@@ -1,74 +1,160 @@
 ---
-// Navbar component with johncrow theme
+// Global navbar component with johncrow theme
+export interface Props {
+  currentPage?: string;
+}
+
+const { currentPage } = Astro.props;
 ---
 
-<nav class="navbar bg-base-100 border-b border-base-300 shadow-sm fixed top-0 z-50 min-h-12">
+<script>
+  // Set active nav item based on current page
+  document.addEventListener('DOMContentLoaded', () => {
+    const currentPage = document.body.getAttribute('data-current-page');
+    const navItems = document.querySelectorAll('.nav-item');
+    
+    navItems.forEach(item => {
+      const link = item.querySelector('a');
+      if (link) {
+        const href = link.getAttribute('href');
+        if ((href === '/' && currentPage === 'home') || href === `/${currentPage}`) {
+          item.classList.add('active');
+        }
+      }
+    });
+  });
+</script>
+
+<!-- Global navbar -->
+<nav class="navbar bg-amber-50 border-b border-amber-200 shadow-sm fixed top-0 z-50 min-h-10">
   <div class="navbar-start">
-    <div class="dropdown">
-      <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16"></path>
-        </svg>
-      </div>
-      <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-        <li><a href="/" class="font-body text-base-content hover:text-primary transition-colors">Welcome</a></li>
-        <li><a href="/search" class="font-body text-base-content hover:text-primary transition-colors">Search Now</a></li>
-        <li><a href="/chat" class="font-body text-base-content hover:text-primary transition-colors">Ask a Question</a></li>
-        <li><a href="/browse" class="font-body text-base-content hover:text-primary transition-colors">Browse the Records</a></li>
-        <li><a href="/visualize" class="font-body text-base-content hover:text-primary transition-colors">Visualize the Data</a></li>
-      </ul>
-    </div>
-    <a href="/" class="btn btn-ghost text-xl font-display text-base-content hover:text-primary transition-colors">
-      John Crow Archive
-    </a>
+    <!-- Empty for now -->
   </div>
   
-  <div class="navbar-center hidden lg:flex">
-    <ul class="menu menu-horizontal px-1 gap-1">
-      <li>
-        <a href="/" class="font-body text-base-content hover:text-primary hover:underline decoration-primary decoration-1 transition-all duration-200">
+  <div class="navbar-center flex-1 flex justify-center">
+    <ul class="menu menu-horizontal px-1 gap-2">
+      <li class="nav-item relative">
+        <a href="/" class="nav-link flex items-center gap-1 font-body text-sm text-base-content hover:text-accent hover:underline decoration-accent decoration-1 transition-all duration-200 pb-1 border-b-2 border-transparent">
+          <svg class="nav-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+          </svg>
           Welcome
         </a>
       </li>
       <li>
-        <span class="text-base-300 font-body">|</span>
+        <span class="text-base-300 font-body text-sm">|</span>
       </li>
-      <li>
-        <a href="/search" class="font-body text-base-content hover:text-primary hover:underline decoration-primary decoration-1 transition-all duration-200">
+      <li class="nav-item relative">
+        <a href="/search" class="nav-link flex items-center gap-1 font-body text-sm text-base-content hover:text-accent hover:underline decoration-accent decoration-1 transition-all duration-200 pb-1 border-b-2 border-transparent">
+          <svg class="nav-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
           Search Now
         </a>
       </li>
       <li>
-        <span class="text-base-300 font-body">|</span>
+        <span class="text-base-300 font-body text-sm">|</span>
       </li>
-      <li>
-        <a href="/chat" class="font-body text-base-content hover:text-primary hover:underline decoration-primary decoration-1 transition-all duration-200">
+      <li class="nav-item relative">
+        <a href="/chat" class="nav-link flex items-center gap-1 font-body text-sm text-base-content hover:text-accent hover:underline decoration-accent decoration-1 transition-all duration-200 pb-1 border-b-2 border-transparent">
+          <svg class="nav-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+          </svg>
           Ask a Question
         </a>
       </li>
       <li>
-        <span class="text-base-300 font-body">|</span>
+        <span class="text-base-300 font-body text-sm">|</span>
       </li>
-      <li>
-        <a href="/browse" class="font-body text-base-content hover:text-primary hover:underline decoration-primary decoration-1 transition-all duration-200">
+      <li class="nav-item relative">
+        <a href="/browse" class="nav-link flex items-center gap-1 font-body text-sm text-base-content hover:text-accent hover:underline decoration-accent decoration-1 transition-all duration-200 pb-1 border-b-2 border-transparent">
+          <svg class="nav-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+          </svg>
           Browse the Records
         </a>
       </li>
       <li>
-        <span class="text-base-300 font-body">|</span>
+        <span class="text-base-300 font-body text-sm">|</span>
+      </li>
+      <li class="nav-item relative">
+        <a href="/visualize" class="nav-link flex items-center gap-1 font-body text-sm text-base-content hover:text-accent hover:underline decoration-accent decoration-1 transition-all duration-200 pb-1 border-b-2 border-transparent">
+          <svg class="nav-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+          Visualize the Data
+        </a>
       </li>
       <li>
-        <a href="/visualize" class="font-body text-base-content hover:text-primary hover:underline decoration-primary decoration-1 transition-all duration-200">
-          Visualize the Data
+        <span class="text-base-300 font-body text-sm">|</span>
+      </li>
+      <li class="nav-item relative">
+        <a href="/sources" class="nav-link flex items-center gap-1 font-body text-sm text-base-content hover:text-accent hover:underline decoration-accent decoration-1 transition-all duration-200 pb-1 border-b-2 border-transparent">
+          <svg class="nav-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+          </svg>
+          Sources
         </a>
       </li>
     </ul>
   </div>
   
   <div class="navbar-end">
-    <!-- Empty for now, can be used for additional elements like search or user menu -->
+    <!-- Empty for now -->
   </div>
 </nav>
 
 <!-- Spacer to prevent content from being hidden behind fixed navbar -->
-<div class="h-16"></div> 
+<div class="h-12"></div>
+
+<style>
+  /* Ensure navbar layout works correctly */
+  .navbar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+  }
+  
+  .navbar-start {
+    flex-shrink: 0 !important;
+  }
+  
+  .navbar-center {
+    flex: 1 !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  
+  .navbar-end {
+    flex-shrink: 0 !important;
+  }
+  
+  /* Ensure menu items are properly displayed */
+  .menu-horizontal {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+  }
+  
+  .menu-horizontal li {
+    display: flex !important;
+    align-items: center !important;
+  }
+  
+  /* Active nav item styles */
+  .nav-item.active .nav-link {
+    color: #1f1f1f !important; /* dark text on brown background */
+    font-weight: 600 !important;
+    background-color: #8b7355 !important; /* accent color as background */
+    border-radius: 0.375rem !important;
+    padding: 0.25rem 0.5rem !important;
+    border-bottom-color: transparent !important;
+  }
+  
+  .nav-item.active .nav-icon {
+    color: #1f1f1f !important; /* dark text on brown background */
+  }
+</style> 

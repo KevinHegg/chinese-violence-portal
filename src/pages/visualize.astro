@@ -1,18 +1,11 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import PageLayout from "../layouts/PageLayout.astro";
 ---
 
-<Layout>
-  <h1 class="text-4xl font-bold mb-6">See the Pattern</h1>
+<PageLayout title="Visualize the Data" currentPage="visualize">
+  <h1 class="text-4xl font-bold mb-6">Visualize the Data</h1>
   
   <p class="mb-8 text-lg max-w-xl">
-    Visualize patterns and trends in the anti-Chinese violence data through interactive charts and maps.
+    See patterns and trends in the data through charts, maps, and timelines.
   </p>
-  
-  <div class="alert alert-info">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-    </svg>
-    <span>Visualization features coming soon. This page will include interactive charts, maps, and data analysis tools.</span>
-  </div>
-</Layout> 
+</PageLayout> 

@@ -9,8 +9,27 @@ module.exports = {
         display: ["Merriweather", "serif"],
         body: ["Georgia", "serif"],
       },
+      borderRadius: {
+        'md': '0.375rem',
+        'xl': '1rem',
+      },
+      boxShadow: {
+        subtle: '0 1px 2px rgba(0, 0, 0, 0.05)',
+        vintage: '0 4px 6px rgba(60, 60, 59, 0.1)',
+      },
     },
   },
+  plugins: [
+    function({ addUtilities }) {
+      addUtilities({
+        '.text-vintage': {
+          color: '#3c3c3b',
+          'font-family': 'Georgia, serif',
+          'font-style': 'italic',
+        },
+      })
+    }
+  ],
   plugins: [require("daisyui"), require("@tailwindcss/typography")],
   daisyui: {
     themes: [

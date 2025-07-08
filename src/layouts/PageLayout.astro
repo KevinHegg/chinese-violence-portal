@@ -1,0 +1,45 @@
+---
+import Navbar from "../components/Navbar.astro";
+import "../styles/tailwind.css";
+
+export interface Props {
+  title: string;
+  currentPage?: string;
+}
+
+const { title, currentPage } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-theme="johncrow">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} - John Crow Archive</title>
+  </head>
+  <body class="font-serif" data-current-page={currentPage}>
+    <Navbar currentPage={currentPage} />
+    
+    <main class="p-6">
+      <div class="max-w-4xl mx-auto">
+        <slot />
+        
+        <footer class="text-center mt-12 pt-8 border-t border-base-300">
+          <p class="text-sm font-body text-base-content/70">
+            © Kevin Hegg, 2025. This website contains sensitive historical content. Please approach the material with respect and care.
+          </p>
+        </footer>
+      </div>
+    </main>
+  </body>
+</html>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style> 

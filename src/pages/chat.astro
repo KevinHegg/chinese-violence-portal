@@ -1,4 +1,11 @@
 ---
+import PageLayout from "../layouts/PageLayout.astro";
 ---
-<h1 class="text-2xl font-bold">Chat With the Archive</h1>
-<p>This page will connect to the Assistants API via Netlify function.</p>
+
+<PageLayout title="Ask a Question" currentPage="chat">
+  <h1 class="text-4xl font-bold mb-6">Ask a Question</h1>
+  
+  <p class="mb-8 text-lg max-w-xl">
+    Chat with the archive using natural language queries.
+  </p>
+</PageLayout>
