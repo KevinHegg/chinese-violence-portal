@@ -1,22 +1,24 @@
 ---
-layout: "../layouts/Layout.astro"
+import Layout from "../layouts/Layout.astro";
 ---
 
-<h1 class="text-4xl font-bold mb-6">John Crow Archive</h1>
+<Layout>
+  <h1 class="text-4xl font-bold mb-6">John Crow Archive</h1>
 
-<p class="mb-8 text-lg max-w-xl">
-  A public research project documenting anti-Chinese violence in the American West, 1845–1945.
-</p>
+  <p class="mb-8 text-lg max-w-xl">
+    A public research project documenting anti-Chinese violence in the American West, 1845–1945.
+  </p>
 
-<ul class="space-y-4">
-  <li>
-    <a class="btn btn-primary" href="/search">🔎 Search the Archive</a>
-  </li>
-  <li>
-    <a class="btn btn-primary" href="/chat">💬 Chat With the Archive</a>
-  </li>
-  <li>
-    <a class="btn btn-primary" href="/browse">🗺️ Browse & Visualize</a>
-  </li>
-</ul>
-<a class="btn btn-primary">Try the Chat</a>
+  <ul class="space-y-4">
+    <li>
+      <a class="btn btn-primary" href="/search">🔎 Search the Archive</a>
+    </li>
+    <li>
+      <a class="btn btn-primary" href="/chat">💬 Chat With the Archive</a>
+    </li>
+    <li>
+      <a class="btn btn-primary" href="/browse">🗺️ Browse & Visualize</a>
+    </li>
+  </ul>
+  <a class="btn btn-primary">Try the Chat</a>
+</Layout>

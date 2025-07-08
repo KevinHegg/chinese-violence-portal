@@ -1,5 +1,5 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  // Tailwind v4 doesn't need the @astrojs/tailwind integration
+  // Configuration for Tailwind CSS v3
 });

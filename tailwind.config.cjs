@@ -1,8 +1,8 @@
 /** @type {import('tailwindcss').Config} */
-const { themes } = require("daisyui/src/colors/themes");
-
 module.exports = {
-  content: ["./src/**/*.{astro,html,js,jsx,ts,tsx,svelte,vue}"],
+  content: [
+    "./src/**/*.{astro,html,js,jsx,ts,tsx,svelte,vue}",
+  ],
   theme: {
     extend: {
       fontFamily: {
@@ -16,10 +16,19 @@ module.exports = {
     themes: [
       {
         johncrow: {
-          ...themes["[data-theme=dim]"],
-          primary: "#3c3c3b",
-          "base-100": "#f5f5eb",
-          "base-content": "#1f1f1f",
+          "primary": "#3c3c3b",       // Dusty black headline ink
+          "base-100": "#f5f5eb",      // Faded paper ivory
+          "base-content": "#1f1f1f",  // Newsprint text black
+          "neutral": "#3c3c3b",
+          "neutral-content": "#f5f5eb",
+          "accent": "#8b7355",
+          "accent-content": "#f5f5eb",
+          "secondary": "#6b7280",
+          "secondary-content": "#f5f5eb",
+          "info": "#3b82f6",
+          "success": "#10b981",
+          "warning": "#f59e0b",
+          "error": "#ef4444",
         },
       },
     ],
