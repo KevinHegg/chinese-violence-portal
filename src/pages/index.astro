@@ -17,7 +17,7 @@ import Navbar from "../components/Navbar.astro";
     
     <main class="p-6 relative">
       <!-- Background image -->
-      <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30" style="background-image: url('/banner_johnchinaman.png');"></div>
+      <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-10" style="background-image: url('/banner_johnchinaman.png');"></div>
       
       <div class="max-w-4xl mx-auto relative z-10">
         <div class="text-center mb-12">
@@ -30,78 +30,43 @@ import Navbar from "../components/Navbar.astro";
           </p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-12">
-          <div class="card bg-base-100 shadow-lg border border-base-300 hover:shadow-xl transition-shadow duration-300">
-            <div class="card-body p-2">
-              <a href="/search" class="group">
-                <div class="flex items-center mb-2">
-                  <svg class="w-4 h-4 text-primary mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                  </svg>
-                  <h2 class="card-title font-display text-sm text-base-content group-hover:text-primary transition-colors duration-200">
-                    Search Now
-                  </h2>
-                </div>
-              </a>
-              <p class="font-body text-base-content/70 text-xs leading-relaxed">
-                Search through the archive with advanced filters and keywords.
-              </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+          <a href="/search" class="block group rounded-xl shadow-vintage border border-amber-200 p-4 hover:shadow-lg transition-all duration-200 bg-white w-full max-w-xs mx-auto">
+            <div class="flex items-center gap-2 mb-2">
+              <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+              <span class="font-display font-semibold text-base">Search Now</span>
             </div>
-          </div>
-
-          <div class="card bg-base-100 shadow-lg border border-base-300 hover:shadow-xl transition-shadow duration-300">
-            <div class="card-body p-2">
-              <a href="/chat" class="group">
-                <div class="flex items-center mb-2">
-                  <svg class="w-4 h-4 text-primary mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                  </svg>
-                  <h2 class="card-title font-display text-sm text-base-content group-hover:text-primary transition-colors duration-200">
-                    Ask a Question
-                  </h2>
-                </div>
-              </a>
-              <p class="font-body text-base-content/70 text-xs leading-relaxed">
-                Chat with the archive using natural language queries.
-              </p>
+            <p class="text-sm text-base-content/70">Find people, places, and events in the archive.</p>
+          </a>
+          <a href="/chat" class="block group rounded-xl shadow-vintage border border-amber-200 p-4 hover:shadow-lg transition-all duration-200 bg-white w-full max-w-xs mx-auto">
+            <div class="flex items-center gap-2 mb-2">
+              <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+              </svg>
+              <span class="font-display font-semibold text-base">Ask a Question</span>
             </div>
-          </div>
-
-          <div class="card bg-base-100 shadow-lg border border-base-300 hover:shadow-xl transition-shadow duration-300">
-            <div class="card-body p-2">
-              <a href="/browse" class="group">
-                <div class="flex items-center mb-2">
-                  <svg class="w-4 h-4 text-primary mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                  </svg>
-                  <h2 class="card-title font-display text-sm text-base-content group-hover:text-primary transition-colors duration-200">
-                    Browse the Records
-                  </h2>
-                </div>
-              </a>
-              <p class="font-body text-base-content/70 text-xs leading-relaxed">
-                Browse the archive by location, date, or event type.
-              </p>
+            <p class="text-sm text-base-content/70">Chat with the archive for research or teaching.</p>
+          </a>
+          <a href="/browse" class="block group rounded-xl shadow-vintage border border-amber-200 p-4 hover:shadow-lg transition-all duration-200 bg-white w-full max-w-xs mx-auto">
+            <div class="flex items-center gap-2 mb-2">
+              <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+              <span class="font-display font-semibold text-base">Browse</span>
             </div>
-          </div>
-
-          <div class="card bg-base-100 shadow-lg border border-base-300 hover:shadow-xl transition-shadow duration-300">
-            <div class="card-body p-2">
-              <a href="/visualize" class="group">
-                <div class="flex items-center mb-2">
-                  <svg class="w-4 h-4 text-primary mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                  </svg>
-                  <h2 class="card-title font-display text-sm text-base-content group-hover:text-primary transition-colors duration-200">
-                    Visualize the Data
-                  </h2>
-                </div>
-              </a>
-              <p class="font-body text-base-content/70 text-xs leading-relaxed">
-                See patterns and trends in the data through charts, maps, and timelines.
-              </p>
+            <p class="text-sm text-base-content/70">Explore the full collection by category.</p>
+          </a>
+          <a href="/visualize" class="block group rounded-xl shadow-vintage border border-amber-200 p-4 hover:shadow-lg transition-all duration-200 bg-white w-full max-w-xs mx-auto">
+            <div class="flex items-center gap-2 mb-2">
+              <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              <span class="font-display font-semibold text-base">Visualize</span>
             </div>
-          </div>
+            <p class="text-sm text-base-content/70">See maps and charts of the archive data.</p>
+          </a>
         </div>
 
         <div class="prose prose-lg max-w-4xl mx-auto mt-12 mb-8">
