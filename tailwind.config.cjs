@@ -2,9 +2,7 @@
 const { themes } = require("daisyui/src/colors/themes");
 
 module.exports = {
-  content: [
-    "./src/**/*.{astro,html,js,jsx,ts,tsx,vue,svelte}",
-  ],
+  content: ["./src/**/*.{astro,html,js,jsx,ts,tsx,svelte,vue}"],
   theme: {
     extend: {
       fontFamily: {
@@ -19,11 +17,11 @@ module.exports = {
       {
         johncrow: {
           ...themes["[data-theme=dim]"],
-          primary: "#3c3c3b",       // Dusty black headline ink
-          "base-100": "#f5f5eb",    // Faded paper ivory
-          "base-content": "#1f1f1f",// Newsprint text black
+          primary: "#3c3c3b",
+          "base-100": "#f5f5eb",
+          "base-content": "#1f1f1f",
         },
       },
     ],
   },
-}
+};
