@@ -1,5 +1,5 @@
-// @ts-check
 import { defineConfig } from 'astro/config';
 
-// https://astro.build/config
-export default defineConfig({});
+export default defineConfig({
+  // Tailwind v4 doesn't need the @astrojs/tailwind integration
+});
