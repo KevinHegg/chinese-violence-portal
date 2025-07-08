@@ -1,0 +1,74 @@
+---
+// Navbar component with johncrow theme
+---
+
+<nav class="navbar bg-base-100 border-b border-base-300 shadow-sm fixed top-0 z-50 min-h-12">
+  <div class="navbar-start">
+    <div class="dropdown">
+      <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16"></path>
+        </svg>
+      </div>
+      <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+        <li><a href="/" class="font-body text-base-content hover:text-primary transition-colors">Welcome</a></li>
+        <li><a href="/search" class="font-body text-base-content hover:text-primary transition-colors">Dig In</a></li>
+        <li><a href="/chat" class="font-body text-base-content hover:text-primary transition-colors">Ask a Question</a></li>
+        <li><a href="/browse" class="font-body text-base-content hover:text-primary transition-colors">Stroll Through</a></li>
+        <li><a href="/visualize" class="font-body text-base-content hover:text-primary transition-colors">See the Pattern</a></li>
+      </ul>
+    </div>
+    <a href="/" class="btn btn-ghost text-xl font-display text-base-content hover:text-primary transition-colors">
+      John Crow Archive
+    </a>
+  </div>
+  
+  <div class="navbar-center hidden lg:flex">
+    <ul class="menu menu-horizontal px-1 gap-1">
+      <li>
+        <a href="/" class="font-body text-base-content hover:text-primary hover:underline decoration-primary decoration-1 transition-all duration-200">
+          Welcome
+        </a>
+      </li>
+      <li>
+        <span class="text-base-300 font-body">|</span>
+      </li>
+      <li>
+        <a href="/search" class="font-body text-base-content hover:text-primary hover:underline decoration-primary decoration-1 transition-all duration-200">
+          Dig In
+        </a>
+      </li>
+      <li>
+        <span class="text-base-300 font-body">|</span>
+      </li>
+      <li>
+        <a href="/chat" class="font-body text-base-content hover:text-primary hover:underline decoration-primary decoration-1 transition-all duration-200">
+          Ask a Question
+        </a>
+      </li>
+      <li>
+        <span class="text-base-300 font-body">|</span>
+      </li>
+      <li>
+        <a href="/browse" class="font-body text-base-content hover:text-primary hover:underline decoration-primary decoration-1 transition-all duration-200">
+          Stroll Through
+        </a>
+      </li>
+      <li>
+        <span class="text-base-300 font-body">|</span>
+      </li>
+      <li>
+        <a href="/visualize" class="font-body text-base-content hover:text-primary hover:underline decoration-primary decoration-1 transition-all duration-200">
+          See the Pattern
+        </a>
+      </li>
+    </ul>
+  </div>
+  
+  <div class="navbar-end">
+    <!-- Empty for now, can be used for additional elements like search or user menu -->
+  </div>
+</nav>
+
+<!-- Spacer to prevent content from being hidden behind fixed navbar -->
+<div class="h-16"></div> 

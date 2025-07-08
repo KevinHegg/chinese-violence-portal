@@ -1,6 +1,7 @@
 ---
 // Import Tailwind CSS
 import "../styles/tailwind.css";
+import Navbar from "../components/Navbar.astro";
 ---
 
 <!doctype html>
@@ -11,8 +12,11 @@ import "../styles/tailwind.css";
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>John Crow Archive</title>
   </head>
-  <body class="font-serif p-6">
-    <slot />
+  <body class="font-serif">
+    <Navbar />
+    <main class="p-6">
+      <slot />
+    </main>
   </body>
 </html>
 
