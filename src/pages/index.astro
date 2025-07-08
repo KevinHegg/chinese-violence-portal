@@ -3,22 +3,76 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-  <h1 class="text-4xl font-bold mb-6">John Crow Archive</h1>
+  <div class="max-w-4xl mx-auto">
+    <div class="text-center mb-12">
+      <h1 class="text-5xl font-display font-bold mb-6 text-base-content">
+        John Crow Archive
+      </h1>
+      
+      <p class="text-xl font-body text-base-content/80 max-w-2xl mx-auto leading-relaxed">
+        A public research project documenting anti-Chinese violence in the American West, 1845–1945.
+      </p>
+    </div>
 
-  <p class="mb-8 text-lg max-w-xl">
-    A public research project documenting anti-Chinese violence in the American West, 1845–1945.
-  </p>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+      <div class="card bg-base-100 shadow-lg border border-base-300">
+        <div class="card-body">
+          <h2 class="card-title font-display text-xl mb-3">🔎 Dig In</h2>
+          <p class="font-body text-base-content/70 mb-4">
+            Search through the archive with advanced filters and keywords.
+          </p>
+          <div class="card-actions">
+            <a href="/search" class="btn btn-primary btn-sm">Search Now</a>
+          </div>
+        </div>
+      </div>
 
-  <ul class="space-y-4">
-    <li>
-      <a class="btn btn-primary" href="/search">🔎 Search the Archive</a>
-    </li>
-    <li>
-      <a class="btn btn-primary" href="/chat">💬 Chat With the Archive</a>
-    </li>
-    <li>
-      <a class="btn btn-primary" href="/browse">🗺️ Browse & Visualize</a>
-    </li>
-  </ul>
-  <a class="btn btn-primary">Try the Chat</a>
+      <div class="card bg-base-100 shadow-lg border border-base-300">
+        <div class="card-body">
+          <h2 class="card-title font-display text-xl mb-3">💬 Ask a Question</h2>
+          <p class="font-body text-base-content/70 mb-4">
+            Chat with the archive using natural language queries.
+          </p>
+          <div class="card-actions">
+            <a href="/chat" class="btn btn-primary btn-sm">Start Chat</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card bg-base-100 shadow-lg border border-base-300">
+        <div class="card-body">
+          <h2 class="card-title font-display text-xl mb-3">🗺️ Stroll Through</h2>
+          <p class="font-body text-base-content/70 mb-4">
+            Browse the archive by location, date, or event type.
+          </p>
+          <div class="card-actions">
+            <a href="/browse" class="btn btn-primary btn-sm">Browse</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card bg-base-100 shadow-lg border border-base-300">
+        <div class="card-body">
+          <h2 class="card-title font-display text-xl mb-3">📊 See the Pattern</h2>
+          <p class="font-body text-base-content/70 mb-4">
+            Visualize patterns and trends in the data through charts and maps.
+          </p>
+          <div class="card-actions">
+            <a href="/visualize" class="btn btn-primary btn-sm">Visualize</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center">
+      <div class="alert alert-info max-w-2xl mx-auto">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span class="font-body">
+          This archive contains sensitive historical content. Please approach the material with respect and understanding of its historical context.
+        </span>
+      </div>
+    </div>
+  </div>
 </Layout>
