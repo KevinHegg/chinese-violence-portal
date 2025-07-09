@@ -1,0 +1,58 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro";
+---
+
+<PageLayout title="In the News - Visualize the Data" currentPage="visualize">
+  <div class="max-w-6xl mx-auto px-4">
+    <div class="mb-6">
+      <a href="/visualize" class="text-accent hover:text-accent-focus flex items-center gap-2 mb-4">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Back to Visualizations
+      </a>
+      <h1 class="text-4xl font-bold mb-6">In the News</h1>
+    </div>
+    
+    <p class="mb-8 text-lg max-w-xl">
+      Explore news articles and media coverage related to the data. This section provides context and contemporary perspectives on the events and patterns in our dataset.
+    </p>
+
+    <!-- Placeholder Content -->
+    <div class="grid gap-6 mb-8">
+      <div class="p-6 bg-amber-50 border border-amber-200 rounded-lg">
+        <h2 class="text-xl font-semibold mb-3">Coming Soon</h2>
+        <p class="text-gray-700 mb-4">
+          The "In the News" section is currently under development. This page will feature:
+        </p>
+        <ul class="list-disc list-inside text-gray-700 space-y-2">
+          <li>Curated news articles related to the dataset</li>
+          <li>Media coverage analysis and trends</li>
+          <li>Historical context and contemporary perspectives</li>
+          <li>Interactive filtering and search capabilities</li>
+        </ul>
+      </div>
+
+      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+        <h3 class="text-lg font-semibold mb-3">Sample News Article</h3>
+        <div class="space-y-3">
+          <p class="text-sm text-gray-500">December 15, 2023 • The New York Times</p>
+          <h4 class="font-medium">Sample Headline: Understanding Historical Patterns</h4>
+          <p class="text-gray-700">
+            This is a placeholder for a news article that would provide context and analysis related to the data in our collection. 
+            The actual content will be populated with real news articles and media coverage.
+          </p>
+          <a href="#" class="text-accent hover:text-accent-focus text-sm font-medium">Read full article →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 p-6 bg-gray-50 border border-gray-200 rounded-lg">
+      <h2 class="text-xl font-semibold mb-3">About This Section</h2>
+      <p class="text-gray-700">
+        The "In the News" section will provide contemporary context for the historical data, helping researchers and visitors understand 
+        how these events were reported and perceived in their time, as well as their ongoing relevance today.
+      </p>
+    </div>
+  </div>
+</PageLayout> 

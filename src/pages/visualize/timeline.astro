@@ -1,0 +1,61 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro";
+---
+
+<PageLayout title="Timeline - Visualize the Data" currentPage="visualize">
+  <div class="max-w-6xl mx-auto px-4">
+    <div class="mb-6">
+      <a href="/visualize" class="text-accent hover:text-accent-focus flex items-center gap-2 mb-4">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Back to Visualizations
+      </a>
+      <h1 class="text-4xl font-bold mb-6">Timeline</h1>
+    </div>
+    
+    <p class="mb-8 text-lg max-w-xl">
+      Explore the chronological progression of events and data points. This interactive timeline helps you understand the sequence and context of historical events.
+    </p>
+
+    <!-- Placeholder Content -->
+    <div class="grid gap-6 mb-8">
+      <div class="p-6 bg-amber-50 border border-amber-200 rounded-lg">
+        <h2 class="text-xl font-semibold mb-3">Coming Soon</h2>
+        <p class="text-gray-700 mb-4">
+          The Timeline visualization is currently under development. This page will feature:
+        </p>
+        <ul class="list-disc list-inside text-gray-700 space-y-2">
+          <li>Interactive chronological timeline of events</li>
+          <li>Filterable date ranges and categories</li>
+          <li>Detailed event descriptions and context</li>
+          <li>Zoom and navigation controls</li>
+        </ul>
+      </div>
+
+      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+        <h3 class="text-lg font-semibold mb-3">Sample Timeline Event</h3>
+        <div class="space-y-3">
+          <p class="text-sm text-gray-500">January 15, 1940</p>
+          <h4 class="font-medium">Sample Event: Historical Milestone</h4>
+          <p class="text-gray-700">
+            This is a placeholder for a timeline event that would show the chronological progression of events in our dataset. 
+            The actual timeline will be populated with real historical events and data points.
+          </p>
+          <div class="flex gap-2">
+            <span class="px-2 py-1 bg-accent text-white text-xs rounded">Category</span>
+            <span class="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded">Location</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 p-6 bg-gray-50 border border-gray-200 rounded-lg">
+      <h2 class="text-xl font-semibold mb-3">About the Timeline</h2>
+      <p class="text-gray-700">
+        The Timeline visualization will provide a comprehensive chronological view of events, allowing researchers to understand 
+        the temporal relationships between different data points and identify patterns over time.
+      </p>
+    </div>
+  </div>
+</PageLayout> 

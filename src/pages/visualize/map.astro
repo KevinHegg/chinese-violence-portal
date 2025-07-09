@@ -1,0 +1,61 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro";
+---
+
+<PageLayout title="Map - Visualize the Data" currentPage="visualize">
+  <div class="max-w-6xl mx-auto px-4">
+    <div class="mb-6">
+      <a href="/visualize" class="text-accent hover:text-accent-focus flex items-center gap-2 mb-4">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Back to Visualizations
+      </a>
+      <h1 class="text-4xl font-bold mb-6">Map</h1>
+    </div>
+    
+    <p class="mb-8 text-lg max-w-xl">
+      Explore the geographic distribution of events and data points. This interactive map visualization helps you understand spatial patterns and regional variations.
+    </p>
+
+    <!-- Placeholder Content -->
+    <div class="grid gap-6 mb-8">
+      <div class="p-6 bg-amber-50 border border-amber-200 rounded-lg">
+        <h2 class="text-xl font-semibold mb-3">Coming Soon</h2>
+        <p class="text-gray-700 mb-4">
+          The Map visualization is currently under development. This page will feature:
+        </p>
+        <ul class="list-disc list-inside text-gray-700 space-y-2">
+          <li>Interactive geographic map with data points</li>
+          <li>Zoom and pan controls for exploration</li>
+          <li>Filterable layers and categories</li>
+          <li>Detailed location information and context</li>
+        </ul>
+      </div>
+
+      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+        <h3 class="text-lg font-semibold mb-3">Sample Map Location</h3>
+        <div class="space-y-3">
+          <p class="text-sm text-gray-500">Coordinates: 40.7128° N, 74.0060° W</p>
+          <h4 class="font-medium">Sample Location: New York City</h4>
+          <p class="text-gray-700">
+            This is a placeholder for a map location that would show the geographic distribution of events in our dataset. 
+            The actual map will be populated with real locations and data points.
+          </p>
+          <div class="flex gap-2">
+            <span class="px-2 py-1 bg-accent text-white text-xs rounded">Event Type</span>
+            <span class="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded">Date Range</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 p-6 bg-gray-50 border border-gray-200 rounded-lg">
+      <h2 class="text-xl font-semibold mb-3">About the Map</h2>
+      <p class="text-gray-700">
+        The Map visualization will provide a spatial perspective on the data, allowing researchers to identify geographic patterns, 
+        regional variations, and spatial relationships between different events and data points.
+      </p>
+    </div>
+  </div>
+</PageLayout> 
