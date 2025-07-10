@@ -1,9 +1,16 @@
 ---
 import PageLayout from "../../layouts/PageLayout.astro";
+import articles from "../../data/articles.json";
+import topNamedEntities from "../../data/top-named-entities.json";
+
+// Extract unique values for dropdowns
+const decades = [...new Set(articles.map(article => article.decade).filter(Boolean))].sort();
+const states = [...new Set(articles.map(article => article.state).filter(Boolean))].sort();
+const publications = [...new Set(articles.map(article => article.newspaper).filter(Boolean))].sort();
 ---
 
 <PageLayout title="In the News - Visualize the Data" currentPage="visualize">
-  <div class="max-w-6xl mx-auto px-4">
+  <div class="max-w-7xl mx-auto px-4">
     <div class="mb-6">
       <a href="/visualize" class="text-accent hover:text-accent-focus flex items-center gap-2 mb-4">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -11,48 +18,566 @@ import PageLayout from "../../layouts/PageLayout.astro";
         </svg>
         Back to Visualizations
       </a>
-      <h1 class="text-4xl font-bold mb-6">In the News</h1>
+      <h1 class="text-4xl font-bold mb-2">Newspaper Archive</h1>
+      <p class="text-lg text-gray-600 mb-6">
+        Explore historical newspaper articles documenting events and patterns in our dataset. 
+        Filter by decade, state, or publication to discover contemporary perspectives on these historical events.
+      </p>
     </div>
-    
-    <p class="mb-8 text-lg max-w-xl">
-      Explore news articles and media coverage related to the data. This section provides context and contemporary perspectives on the events and patterns in our dataset.
-    </p>
 
-    <!-- Placeholder Content -->
-    <div class="grid gap-6 mb-8">
-      <div class="p-6 bg-amber-50 border border-amber-200 rounded-lg">
-        <h2 class="text-xl font-semibold mb-3">Coming Soon</h2>
-        <p class="text-gray-700 mb-4">
-          The "In the News" section is currently under development. This page will feature:
-        </p>
-        <ul class="list-disc list-inside text-gray-700 space-y-2">
-          <li>Curated news articles related to the dataset</li>
-          <li>Media coverage analysis and trends</li>
-          <li>Historical context and contemporary perspectives</li>
-          <li>Interactive filtering and search capabilities</li>
-        </ul>
+    <!-- Filter and Sort Controls -->
+    <div class="bg-amber-50 border-2 border-amber-200 rounded-lg p-4 mb-6 shadow-lg">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <!-- Filter Section -->
+        <div class="lg:col-span-2">
+          <div class="bg-white rounded-lg p-3 border border-amber-300">
+            <h3 class="text-lg font-semibold mb-3 text-amber-800 border-b border-amber-200 pb-2">Filters</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text font-medium text-amber-800">Decade</span>
+                </label>
+                <select id="filter-decade" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
+                  <option value="">All Decades</option>
+                  {decades.map(decade => <option value={decade}>{decade}</option>)}
+                </select>
+              </div>
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text font-medium text-amber-800">Publication State</span>
+                </label>
+                <select id="filter-state" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
+                  <option value="">All States</option>
+                  {states.map(state => <option value={state}>{state}</option>)}
+                </select>
+              </div>
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text font-medium text-amber-800">Publication Title</span>
+                </label>
+                <select id="filter-publication" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
+                  <option value="">All Publications</option>
+                  {publications.map(pub => <option value={pub}>{pub}</option>)}
+                </select>
+              </div>
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text font-medium text-amber-800">Top Named Entities</span>
+                </label>
+                <select id="filter-entities" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
+                  <option value="">All Entities</option>
+                  {topNamedEntities.map(entity => <option value={entity}>{entity}</option>)}
+                </select>
+              </div>
+            </div>
+            <div class="flex justify-end mt-3">
+              <button id="clear-filters" class="btn btn-primary btn-sm">
+                Clear All Filters
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sort Section -->
+        <div>
+          <div class="bg-white rounded-lg p-3 border border-amber-300 h-full">
+            <h3 class="text-lg font-semibold mb-3 text-amber-800 border-b border-amber-200 pb-2">Sort Options</h3>
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text font-medium text-amber-800">Sort By</span>
+              </label>
+              <select id="sort-by" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
+                <option value="date">Publication Date</option>
+                <option value="state">State</option>
+                <option value="title">Article Title</option>
+                <option value="newspaper">Newspaper Title</option>
+              </select>
+            </div>
+            <div class="form-control mt-3">
+              <label class="label">
+                <span class="label-text font-medium text-amber-800">Order</span>
+              </label>
+              <select id="sort-order" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
+      <div class="mt-3 text-sm text-amber-700 bg-amber-100 rounded-lg p-2 text-center">
+        <span id="results-count">Showing all {articles.length} articles</span>
+      </div>
+    </div>
 
-      <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
-        <h3 class="text-lg font-semibold mb-3">Sample News Article</h3>
-        <div class="space-y-3">
-          <p class="text-sm text-gray-500">December 15, 2023 • The New York Times</p>
-          <h4 class="font-medium">Sample Headline: Understanding Historical Patterns</h4>
-          <p class="text-gray-700">
-            This is a placeholder for a news article that would provide context and analysis related to the data in our collection. 
-            The actual content will be populated with real news articles and media coverage.
-          </p>
-          <a href="#" class="text-accent hover:text-accent-focus text-sm font-medium">Read full article →</a>
+    <!-- Article Cards Grid -->
+    <div id="cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
+
+    <!-- Article Viewer Modal -->
+    <div id="article-viewer" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div class="bg-newspaper-offwhite rounded-lg shadow-xl max-w-7xl w-full max-h-[95vh] overflow-hidden">
+        <div class="p-6 border-b border-base-300">
+          <div class="flex justify-between items-start">
+            <h2 class="text-2xl font-bold" id="viewer-title"></h2>
+            <button id="close-viewer" class="btn btn-ghost btn-sm" aria-label="Close article viewer">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+        <div class="flex flex-col lg:flex-row h-[calc(95vh-120px)]">
+          <!-- Image Panel with Zoom/Pan -->
+          <div class="lg:w-1/2 p-4 border-r border-base-300 bg-newspaper-offwhite">
+            <div class="relative h-full">
+              <div id="image-container" class="relative w-full h-full overflow-hidden bg-base-200 rounded-lg">
+                <img id="viewer-image" class="w-full h-full object-contain" alt="Article image" />
+                <div id="image-loading" class="absolute inset-0 bg-base-200 rounded-lg flex items-center justify-center">
+                  <div class="loading loading-spinner loading-lg"></div>
+                </div>
+                <div id="image-error" class="hidden absolute inset-0 bg-base-200 rounded-lg flex items-center justify-center">
+                  <div class="text-center text-gray-500">
+                    <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <p class="text-sm">Image not available</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Zoom Controls -->
+              <div class="absolute top-4 left-4 flex flex-col gap-2 bg-white bg-opacity-90 rounded-lg p-2 shadow-lg">
+                <button id="zoom-in" class="btn btn-circle btn-sm btn-primary" title="Zoom In (Click)">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                  </svg>
+                </button>
+                <button id="zoom-out" class="btn btn-circle btn-sm btn-primary" title="Zoom Out (Shift+Click or Right Click)">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10h-6"></path>
+                  </svg>
+                </button>
+                <button id="reset-zoom" class="btn btn-circle btn-sm btn-outline" title="Reset Zoom">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Transcript Panel -->
+          <div class="lg:w-1/2 p-4 flex flex-col bg-newspaper-offwhite">
+            <div class="flex-1 overflow-hidden">
+              <h3 class="text-lg font-semibold mb-3">Transcription</h3>
+              <div id="viewer-transcription" class="h-full overflow-y-auto border border-base-300 rounded-lg p-4 bg-white text-sm leading-relaxed whitespace-pre-wrap"></div>
+            </div>
+            
+            <!-- Citation -->
+            <div class="mt-4 p-3 bg-base-200 rounded-lg">
+              <h4 class="text-sm font-medium mb-2">Citation</h4>
+              <p class="text-xs text-gray-600" id="viewer-citation"></p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="mt-12 p-6 bg-gray-50 border border-gray-200 rounded-lg">
-      <h2 class="text-xl font-semibold mb-3">About This Section</h2>
-      <p class="text-gray-700">
-        The "In the News" section will provide contemporary context for the historical data, helping researchers and visitors understand 
-        how these events were reported and perceived in their time, as well as their ongoing relevance today.
-      </p>
+    <!-- Loading State -->
+    <div id="loading" class="hidden text-center py-12">
+      <div class="loading loading-spinner loading-lg"></div>
+      <p class="mt-4 text-gray-600">Loading articles...</p>
+    </div>
+
+    <!-- No Results State -->
+    <div id="no-results" class="hidden text-center py-12">
+      <div class="text-gray-400 mb-4">
+        <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold mb-2">No articles found</h3>
+      <p class="text-gray-600 mb-4">Try adjusting your filters or clearing them to see all articles.</p>
+      <button id="reset-filters" class="btn btn-outline">Show All Articles</button>
     </div>
   </div>
+
+  <script define:vars={{ articles }}>
+    const container = document.getElementById('cards-container');
+    const decadeInput = document.getElementById('filter-decade');
+    const stateInput = document.getElementById('filter-state');
+    const publicationInput = document.getElementById('filter-publication');
+    const entitiesInput = document.getElementById('filter-entities');
+    const sortByInput = document.getElementById('sort-by');
+    const sortOrderInput = document.getElementById('sort-order');
+    const clearBtn = document.getElementById('clear-filters');
+    const viewer = document.getElementById('article-viewer');
+    const closeViewer = document.getElementById('close-viewer');
+    const viewerTitle = document.getElementById('viewer-title');
+    const viewerImage = document.getElementById('viewer-image');
+    const imageContainer = document.getElementById('image-container');
+    const imageLoading = document.getElementById('image-loading');
+    const imageError = document.getElementById('image-error');
+
+    const viewerTranscription = document.getElementById('viewer-transcription');
+    const viewerCitation = document.getElementById('viewer-citation');
+    const resultsCount = document.getElementById('results-count');
+    const loading = document.getElementById('loading');
+    const noResults = document.getElementById('no-results');
+    
+    // Zoom controls
+    const zoomIn = document.getElementById('zoom-in');
+    const zoomOut = document.getElementById('zoom-out');
+    const resetZoom = document.getElementById('reset-zoom');
+
+    // Zoom and pan state
+    let currentZoom = 1;
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let translateX = 0;
+    let translateY = 0;
+
+    function formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+    }
+
+    function renderCards(filtered) {
+      container.innerHTML = '';
+      
+      if (filtered.length === 0) {
+        container.classList.add('hidden');
+        noResults.classList.remove('hidden');
+        resultsCount.textContent = 'No articles found';
+        return;
+      }
+
+      container.classList.remove('hidden');
+      noResults.classList.add('hidden');
+      resultsCount.textContent = `Showing ${filtered.length} of ${articles.length} articles`;
+
+      filtered.forEach((article, index) => {
+        const card = document.createElement('div');
+        card.className = 'card bg-base-100 shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-base-300';
+        card.innerHTML = `
+          <div class="card-body p-4">
+            <div class="flex justify-between items-start mb-3">
+              <h3 class="card-title text-base font-semibold line-clamp-3 flex-1 mr-3">${article['article-title'] || 'Untitled'}</h3>
+              <span class="badge badge-primary badge-sm flex-shrink-0">${article['publication-year'] || 'Unknown'}</span>
+            </div>
+            <p class="text-sm text-gray-600 mb-2">
+              <span class="font-medium">${article.newspaper || 'Unknown Publication'}</span>${article['newspaper-location'] ? ` (${article['newspaper-location']})` : ''}
+            </p>
+            <p class="text-sm text-gray-500 mb-3">
+              ${formatDate(article['publication-date'])}${article.page ? ` (Page ${article.page})` : ''}
+            </p>
+            <div class="summary-container relative">
+              <p class="text-sm text-gray-700 summary-text">${article['article-summary'] || 'No summary available.'}</p>
+              <div class="summary-fade"></div>
+            </div>
+          </div>
+        `;
+        
+        card.addEventListener('click', () => renderViewer(article));
+        container.appendChild(card);
+      });
+    }
+
+    function resetImageTransform() {
+      currentZoom = 1;
+      translateX = 0;
+      translateY = 0;
+      updateImageTransform();
+    }
+
+    function updateImageTransform() {
+      viewerImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentZoom})`;
+    }
+
+    function renderViewer(article) {
+      viewer.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      
+      // Create title with newspaper metadata (without location since it's in citation)
+      const newspaperName = article.newspaper || 'Unknown Publication';
+      const publicationDate = formatDate(article['publication-date']);
+      const titleWithMetadata = `${article['article-title'] || 'Untitled Article'} - ${newspaperName}, ${publicationDate}`;
+      viewerTitle.textContent = titleWithMetadata;
+      
+      // Reset zoom and pan
+      resetImageTransform();
+      
+      // Show loading state for image
+      imageLoading.classList.remove('hidden');
+      imageError.classList.add('hidden');
+      
+      // Set image with fallback
+      const imagePath = `/articles/${article.image_name}`;
+      viewerImage.src = imagePath;
+      viewerImage.alt = article['article-title'] || 'Article image';
+      
+      // Handle image load events
+      viewerImage.onload = () => {
+        imageLoading.classList.add('hidden');
+      };
+      
+      viewerImage.onerror = () => {
+        imageLoading.classList.add('hidden');
+        imageError.classList.remove('hidden');
+      };
+      
+      // Transcription with proper formatting
+      const transcript = (article['article-transcript'] || 'No transcription available.')
+        .replace(/⏎/g, '\n')
+        .split(/\n{2,}/)
+        .map(paragraph => paragraph.trim())
+        .filter(paragraph => paragraph.length > 0);
+      viewerTranscription.innerHTML = transcript.map(p => `<p class='mb-4'>${p.replace(/\n/g, '<br>')}</p>`).join('');
+      
+      // Citation
+      viewerCitation.textContent = article['turabian-citation'] || 'Citation not available.';
+    }
+
+    function closeViewerModal() {
+      viewer.classList.add('hidden');
+      document.body.style.overflow = 'auto';
+      resetImageTransform();
+    }
+
+    function applyFilters() {
+      const decade = decadeInput.value;
+      const state = stateInput.value;
+      const publication = publicationInput.value;
+      const entities = entitiesInput.value;
+      
+      const filtered = articles.filter(article => {
+        const decadeMatch = !decade || article.decade === decade;
+        const stateMatch = !state || article.state === state;
+        const publicationMatch = !publication || article.newspaper === publication;
+        const entitiesMatch = !entities || (article['named-entities'] && article['named-entities'].includes(entities));
+        
+        return decadeMatch && stateMatch && publicationMatch && entitiesMatch;
+      });
+      
+      // Sort the filtered results
+      const sorted = sortArticles(filtered);
+      renderCards(sorted);
+    }
+
+    function sortArticles(articlesToSort) {
+      const sortBy = sortByInput.value;
+      const sortOrder = sortOrderInput.value;
+      
+      return [...articlesToSort].sort((a, b) => {
+        let aValue, bValue;
+        
+        switch (sortBy) {
+          case 'date':
+            aValue = a['publication-date'] || '';
+            bValue = b['publication-date'] || '';
+            break;
+          case 'state':
+            aValue = a.state || '';
+            bValue = b.state || '';
+            break;
+          case 'title':
+            aValue = a['article-title'] || '';
+            bValue = b['article-title'] || '';
+            break;
+          case 'newspaper':
+            aValue = a.newspaper || '';
+            bValue = b.newspaper || '';
+            break;
+          default:
+            aValue = a['publication-date'] || '';
+            bValue = b['publication-date'] || '';
+        }
+        
+        // Handle date comparison
+        if (sortBy === 'date') {
+          const dateA = new Date(aValue);
+          const dateB = new Date(bValue);
+          return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+        }
+        
+        // Handle string comparison
+        const comparison = aValue.localeCompare(bValue);
+        return sortOrder === 'asc' ? comparison : -comparison;
+      });
+    }
+
+    function clearAllFilters() {
+      decadeInput.value = '';
+      stateInput.value = '';
+      publicationInput.value = '';
+      entitiesInput.value = '';
+      sortByInput.value = 'date';
+      sortOrderInput.value = 'asc';
+      renderCards(sortArticles(articles));
+    }
+
+    // Event listeners
+    decadeInput.addEventListener('change', applyFilters);
+    stateInput.addEventListener('change', applyFilters);
+    publicationInput.addEventListener('change', applyFilters);
+    entitiesInput.addEventListener('change', applyFilters);
+    sortByInput.addEventListener('change', applyFilters);
+    sortOrderInput.addEventListener('change', applyFilters);
+    clearBtn.addEventListener('click', clearAllFilters);
+    
+    closeViewer.addEventListener('click', closeViewerModal);
+    
+    // Close viewer when clicking outside
+    viewer.addEventListener('click', (e) => {
+      if (e.target === viewer) {
+        closeViewerModal();
+      }
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !viewer.classList.contains('hidden')) {
+        closeViewerModal();
+      }
+    });
+
+    // Zoom controls
+    zoomIn.addEventListener('click', () => {
+      currentZoom = Math.min(currentZoom * 1.5, 5);
+      updateImageTransform();
+    });
+
+    zoomOut.addEventListener('click', () => {
+      currentZoom = Math.max(currentZoom / 1.5, 0.5);
+      updateImageTransform();
+    });
+
+    resetZoom.addEventListener('click', resetImageTransform);
+
+    // Mouse wheel zoom
+    imageContainer.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? 0.9 : 1.1;
+      currentZoom = Math.max(0.5, Math.min(5, currentZoom * delta));
+      updateImageTransform();
+    });
+
+    // Click to zoom in, shift+click or right-click to zoom out
+    imageContainer.addEventListener('click', (e) => {
+      if (e.shiftKey || e.button === 2) {
+        // Zoom out
+        currentZoom = Math.max(currentZoom / 1.5, 0.5);
+      } else {
+        // Zoom in
+        currentZoom = Math.min(currentZoom * 1.5, 5);
+      }
+      updateImageTransform();
+    });
+
+    // Prevent context menu on right click
+    imageContainer.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
+
+    // Mouse drag pan - only when zoomed in and mouse is held down
+    imageContainer.addEventListener('mousedown', (e) => {
+      if (currentZoom > 1 && !e.shiftKey && e.button === 0) {
+        isDragging = true;
+        startX = e.clientX - translateX;
+        startY = e.clientY - translateY;
+      }
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (isDragging) {
+        translateX = e.clientX - startX;
+        translateY = e.clientY - startY;
+        updateImageTransform();
+      }
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (isDragging) {
+        isDragging = false;
+      }
+    });
+
+    // Double click to zoom in
+    imageContainer.addEventListener('dblclick', (e) => {
+      e.preventDefault();
+      currentZoom = Math.min(currentZoom * 1.5, 5);
+      updateImageTransform();
+    });
+
+    // Initialize with sorted articles
+    renderCards(sortArticles(articles));
+  </script>
+
+  <style>
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .line-clamp-4 {
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .line-clamp-5 {
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .summary-container {
+      max-height: 120px;
+      overflow: hidden;
+    }
+
+    .summary-text {
+      margin-bottom: 0;
+    }
+
+    .summary-fade {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background: linear-gradient(transparent, white);
+      pointer-events: none;
+    }
+
+    .bg-newspaper-offwhite {
+      background-color: #faf9f6;
+    }
+
+    #viewer-image {
+      transition: transform 0.1s ease-out;
+      transform-origin: center;
+    }
+
+    @media (max-width: 1024px) {
+      .article-viewer-flex {
+        flex-direction: column;
+      }
+      .article-viewer-flex > div {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+    }
+  </style>
 </PageLayout> 
