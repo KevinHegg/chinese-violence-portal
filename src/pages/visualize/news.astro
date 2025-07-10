@@ -552,8 +552,8 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
 
     // Click to zoom in, shift+click or right-click to zoom out
     imageContainer.addEventListener('click', (e) => {
-      // Only zoom if not dragging
-      if (!isDragging) {
+      // Only zoom if not dragging and not just finished dragging
+      if (!isDragging && !hasDragged) {
         if (e.shiftKey || e.button === 2) {
           // Zoom out
           currentZoom = Math.max(currentZoom / 1.5, 0.5);
@@ -571,9 +571,14 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
     });
 
     // Mouse drag pan - always allow dragging when image is larger than container
+    let dragStartTime = 0;
+    let hasDragged = false;
+
     imageContainer.addEventListener('mousedown', (e) => {
       if (!e.shiftKey && e.button === 0) {
         isDragging = true;
+        hasDragged = false;
+        dragStartTime = Date.now();
         startX = e.clientX - translateX;
         startY = e.clientY - translateY;
         imageContainer.style.cursor = 'grabbing';
@@ -583,6 +588,7 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
 
     document.addEventListener('mousemove', (e) => {
       if (isDragging) {
+        hasDragged = true;
         translateX = e.clientX - startX;
         translateY = e.clientY - startY;
         updateImageTransform();
@@ -593,6 +599,12 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
       if (isDragging) {
         isDragging = false;
         imageContainer.style.cursor = 'grab';
+        // If we dragged, prevent the click event from firing
+        if (hasDragged) {
+          setTimeout(() => {
+            hasDragged = false;
+          }, 100);
+        }
       }
     });
 
