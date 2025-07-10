@@ -563,6 +563,8 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
         }
         updateImageTransform();
       }
+      // Reset the hasDragged flag after processing the click
+      hasDragged = false;
     });
 
     // Prevent context menu on right click
@@ -573,11 +575,13 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
     // Mouse drag pan - always allow dragging when image is larger than container
     let dragStartTime = 0;
     let hasDragged = false;
+    let dragDistance = 0;
 
     imageContainer.addEventListener('mousedown', (e) => {
       if (!e.shiftKey && e.button === 0) {
         isDragging = true;
         hasDragged = false;
+        dragDistance = 0;
         dragStartTime = Date.now();
         startX = e.clientX - translateX;
         startY = e.clientY - translateY;
@@ -588,7 +592,14 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
 
     document.addEventListener('mousemove', (e) => {
       if (isDragging) {
-        hasDragged = true;
+        const deltaX = e.clientX - (startX + translateX);
+        const deltaY = e.clientY - (startY + translateY);
+        dragDistance += Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        if (dragDistance > 5) { // Only mark as dragged if moved more than 5 pixels
+          hasDragged = true;
+        }
+        
         translateX = e.clientX - startX;
         translateY = e.clientY - startY;
         updateImageTransform();
@@ -599,12 +610,6 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
       if (isDragging) {
         isDragging = false;
         imageContainer.style.cursor = 'grab';
-        // If we dragged, prevent the click event from firing
-        if (hasDragged) {
-          setTimeout(() => {
-            hasDragged = false;
-          }, 100);
-        }
       }
     });
 
