@@ -7,6 +7,7 @@ import topNamedEntities from "../../data/top-named-entities.json";
 const decades = [...new Set(articles.map(article => article.decade).filter(Boolean))].sort();
 const states = [...new Set(articles.map(article => article.state).filter(Boolean))].sort();
 const publications = [...new Set(articles.map(article => article.newspaper).filter(Boolean))].sort();
+const entities = [...topNamedEntities].sort(); // Alphabetize the entities
 ---
 
 <PageLayout title="In the News - Visualize the Data" currentPage="visualize">
@@ -21,7 +22,7 @@ const publications = [...new Set(articles.map(article => article.newspaper).filt
       <h1 class="text-4xl font-bold mb-2">Newspaper Archive</h1>
       <p class="text-lg text-gray-600 mb-6">
         Explore historical newspaper articles documenting events and patterns in our dataset. 
-        Filter by decade, state, or publication to discover contemporary perspectives on these historical events.
+        Filter by decade, state, publication, or top named entities to discover contemporary perspectives on these historical events.
       </p>
     </div>
 
@@ -66,12 +67,15 @@ const publications = [...new Set(articles.map(article => article.newspaper).filt
                 </label>
                 <select id="filter-entities" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
                   <option value="">All Entities</option>
-                  {topNamedEntities.map(entity => <option value={entity}>{entity}</option>)}
+                  {entities.map(entity => <option value={entity}>{entity}</option>)}
                 </select>
               </div>
             </div>
             <div class="flex justify-end mt-3">
-              <button id="clear-filters" class="btn btn-primary btn-sm">
+              <button id="clear-filters" class="btn btn-outline btn-sm gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
                 Clear All Filters
               </button>
             </div>
@@ -203,7 +207,7 @@ const publications = [...new Set(articles.map(article => article.newspaper).filt
     </div>
   </div>
 
-  <script define:vars={{ articles }}>
+  <script define:vars={{ articles, entities }}>
     const container = document.getElementById('cards-container');
     const decadeInput = document.getElementById('filter-decade');
     const stateInput = document.getElementById('filter-state');
@@ -366,9 +370,86 @@ const publications = [...new Set(articles.map(article => article.newspaper).filt
         return decadeMatch && stateMatch && publicationMatch && entitiesMatch;
       });
       
+      // Update filter options based on current selection
+      updateFilterOptions(filtered);
+      
       // Sort the filtered results
       const sorted = sortArticles(filtered);
       renderCards(sorted);
+    }
+
+    function updateFilterOptions(currentFiltered) {
+      // Get available values for each filter based on current filtered results
+      const availableDecades = [...new Set(currentFiltered.map(article => article.decade).filter(Boolean))].sort();
+      const availableStates = [...new Set(currentFiltered.map(article => article.state).filter(Boolean))].sort();
+      const availablePublications = [...new Set(currentFiltered.map(article => article.newspaper).filter(Boolean))].sort();
+      const availableEntities = [...new Set(currentFiltered.flatMap(article => 
+        article['named-entities'] ? article['named-entities'].split('@') : []
+      ).filter(Boolean))].sort();
+
+      // Update decade options
+      updateSelectOptions(decadeInput, availableDecades, 'All Decades');
+      
+      // Update state options
+      updateSelectOptions(stateInput, availableStates, 'All States');
+      
+      // Update publication options
+      updateSelectOptions(publicationInput, availablePublications, 'All Publications');
+      
+      // Update entities options
+      updateSelectOptions(entitiesInput, availableEntities, 'All Entities');
+    }
+
+    function updateSelectOptions(selectElement, availableValues, defaultText) {
+      const currentValue = selectElement.value;
+      const currentOptions = Array.from(selectElement.options);
+      
+      // Clear existing options except the first one
+      selectElement.innerHTML = `<option value="">${defaultText}</option>`;
+      
+      // Add available options
+      availableValues.forEach(value => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = value;
+        option.disabled = false;
+        selectElement.appendChild(option);
+      });
+      
+      // Add disabled options for unavailable values
+      const allValues = getFilterValues(selectElement.id);
+      allValues.forEach(value => {
+        if (!availableValues.includes(value)) {
+          const option = document.createElement('option');
+          option.value = value;
+          option.textContent = value;
+          option.disabled = true;
+          option.className = 'text-gray-400';
+          selectElement.appendChild(option);
+        }
+      });
+      
+      // Restore current value if it's still available
+      if (currentValue && availableValues.includes(currentValue)) {
+        selectElement.value = currentValue;
+      } else if (currentValue && !availableValues.includes(currentValue)) {
+        selectElement.value = '';
+      }
+    }
+
+    function getFilterValues(filterId) {
+      switch (filterId) {
+        case 'filter-decade':
+          return [...new Set(articles.map(article => article.decade).filter(Boolean))].sort();
+        case 'filter-state':
+          return [...new Set(articles.map(article => article.state).filter(Boolean))].sort();
+        case 'filter-publication':
+          return [...new Set(articles.map(article => article.newspaper).filter(Boolean))].sort();
+        case 'filter-entities':
+          return entities;
+        default:
+          return [];
+      }
     }
 
     function sortArticles(articlesToSort) {
@@ -420,6 +501,9 @@ const publications = [...new Set(articles.map(article => article.newspaper).filt
       entitiesInput.value = '';
       sortByInput.value = 'date';
       sortOrderInput.value = 'asc';
+      
+      // Reset all filter options to show all values
+      updateFilterOptions(articles);
       renderCards(sortArticles(articles));
     }
 
@@ -492,6 +576,7 @@ const publications = [...new Set(articles.map(article => article.newspaper).filt
         isDragging = true;
         startX = e.clientX - translateX;
         startY = e.clientY - translateY;
+        imageContainer.style.cursor = 'grabbing';
       }
     });
 
@@ -506,6 +591,7 @@ const publications = [...new Set(articles.map(article => article.newspaper).filt
     document.addEventListener('mouseup', () => {
       if (isDragging) {
         isDragging = false;
+        imageContainer.style.cursor = 'default';
       }
     });
 
@@ -516,7 +602,8 @@ const publications = [...new Set(articles.map(article => article.newspaper).filt
       updateImageTransform();
     });
 
-    // Initialize with sorted articles
+    // Initialize with sorted articles and set up filter options
+    updateFilterOptions(articles);
     renderCards(sortArticles(articles));
   </script>
 
@@ -568,6 +655,12 @@ const publications = [...new Set(articles.map(article => article.newspaper).filt
     #viewer-image {
       transition: transform 0.1s ease-out;
       transform-origin: center;
+    }
+
+    /* Style disabled options */
+    select option:disabled {
+      color: #9ca3af;
+      font-style: italic;
     }
 
     @media (max-width: 1024px) {
