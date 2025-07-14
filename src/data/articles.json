@@ -37,7 +37,7 @@
   },
   {
     "article-id": "3",
-    "lynching-id": "AR1885-05-05",
+    "lynching-id": "MS1885-05-05",
     "image_name": "0003_1885-05-16_harrisburg-telegraph_lawlessness-in-arkansas.jpg",
     "newspaper": "Harrisburg Telegraph",
     "newspaper-location": "Harrisburg, Pennsylvania",
@@ -55,7 +55,7 @@
   },
   {
     "article-id": "4",
-    "lynching-id": "AR1885-05-05",
+    "lynching-id": "MS1885-05-05",
     "image_name": "0004_1885-05-16_santa-cruz-surf-and-superior-california-farmer_the-chinese-must-go.jpg",
     "newspaper": "Santa Cruz Surf and Superior California Farmer",
     "newspaper-location": "Santa Cruz, California",
@@ -1819,10 +1819,10 @@
   },
   {
     "article-id": "102",
-    "lynching-id": "CA1913-09-03",
+    "lynching-id": "IL1913-09-03",
     "image_name": "0102_1913-09-11_the-bamberg-herald_mob-kills-chinaman.jpg",
     "newspaper": "The Bamberg Herald",
-    "newspaper-location": "Visalia, California",
+    "newspaper-location": "Bamberg, South Carolina",
     "publication-date-expanded": "Thu, Sep 11, 1913",
     "publication-date": "1913-09-11 00:00:00",
     "page": "5",
@@ -1831,7 +1831,7 @@
     "article-summary": "Chicago restauranteur Charles Sing, 40, is fatally beaten and stabbed in his home; his white wife Alice Sing is found with a fractured skull. Police suspect neighborhood racists angered by the interracial marriage.",
     "named-entities": "Josephine Modelski@Charles Sing@Alice Sing@Chicago@Illinois",
     "turabian-citation": "Mob Kills Chinaman. The Bamberg Herald (Bamberg, SC), September 11 1913, 5. https://chroniclingamerica.loc.gov/lccn/sn86063790/1913-09-11/ed-1/seq-5/",
-    "state": "California",
+    "state": "South Carolina",
     "publication-year": "1913",
     "decade": "1910s"
   },
@@ -1945,7 +1945,7 @@
   },
   {
     "article-id": "109",
-    "lynching-id": "AR1885-05-05",
+    "lynching-id": "MS1885-05-05",
     "image_name": "0109_1885-05-17_the-morning-democrat_a-chinaman-lynched.jpg",
     "newspaper": "The Morning Democrat",
     "newspaper-location": "Los Angeles, California",
@@ -2323,7 +2323,7 @@
   },
   {
     "article-id": "130",
-    "lynching-id": "AR1885-05-05",
+    "lynching-id": "MS1885-05-05",
     "image_name": "0130_1885-05-16_santa-cruz-surf_the-chinese-must-go.jpg",
     "newspaper": "Santa Cruz Surf",
     "newspaper-location": "Santa Cruz, California",
@@ -2431,7 +2431,7 @@
   },
   {
     "article-id": "136",
-    "lynching-id": "CA1913-09-03",
+    "lynching-id": "IL1913-09-03",
     "image_name": "0136_1913-09-11_the-bamberg-herald_mob-kills-chinaman.jpg",
     "newspaper": "The Bamberg Herald",
     "newspaper-location": "Bamberg, South Carolina",

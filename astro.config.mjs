@@ -1,5 +1,7 @@
 import { defineConfig } from 'astro/config';
 
+import react from '@astrojs/react';
+
 export default defineConfig({
-  // Configuration for Tailwind CSS v3
+  integrations: [react()]
 });
