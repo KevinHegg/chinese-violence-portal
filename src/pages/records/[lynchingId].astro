@@ -26,7 +26,7 @@ if (lynching["article-ids"]) {
 }
 
 // Get navigation data
-const allLynchings = lynchingsData.sort((a, b) => a["lynching-id"].localeCompare(b["lynching-id"]));
+const allLynchings = lynchingsData; // Use original order from JSON (chronological)
 const currentIndex = allLynchings.findIndex(l => l["lynching-id"] === lynching["lynching-id"]);
 const prevLynching = currentIndex > 0 ? allLynchings[currentIndex - 1] : null;
 const nextLynching = currentIndex < allLynchings.length - 1 ? allLynchings[currentIndex + 1] : null;
@@ -34,17 +34,26 @@ const nextLynching = currentIndex < allLynchings.length - 1 ? allLynchings[curre
 // Format date for display
 const formatDate = (dateStr) => {
   if (!dateStr) return "Unknown";
-  const date = new Date(dateStr);
-  if (isNaN(date.getTime())) return dateStr;
-  return date.toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  });
+  // Handle YYYY-MM-DD or YYYY-MM-00 or YYYY-00-00
+  const [year, month, day] = dateStr.split("-");
+  if (!year) return dateStr;
+  if (month === "00" || !month) return year;
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  const monthIndex = parseInt(month, 10) - 1;
+  if (isNaN(monthIndex) || monthIndex < 0 || monthIndex > 11) return year;
+  const monthName = monthNames[monthIndex];
+  if (day === "00" || !day) {
+    return `${monthName} ${year}`;
+  }
+  return `${monthName} ${parseInt(day, 10)}, ${year}`;
 };
 
-// Simple HTML entity decoding for server-side
+// Improved HTML entity decoding for more entities
 const decodeHtmlEntities = (text) => {
+  if (!text) return '';
   return text
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
@@ -56,54 +65,51 @@ const decodeHtmlEntities = (text) => {
     .replace(/&lsquo;/g, "'")
     .replace(/&rsquo;/g, "'")
     .replace(/&ndash;/g, '–')
-    .replace(/&mdash;/g, '—');
+    .replace(/&mdash;/g, '—')
+    .replace(/&iacute;/g, 'í')
+    .replace(/&eacute;/g, 'é')
+    .replace(/&aacute;/g, 'á')
+    .replace(/&oacute;/g, 'ó')
+    .replace(/&uacute;/g, 'ú')
+    .replace(/&Uuml;/g, 'Ü')
+    .replace(/&uuml;/g, 'ü')
+    .replace(/&Aacute;/g, 'Á')
+    .replace(/&Eacute;/g, 'É')
+    .replace(/&Oacute;/g, 'Ó')
+    .replace(/&Uacute;/g, 'Ú')
+    .replace(/&ntilde;/g, 'ñ')
+    .replace(/&Ntilde;/g, 'Ñ');
 };
 ---
 
 <PageLayout title={decodeHtmlEntities(lynching["narrative-title"])} currentPage="records">
   <div class="max-w-4xl mx-auto">
     <!-- Navigation -->
-    <div class="flex justify-between items-center mb-8">
-      <a href="/search" class="text-accent hover:text-accent-focus flex items-center gap-2">
+    <div class="mb-8" id="record-nav" style="display:none;">
+      <a id="back-to-explore" href="/explore" class="text-accent hover:text-accent-focus flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
         </svg>
-        Back to Lynching Records
+        <span>Back to Explore</span>
       </a>
-      
-      <div class="flex gap-4">
-        {prevLynching ? (
-          <a href={`/records/${prevLynching["lynching-id"]}`} class="text-accent hover:text-accent-focus flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-            </svg>
-            Previous
-          </a>
-        ) : (
-          <span class="text-gray-400 flex items-center gap-2 cursor-not-allowed">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-            </svg>
-            Previous
-          </span>
-        )}
-        
-        {nextLynching ? (
-          <a href={`/records/${nextLynching["lynching-id"]}`} class="text-accent hover:text-accent-focus flex items-center gap-2">
-            Next
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </a>
-        ) : (
-          <span class="text-gray-400 flex items-center gap-2 cursor-not-allowed">
-            Next
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-            </svg>
-          </span>
-        )}
-      </div>
+      <script is:inline>
+        document.addEventListener('DOMContentLoaded', function() {
+          if (window.location.search.includes('from=explore')) {
+            document.getElementById('record-nav').style.display = '';
+            const urlParams = new URLSearchParams(window.location.search);
+            const exploreParams = new URLSearchParams();
+            ['decade', 'state', 'eventType', 'newlyDocumented', 'sortBy', 'sortOrder', 'keyword'].forEach(param => {
+              if (urlParams.has(param)) {
+                exploreParams.set(param, urlParams.get(param));
+              }
+            });
+            const exploreLink = document.getElementById('back-to-explore');
+            if (exploreLink && exploreParams.toString()) {
+              exploreLink.href = '/explore?' + exploreParams.toString();
+            }
+          }
+        });
+      </script>
     </div>
 
     <!-- Main Content -->
@@ -121,7 +127,7 @@ const decodeHtmlEntities = (text) => {
             <table class="w-full text-left align-top" style="border-spacing:0;border-collapse:collapse;">
               <tbody>
                 <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Date:</th><td class="py-0.5 align-top">{formatDate(lynching["date"])}</td></tr>
-                <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Location:</th><td class="py-0.5 align-top">{lynching["city"]}, {lynching["state"]}</td></tr>
+                <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Location:</th><td class="py-0.5 align-top">{(!lynching["city"] && lynching["county"]) ? `${lynching["county"]} County, ${lynching["state"]}` : `${lynching["city"]}, ${lynching["state"]}`}</td></tr>
                 <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Event Type:</th><td class="py-0.5 align-top">{lynching["event-type"]}</td></tr>
                 <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Victim Names:</th><td class="py-0.5 align-top">{lynching["victim-names"].join(", ")}</td></tr>
                 <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Victim Gender:</th><td class="py-0.5 align-top">{lynching["victim-gender"]}</td></tr>

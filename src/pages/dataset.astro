@@ -1,0 +1,333 @@
+---
+import PageLayout from "../layouts/PageLayout.astro";
+---
+
+<PageLayout title="Dataset" currentPage="dataset">
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold mb-6">Anti-Chinese Lynching Dataset</h1>
+    
+    <div class="mb-8">
+      <p class="text-lg mb-4">
+        Explore a living dataset of anti-Chinese violence (1850 – 1915) drawn from newspapers and other archival sources. The table refreshes automatically whenever our Google Sheet is updated. Click any column header to sort the table. Click the same header again to sort in reverse order.
+      </p>
+      
+      <div class="flex flex-wrap gap-4 mb-6">
+        <button id="download-csv" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+          Download CSV
+        </button>
+        <button id="download-excel" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+          Download Excel
+        </button>
+        <button id="download-pdf" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+          Download PDF
+        </button>
+      </div>
+    </div>
+
+    <div style="max-height: 800px; overflow: hidden;">
+      <div class="table-scroll" style="overflow-x:auto; overflow-y:auto; max-height:760px; background: #f8fafc; border-radius: 0.5rem; border: 2px solid #d1d5db;">
+        <table id="data-table" style="table-layout:fixed; min-width:1700px; font-size: 0.875rem;">
+          <colgroup>
+            <col style="width:140px;">
+            <col style="width:60px;">
+            <col style="width:120px;">
+            <col style="width:60px;">
+            <col style="width:120px;">
+            <col style="width:50px;">
+            <col style="width:50px;">
+            <col style="width:70px;">
+            <col style="width:80px;">
+            <col style="width:90px;">
+            <col style="width:200px;">
+            <col style="width:100px;">
+            <col style="width:80px;">
+            <col style="width:380px;">
+          </colgroup>
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Identifier">ID</th>
+              <th class="px-2 py-2 text-left text-sm">Link</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Name">Name</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Gender">Gender</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Date">Date</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Year">Year</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Number of Victims">Victims</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="State">State</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="County">County</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="City">City</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Category of Violence">Category of Violence</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Accusation or Pretext">Accusation</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Job">Job</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Source">Source</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <tr>
+              <td colspan="14" class="text-center py-8">Loading data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</PageLayout>
+
+<!-- Add jsPDF and autoTable CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+  // CSV URL from Google Sheets
+  const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRNUFmt4rj08UFlhScGPJfiOTLPWS_HlT2eRukzdhTq24U2Y877iFBiyTWwHiG7OpHUsMich6giiluS/pub?gid=378919265&single=true&output=csv';
+
+  let tableData = [];
+  let currentSort = { column: 'Year', direction: 'asc' };
+
+  // Load and parse CSV data
+  async function loadData() {
+    try {
+      console.log('Fetching CSV data from:', CSV_URL);
+      const response = await fetch(CSV_URL);
+      const csvText = await response.text();
+      
+      console.log('CSV Response received, length:', csvText.length);
+      
+      // Parse CSV
+      const lines = csvText.split('\n');
+      console.log('Number of lines:', lines.length);
+      
+      if (lines.length < 2) {
+        throw new Error('Invalid CSV format');
+      }
+      
+      const headers = lines[0].split(',').map(h => h.trim());
+      console.log('Headers:', headers);
+      
+      const data = [];
+      for (let i = 1; i < lines.length; i++) {
+        if (lines[i].trim()) {
+          const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+          const row = {};
+          headers.forEach((header, index) => {
+            row[header] = values[index] || '';
+          });
+          data.push(row);
+        }
+      }
+      
+      console.log('Parsed data rows:', data.length);
+      tableData = data;
+      
+      // Initial sort and display
+      sortData(currentSort.column, currentSort.direction);
+      displayData();
+      
+      console.log('✅ Data loaded and displayed successfully');
+      
+    } catch (error) {
+      console.error('Error loading data:', error);
+      document.getElementById('table-body').innerHTML = 
+        '<tr><td colspan="14" class="text-center py-8 text-red-600">Error loading data. Please try again.</td></tr>';
+    }
+  }
+
+  // Sort data
+  function sortData(column, direction) {
+    tableData.sort((a, b) => {
+      let aVal = a[column] || '';
+      let bVal = b[column] || '';
+      
+      // Handle numeric columns
+      if (column === 'Year' || column === 'Number of Victims') {
+        aVal = parseInt(aVal) || 0;
+        bVal = parseInt(bVal) || 0;
+      }
+      
+      if (direction === 'asc') {
+        return aVal > bVal ? 1 : -1;
+      } else {
+        return aVal < bVal ? 1 : -1;
+      }
+    });
+  }
+
+  // Display data in table
+  function displayData() {
+    const tbody = document.getElementById('table-body');
+    tbody.innerHTML = '';
+    
+    tableData.forEach(row => {
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-gray-50';
+      
+      tr.innerHTML = `
+        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Identifier'] || ''}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">
+          ${row['Link'] ? `<a href="${row['Link']}" target="_blank" class="text-blue-600 hover:underline text-sm">[more]</a>` : ''}
+        </td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Name'] || ''}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Gender'] || ''}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Date'] || ''}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Year'] || ''}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Number of Victims'] || ''}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${row['State'] || ''}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${row['County'] || ''}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${row['City'] || ''}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Category of Violence'] || ''}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Accusation or Pretext'] || ''}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Job'] || ''}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Source'] || ''}</td>
+      `;
+      
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Handle column sorting
+  function setupSorting() {
+    const headers = document.querySelectorAll('th[data-sort]');
+    headers.forEach(header => {
+      header.addEventListener('click', () => {
+        const column = header.getAttribute('data-sort');
+        const direction = currentSort.column === column && currentSort.direction === 'asc' ? 'desc' : 'asc';
+        
+        currentSort = { column, direction };
+        sortData(column, direction);
+        displayData();
+        
+        // Update header styling
+        headers.forEach(h => h.classList.remove('bg-blue-200'));
+        header.classList.add('bg-blue-200');
+      });
+    });
+  }
+
+  // Download functions
+  function downloadCSV() {
+    if (tableData.length === 0) {
+      alert('No data available for download');
+      return;
+    }
+    
+    const headers = Object.keys(tableData[0]);
+    const csvContent = [
+      headers.join(','),
+      ...tableData.map(row => headers.map(header => `"${row[header] || ''}"`).join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'chinese-violence-dataset.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  function downloadExcel() {
+    if (tableData.length === 0) {
+      alert('No data available for download');
+      return;
+    }
+    
+    // Create Excel-compatible CSV with proper encoding
+    const headers = Object.keys(tableData[0]);
+    const csvContent = [
+      headers.join(','),
+      ...tableData.map(row => headers.map(header => `"${(row[header] || '').replace(/"/g, '""')}"`).join(','))
+    ].join('\r\n');
+    
+    // Add BOM for Excel compatibility
+    const BOM = '\uFEFF';
+    const blob = new Blob([BOM + csvContent], { type: 'application/vnd.ms-excel' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'chinese-violence-dataset.xls';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  function downloadPDF() {
+    if (tableData.length === 0) {
+      alert('No data available for download');
+      return;
+    }
+    
+    // Wait for jsPDF to load
+    setTimeout(() => {
+      try {
+        if (typeof window.jspdf === 'undefined') {
+          alert('PDF export failed: jsPDF not loaded. Please refresh the page and try again.');
+          return;
+        }
+        
+        const doc = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'pt', format: 'A4' });
+        const headers = Object.keys(tableData[0]);
+        const data = tableData.map(row => headers.map(header => row[header] || ''));
+        
+        doc.text('Chinese Violence Dataset (1850-1915)', 40, 40);
+        doc.text('Generated on: ' + new Date().toLocaleDateString(), 40, 60);
+        
+        // Use autoTable plugin
+        doc.autoTable({
+          head: [headers],
+          body: data,
+          startY: 80,
+          styles: { fontSize: 6, cellPadding: 1 },
+          headStyles: { fillColor: [240,240,240], textColor: 20, fontStyle: 'bold' },
+          margin: { left: 40, right: 40 },
+          tableWidth: 'auto',
+        });
+        
+        doc.save('chinese-violence-dataset.pdf');
+      } catch (error) {
+        console.error('PDF generation error:', error);
+        alert('PDF export failed: ' + error.message + '. Please refresh the page and try again.');
+      }
+    }, 100);
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    setupSorting();
+    
+    // Setup download buttons
+    document.getElementById('download-csv').addEventListener('click', downloadCSV);
+    document.getElementById('download-excel').addEventListener('click', downloadExcel);
+    document.getElementById('download-pdf').addEventListener('click', downloadPDF);
+  });
+</script> 
+
+<style>
+.table-scroll {
+  scrollbar-width: auto;
+  scrollbar-color: #64748b #e5e7eb;
+  border-radius: 0.5rem;
+}
+.table-scroll::-webkit-scrollbar {
+  height: 14px;
+  width: 14px;
+  background: #e5e7eb;
+  border-radius: 0.5rem;
+}
+.table-scroll::-webkit-scrollbar-thumb {
+  background: #64748b;
+  border-radius: 0.5rem;
+}
+.table-scroll::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+th, td {
+  border: 1px solid #cbd5e1;
+  background-clip: padding-box;
+}
+th {
+  background-color: #f1f5f9;
+  font-weight: bold;
+}
+.bg-gray-50 {
+  background-color: #f8fafc;
+}
+</style> 
