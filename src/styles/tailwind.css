@@ -22,3 +22,10 @@ body::before {
   z-index: -1;
   pointer-events: none;
 }
+
+@layer utilities {
+  .text-4xl {
+    font-size: 1.85rem !important;
+    line-height: 2.1rem !important;
+  }
+}

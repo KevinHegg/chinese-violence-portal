@@ -1,0 +1,381 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro";
+import lynchingsData from "../../data/lynchings.json";
+import articlesData from "../../data/articles.json";
+
+// Generate static paths for all lynching records
+export async function getStaticPaths() {
+  return lynchingsData.map(lynching => ({
+    params: { lynchingId: lynching["lynching-id"] },
+    props: { lynching }
+  }));
+}
+
+// Get the lynching data from props
+const { lynching } = Astro.props;
+
+// Get related articles
+const relatedArticles = [];
+if (lynching["article-ids"]) {
+  for (const articleId of lynching["article-ids"]) {
+    const article = articlesData.find(a => a["article-id"] === articleId);
+    if (article) {
+      relatedArticles.push(article);
+    }
+  }
+}
+
+// Get navigation data
+const allLynchings = lynchingsData.sort((a, b) => a["lynching-id"].localeCompare(b["lynching-id"]));
+const currentIndex = allLynchings.findIndex(l => l["lynching-id"] === lynching["lynching-id"]);
+const prevLynching = currentIndex > 0 ? allLynchings[currentIndex - 1] : null;
+const nextLynching = currentIndex < allLynchings.length - 1 ? allLynchings[currentIndex + 1] : null;
+
+// Format date for display
+const formatDate = (dateStr) => {
+  if (!dateStr) return "Unknown";
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return dateStr;
+  return date.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+};
+
+// Simple HTML entity decoding for server-side
+const decodeHtmlEntities = (text) => {
+  return text
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&ldquo;/g, '"')
+    .replace(/&rdquo;/g, '"')
+    .replace(/&lsquo;/g, "'")
+    .replace(/&rsquo;/g, "'")
+    .replace(/&ndash;/g, '–')
+    .replace(/&mdash;/g, '—');
+};
+---
+
+<PageLayout title={decodeHtmlEntities(lynching["narrative-title"])} currentPage="records">
+  <div class="max-w-4xl mx-auto">
+    <!-- Navigation -->
+    <div class="flex justify-between items-center mb-8">
+      <a href="/search" class="text-accent hover:text-accent-focus flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Back to Lynching Records
+      </a>
+      
+      <div class="flex gap-4">
+        {prevLynching ? (
+          <a href={`/records/${prevLynching["lynching-id"]}`} class="text-accent hover:text-accent-focus flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Previous
+          </a>
+        ) : (
+          <span class="text-gray-400 flex items-center gap-2 cursor-not-allowed">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Previous
+          </span>
+        )}
+        
+        {nextLynching ? (
+          <a href={`/records/${nextLynching["lynching-id"]}`} class="text-accent hover:text-accent-focus flex items-center gap-2">
+            Next
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+        ) : (
+          <span class="text-gray-400 flex items-center gap-2 cursor-not-allowed">
+            Next
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </span>
+        )}
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="border border-gray-200 shadow-sm overflow-hidden bg-amber-50 rounded-lg">
+      <!-- Header (now part of the main content container for seamless background) -->
+      <div class="border-b border-amber-200 py-2">
+        <h1 class="text-3xl font-bold text-gray-900 mb-1" style="padding-left: 21px;">{decodeHtmlEntities(lynching["narrative-short-title"])} </h1>
+      </div>
+
+      <!-- Metadata with Map -->
+      <div class="px-10 p-6 border-b border-gray-200 bg-white" style="padding-left: 20px;">
+        <div class="flex gap-6 items-start">
+          <!-- Metadata Table -->
+          <div class="flex-1">
+            <table class="w-full text-left align-top" style="border-spacing:0;border-collapse:collapse;">
+              <tbody>
+                <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Date:</th><td class="py-0.5 align-top">{formatDate(lynching["date"])}</td></tr>
+                <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Location:</th><td class="py-0.5 align-top">{lynching["city"]}, {lynching["state"]}</td></tr>
+                <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Event Type:</th><td class="py-0.5 align-top">{lynching["event-type"]}</td></tr>
+                <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Victim Names:</th><td class="py-0.5 align-top">{lynching["victim-names"].join(", ")}</td></tr>
+                <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Victim Gender:</th><td class="py-0.5 align-top">{lynching["victim-gender"]}</td></tr>
+                <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top whitespace-nowrap" style="min-width: 140px;">No. of Victims:</th><td class="py-0.5 align-top">{lynching["number-of-victims"]}</td></tr>
+                <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Accusation:</th><td class="py-0.5 align-top">{lynching["accusation"] || "Unknown"}</td></tr>
+                <tr><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Source:</th><td class="py-0.5 align-top">{lynching["source"]}</td></tr>
+                {lynching["job"] && (
+                  <tr><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Occupation:</th><td class="py-0.5 align-top">{lynching["job"]}</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          <!-- Map Image -->
+          <div class="flex-shrink-0">
+            <img 
+              src={`/mapimages/${lynching["lynching-id"]}.png`} 
+              alt={`Map showing location of ${lynching["city"]}, ${lynching["state"]}`}
+              class="w-[300px] h-[300px] object-cover rounded-lg border border-gray-200"
+              style="width:300px;height:300px;"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+            />
+            <div class="hidden w-[300px] h-[300px] bg-gray-100 rounded-lg border border-gray-200 items-center justify-center text-gray-500">
+              <div class="text-center">
+                <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"></path>
+                </svg>
+                <p class="text-sm">Map not available</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Narrative -->
+      <div class="p-6 border-b border-gray-200" style="background-color: #faf9f6;">
+        <h2 class="text-xl font-semibold mb-4">Narrative</h2>
+        <div class="prose max-w-none w-full" style="width:100%; max-width:none;" set:html={decodeHtmlEntities(lynching["narrative-body"])}></div>
+      </div>
+
+      <!-- Related Articles -->
+      {relatedArticles.length > 0 && (
+        <div class="p-6 bg-white">
+          <h2 class="text-xl font-semibold mb-4">Related Newspaper Articles</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {relatedArticles.map(article => (
+              <div class="card bg-base-100 shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-base-300">
+                <div class="card-body p-4">
+                  <div class="flex justify-between items-start mb-3">
+                    <h3 class="card-title text-base font-semibold line-clamp-3 flex-1">{article["article-title"] || 'Untitled'}</h3>
+                  </div>
+                  <p class="text-sm text-gray-600 mb-2">
+                    <span class="font-medium">{article.newspaper || 'Unknown Publication'}</span>{article["newspaper-location"] ? ` (${article["newspaper-location"]})` : ''}
+                  </p>
+                  <p class="text-sm text-gray-500 mb-3">
+                    {formatDate(article["publication-date"])}{article.page ? ` (Page ${article.page})` : ''}
+                  </p>
+                  <div class="summary-container relative">
+                    <p class="text-sm text-gray-700 summary-text">{article["article-summary"] || 'No summary available.'}</p>
+                    <div class="summary-fade"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+
+  <!-- Article Viewer Modal (styled like visualize/news) -->
+  <div id="article-viewer" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 lg:p-4">
+    <div class="bg-newspaper-offwhite rounded-lg shadow-xl max-w-7xl w-full max-h-[95vh] lg:max-h-[95vh] overflow-hidden">
+      <div class="p-4 lg:p-6 border-b border-base-300">
+        <div class="flex justify-between items-start">
+          <h2 class="text-lg lg:text-2xl font-bold" id="viewer-title"></h2>
+          <button id="close-viewer" class="btn btn-ghost btn-sm" aria-label="Close article viewer">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div class="flex flex-col lg:flex-row h-[calc(95vh-120px)]">
+        <!-- Image Panel -->
+        <div class="lg:w-1/2 p-2 lg:p-4 lg:border-r border-base-300 bg-newspaper-offwhite">
+          <div class="relative h-full">
+            <div id="image-container" class="relative w-full h-64 lg:h-full overflow-hidden bg-white border border-base-300 rounded-lg">
+              <img id="viewer-image" class="w-full h-full object-contain" alt="Article image" />
+              <div id="image-loading" class="absolute inset-0 bg-base-200 rounded-lg flex items-center justify-center">
+                <div class="loading loading-spinner loading-lg"></div>
+              </div>
+              <div id="image-error" class="hidden absolute inset-0 bg-base-200 rounded-lg flex items-center justify-center">
+                <div class="text-center text-gray-500">
+                  <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  <p class="text-sm">Image not available</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Transcript Panel -->
+        <div class="lg:w-1/2 p-2 lg:p-4 flex flex-col bg-newspaper-offwhite">
+          <div class="flex-1 overflow-hidden">
+            <h3 class="text-lg font-semibold mb-2 lg:mb-3">Transcription</h3>
+            <div id="viewer-transcription" class="h-64 lg:h-full overflow-y-auto border border-base-300 rounded-lg p-4 bg-white text-sm leading-snug whitespace-pre-wrap"></div>
+          </div>
+          
+          <!-- Citation -->
+          <div class="mt-4 p-3 bg-base-200 rounded-lg">
+            <h4 class="text-sm font-medium mb-2">Citation</h4>
+            <p class="text-xs text-gray-600" id="viewer-citation"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</PageLayout>
+
+<script define:vars={{ relatedArticles }}>
+  // Client-side formatDate function
+  function formatDate(dateStr) {
+    if (!dateStr) return "Unknown";
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return dateStr;
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
+  // Add click handlers to article cards
+  document.addEventListener('DOMContentLoaded', function() {
+    const articleCards = document.querySelectorAll('.card');
+    articleCards.forEach(card => {
+      card.addEventListener('click', function() {
+        // Find the article data from the related articles
+        const articleTitle = this.querySelector('.card-title').textContent;
+        const article = relatedArticles.find(a => a['article-title'] === articleTitle);
+        
+        if (article) {
+          openArticleViewer(article);
+        }
+      });
+    });
+  });
+
+  function openArticleViewer(article) {
+    const viewer = document.getElementById('article-viewer');
+    const title = document.getElementById('viewer-title');
+    const image = document.getElementById('viewer-image');
+    const transcription = document.getElementById('viewer-transcription');
+    const citation = document.getElementById('viewer-citation');
+    const imageLoading = document.getElementById('image-loading');
+    const imageError = document.getElementById('image-error');
+    
+    // Create title with newspaper metadata
+    const newspaperName = article.newspaper || 'Unknown Publication';
+    const publicationDate = formatDate(article['publication-date']);
+    const titleWithMetadata = `${article['article-title'] || 'Untitled Article'} - ${newspaperName}, ${publicationDate}`;
+    title.textContent = titleWithMetadata;
+    
+    // Show loading state for image
+    imageLoading.classList.remove('hidden');
+    imageError.classList.add('hidden');
+    
+    // Set image
+    const imagePath = `/articles/${article.image_name}`;
+    image.src = imagePath;
+    image.alt = article['article-title'] || 'Article image';
+    
+    // Handle image load events
+    image.onload = () => {
+      imageLoading.classList.add('hidden');
+    };
+    
+    image.onerror = () => {
+      imageLoading.classList.add('hidden');
+      imageError.classList.remove('hidden');
+    };
+    
+    // Transcription with proper formatting
+    const transcript = (article['article-transcript'] || 'No transcription available.')
+      .replace(/⏎/g, '\n')
+      .split(/\n/)
+      .map(paragraph => paragraph.trim())
+      .filter(paragraph => paragraph.length > 0);
+    transcription.innerHTML = transcript.map((p, index) => {
+      return `<p class='leading-snug' style='margin-bottom: 8px; text-indent: 8px;'>${p}</p>`;
+    }).join('');
+    
+    // Citation
+    citation.textContent = article['turabian-citation'] || 'Citation not available.';
+    
+    viewer.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+  
+  function closeArticleViewer() {
+    const viewer = document.getElementById('article-viewer');
+    viewer.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+  }
+  
+  // Close viewer on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeArticleViewer();
+    }
+  });
+  
+  // Close viewer on background click
+  document.getElementById('article-viewer').addEventListener('click', (e) => {
+    if (e.target.id === 'article-viewer') {
+      closeArticleViewer();
+    }
+  });
+  
+  // Close viewer on close button click
+  document.getElementById('close-viewer').addEventListener('click', closeArticleViewer);
+</script>
+
+<style>
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .summary-container {
+    max-height: 120px;
+    overflow: hidden;
+  }
+
+  .summary-text {
+    margin-bottom: 0;
+  }
+
+  .summary-fade {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(transparent, white);
+    pointer-events: none;
+  }
+
+  .bg-newspaper-offwhite {
+    background-color: #faf9f6;
+  }
+</style> 

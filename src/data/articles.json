@@ -1,6 +1,6 @@
 [
   {
-    "article-id": "1",
+    "article-id": "0001",
     "lynching-id": "",
     "image_name": "0001_1877-08-13_san-francisco-chronicle_reford-on-the-riots.jpg",
     "newspaper": "San Francisco Chronicle",
@@ -18,7 +18,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "2",
+    "article-id": "0002",
     "lynching-id": "CA1853-02-11",
     "image_name": "0002_1853-03-15_new-york-daily-herald_great-excitement-at-jacksonville-pursuit.jpg",
     "newspaper": "New York Daily Herald",
@@ -36,7 +36,7 @@
     "decade": "1850s"
   },
   {
-    "article-id": "3",
+    "article-id": "0003",
     "lynching-id": "MS1885-05-05",
     "image_name": "0003_1885-05-16_harrisburg-telegraph_lawlessness-in-arkansas.jpg",
     "newspaper": "Harrisburg Telegraph",
@@ -54,7 +54,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "4",
+    "article-id": "0004",
     "lynching-id": "MS1885-05-05",
     "image_name": "0004_1885-05-16_santa-cruz-surf-and-superior-california-farmer_the-chinese-must-go.jpg",
     "newspaper": "Santa Cruz Surf and Superior California Farmer",
@@ -72,7 +72,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "5",
+    "article-id": "0005",
     "lynching-id": "",
     "image_name": "0005_1884-03-17_the-san-francisco-examiner_no-chinese-miners-wanted.jpg",
     "newspaper": "The San Francisco Examiner",
@@ -90,7 +90,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "6",
+    "article-id": "0006",
     "lynching-id": "",
     "image_name": "0006_1855-11-13_the-baltimore-sun_indian-massacre-on-rogue-river.jpg",
     "newspaper": "The Baltimore Sun",
@@ -108,7 +108,7 @@
     "decade": "1850s"
   },
   {
-    "article-id": "7",
+    "article-id": "0007",
     "lynching-id": "",
     "image_name": "0007_1882-04-11_rutland-daily-herald_chinese-miners-murdered.jpg",
     "newspaper": "Rutland Daily Herald",
@@ -126,7 +126,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "8",
+    "article-id": "0008",
     "lynching-id": "",
     "image_name": "0008_1881-03-08_the-kansas-city-star_john-must-go.jpg",
     "newspaper": "The Kansas City Star",
@@ -144,7 +144,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "9",
+    "article-id": "0009",
     "lynching-id": "",
     "image_name": "0009_1882-04-13_oakland-tribune_adventures-of-an-effigy.jpg",
     "newspaper": "Oakland Tribune",
@@ -162,7 +162,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "10",
+    "article-id": "0010",
     "lynching-id": "",
     "image_name": "0010_1880-11-03_the-tipton-times_a-serious-riot-occurred-at.jpg",
     "newspaper": "The Tipton Times",
@@ -180,7 +180,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "11",
+    "article-id": "0011",
     "lynching-id": "",
     "image_name": "0011_1880-11-01_st-albans-daily-messenger_mob-rule-at-denver-drunken.jpg",
     "newspaper": "St. Albans Daily Messenger",
@@ -198,7 +198,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "12",
+    "article-id": "0012",
     "lynching-id": "CA1871-10-24",
     "image_name": "0012_1871-10-25_deseret-news_the-los-angeles-lynching-wholesale.jpg",
     "newspaper": "The Deseret News",
@@ -216,7 +216,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "13",
+    "article-id": "0013",
     "lynching-id": "CA1871-10-24",
     "image_name": "0013_1871-11-04_the-anaconda-recorder-and-new-northwest_lynching-at-henderson.jpg",
     "newspaper": "The Anaconda Recorder and New Northwest",
@@ -234,7 +234,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "14",
+    "article-id": "0014",
     "lynching-id": "CA1871-10-24",
     "image_name": "0014_1871-11-07_chicago-tribune_later-particulars-robbery-as-well.jpg",
     "newspaper": "Chicago Tribune",
@@ -252,7 +252,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "15",
+    "article-id": "0015",
     "lynching-id": "",
     "image_name": "0015_1889-03-13_the-sacramento-union_yellow-devils-the-milwaukee-chinese.jpg",
     "newspaper": "The Sacramento Union",
@@ -270,7 +270,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "16",
+    "article-id": "0016",
     "lynching-id": "OR1887-07-00",
     "image_name": "0016_1887-07-18_lancaster-new-era_the-chinese-massacre-in-oregon.jpg",
     "newspaper": "Lancaster New Era",
@@ -288,7 +288,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "17",
+    "article-id": "0017",
     "lynching-id": "OR1887-07-00",
     "image_name": "0017_1887-07-01_the-lebanon-express_a-severe-warning-to-chinese.jpg",
     "newspaper": "The Lebanon Express",
@@ -306,7 +306,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "18",
+    "article-id": "0018",
     "lynching-id": "OR1887-07-00",
     "image_name": "0018_1887-07-09_asheville-citizen-times_the-snake-river-massacre-not.jpg",
     "newspaper": "Asheville Citizen-Times",
@@ -324,7 +324,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "19",
+    "article-id": "0019",
     "lynching-id": "",
     "image_name": "0019_1857-06-20_the-sacramento-bee_lynching-at-diamondville.jpg",
     "newspaper": "The Sacramento Bee",
@@ -342,7 +342,7 @@
     "decade": "1850s"
   },
   {
-    "article-id": "20",
+    "article-id": "0020",
     "lynching-id": "UT1874-04-13",
     "image_name": "0020_1874-04-15_the-st-louis-republican_chinaman-lynched.jpg",
     "newspaper": "The St. Louis Republican",
@@ -360,7 +360,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "21",
+    "article-id": "0021",
     "lynching-id": "CA1874-06-04",
     "image_name": "0021_1874-07-22_the-deseret-news_two-chinese-murderers-lynched.jpg",
     "newspaper": "The Deseret News",
@@ -378,7 +378,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "22",
+    "article-id": "0022",
     "lynching-id": "UT1874-04-13",
     "image_name": "0022_1874-04-15_the-san-francisco-examiner_a-chinese-malefactor-lynched-at.jpg",
     "newspaper": "The San Francisco Examiner",
@@ -396,7 +396,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "23",
+    "article-id": "0023",
     "lynching-id": "CA1874-06-04",
     "image_name": "0023_1874-06-05_ottawa-daily-citizen_two-chinamen-lynched-at-happy.jpg",
     "newspaper": "Ottawa Daily Citizen",
@@ -414,7 +414,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "24",
+    "article-id": "0024",
     "lynching-id": "WA1883-01-07",
     "image_name": "0024_1883-01-08_the-fort-wayne-news-and-sentinel_chinaman-lynched.jpg",
     "newspaper": "The Fort Wayne News And Sentinel",
@@ -432,7 +432,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "25",
+    "article-id": "0025",
     "lynching-id": "CA1887-07-11",
     "image_name": "0025_1887-07-12_fort-worth-daily-gazette_a-chinaman-lynched.jpg",
     "newspaper": "Fort Worth Daily Gazette",
@@ -450,7 +450,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "26",
+    "article-id": "0026",
     "lynching-id": "CA1887-07-11",
     "image_name": "0026_1887-07-12_wilkes-barre-times-leader-the-evening-news_a-chinaman-lynched.jpg",
     "newspaper": "Wilkes-Barre Times Leader, the Evening News",
@@ -468,7 +468,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "27",
+    "article-id": "0027",
     "lynching-id": "",
     "image_name": "0027_1889-03-12_the-sacramento-union_one-chinaman-almost-lynched.jpg",
     "newspaper": "The Sacramento Union",
@@ -486,7 +486,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "28",
+    "article-id": "0028",
     "lynching-id": "",
     "image_name": "0028_1891-06-16_birmingham-daily-post_a-chinaman-lynched-by-indians.jpg",
     "newspaper": "Birmingham Daily Post",
@@ -504,7 +504,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "29",
+    "article-id": "0029",
     "lynching-id": "CA1901-07-09",
     "image_name": "0029_1901-07-10_the-brooklyn-daily-times_crazy-chinaman-lynched.jpg",
     "newspaper": "The Brooklyn Daily Times",
@@ -522,7 +522,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "30",
+    "article-id": "0030",
     "lynching-id": "CA1901-07-09",
     "image_name": "0030_1901-07-10_fall-river-daily-evening-news_chinaman-lynched.jpg",
     "newspaper": "Fall River Daily Evening News",
@@ -540,7 +540,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "31",
+    "article-id": "0031",
     "lynching-id": "CO1890-07-08",
     "image_name": "0031_1890-07-24_beaver-valley-tribune_chinaman-lynched.jpg",
     "newspaper": "Beaver Valley Tribune",
@@ -558,7 +558,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "32",
+    "article-id": "0032",
     "lynching-id": "CO1890-07-08",
     "image_name": "0032_1890-07-18_the-cuba-daylight_chinaman-lynched.jpg",
     "newspaper": "The Cuba Daylight",
@@ -576,7 +576,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "33",
+    "article-id": "0033",
     "lynching-id": "CA1901-07-09",
     "image_name": "0033_1901-07-11_the-daily-herald_chinaman-lynched.jpg",
     "newspaper": "The Daily Herald",
@@ -594,7 +594,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "34",
+    "article-id": "0034",
     "lynching-id": "",
     "image_name": "0034_1933-05-24_the-daily-advocate_chinese-trio-lynched-for-killing.jpg",
     "newspaper": "The Daily Advocate",
@@ -612,7 +612,7 @@
     "decade": "1930s"
   },
   {
-    "article-id": "35",
+    "article-id": "0035",
     "lynching-id": "",
     "image_name": "0035_1932-10-13_st-joseph-news-press_chinese-bandit-lynched.jpg",
     "newspaper": "St. Joseph News-Press",
@@ -630,7 +630,7 @@
     "decade": "1930s"
   },
   {
-    "article-id": "36",
+    "article-id": "0036",
     "lynching-id": "WI1889-03-12",
     "image_name": "0036_1889-03-09_the-pittsburgh-post_their-knees-knocked.jpg",
     "newspaper": "The Pittsburgh Post",
@@ -648,7 +648,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "37",
+    "article-id": "0037",
     "lynching-id": "",
     "image_name": "0037_1933-05-25_pittsburgh-sun-telegraph_3-chinese-lynched-soldiers-called.jpg",
     "newspaper": "Pittsburgh Sun-Telegraph",
@@ -666,7 +666,7 @@
     "decade": "1930s"
   },
   {
-    "article-id": "38",
+    "article-id": "0038",
     "lynching-id": "",
     "image_name": "0038_1890-03-27_evening-star_nearly-lynched-a-chinaman.jpg",
     "newspaper": "Evening star",
@@ -684,7 +684,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "39",
+    "article-id": "0039",
     "lynching-id": "CA1901-07-09",
     "image_name": "0039_1901-07-10_visalia-daily-times_chinaman-lynched.jpg",
     "newspaper": "Visalia Daily Times",
@@ -702,7 +702,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "40",
+    "article-id": "0040",
     "lynching-id": "",
     "image_name": "0040_1905-08-02_the-tribune_nearly-lynched-a-chinaman.jpg",
     "newspaper": "The Tribune",
@@ -720,7 +720,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "41",
+    "article-id": "0041",
     "lynching-id": "CO1891-08-25",
     "image_name": "0041_1891-08-27_oklahoma-daily-times-journal_a-bad-chinaman.jpg",
     "newspaper": "Oklahoma Daily Times-Journal",
@@ -738,7 +738,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "42",
+    "article-id": "0042",
     "lynching-id": "",
     "image_name": "0042_1893-08-18_the-evening-mail_protected-by-law.jpg",
     "newspaper": "The Evening Mail",
@@ -756,7 +756,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "43",
+    "article-id": "0043",
     "lynching-id": "",
     "image_name": "0043_1896-11-19_the-anaconda-standard_i-hung-one-chinaman.jpg",
     "newspaper": "The Anaconda Standard",
@@ -774,7 +774,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "44",
+    "article-id": "0044",
     "lynching-id": "MT1873-07-04",
     "image_name": "0044_1891-03-01_the-anaconda-standard_a-chinaman-hung-for-fun.jpg",
     "newspaper": "The Anaconda Standard",
@@ -792,7 +792,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "45",
+    "article-id": "0045",
     "lynching-id": "",
     "image_name": "0045_1893-09-07_santa-fe-monitor_chinese-must-go.jpg",
     "newspaper": "Santa Fe Monitor",
@@ -810,7 +810,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "46",
+    "article-id": "0046",
     "lynching-id": "",
     "image_name": "0046_1893-09-06_the-kiowa-news-review-and-the-kiowa-record_chinese-must-go.jpg",
     "newspaper": "The Kiowa News-Review and the Kiowa Record",
@@ -828,7 +828,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "47",
+    "article-id": "0047",
     "lynching-id": "",
     "image_name": "0047_1882-09-27_the-millbrook-herald_the-chinese-must-go-and.jpg",
     "newspaper": "The Millbrook Herald",
@@ -846,7 +846,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "48",
+    "article-id": "0048",
     "lynching-id": "",
     "image_name": "0048_1885-10-09_the-nortonville-news_general-news-a-first-warning.jpg",
     "newspaper": "The Nortonville News",
@@ -864,7 +864,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "49",
+    "article-id": "0049",
     "lynching-id": "",
     "image_name": "0049_1888-03-16_bismarck-weekly-tribune_the-chinese-must-go.jpg",
     "newspaper": "Bismarck Weekly Tribune",
@@ -882,7 +882,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "50",
+    "article-id": "0050",
     "lynching-id": "",
     "image_name": "0050_1882-04-04_warrenton-banner_explosion-kills-chinese-amid-racist.jpg",
     "newspaper": "Warrenton Banner",
@@ -900,7 +900,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "51",
+    "article-id": "0051",
     "lynching-id": "",
     "image_name": "0051_1882-06-12_the-evening-news_racist-slogan-used-in-advertisement.jpg",
     "newspaper": "The Evening News",
@@ -918,7 +918,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "52",
+    "article-id": "0052",
     "lynching-id": "",
     "image_name": "0052_1881-03-14_the-kansas-city-times_chinese-workers-killed-in-wyoming.jpg",
     "newspaper": "The Kansas City Times",
@@ -936,7 +936,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "53",
+    "article-id": "0053",
     "lynching-id": "",
     "image_name": "0053_1895-01-24_great-bend-beacon_chinese-must-go-idaho-miners.jpg",
     "newspaper": "Great Bend Beacon",
@@ -954,7 +954,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "54",
+    "article-id": "0054",
     "lynching-id": "",
     "image_name": "0054_1885-09-01_lincoln-journal-star_ad-for-half-hose-with.jpg",
     "newspaper": "Lincoln Journal Star",
@@ -972,7 +972,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "55",
+    "article-id": "0055",
     "lynching-id": "",
     "image_name": "0055_1879-02-13_the-autauga-citizen_cuba-welcomes-chinese-laborers-amid.jpg",
     "newspaper": "The Autauga Citizen",
@@ -990,7 +990,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "56",
+    "article-id": "0056",
     "lynching-id": "",
     "image_name": "0056_1878-01-06_chicago-tribune_chinese-as-scapegoats-for-crime.jpg",
     "newspaper": "Chicago Tribune",
@@ -1008,7 +1008,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "57",
+    "article-id": "0057",
     "lynching-id": "WY1885-09-02",
     "image_name": "0057_1885-09-19_ness-county-news_u-s-army-protects-chinese.jpg",
     "newspaper": "Ness County News",
@@ -1026,7 +1026,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "58",
+    "article-id": "0058",
     "lynching-id": "WA1883-01-07",
     "image_name": "0058_1883-01-11_the-paxton-record_cheney-mob-lynches-chinese-man.jpg",
     "newspaper": "The Paxton Record",
@@ -1044,7 +1044,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "59",
+    "article-id": "0059",
     "lynching-id": "WA1885-09-21",
     "image_name": "0059_1885-09-25_the-times_chinese-and-chinese-americans-lynched.jpg",
     "newspaper": "The Times",
@@ -1062,7 +1062,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "60",
+    "article-id": "0060",
     "lynching-id": "ID1885-09-21",
     "image_name": "0060_1885-09-30_emmons-county-record_chinese-lynched-others-arrested-in.jpg",
     "newspaper": "Emmons County Record",
@@ -1080,7 +1080,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "61",
+    "article-id": "0061",
     "lynching-id": "CA1884-12-18",
     "image_name": "0061_1894-12-19_the-san-francisco-examiner_chinese-found-hanging-in-mowry.jpg",
     "newspaper": "The San Francisco Examiner",
@@ -1098,7 +1098,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "62",
+    "article-id": "0062",
     "lynching-id": "CA1884-12-18",
     "image_name": "0062_1894-12-19_the-san-francisco-call-and-post_a-chinese-commits-suicide.jpg",
     "newspaper": "The San Francisco Call and Post",
@@ -1116,7 +1116,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "63",
+    "article-id": "0063",
     "lynching-id": "CA1884-12-18",
     "image_name": "0063_1894-12-19_san-francisco-chronicle_a-chinese-hanged.jpg",
     "newspaper": "San Francisco Chronicle",
@@ -1134,7 +1134,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "64",
+    "article-id": "0064",
     "lynching-id": "CA1884-06-30",
     "image_name": "0064_1884-07-02_los-angeles-herald_chinese-man-killed-near-pomona.jpg",
     "newspaper": "Los Angeles Herald",
@@ -1152,7 +1152,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "65",
+    "article-id": "0065",
     "lynching-id": "NV1880-09-13",
     "image_name": "0065_1880-09-20_reno-gazette-journal_chinese-lynching-in-nevada.jpg",
     "newspaper": "Reno Gazette-Journal",
@@ -1170,7 +1170,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "66",
+    "article-id": "0066",
     "lynching-id": "NV1880-09-13",
     "image_name": "0066_1880-09-19_weekly-independent_new-york-charley-lynched-by.jpg",
     "newspaper": "Weekly Independent",
@@ -1188,7 +1188,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "67",
+    "article-id": "0067",
     "lynching-id": "TX1911-07-00",
     "image_name": "0067_1911-07-26_honolulu-star-bulletin_chinese-jailed-for-alleged-lynching.jpg",
     "newspaper": "Honolulu Star-Bulletin",
@@ -1206,7 +1206,7 @@
     "decade": "1910s"
   },
   {
-    "article-id": "68",
+    "article-id": "0068",
     "lynching-id": "CA1871-10-24",
     "image_name": "0068_1872-02-18_los-angeles-daily-news_trial-of-crenshaw-for-lynching.jpg",
     "newspaper": "Los Angeles Daily News",
@@ -1224,7 +1224,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "69",
+    "article-id": "0069",
     "lynching-id": "TX1911-07-00",
     "image_name": "0069_1911-07-27_honolulu-star-advertiser_chinese-jailed-for-alleged-lynching.jpg",
     "newspaper": "Honolulu Star-Advertiser",
@@ -1242,7 +1242,7 @@
     "decade": "1910s"
   },
   {
-    "article-id": "70",
+    "article-id": "0070",
     "lynching-id": "NV1903-09-17",
     "image_name": "0070_1903-09-24_the-morning-news_china-wants-damages.jpg",
     "newspaper": "The Morning News",
@@ -1260,7 +1260,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "71",
+    "article-id": "0071",
     "lynching-id": "ID1885-09-21",
     "image_name": "0071_1885-09-23_springfield-news-sun_five-chinamen-lynched.jpg",
     "newspaper": "Springfield News-Sun",
@@ -1278,7 +1278,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "72",
+    "article-id": "0072",
     "lynching-id": "CA1887-07-11",
     "image_name": "0072_1887-07-15_the-boomer_chinese-murderer-lynched.jpg",
     "newspaper": "The Boomer",
@@ -1296,7 +1296,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "73",
+    "article-id": "0073",
     "lynching-id": "CA1887-07-11",
     "image_name": "0073_1887-07-11_brooklyn-eagle_a-chinese-murderer-lynched-by.jpg",
     "newspaper": "Brooklyn Eagle",
@@ -1314,7 +1314,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "74",
+    "article-id": "0074",
     "lynching-id": "",
     "image_name": "0074_1881-04-13_the-daily-astorian_advertisement-wines-liquors-and-chinese.jpg",
     "newspaper": "The Daily Astorian",
@@ -1332,7 +1332,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "75",
+    "article-id": "0075",
     "lynching-id": "",
     "image_name": "0075_1888-03-01_oakland-tribune_advertisement-french-laundry-anti-chinese.jpg",
     "newspaper": "Oakland Tribune",
@@ -1350,7 +1350,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "76",
+    "article-id": "0076",
     "lynching-id": "CA1874-06-04",
     "image_name": "0076_1874-06-11_the-altoona-tribune_chinese-murderers-lynched.jpg",
     "newspaper": "The Altoona Tribune",
@@ -1368,7 +1368,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "77",
+    "article-id": "0077",
     "lynching-id": "WY1885-09-02",
     "image_name": "0077_1885-09-24_wood-county-reporter_the-chinese-must-go-movement.jpg",
     "newspaper": "Wood County Reporter",
@@ -1386,7 +1386,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "78",
+    "article-id": "0078",
     "lynching-id": "",
     "image_name": "0078_1873-01-04_rutland-independent_a-chinaman-lynched-by-his.jpg",
     "newspaper": "Rutland Independent",
@@ -1404,7 +1404,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "79",
+    "article-id": "0079",
     "lynching-id": "WA1889-02-00",
     "image_name": "0079_1889-03-06_the-daily-astorian_chinaman-hanged-near-takoa.jpg",
     "newspaper": "The Daily Astorian",
@@ -1422,7 +1422,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "80",
+    "article-id": "0080",
     "lynching-id": "CO1890-08-25",
     "image_name": "0080_1891-08-26_san-francisco-chronicle_speedy-retribution.jpg",
     "newspaper": "San Francisco Chronicle",
@@ -1440,7 +1440,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "81",
+    "article-id": "0081",
     "lynching-id": "HI1889-01-00",
     "image_name": "0081_1889-01-22_the-hawaiian-gazette_highbinders-law.jpg",
     "newspaper": "The Hawaiian Gazette",
@@ -1458,7 +1458,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "82",
+    "article-id": "0082",
     "lynching-id": "WI1889-03-12",
     "image_name": "0082_1889-03-13_ashland-weekly-news_lynched-a-chinaman.jpg",
     "newspaper": "Ashland Weekly News",
@@ -1476,7 +1476,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "83",
+    "article-id": "0083",
     "lynching-id": "CA1886-08-11",
     "image_name": "0083_1886-08-14_santa-cruz-sentinel_five-chinese-children-perish-in.jpg",
     "newspaper": "Santa Cruz Sentinel",
@@ -1494,7 +1494,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "84",
+    "article-id": "0084",
     "lynching-id": "CA1886-08-11",
     "image_name": "0084_1886-08-12_the-evening-mail_four-blocks-and-five-children.jpg",
     "newspaper": "The Evening Mail",
@@ -1512,7 +1512,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "85",
+    "article-id": "0085",
     "lynching-id": "CA1886-08-11",
     "image_name": "0085_1886-08-12_the-san-francisco-examiner_the-pacific-coast-swept-by.jpg",
     "newspaper": "The San Francisco Examiner",
@@ -1530,7 +1530,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "86",
+    "article-id": "0086",
     "lynching-id": "CA1886-08-11",
     "image_name": "0086_1886-08-12_the-evening-mail_four-blocks-and-five-children.jpg",
     "newspaper": "The Evening Mail",
@@ -1548,7 +1548,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "87",
+    "article-id": "0087",
     "lynching-id": "CA1886-08-11",
     "image_name": "0087_1886-06-19_the-evening-mail_the-truckee-fire.jpg",
     "newspaper": "The Evening Mail",
@@ -1566,7 +1566,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "88",
+    "article-id": "0088",
     "lynching-id": "CA1886-08-11",
     "image_name": "0088_1886-06-19_spokane-falls-review_fire-at-truckee.jpg",
     "newspaper": "Spokane Falls Review",
@@ -1584,7 +1584,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "89",
+    "article-id": "0089",
     "lynching-id": "",
     "image_name": "0089_1886-02-08_knoxville-daily-chronicle_chinese-must-go.jpg",
     "newspaper": "Knoxville Daily Chronicle",
@@ -1602,7 +1602,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "90",
+    "article-id": "0090",
     "lynching-id": "UT1874-04-13",
     "image_name": "0090_1874-04-15_fort-scott-daily-monitor_lynched.jpg",
     "newspaper": "Fort Scott Daily Monitor",
@@ -1620,7 +1620,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "91",
+    "article-id": "0091",
     "lynching-id": "CA1871-10-24",
     "image_name": "0091_1872-02-18_los-angeles-daily-news_trial-of-crenshaw-for-lynching.jpg",
     "newspaper": "Los Angeles Daily News",
@@ -1638,7 +1638,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "92",
+    "article-id": "0092",
     "lynching-id": "OR1883-10-03",
     "image_name": "0092_1883-10-04_the-sacramento-union_chinaman-lynched-near-weatherby.jpg",
     "newspaper": "The Sacramento Union",
@@ -1656,7 +1656,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "93",
+    "article-id": "0093",
     "lynching-id": "",
     "image_name": "0093_1899-02-20_the-butte-daily-post_chinese-man-lynched-in-silver.jpg",
     "newspaper": "The Butte Daily Post",
@@ -1674,7 +1674,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "94",
+    "article-id": "0094",
     "lynching-id": "CA1870-06-00",
     "image_name": "0094_1920-12-10_the-sacramento-bee_two-chinese-lynched-at-yreka.jpg",
     "newspaper": "The Sacramento Bee",
@@ -1692,7 +1692,7 @@
     "decade": "1920s"
   },
   {
-    "article-id": "95",
+    "article-id": "0095",
     "lynching-id": "CO1880-10-31",
     "image_name": "0095_1880-11-01_st-louis-post-dispatch_denver-riot-against-chinese.jpg",
     "newspaper": "St. Louis Post-Dispatch",
@@ -1710,7 +1710,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "96",
+    "article-id": "0096",
     "lynching-id": "CO1881-03-05",
     "image_name": "0096_1881-03-13_deadwood-pioneer-times_he-wouldn-t-go.jpg",
     "newspaper": "Deadwood Pioneer-Times",
@@ -1728,7 +1728,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "97",
+    "article-id": "0097",
     "lynching-id": "",
     "image_name": "0097_1902-06-10_the-scranton-tribune_twice-hanged-a-chinaman.jpg",
     "newspaper": "The Scranton Tribune",
@@ -1746,7 +1746,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "98",
+    "article-id": "0098",
     "lynching-id": "WA1891-03-08",
     "image_name": "0098_1891-03-08_the-seattle-post-intelligencer_a-mob-attacks-a-chinaman.jpg",
     "newspaper": "The Seattle Post-Intelligencer",
@@ -1764,7 +1764,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "99",
+    "article-id": "0099",
     "lynching-id": "CA1871-10-24",
     "image_name": "0099_1871-11-02_yorkville-enquirer_ku-kluxing-in-california.jpg",
     "newspaper": "Yorkville Enquirer",
@@ -1782,7 +1782,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "100",
+    "article-id": "0100",
     "lynching-id": "CA1896-06-02",
     "image_name": "0100_1896-06-03_the-princeton-union_an-inoffensive-chinaman-murdered-by.jpg",
     "newspaper": "The Princeton Union",
@@ -1800,7 +1800,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "101",
+    "article-id": "0101",
     "lynching-id": "NV1903-09-17",
     "image_name": "0101_1903-09-21_the-bremen-enquirer_may-go-hard-with-them.jpg",
     "newspaper": "The Bremen Enquirer",
@@ -1818,7 +1818,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "102",
+    "article-id": "0102",
     "lynching-id": "IL1913-09-03",
     "image_name": "0102_1913-09-11_the-bamberg-herald_mob-kills-chinaman.jpg",
     "newspaper": "The Bamberg Herald",
@@ -1836,7 +1836,7 @@
     "decade": "1910s"
   },
   {
-    "article-id": "103",
+    "article-id": "0103",
     "lynching-id": "ID1885-09-21",
     "image_name": "0103_1885-10-02_the-griggs-courier_five-celestials-lynched-in-idaho.jpg",
     "newspaper": "The Griggs Courier",
@@ -1854,7 +1854,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "104",
+    "article-id": "0104",
     "lynching-id": "MO1886-07-02",
     "image_name": "0104_1886-07-03_the-montana-post_a-strangled-heathen.jpg",
     "newspaper": "The Montana Post",
@@ -1872,7 +1872,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "105",
+    "article-id": "0105",
     "lynching-id": "ID1885-09-21",
     "image_name": "0105_1885-06-30_the-courier_five-celestials-lynched-in-idaho.jpg",
     "newspaper": "The Courier",
@@ -1890,7 +1890,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "106",
+    "article-id": "0106",
     "lynching-id": "CA1871-10-24",
     "image_name": "0106_1871-11-18_the-beatrice-weekly-express_the-los-angeles-tragedy-an.jpg",
     "newspaper": "The Beatrice Weekly Express",
@@ -1908,7 +1908,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "107",
+    "article-id": "0107",
     "lynching-id": "WA1883-01-07",
     "image_name": "0107_1883-01-09_st-louis-globe-democrat_a-chinaman-lynched.jpg",
     "newspaper": "St. Louis Globe-Democrat",
@@ -1926,7 +1926,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "108",
+    "article-id": "0108",
     "lynching-id": "",
     "image_name": "0108_1883-07-11_daily-arkansas-gazette_a-half-year-s-crimes.jpg",
     "newspaper": "Daily Arkansas Gazette",
@@ -1944,7 +1944,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "109",
+    "article-id": "0109",
     "lynching-id": "MS1885-05-05",
     "image_name": "0109_1885-05-17_the-morning-democrat_a-chinaman-lynched.jpg",
     "newspaper": "The Morning Democrat",
@@ -1962,7 +1962,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "110",
+    "article-id": "0110",
     "lynching-id": "CA1887-07-11",
     "image_name": "0110_1887-07-11_the-macon-telegraph_a-chinaman-lynched-an-exciting.jpg",
     "newspaper": "The Macon Telegraph",
@@ -1980,7 +1980,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "111",
+    "article-id": "0111",
     "lynching-id": "CA1887-07-11",
     "image_name": "0111_1877-10-23_the-times-leader_a-chinaman-lynched-an-entire.jpg",
     "newspaper": "The Times Leader",
@@ -1998,7 +1998,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "112",
+    "article-id": "0112",
     "lynching-id": "CA1887-07-11",
     "image_name": "0112_1877-10-23_the-new-york-times_a-chinaman-lynched-the-jury.jpg",
     "newspaper": "The New York Times",
@@ -2016,7 +2016,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "113",
+    "article-id": "0113",
     "lynching-id": "CO1890-08-25",
     "image_name": "0113_1890-07-17_the-north-bend-argus_chinaman-lynched.jpg",
     "newspaper": "The North Bend Argus",
@@ -2034,7 +2034,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "114",
+    "article-id": "0114",
     "lynching-id": "CA1901-07-09",
     "image_name": "0114_1901-07-10_the-topeka-state-journal_chinaman-lynched.jpg",
     "newspaper": "The Topeka State Journal",
@@ -2052,7 +2052,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "115",
+    "article-id": "0115",
     "lynching-id": "",
     "image_name": "0115_1904-01-09_virginian-pilot_the-low-price-of-life.jpg",
     "newspaper": "Virginian-Pilot",
@@ -2070,7 +2070,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "116",
+    "article-id": "0116",
     "lynching-id": "MS1915-10-11",
     "image_name": "0116_1915-10-11_the-oregon-daily-journal_negro-and-chinaman-lynched.jpg",
     "newspaper": "The Oregon Daily Journal",
@@ -2088,7 +2088,7 @@
     "decade": "1910s"
   },
   {
-    "article-id": "117",
+    "article-id": "0117",
     "lynching-id": "MS1915-10-11",
     "image_name": "0117_1915-10-12_the-vicksburg-post_banker-s-slayers-made-their.jpg",
     "newspaper": "The Vicksburg Post",
@@ -2106,7 +2106,7 @@
     "decade": "1910s"
   },
   {
-    "article-id": "118",
+    "article-id": "0118",
     "lynching-id": "OR1883-01-06",
     "image_name": "0118_1883-01-11_the-idaho-statesman_chinese-murderer-lynched.jpg",
     "newspaper": "The Idaho Statesman",
@@ -2124,7 +2124,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "119",
+    "article-id": "0119",
     "lynching-id": "ID1885-09-21",
     "image_name": "0119_1885-09-23_the-inter-ocean_chinese-lynched-ghastly-fruit-on.jpg",
     "newspaper": "The Inter Ocean",
@@ -2142,7 +2142,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "120",
+    "article-id": "0120",
     "lynching-id": "ID1885-09-21",
     "image_name": "0120_1885-09-23_the-boston-globe_five-chinese-murderers-lynched.jpg",
     "newspaper": "The Boston Globe",
@@ -2160,7 +2160,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "121",
+    "article-id": "0121",
     "lynching-id": "CA1901-07-09",
     "image_name": "0121_1901-07-10_evening-star_chinese-cook-lynched.jpg",
     "newspaper": "Evening Star",
@@ -2178,7 +2178,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "122",
+    "article-id": "0122",
     "lynching-id": "CA1877-03-14",
     "image_name": "0122_1877-03-19_sacramento-daily-union_the-chico-chinese-massacre.jpg",
     "newspaper": "Sacramento Daily Union",
@@ -2196,7 +2196,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "123",
+    "article-id": "0123",
     "lynching-id": "CA1853-10-05",
     "image_name": "0123_1853-10-11_sacramento-daily-union_chinaman-lynched-or-driven-out.jpg",
     "newspaper": "Sacramento Daily Union",
@@ -2214,7 +2214,7 @@
     "decade": "1850s"
   },
   {
-    "article-id": "124",
+    "article-id": "0124",
     "lynching-id": "CA1876-06-18",
     "image_name": "0124_1876-06-24_sentinel_caucasian-league-murders-chinaman.jpg",
     "newspaper": "Sentinel",
@@ -2232,7 +2232,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "125",
+    "article-id": "0125",
     "lynching-id": "CA1876-06-18",
     "image_name": "0125_1876-08-15_sacramento-daily-union_the-truckee-outrage.jpg",
     "newspaper": "Sacramento Daily Union",
@@ -2250,7 +2250,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "126",
+    "article-id": "0126",
     "lynching-id": "",
     "image_name": "0126_1877-09-15_placer-argus_ruffianism-rampant.jpg",
     "newspaper": "Placer Argus",
@@ -2268,7 +2268,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "127",
+    "article-id": "0127",
     "lynching-id": "",
     "image_name": "0127_1878-04-18_sacramento-daily-union_a-chicago-view-of-kearneyism.jpg",
     "newspaper": "Sacramento Daily Union",
@@ -2286,7 +2286,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "128",
+    "article-id": "0128",
     "lynching-id": "",
     "image_name": "0128_1878-04-20_daliy-alta-california_california-communism.jpg",
     "newspaper": "Daliy Alta California",
@@ -2304,7 +2304,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "129",
+    "article-id": "0129",
     "lynching-id": "WA1883-01-07",
     "image_name": "0129_1883-01-09_los-angeles-herald_lynching-a-chinaman.jpg",
     "newspaper": "Los Angeles Herald",
@@ -2322,7 +2322,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "130",
+    "article-id": "0130",
     "lynching-id": "MS1885-05-05",
     "image_name": "0130_1885-05-16_santa-cruz-surf_the-chinese-must-go.jpg",
     "newspaper": "Santa Cruz Surf",
@@ -2340,7 +2340,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "131",
+    "article-id": "0131",
     "lynching-id": "",
     "image_name": "0131_1886-04-13_santa-cruz-surf_advertisement-no-chinese-need-apply.jpg",
     "newspaper": "Santa Cruz Surf",
@@ -2358,7 +2358,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "132",
+    "article-id": "0132",
     "lynching-id": "CA1887-04-11",
     "image_name": "0132_1887-04-16_san-jose-weekly-mercury_a-fatal-mistake.jpg",
     "newspaper": "San Jose Weekly Mercury",
@@ -2376,7 +2376,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "133",
+    "article-id": "0133",
     "lynching-id": "MO1886-07-02",
     "image_name": "0133_1886-07-03_butte-semi-weekly-miner_a-strangled-heathen.jpg",
     "newspaper": "Butte Semi-Weekly Miner",
@@ -2394,7 +2394,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "134",
+    "article-id": "0134",
     "lynching-id": "WA1891-03-08",
     "image_name": "0134_1891-03-09_the-seattle-post-intelligencer_a-mob-attacks-chinaman.jpg",
     "newspaper": "The Seattle Post-Intelligencer",
@@ -2412,7 +2412,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "135",
+    "article-id": "0135",
     "lynching-id": "CA1896-06-02",
     "image_name": "0134_1896-06-04_the-princeton-union_killed-by-a-mob.jpg",
     "newspaper": "The Princeton Union",
@@ -2430,7 +2430,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "136",
+    "article-id": "0136",
     "lynching-id": "IL1913-09-03",
     "image_name": "0136_1913-09-11_the-bamberg-herald_mob-kills-chinaman.jpg",
     "newspaper": "The Bamberg Herald",
@@ -2448,7 +2448,7 @@
     "decade": "1910s"
   },
   {
-    "article-id": "137",
+    "article-id": "0137",
     "lynching-id": "UT1874-04-13",
     "image_name": "0137_1874-04-15_marysville-daily-appeal_a-chinaman-lynched.jpg",
     "newspaper": "Marysville Daily Appeal",
@@ -2466,7 +2466,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "138",
+    "article-id": "0138",
     "lynching-id": "CA1853-10-05",
     "image_name": "0138_1853-10-11_sacramento-daily-union_lynched.jpg",
     "newspaper": "Sacramento Daily Union",
@@ -2484,7 +2484,7 @@
     "decade": "1850s"
   },
   {
-    "article-id": "139",
+    "article-id": "0139",
     "lynching-id": "CA1876-06-18",
     "image_name": "0139_1876-06-24_sentinel_a-truckee-telegram.jpg",
     "newspaper": "Sentinel",
@@ -2502,7 +2502,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "140",
+    "article-id": "0140",
     "lynching-id": "",
     "image_name": "0140_1904-06-15_watertown-republican_may-lynch-chinaman.jpg",
     "newspaper": "Watertown Republican",
@@ -2520,7 +2520,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "141",
+    "article-id": "0141",
     "lynching-id": "",
     "image_name": "0141_1877-09-22_richland-beacon_two-chinamen-arrested-on-suspicion-of-murder.jpg",
     "newspaper": "Richland Beacon",
@@ -2538,7 +2538,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "142",
+    "article-id": "0142",
     "lynching-id": "CA1901-07-09",
     "image_name": "0142_1901-07-10_waterbury-democrat_chinese-cook-lynched.jpg",
     "newspaper": "Waterbury Democrat",
@@ -2556,7 +2556,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "143",
+    "article-id": "0143",
     "lynching-id": "MS1915-10-11",
     "image_name": "0143_1915-10-13_the-watchman-and-southron_lynching-in-mississippi.jpg",
     "newspaper": "The Watchman and Southron",
@@ -2574,7 +2574,7 @@
     "decade": "1910s"
   },
   {
-    "article-id": "144",
+    "article-id": "0144",
     "lynching-id": "",
     "image_name": "0144_1902-06-11_the-scranton-tribune_twice-hanged-a-chinaman.jpg",
     "newspaper": "The Scranton Tribune",
@@ -2592,7 +2592,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "145",
+    "article-id": "0145",
     "lynching-id": "",
     "image_name": "0145_1891-09-15_the-salt-lake-herald_chinese-eject-dying-man-from-a-joint.jpg",
     "newspaper": "The Salt Lake Herald",
@@ -2610,7 +2610,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "146",
+    "article-id": "0146",
     "lynching-id": "",
     "image_name": "0146_1891-05-04_the-evening-bulliten_chinaman-saved-from-a-mob.jpg",
     "newspaper": "The Evening Bulletin",
@@ -2628,7 +2628,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "147",
+    "article-id": "0147",
     "lynching-id": "",
     "image_name": "0147_1888-12-11_st-paul-daily-globe_lynching-is-feared.jpg",
     "newspaper": "St. Paul Daily globe",
@@ -2646,7 +2646,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "148",
+    "article-id": "0148",
     "lynching-id": "",
     "image_name": "0148_1907-02-23_omaha-daily-bee_problems-that-perplex.jpg",
     "newspaper": "Omaha Daily Bee",
@@ -2664,7 +2664,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "149",
+    "article-id": "0149",
     "lynching-id": "",
     "image_name": "0149_1877-09-18_memphis-daily-appeal_a-chinese-outrage.jpg",
     "newspaper": "Memphis Daily Appeal",
@@ -2682,7 +2682,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "150",
+    "article-id": "0150",
     "lynching-id": "",
     "image_name": "0150_1888-12-15_great-falls-tribune_butte-excited.jpg",
     "newspaper": "Great Falls Tribune",
@@ -2700,7 +2700,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "151",
+    "article-id": "0151",
     "lynching-id": "",
     "image_name": "0151_1893-07-21_san-saba-county-news_irate-citizens.jpg",
     "newspaper": "San Saba County News",
@@ -2718,7 +2718,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "152",
+    "article-id": "0152",
     "lynching-id": "",
     "image_name": "0152_1900-07-26_arizona-republican_wanted-to-lynch-sun-wah.jpg",
     "newspaper": "Arizona Republican",
@@ -2736,7 +2736,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "153",
+    "article-id": "0153",
     "lynching-id": "",
     "image_name": "0153_1889-03-27_pittsburg-dispatch_the-mistake-of-a-mob.jpg",
     "newspaper": "Pittsburg Dispatch",
@@ -2754,7 +2754,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "154",
+    "article-id": "0154",
     "lynching-id": "WY1885-09-02",
     "image_name": "0154_1886-06-09_morris-tribune_indemnity-for-chinese.jpg",
     "newspaper": "Morris Tribune",
@@ -2772,7 +2772,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "155",
+    "article-id": "0155",
     "lynching-id": "CA1887-07-11",
     "image_name": "0155_1887-07-12_wichita-eagle_unceremonious_negro-ravisher-lynched.jpg",
     "newspaper": "Wichita Eagle",
@@ -2790,7 +2790,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "156",
+    "article-id": "0156",
     "lynching-id": "",
     "image_name": "0156_1857-05-9_punch_a-lesson-to-john-chinaman.jpg",
     "newspaper": "Punch",
@@ -2808,7 +2808,7 @@
     "decade": "1850s"
   },
   {
-    "article-id": "157",
+    "article-id": "0157",
     "lynching-id": "",
     "image_name": "0157_1910-06-14_the-san-francisco-call_laborers-attempt-to-lynch-chinese-cook.jpg",
     "newspaper": "The San Francisco Call",
@@ -2826,7 +2826,7 @@
     "decade": "1910s"
   },
   {
-    "article-id": "158",
+    "article-id": "0158",
     "lynching-id": "",
     "image_name": "0158_1910-10-23_the-morning-standard_chinaman-is-pursued.jpg",
     "newspaper": "The Morning Standard",
@@ -2844,7 +2844,7 @@
     "decade": "1910s"
   },
   {
-    "article-id": "159",
+    "article-id": "0159",
     "lynching-id": "CA1887-07-11",
     "image_name": "0159_1887-07-12_the-morning-news_a-chinaman-in-the-hemp.jpg",
     "newspaper": "The Morning News",
@@ -2862,7 +2862,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "160",
+    "article-id": "0160",
     "lynching-id": "",
     "image_name": "0160_1891-05-04_the-morning-call_chinese-filth.jpg",
     "newspaper": "The Morning Call",
@@ -2880,7 +2880,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "161",
+    "article-id": "0161",
     "lynching-id": "WI1889-03-12",
     "image_name": "0161_1889-03-10_the-great-falls-leader_down-with-the-chinese.jpg",
     "newspaper": "The Great Falls Leader",
@@ -2898,7 +2898,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "162",
+    "article-id": "0162",
     "lynching-id": "",
     "image_name": "0162_1888-07-24_the-delta-independent_chinaman-fears-lyniching.jpg",
     "newspaper": "The Delta Independent",
@@ -2916,7 +2916,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "163",
+    "article-id": "0163",
     "lynching-id": "",
     "image_name": "0163_1900-09-05_the-daily-ardmoreite_mob-tried-to-lynch-a-chinaman.jpg",
     "newspaper": "The Daily Ardmoreite",
@@ -2934,7 +2934,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "164",
+    "article-id": "0164",
     "lynching-id": "",
     "image_name": "0164_1911-10-12_the-bamberg-herald_wanted-to-lynch-chinaman.jpg",
     "newspaper": "The Bamberg Herald",
@@ -2952,7 +2952,7 @@
     "decade": "1910s"
   },
   {
-    "article-id": "165",
+    "article-id": "0165",
     "lynching-id": "CA1891-06-15",
     "image_name": "0165_1891-08-04_the-pittsburg-dispatch_worse-than-africa.jpg",
     "newspaper": "The Pittsburg Dispatch",
@@ -2970,7 +2970,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "166",
+    "article-id": "0166",
     "lynching-id": "NV1880-09-13",
     "image_name": "0166_1880-09-19_morning-appeal_a-stupid-chinaman.jpg",
     "newspaper": "Morning Appeal",
@@ -2988,7 +2988,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "167",
+    "article-id": "0167",
     "lynching-id": "",
     "image_name": "0167_1907-11-02_the-morning-astoria_results-in-death.jpg",
     "newspaper": "The Morning Astorian",
@@ -3006,7 +3006,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "168",
+    "article-id": "0168",
     "lynching-id": "CA1871-10-24",
     "image_name": "0168_1872-02-18_los-angeles-daily-news_trial-of-crenshaw-for-lynching.jpg",
     "newspaper": "Los Angeles Daily News",
@@ -3024,7 +3024,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "169",
+    "article-id": "0169",
     "lynching-id": "CA1887-07-11",
     "image_name": "0169_1877-07-11_san-jose-mercury-news_an-outrage.jpg",
     "newspaper": "San Jose Weekly Mercury",
@@ -3042,7 +3042,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "170",
+    "article-id": "0170",
     "lynching-id": "CA1887-07-11",
     "image_name": "0170_1877-07-11_stockton-mail_hong-di-dead.jpg",
     "newspaper": "Stockton Mail",
@@ -3060,7 +3060,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "171",
+    "article-id": "0171",
     "lynching-id": "",
     "image_name": "0171_1891-05-04_san-francisco-call_chinese-filth.jpg",
     "newspaper": "San Francisco Call",
@@ -3078,7 +3078,7 @@
     "decade": "1890s"
   },
   {
-    "article-id": "172",
+    "article-id": "0172",
     "lynching-id": "CA1858-10-00",
     "image_name": "0172_1858-11-13_detroit-free-press_chinaman-hung-by-a-mob.jpg",
     "newspaper": "Detroit Free Press",
@@ -3096,7 +3096,7 @@
     "decade": "1850s"
   },
   {
-    "article-id": "173",
+    "article-id": "0173",
     "lynching-id": "CA1861-11-12",
     "image_name": "0173_1861-11-14_the-sacramento-bee_the-lynched-chinaman.jpg",
     "newspaper": "The Sacramento Bee",
@@ -3114,7 +3114,7 @@
     "decade": "1860s"
   },
   {
-    "article-id": "174",
+    "article-id": "0174",
     "lynching-id": "CA1861-11-12",
     "image_name": "0174_1861-11-15_the-sacramento-bee_the-lynched-chinaman.jpg",
     "newspaper": "The Sacramento Bee",
@@ -3132,7 +3132,7 @@
     "decade": "1860s"
   },
   {
-    "article-id": "175",
+    "article-id": "0175",
     "lynching-id": "CA1865-10-00",
     "image_name": "0175_1865-10-11_the-sacramento-bee_lynching-in-placer.jpg",
     "newspaper": "The Sacramento Bee",
@@ -3150,7 +3150,7 @@
     "decade": "1860s"
   },
   {
-    "article-id": "176",
+    "article-id": "0176",
     "lynching-id": "CA1865-10-00",
     "image_name": "0176_1865-10-17_the-sacramento-bee_a-chinaman-was-recently-hung-for-theft.jpg",
     "newspaper": "Gold Hill Daily News",
@@ -3168,7 +3168,7 @@
     "decade": "1860s"
   },
   {
-    "article-id": "177",
+    "article-id": "0177",
     "lynching-id": "MT1871-10-31",
     "image_name": "0177_1871-11-09_the-bozeman-courier_a-chinaman-was-hung-in-henderson-gulch.jpg",
     "newspaper": "The Bozeman Courier",
@@ -3186,7 +3186,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "178",
+    "article-id": "0178",
     "lynching-id": "MT1871-10-31",
     "image_name": "0178_1871-11-10_the-anaconda-recorder-and-new-northwest_lynching-at-henderson.jpg",
     "newspaper": "The Anaconda Recorder and New Northwest",
@@ -3204,7 +3204,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "179",
+    "article-id": "0179",
     "lynching-id": "MT1871-10-31",
     "image_name": "0179_1871-12-05_the-herald-glasgow-edition_rough-justice.jpg",
     "newspaper": "The Herald (Glasgow ed.)",
@@ -3222,7 +3222,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "180",
+    "article-id": "0180",
     "lynching-id": "MT1870-01-26",
     "image_name": "0180_1870-01-27_the-philadelphia-inquirer_a-chinaman-lynched.jpg",
     "newspaper": "The Philiadelphia Inquirer",
@@ -3240,7 +3240,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "181",
+    "article-id": "0181",
     "lynching-id": "MT1873-07-04",
     "image_name": "0181_1873-08-02_the-ogden-junction_outrage-in-montana.jpg",
     "newspaper": "The Ogden Junction",
@@ -3258,7 +3258,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "182",
+    "article-id": "0182",
     "lynching-id": "",
     "image_name": "0182_1874-05-13_the-greensboro-patriot_untitled.jpg",
     "newspaper": "The Greensboro Patriot",
@@ -3276,7 +3276,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "183",
+    "article-id": "0183",
     "lynching-id": "",
     "image_name": "0183_1878-01-06_chicago-tribune_john-taken-individually.jpg",
     "newspaper": "Chicago Tribune",
@@ -3294,7 +3294,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "184",
+    "article-id": "0184",
     "lynching-id": "CA1868-00-00",
     "image_name": "0184_1903-02-10_stockton-evening-and-sunday-record_a-lynching-of-years-gone-by.jpg",
     "newspaper": "Stockton Evening and Sunday Record",
@@ -3312,7 +3312,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "185",
+    "article-id": "0185",
     "lynching-id": "MT1868-00-00",
     "image_name": "0185_1904-11-02_the-anaconda-standard_judge-knowles-response.jpg",
     "newspaper": "The Anaconda Standard",
@@ -3330,7 +3330,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "186",
+    "article-id": "0186",
     "lynching-id": "CA1866-11-19",
     "image_name": "0186_1866-11-28_daily-evening-herald_chinaman-lynched.jpg",
     "newspaper": "Daily Evening Herald",
@@ -3348,7 +3348,7 @@
     "decade": "1860s"
   },
   {
-    "article-id": "187",
+    "article-id": "0187",
     "lynching-id": "CA1877-07-23",
     "image_name": "0187_1877-07-26_san-francisco-chronicle_reign_of_riot.jpg",
     "newspaper": "San Francisco Chronicle",
@@ -3366,7 +3366,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "188",
+    "article-id": "0188",
     "lynching-id": "CA1877-07-23",
     "image_name": "0188_1877-07-25_the-san-francisco-examiner_the-hoodlum-outbreak.jpg",
     "newspaper": "The San Francisco Examiner ",
@@ -3384,7 +3384,7 @@
     "decade": "1870s"
   },
   {
-    "article-id": "189",
+    "article-id": "0189",
     "lynching-id": "CA1881-03-04",
     "image_name": "0189_1881-03-04_reno-gazette-journal_a-chinaman-hanged.jpg",
     "newspaper": "Reno Gazette-Journal",
@@ -3402,7 +3402,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "190",
+    "article-id": "0190",
     "lynching-id": "CA1881-03-04",
     "image_name": "0190_1881-03-18_napa-county-reporter_items-of-interest.jpg",
     "newspaper": "Napa County Recorder",
@@ -3420,7 +3420,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "191",
+    "article-id": "0191",
     "lynching-id": "CO1881-03-05",
     "image_name": "0191_1881-03-08_the-kansas-city-star_john-must-go.jpg",
     "newspaper": "The Kansas City Star",
@@ -3438,7 +3438,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "192",
+    "article-id": "0192",
     "lynching-id": "CO1881-03-05",
     "image_name": "0192_1881-03-07_the-evening-herald_a-chinaman-hung.jpg",
     "newspaper": "The Evening Herald",
@@ -3456,7 +3456,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "193",
+    "article-id": "0193",
     "lynching-id": "CO1881-03-05",
     "image_name": "0193_1881-03-07_harrisburg-telegraph_a-chinaman-was-hanged.jpg",
     "newspaper": "Harrisburg Telegraph",
@@ -3474,7 +3474,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "194",
+    "article-id": "0194",
     "lynching-id": "UT1883-09-26",
     "image_name": "0194_1883-09-27_the-san-francisco-examiner_lynched.jpg",
     "newspaper": "The San Francisco Examiner",
@@ -3492,7 +3492,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "195",
+    "article-id": "0195",
     "lynching-id": "UT1883-09-26",
     "image_name": "0195_1883-09-29_the-democratic-advocate_a-chinaman-was-lynched.jpg",
     "newspaper": "The Democratic Advocate",
@@ -3510,7 +3510,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "196",
+    "article-id": "0196",
     "lynching-id": "UT1883-09-26",
     "image_name": "0196_1883-09-27_san-francisco-chronicle_a-chinaman-lynched.jpg",
     "newspaper": "San Francisco Chronicle",
@@ -3528,7 +3528,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "197",
+    "article-id": "0197",
     "lynching-id": "OR1883-10-03",
     "image_name": "0196_1883-10-03_the-sacramento-union_chinaman-lynched.jpg",
     "newspaper": "The Sacramento Union",
@@ -3546,7 +3546,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "198",
+    "article-id": "0198",
     "lynching-id": "TX1884-08-14",
     "image_name": "0198_1884_08-20_el-paso-times_a-dead-chinaman.jpg",
     "newspaper": "El Paso times",
@@ -3564,7 +3564,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "199",
+    "article-id": "0199",
     "lynching-id": "CO1880-10-31",
     "image_name": "0199_1880-11-03_the-tipton-times_a-serious-riot.jpg",
     "newspaper": "The Tipton Times",
@@ -3582,7 +3582,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "200",
+    "article-id": "0200",
     "lynching-id": "CA1884-06-30",
     "image_name": "0200_1884-07-02_los-angeles-herald_chinese-delegation-receives-body-of-murdered-chinaman.jpg",
     "newspaper": "Los Angeles Herald",
@@ -3600,7 +3600,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "201",
+    "article-id": "0201",
     "lynching-id": "CA1884-06-30",
     "image_name": "0201_1884-07-01_the-san-francisco-examiner_lynch-law.jpg",
     "newspaper": "The San Francisco Examiner",
@@ -3618,7 +3618,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "202",
+    "article-id": "0202",
     "lynching-id": "CO1880-10-31",
     "image_name": "0202_1880-11-01_st-albans-daily-messenger_mob-rule-at-denver.jpg",
     "newspaper": "St. Albans Daily Messenger",
@@ -3636,7 +3636,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "203",
+    "article-id": "0203",
     "lynching-id": "CO1880-10-31",
     "image_name": "0203_1880-11-03_the-tipton-times_a-serious-riot-occurred-at-denver.jpg",
     "newspaper": "The Tipton Times",
@@ -3654,7 +3654,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "204",
+    "article-id": "0204",
     "lynching-id": "CA1885-07-12",
     "image_name": "0204_1885-07-14_san-francisco-chronicle_a-chinese-execution.jpg",
     "newspaper": "San Francisco Chronicle",
@@ -3672,7 +3672,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "205",
+    "article-id": "0205",
     "lynching-id": "MS1885-05-06",
     "image_name": "0205_1885-05-14_the-vicksburg-post_ah-yo-a-chinaman-thrown-into-the-river-and-shot.jpg",
     "newspaper": "The Vicksburg Post",
@@ -3690,7 +3690,7 @@
     "decade": "1880s"
   },
   {
-    "article-id": "206",
+    "article-id": "0206",
     "lynching-id": "CA1853-02-21",
     "image_name": "0206_1853-03-04_the-nevada-journal_more-murders-and-robberies.jpg",
     "newspaper": "The Nevada Journal",
@@ -3708,7 +3708,7 @@
     "decade": "1850s"
   },
   {
-    "article-id": "207",
+    "article-id": "0207",
     "lynching-id": "MS1904-08-00",
     "image_name": "0207_1904-08-06_the-boston-globe_negroes-lynch-chinaman.jpg",
     "newspaper": "The Boston Globe",
@@ -3726,7 +3726,7 @@
     "decade": "1900s"
   },
   {
-    "article-id": "208",
+    "article-id": "0208",
     "lynching-id": "MS1904-08-00",
     "image_name": "0208_1904-08-08_times-herald_a-race-war-is-on.jpg",
     "newspaper": "Time Herald",

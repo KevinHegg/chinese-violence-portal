@@ -116,7 +116,57 @@ const Timeline: React.FC = () => {
 
   // Function to determine if an event should be on the left side
   const isLeftSideEvent = (eventType: string) => {
-    return eventType.toLowerCase().includes('anti-chinese violence');
+    return eventType.toLowerCase() === 'anti-chinese violence';
+  };
+
+  // Function to get the pill color for an event type
+  const getPillColor = (eventType: string) => {
+    const type = eventType.trim().toLowerCase();
+    if (type === 'anti-chinese violence') return 'bg-red-100 text-red-800';
+    if (type === 'u.s. decennial census data') return 'bg-green-100 text-green-800';
+    return 'bg-blue-100 text-blue-800';
+  };
+
+  // Function to determine the dot color
+  const getDotColor = (eventType: string) => {
+    const type = eventType.trim().toLowerCase();
+    if (type === 'anti-chinese violence') return 'bg-red-500';
+    if (type === 'u.s. decennial census data') return 'bg-green-500';
+    return 'bg-blue-500'; // Legal & Policy (default)
+  };
+
+  // Function to render description with <br> as line breaks and <strong> as bold
+  const renderDescription = (desc: string) => {
+    // Decode HTML entities
+    let html = decodeHtmlEntities(desc);
+    // Replace <br> tags with newlines
+    html = html.replace(/<br\s*\/?>(\n)?/gi, '\n');
+    // Split by newlines
+    const lines = html.split('\n');
+    // For each line, replace <strong>...</strong> with <strong> React elements
+    return lines.map((line, idx) => {
+      const parts = [];
+      let lastIndex = 0;
+      const strongRegex = /<strong>(.*?)<\/strong>/gi;
+      let match;
+      let key = 0;
+      while ((match = strongRegex.exec(line)) !== null) {
+        if (match.index > lastIndex) {
+          parts.push(line.slice(lastIndex, match.index));
+        }
+        parts.push(<strong key={key++}>{match[1]}</strong>);
+        lastIndex = match.index + match[0].length;
+      }
+      if (lastIndex < line.length) {
+        parts.push(line.slice(lastIndex));
+      }
+      return (
+        <React.Fragment key={idx}>
+          {parts}
+          {idx !== lines.length - 1 && <br />}
+        </React.Fragment>
+      );
+    });
   };
 
   // Function to decode HTML entities
@@ -163,6 +213,7 @@ const Timeline: React.FC = () => {
               <option value="all">All Event Types</option>
               <option value="Anti-Chinese Violence">Anti-Chinese Violence</option>
               <option value="Legal & Policy">Legal & Policy</option>
+              <option value="U.S. Decennial Census Data">U.S. Decennial Census Data</option>
             </select>
           </div>
           <div>
@@ -207,14 +258,14 @@ const Timeline: React.FC = () => {
               <div key={item.id} className="relative flex items-start">
                 {/* Timeline Dot */}
                 <div className={`absolute left-1/2 w-3 h-3 rounded-full border-2 border-white shadow-md transform -translate-x-1/2 ${
-                  isLeftSide ? 'bg-red-500' : 'bg-blue-500'
+                  getDotColor(item.eventType)
                 }`}></div>
                 
                 {/* Content Card - Positioned on left or right based on event type */}
                 <div className={`w-6/12 ${
-                  isLeftSide
+                  isLeftSideEvent(item.eventType)
                     ? 'mr-auto pr-3' // Left side for Anti-Chinese Violence events
-                    : 'ml-auto pl-3'  // Right side for Legal & Policy events
+                    : 'ml-auto pl-3'  // Right side for Legal & Policy and Census events
                 }`}>
                   <div className={`bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow text-left`}>
                     <div className={`flex items-start justify-between mb-1 ${
@@ -223,11 +274,7 @@ const Timeline: React.FC = () => {
                         : 'flex-row-reverse' // Date on right (closer to timeline), pill on left
                     }`}>
                       <div>
-                        <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ${
-                          isLeftSide
-                            ? 'bg-red-100 text-red-800' 
-                            : 'bg-blue-100 text-blue-800'
-                        }`}>
+                        <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ${getPillColor(item.eventType)}`}>
                           {item.eventType}
                         </span>
                       </div>
@@ -236,7 +283,7 @@ const Timeline: React.FC = () => {
                     
                     <h3 className="text-sm font-semibold text-gray-900 mb-0.5">{decodeHtmlEntities(item.title)}</h3>
                     <p className="text-xs text-gray-700 leading-relaxed">
-                      {decodeHtmlEntities(item.description)}
+                      {renderDescription(item.description)}
                       {item.link && (
                         <span className="ml-1">
                           <a 
