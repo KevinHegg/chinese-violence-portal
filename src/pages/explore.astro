@@ -1,0 +1,356 @@
+---
+import PageLayout from "../layouts/PageLayout.astro";
+import lynchingsData from "../data/lynchings.json";
+
+// Extract unique filter options
+const decades = Array.from(new Set(lynchingsData.map(l => l.decade))).sort();
+const states = Array.from(new Set(lynchingsData.map(l => l.state))).sort();
+const eventTypes = Array.from(new Set(lynchingsData.map(l => l["event-type"]))).sort();
+const sources = Array.from(new Set(lynchingsData.map(l => l.source))).sort();
+
+// Event Type dropdown: reorder values
+const eventTypeOrder = ["Lynching", "Possible Lynching", "Massacre", "Riot"];
+const eventTypesSorted = [
+  ...eventTypeOrder.filter(type => eventTypes.includes(type)),
+  ...eventTypes.filter(type => !eventTypeOrder.includes(type)).sort()
+];
+
+// Replace Source filter with Newly Documented filter
+const newlyDocumentedOptions = ['Yes', 'No'];
+---
+
+<PageLayout title="Explore the Records" currentPage="explore">
+  <h1 class="text-4xl font-bold mb-6">Explore the Records</h1>
+
+  <!-- Filter/Search Panel -->
+  <div class="bg-amber-50/90 border-2 border-amber-200 rounded-lg p-4 mb-6 shadow-lg">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <!-- Filter Section -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-lg p-3 border border-amber-300">
+          <h3 class="text-lg font-semibold mb-3 text-amber-800 border-b border-amber-200 pb-2">Filters</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text font-medium text-amber-800">Decade</span>
+              </label>
+              <select id="filter-decade" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
+                <option value="">All Decades</option>
+                {decades.map(decade => <option value={decade}>{decade}</option>)}
+              </select>
+            </div>
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text font-medium text-amber-800">State</span>
+              </label>
+              <select id="filter-state" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
+                <option value="">All States</option>
+                {states.map(state => <option value={state}>{state}</option>)}
+              </select>
+            </div>
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text font-medium text-amber-800">Event Type</span>
+              </label>
+              <select id="filter-eventType" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
+                <option value="">All Event Types</option>
+                {eventTypesSorted.map(type => <option value={type}>{type}</option>)}
+              </select>
+            </div>
+            <div class="form-control">
+              <label class="label">
+                <span class="label-text font-medium text-amber-800">Newly Documented</span>
+              </label>
+              <select id="filter-newlyDocumented" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
+                <option value="">All</option>
+                {newlyDocumentedOptions.map(opt => <option value={opt}>{opt}</option>)}
+              </select>
+            </div>
+          </div>
+          <div class="flex justify-end mt-3">
+            <button id="clear-filters" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm">
+              Clear All Filters
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Sort Section -->
+      <div class="h-full flex flex-col justify-start">
+        <div class="bg-white rounded-lg p-3 border border-amber-300 h-full">
+          <h3 class="text-lg font-semibold mb-3 text-amber-800 border-b border-amber-200 pb-2">Sort Options</h3>
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-medium text-amber-800">Sort By</span>
+            </label>
+            <select id="sort-by" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
+              <option value="date">Date</option>
+              <option value="state">State</option>
+            </select>
+          </div>
+          <div class="form-control mt-3">
+            <label class="label">
+              <span class="label-text font-medium text-amber-800">Order</span>
+            </label>
+            <select id="sort-order" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Keyword Search Panel -->
+    <div class="mt-4 flex w-full">
+      <div class="bg-white rounded-lg p-3 border border-amber-300 flex-1 flex items-center gap-4" style="width: 100%;">
+        <label for="keyword-search" class="font-medium text-amber-800 whitespace-nowrap">Keyword Search:</label>
+        <input id="keyword-search" type="text" class="input input-bordered border-2 border-amber-300 bg-amber-50 w-full max-w-lg" placeholder="Enter keyword(s)" />
+        <button id="keyword-clear" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm" style="height: 40px;">Clear</button>
+      </div>
+    </div>
+    <div class="mt-3 text-sm text-amber-700 bg-amber-100 rounded-lg p-2 text-center">
+      <span id="results-count">Showing all {lynchingsData.length} records</span>
+    </div>
+  </div>
+
+  <!-- Records Cards Grid -->
+  <div id="cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
+
+</PageLayout>
+
+<script define:vars={{ lynchingsData }}>
+  const data = lynchingsData;
+  const container = document.getElementById('cards-container');
+  const decadeInput = document.getElementById('filter-decade');
+  const stateInput = document.getElementById('filter-state');
+  const eventTypeInput = document.getElementById('filter-eventType');
+  const sourceInput = document.getElementById('filter-source');
+  const sortByInput = document.getElementById('sort-by');
+  const sortOrderInput = document.getElementById('sort-order');
+  const clearBtn = document.getElementById('clear-filters');
+  const resultsCount = document.getElementById('results-count');
+  const keywordInput = document.getElementById('keyword-search');
+  const keywordClearBtn = document.getElementById('keyword-clear');
+  const newlyDocumentedInput = document.getElementById('filter-newlyDocumented');
+
+  let lastKeyword = '';
+
+  function applyFilters() {
+    const decade = decadeInput.value;
+    const state = stateInput.value;
+    const eventType = eventTypeInput.value;
+    const newlyDocumented = newlyDocumentedInput.value;
+    const keyword = (keywordInput?.value || '').trim().replace(/\s+/g, ' ').toLowerCase();
+    lastKeyword = keyword;
+
+    let filtered = data.filter(l => {
+      const decadeMatch = !decade || l.decade === decade;
+      const stateMatch = !state || l.state === state;
+      const eventTypeMatch = !eventType || l['event-type'] === eventType;
+      const newlyDocMatch = !newlyDocumented || (newlyDocumented === 'Yes' ? l['newly-documented'] === true || l['newly-documented'] === 'Yes' : l['newly-documented'] === false || l['newly-documented'] === 'No');
+      const keywordMatch = !keyword ||
+        l['narrative-short-title']?.toLowerCase().includes(keyword) ||
+        l['narrative-summary']?.toLowerCase().includes(keyword) ||
+        l.state?.toLowerCase().includes(keyword) ||
+        l.city?.toLowerCase().includes(keyword) ||
+        l.county?.toLowerCase().includes(keyword);
+      return decadeMatch && stateMatch && eventTypeMatch && newlyDocMatch && keywordMatch;
+    });
+    updateFilterOptions(filtered);
+    renderCards(sortRecords(filtered));
+  }
+
+  function updateFilterOptions(currentFiltered = data) {
+    // Only disable options in OTHER dropdowns, never in the same dropdown
+    const availableDecades = [...new Set(currentFiltered.map(l => l.decade).filter(Boolean))].sort();
+    const availableStates = [...new Set(currentFiltered.map(l => l.state).filter(Boolean))].sort();
+    const availableEventTypes = [...new Set(currentFiltered.map(l => l['event-type']).filter(Boolean))].sort();
+    const availableNewlyDoc = ['Yes', 'No'];
+    updateSelectOptions(decadeInput, availableDecades, 'All Decades', 'decade');
+    updateSelectOptions(stateInput, availableStates, 'All States', 'state');
+    updateSelectOptions(eventTypeInput, availableEventTypes, 'All Event Types', 'eventType');
+    updateSelectOptions(newlyDocumentedInput, availableNewlyDoc, 'All', 'newlyDocumented');
+  }
+
+  function updateSelectOptions(selectElement, availableValues, defaultText, filterType) {
+    const currentValue = selectElement.value;
+    selectElement.innerHTML = `<option value="">${defaultText}</option>`;
+    // Get all possible values for this filter type
+    const allValues = Array.from(new Set(data.map(l => filterType === 'eventType' ? l['event-type'] : filterType === 'newlyDocumented' ? (l['newly-documented'] === true || l['newly-documented'] === 'Yes' ? 'Yes' : 'No') : l[filterType]).filter(Boolean))).sort();
+    allValues.forEach(value => {
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = value;
+      // Never disable options in the currently active dropdown
+      if (selectElement === document.activeElement) {
+        option.disabled = false;
+      } else {
+        option.disabled = !availableValues.includes(value);
+        if (!availableValues.includes(value)) {
+          option.className = 'text-gray-400';
+        }
+      }
+      selectElement.appendChild(option);
+    });
+    if (currentValue && allValues.includes(currentValue)) {
+      selectElement.value = currentValue;
+    } else if (currentValue && !allValues.includes(currentValue)) {
+      selectElement.value = '';
+    }
+  }
+
+  function sortRecords(records) {
+    const sortBy = sortByInput.value;
+    const sortOrder = sortOrderInput.value;
+    return [...records].sort((a, b) => {
+      let aValue, bValue;
+      switch (sortBy) {
+        case 'date':
+          aValue = a.date || '';
+          bValue = b.date || '';
+          break;
+        case 'state':
+          aValue = a.state || '';
+          bValue = b.state || '';
+          break;
+        default:
+          aValue = a.date || '';
+          bValue = b.date || '';
+      }
+      const cmp = aValue.localeCompare(bValue);
+      return sortOrder === 'desc' ? -cmp : cmp;
+    });
+  }
+
+  function renderCards(filtered = data) {
+    container.innerHTML = '';
+    if (filtered.length === 0) {
+      resultsCount.textContent = 'No records found';
+      return;
+    }
+    resultsCount.textContent = `Showing ${filtered.length} of ${data.length} records`;
+    
+    // Build URL parameters for current filter state
+    const params = new URLSearchParams();
+    params.set('from', 'explore');
+    if (decadeInput.value) params.set('decade', decadeInput.value);
+    if (stateInput.value) params.set('state', stateInput.value);
+    if (eventTypeInput.value) params.set('eventType', eventTypeInput.value);
+    if (newlyDocumentedInput.value) params.set('newlyDocumented', newlyDocumentedInput.value);
+    if (sortByInput.value) params.set('sortBy', sortByInput.value);
+    if (sortOrderInput.value) params.set('sortOrder', sortOrderInput.value);
+    if (keywordInput && keywordInput.value.trim()) params.set('keyword', keywordInput.value.trim());
+    
+    filtered.forEach(l => {
+      const card = document.createElement('a');
+      const cardLink = `/records/${l["lynching-id"]}?${params.toString()}`;
+      card.href = cardLink;
+      card.className = 'block card bg-base-100 shadow-md hover:shadow-lg transition-shadow border border-base-300 p-4 h-full';
+      card.innerHTML = `
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-xs font-semibold text-gray-500">${l.date}</span>
+          <span class="text-xs font-semibold text-gray-500">${l.state}</span>
+        </div>
+        <div class="font-bold text-base mb-1">${l["narrative-short-title"]}</div>
+        <div class="text-sm text-gray-700 summary-fade-container"><span class="summary-fade-text">${l["narrative-summary"] || ''}</span><span class="summary-fade"></span></div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function clearAllFilters() {
+    decadeInput.value = '';
+    stateInput.value = '';
+    eventTypeInput.value = '';
+    sourceInput.value = '';
+    sortByInput.value = 'date';
+    sortOrderInput.value = 'asc';
+    if (keywordInput) keywordInput.value = '';
+    updateFilterOptions(data);
+    renderCards(sortRecords(data));
+  }
+
+  if (decadeInput) decadeInput.addEventListener('change', applyFilters);
+  if (stateInput) stateInput.addEventListener('change', applyFilters);
+  if (eventTypeInput) eventTypeInput.addEventListener('change', applyFilters);
+  if (newlyDocumentedInput) newlyDocumentedInput.addEventListener('change', applyFilters);
+  if (sortByInput) sortByInput.addEventListener('change', applyFilters);
+  if (sortOrderInput) sortOrderInput.addEventListener('change', applyFilters);
+  if (clearBtn) clearBtn.addEventListener('click', clearAllFilters);
+  if (keywordInput) {
+    keywordInput.addEventListener('input', (e) => {
+      // Only trigger if the trimmed, single-spaced value actually changes
+      const newKeyword = (e.target.value || '').trim().replace(/\s+/g, ' ').toLowerCase();
+      if (newKeyword !== lastKeyword) {
+        applyFilters();
+      }
+    });
+  }
+  if (keywordClearBtn) {
+    keywordClearBtn.addEventListener('click', () => {
+      if (keywordInput) keywordInput.value = '';
+      applyFilters();
+    });
+  }
+  // Restore filter state from URL parameters if present
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('decade')) decadeInput.value = urlParams.get('decade');
+  if (urlParams.has('state')) stateInput.value = urlParams.get('state');
+  if (urlParams.has('eventType')) eventTypeInput.value = urlParams.get('eventType');
+  if (urlParams.has('newlyDocumented')) newlyDocumentedInput.value = urlParams.get('newlyDocumented');
+  if (urlParams.has('sortBy')) sortByInput.value = urlParams.get('sortBy');
+  if (urlParams.has('sortOrder')) sortOrderInput.value = urlParams.get('sortOrder');
+  if (urlParams.has('keyword') && keywordInput) keywordInput.value = urlParams.get('keyword');
+
+  // Always apply filters after restoring controls (even if no params)
+  applyFilters();
+
+  window.addEventListener('pageshow', () => {
+    // Re-apply filter/sort/keyword logic to the card grid and controls
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('decade')) decadeInput.value = urlParams.get('decade');
+    else decadeInput.value = '';
+    if (urlParams.has('state')) stateInput.value = urlParams.get('state');
+    else stateInput.value = '';
+    if (urlParams.has('eventType')) eventTypeInput.value = urlParams.get('eventType');
+    else eventTypeInput.value = '';
+    if (urlParams.has('newlyDocumented')) newlyDocumentedInput.value = urlParams.get('newlyDocumented');
+    else newlyDocumentedInput.value = '';
+    if (urlParams.has('sortBy')) sortByInput.value = urlParams.get('sortBy');
+    else sortByInput.value = 'date';
+    if (urlParams.has('sortOrder')) sortOrderInput.value = urlParams.get('sortOrder');
+    else sortOrderInput.value = 'asc';
+    if (urlParams.has('keyword') && keywordInput) keywordInput.value = urlParams.get('keyword');
+    else if (keywordInput) keywordInput.value = '';
+    applyFilters();
+  });
+</script>
+<style>
+  select option:disabled {
+    color: #9ca3af;
+    font-style: italic;
+  }
+  .summary-fade-container {
+    position: relative;
+    max-height: 120px;
+    overflow: hidden;
+  }
+  .summary-fade-text {
+    display: block;
+    margin-bottom: 0;
+  }
+  .summary-fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 40px;
+    background: linear-gradient(transparent, white);
+    pointer-events: none;
+    width: 100%;
+    z-index: 2;
+  }
+</style>
+
+    z-index: 2;
+  }
+</style>
