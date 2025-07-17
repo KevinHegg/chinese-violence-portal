@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Anti-Chinese Violence Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Leaflet CSS and JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css">
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    #map {
+      width: 100%;
+      height: 100vh;
+    }
+    /* Overlay for timeline controls: half the map's width, centered at bottom */
+    #overlay {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50%;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 10px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+    }
+    #yearSlider { flex: 1; }
+    #yearLabel { font-size: 14px; font-weight: bold; }
+    /* Default marker style: thin stroke */
+    .leaflet-interactive { stroke-width: 2 !important; }
+    /* Pulse animation for new markers */
+    @keyframes pulseColor {
+      0% { fill: yellow; stroke: yellow; }
+      50% { fill: orange; stroke: orange; }
+      100% { fill: red; stroke: red; }
+    }
+    .pulse { animation: pulseColor 750ms ease-out forwards; }
+    .info-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #FFFBED;
+      padding: 0;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      width: 240px;
+      z-index: 1000;
+      cursor: default;
+      user-select: none;
+      transition: none;
+      border:1px solid #e5e7eb;
+      font-family: -apple-system, BlinkMacSystemFont, Segoe UI", Roboto,Helvetica Neue", Arial, sans-serif;
+    }
+    .info-panel-header {
+      position: relative;
+      width: 240px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      background: #FEF3C7;
+      border-radius: 8px;
+      border-bottom:1px solid #e5e7eb;
+      cursor: grab;
+    }
+    .drag-handle {
+      font-size: 12px;
+      color: #6b7280;
+      cursor: grab;
+      margin-right: 8px;
+    }
+    .info-panel h1 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin: 0;
+      color: #1f2937;
+      letter-spacing: 0.01em;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .info-panel p {
+      display: block;
+      font-size: 0.875rem;
+      margin:0 2px 0;
+      color: #4b5563;
+      line-height: 1.4;
+    }
+    .info-panel .collapse-btn, .info-panel .expand-btn {
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #6b7280;
+      transition: background-color 0.2s;
+      border-radius: 4px;
+    }
+    .info-panel .collapse-btn:hover, .info-panel .expand-btn:hover {
+      background: #d1d5db;
+    }
+    .info-panel .collapse-btn { display: flex; }
+    .info-panel .expand-btn { display: none; }
+    .info-panel.collapsed h1,
+    .info-panel.collapsed p,
+    .info-panel.collapsed .back-link {
+      display: none;
+    }
+    .info-panel.collapsed .collapse-btn { display: none; }
+    .info-panel.collapsed .expand-btn { display: flex; }
+    .info-panel.collapsed .collapsed-back-link {
+      display: flex !important;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+      font-size: 14px;
+      color: #000;
+      text-decoration: none;
+    }
+    .info-panel-content {
+      padding: 16px;
+      width: 240px;
+      box-sizing: border-box;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+    }
+    .info-panel.collapsed .info-panel-content {
+      padding: 8px 16px;
+    }
+    .back-link {
+      display: inline-block;
+      font-size: 14px;
+      color: #000;
+      text-decoration: none;
+      margin-top: 8px;
+      margin-bottom: 0;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+    .info-panel.collapsed .info-panel-content {
+      display: none;
+    }
+    .collapsed-back-link {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="overlay">
+    <button id="playButton" class="btn btn-primary">Play</button>
+    <input type="range" id="yearSlider" step="1">
+    <span id="yearLabel"></span>
+  </div>
+  <div id="infoPanel" class="info-panel">
+    <div class="info-panel-header">
+      <span class="drag-handle">⋮⋮</span>
+      <h1>Anti-Chinese Violence Map</h1>
+      <a href="/visualize/" class="back-link collapsed-back-link">&lt; Back to Visualizations</a>
+      <button class="collapse-btn" title="Roll up" aria-label="Roll up">&#x25B2;</button>
+      <button class="expand-btn" title="Expand" aria-label="Expand">&#x25BC;</button>
+    </div>
+    <div class="info-panel-content">
+      <p>Interactive map and timeline of anti-Chinese violence events (1850-1915). Click on a red marker to view more details about the event.</p>
+      <a href="/visualize/" class="back-link">&lt; Back to Visualizations</a>
+    </div>
+  </div>
+  <script>
+    // Parameters - INCREASED SPEED
+    const pulseDuration = 750;      // 750ms per pulse cycle
+    const playbackSpeed = 300;       // FASTER: 300ms per year increment (was 500)
+    const endColor = "red";          // Final marker color
+
+    // Local JSON file path
+    const jsonURL = "./lynchings.json";
+
+    let dataRows = [];
+    let minYear, maxYear;
+    let lastYear = 0;
+    let animationInterval = null;
+    let openPopups = []; // Track open popups
+
+    // Set up the Leaflet map
+    const map = L.map('map').setView([39.8283, -98.5795], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    const markersLayer = L.layerGroup().addTo(map);
+
+    // Simple responsive zoom based on browser width at load time only
+    function adjustZoomForScreenSize() {
+      const browserWidth = window.innerWidth;
+      const zoomLevel = browserWidth >= 1024? 5 : 4;
+      map.setZoom(zoomLevel);
+    }
+
+    // Adjust zoom on load only (no resize listener)
+    adjustZoomForScreenSize();
+
+    // Timeline controls
+    const slider = document.getElementById('yearSlider');
+    const yearLabel = document.getElementById('yearLabel');
+    const playButton = document.getElementById('playButton');
+
+    // Helper to get field with fallback (prefer dash-case)
+    function getField(d, field) {
+      return d[field] || d[field.toLowerCase()] || d[field.replace(/ /g, "-").toLowerCase()] || '';
+    }
+
+    // Scale marker radius based on number-of-victims
+    function scaleRadius(v) {
+      const victimValues = dataRows.map(d => +getField(d, "number-of-victims"));
+      const minVictims = Math.min(...victimValues);
+      const maxVictims = Math.max(...victimValues);
+      return 5 + (v - minVictims) / (maxVictims - minVictims) * 15;
+    }
+
+    // Build popup content
+    function buildPopup(d) {
+      let content = `<b>${getField(d, "narrative-short-title")}</b>`;
+      content += `<table style="margin: 4px 0 0 0; border-collapse: collapse; width: 100%; font-size: 1em;">
+        <tr><td style='font-weight:bold; padding-right:2px; vertical-align:top;'>Date:</td><td style='text-align:left;'>${getField(d, "date")}</td></tr>
+        <tr><td style='font-weight:bold; padding-right:2px; vertical-align:top;'>Location:</td><td style='text-align:left;'>${(() => {
+          const city = getField(d, "city");
+          const county = getField(d, "county");
+          const state = getField(d, "state");
+          if(city && city.trim() !== '') {
+            // Show only city and state
+            return [city, state].filter(Boolean).join(", ");
+          } else if(county && county.trim() !== '') {
+            // Show county (with comma) and state
+            return [county + " County,", state].filter(Boolean).join(" ");
+          } else {
+            // Only state or empty
+            return state || '';
+          }
+        })()}</td></tr>
+        <tr><td style='font-weight:bold; padding-right:2px; vertical-align:top;'>No.&nbsp;of&nbsp;Victims:&nbsp;</td><td style='text-align:left;'>${getField(d, "number-of-victims")}</td></tr>
+        <tr><td style='font-weight:bold; padding-right:2px; vertical-align:top;'>Event Type:</td><td style='text-align:left;'>${getField(d, "event-type")}</td></tr>
+      </table>`;
+      content += `<hr style="margin: 8px 0 4px 0; border: none; border-top:1px solid #ccc;">`;
+      content += `${getField(d, "narrative-summary")} <a href="/records/${getField(d, "lynching-id")}" target="_blank">(more details)</a>`;
+      return content;
+    }
+
+    // Apply pulse animation to a marker's SVG path
+    function applyPulse(el) {
+      el.classList.add("pulse");
+      setTimeout(() => {
+        el.classList.remove("pulse");
+      }, pulseDuration);
+    }
+
+    // Update markers cumulatively based on currentYear - FIXED POPUP BEHAVIOR
+    function updateMarkers(currentYear) {
+      // Preserve open popup lynching-id (if any)
+      let openLynchingId = null;
+      if (openPopups.length > 0 && openPopups[0].getPopup() && openPopups[0].isPopupOpen()) {
+        const popupContent = openPopups[0].getPopup().getContent();
+        // Try to extract lynching-id from the (more details) link
+        const match = popupContent && popupContent.match(/\/records\/(.*?)\"/);
+        if (match && match[1]) {
+          openLynchingId = match[1];
+        }
+      }
+      openPopups = [];
+      markersLayer.clearLayers();
+      const filtered = dataRows.filter(d => +getField(d, "year") <= currentYear);
+      let markerToOpen = null;
+      filtered.forEach(d => {
+        const year = +getField(d, "year");
+        const num = +getField(d, "number-of-victims");
+        const lat = +getField(d, "latitude");
+        const lon = +getField(d, "longitude");
+        if(lat && lon) {
+          const marker = L.circleMarker([lat, lon], {
+            radius: scaleRadius(num),
+            color: endColor,
+            fillColor: endColor,
+            fillOpacity: 0.6,
+            weight: 2
+          });
+          marker.bindPopup(buildPopup(d));
+          marker.on('popupopen', function() { openPopups.push(marker); });
+          marker.on('popupclose', function() { const index = openPopups.indexOf(marker); if (index > -1) { openPopups.splice(index, 1); } });
+          if(year > lastYear) {
+            marker.on('add', function() { if(marker._path) { applyPulse(marker._path); } });
+          }
+          markersLayer.addLayer(marker);
+          // If this marker matches the previously open popup, remember it
+          if (openLynchingId && getField(d, "lynching-id") === openLynchingId) {
+            markerToOpen = marker;
+          }
+        }
+      });
+      // Reopen the popup if possible
+      if (markerToOpen) {
+        markerToOpen.openPopup();
+      }
+      lastYear = currentYear;
+    }
+
+    // Slider event: update markers and stop auto-play if active
+    slider.addEventListener("input", function() {
+      const selectedYear = +this.value;
+      yearLabel.textContent = selectedYear;
+      if(animationInterval !== null) {
+        clearInterval(animationInterval);
+        animationInterval = null;
+        playButton.textContent = "Play";
+      }
+      updateMarkers(selectedYear);
+      console.log("Slider changed, current year:", selectedYear);
+    });
+
+    // Play/Pause button event: auto-advance timeline; stop at maxYear; restart if at end
+    playButton.addEventListener("click", function() {
+      if(+slider.value >= maxYear) {
+        slider.value = minYear;
+        yearLabel.textContent = minYear;
+        updateMarkers(minYear);
+      }
+      if(animationInterval !== null) {
+        clearInterval(animationInterval);
+        animationInterval = null;
+        playButton.textContent = "Play";
+      } else {
+        playButton.textContent = "Pause";
+        animationInterval = setInterval(() => {
+          let year = +slider.value;
+          if(year < maxYear) {
+            year++;
+          } else {
+            clearInterval(animationInterval);
+            animationInterval = null;
+            playButton.textContent = "Play";
+          }
+          slider.value = year;
+          yearLabel.textContent = year;
+          updateMarkers(year);
+          console.log("Auto-play advancing, current year:", year);
+        }, playbackSpeed);
+      }
+    });
+
+    // Load JSON data using fetch
+    fetch(jsonURL)
+      .then(response => response.json())
+      .then(data => {
+        console.log("JSON data loaded:", data);
+        dataRows = data;
+        dataRows.forEach(d => {
+          d.year = +getField(d, "year");
+          d["number-of-victims"] = +getField(d, "number-of-victims");
+          d.latitude = +getField(d, "latitude");
+          d.longitude = +getField(d, "longitude");
+        });
+        const allYears = dataRows.map(d => +getField(d, "year"));
+        minYear = Math.min(...allYears);
+        maxYear = Math.max(...allYears);
+        // Force timeline to start at 1852 if data has earlier years
+        if(minYear < 1852) {
+          minYear = 1852;
+        }
+        slider.min = minYear;
+        slider.max = maxYear;
+        slider.value = minYear;
+        yearLabel.textContent = minYear;
+        lastYear = minYear;
+        updateMarkers(minYear);
+        console.log("Timeline initialized:", {minYear, maxYear});
+
+        // AUTO-START PLAYBACK
+        setTimeout(() => {
+          playButton.click(); // Start playing automatically
+        }, 1000); // Wait 1 second after load
+
+      }).catch(error => {
+        console.error("Error loading JSON:", error);
+      });
+
+    // Moveable info panel
+    const infoPanel = document.getElementById('infoPanel');
+    const infoPanelHeader = infoPanel.querySelector('.info-panel-header');
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+    let startX = 0;
+    let startY = 0;
+
+    infoPanelHeader.addEventListener('mousedown', function(e) {
+      // Only drag if not clicking a button or link
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A') return;
+      isDragging = true;
+      startX = e.clientX - infoPanel.offsetLeft;
+      startY = e.clientY - infoPanel.offsetTop;
+      infoPanelHeader.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging) return;
+      offsetX = e.clientX - startX;
+      offsetY = e.clientY - startY;
+      infoPanel.style.left = offsetX + 'px';
+      infoPanel.style.top = offsetY + 'px';
+    });
+
+    document.addEventListener('mouseup', function() {
+      isDragging = false;
+      infoPanelHeader.style.cursor = 'grab';
+    });
+
+    // Collapse/expand logic
+    const collapseBtn = infoPanel.querySelector('.collapse-btn');
+    const expandBtn = infoPanel.querySelector('.expand-btn');
+    collapseBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      infoPanel.classList.add('collapsed');
+    });
+    expandBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      infoPanel.classList.remove('collapsed');
+    });
+  </script>
+</body>
+</html> 

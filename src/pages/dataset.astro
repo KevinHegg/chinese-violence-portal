@@ -8,7 +8,8 @@ import PageLayout from "../layouts/PageLayout.astro";
     
     <div class="mb-8">
       <p class="text-lg mb-4">
-        Explore a living dataset of anti-Chinese violence (1850 – 1915) drawn from newspapers and other archival sources. The table refreshes automatically whenever our Google Sheet is updated. Click any column header to sort the table. Click the same header again to sort in reverse order.
+        Explore a living dataset of anti-Chinese violence (1850 – 1915) drawn from newspapers and other archival sources. The table refreshes automatically whenever our Google Sheet is updated. 
+        <strong>Click</strong> any column header to sort the table. <strong>Click</strong> the same header again to sort in reverse order. The "[more]" link opens a web page with more details about the selected event.
       </p>
       
       <div class="flex flex-wrap gap-4 mb-6">
@@ -18,7 +19,7 @@ import PageLayout from "../layouts/PageLayout.astro";
         <button id="download-excel" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
           Download Excel
         </button>
-        <button id="download-pdf" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+        <button id="download-pdf" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">
           Download PDF
         </button>
       </div>
@@ -28,37 +29,37 @@ import PageLayout from "../layouts/PageLayout.astro";
       <div class="table-scroll" style="overflow-x:auto; overflow-y:auto; max-height:760px; background: #f8fafc; border-radius: 0.5rem; border: 2px solid #d1d5db;">
         <table id="data-table" style="table-layout:fixed; min-width:1700px; font-size: 0.875rem;">
           <colgroup>
+            <col style="width:110px;">
+            <col style="width:60px;">
             <col style="width:140px;">
-            <col style="width:60px;">
-            <col style="width:120px;">
-            <col style="width:60px;">
-            <col style="width:120px;">
+            <col style="width:40px;">
+            <col style="width:100px;">
             <col style="width:50px;">
             <col style="width:50px;">
             <col style="width:70px;">
             <col style="width:80px;">
-            <col style="width:90px;">
-            <col style="width:200px;">
+            <col style="width:120px;">
+            <col style="width:180px;">
+            <col style="width:120px;">
             <col style="width:100px;">
-            <col style="width:80px;">
-            <col style="width:380px;">
+            <col style="width:280px;">
           </colgroup>
           <thead>
-            <tr class="bg-gray-100">
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Identifier">ID</th>
+            <tr class="bg-gray-200">
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Identifier">ID</th>
               <th class="px-2 py-2 text-left text-sm">Link</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Name">Name</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Gender">Gender</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Date">Date</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Year">Year</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Number of Victims">Victims</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="State">State</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="County">County</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="City">City</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Category of Violence">Category of Violence</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Accusation or Pretext">Accusation</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Job">Job</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-200 text-sm" data-sort="Source">Source</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Name">Name</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Gender">Gender</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Date">Date</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Year">Year</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Number of Victims">Victims</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="State">State</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="County">County</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="City">City</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Category of Violence">Category of Violence</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Accusation or Pretext">Accusation</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Job">Job</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Source">Source</th>
             </tr>
           </thead>
           <tbody id="table-body">
@@ -72,9 +73,10 @@ import PageLayout from "../layouts/PageLayout.astro";
   </div>
 </PageLayout>
 
-<!-- Add jsPDF and autoTable CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<!-- Add html2pdf for better PDF generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<!-- Add xlsx library for Excel file generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
   // CSV URL from Google Sheets
@@ -156,9 +158,14 @@ import PageLayout from "../layouts/PageLayout.astro";
     const tbody = document.getElementById('table-body');
     tbody.innerHTML = '';
     
-    tableData.forEach(row => {
+    tableData.forEach((row, index) => {
       const tr = document.createElement('tr');
-      tr.className = 'hover:bg-gray-50';
+      // Add alternating row background
+      if (index % 2 === 0) {
+        tr.className = 'hover:bg-gray-50 bg-white';
+      } else {
+        tr.className = 'hover:bg-gray-50 bg-gray-50';
+      }
       
       tr.innerHTML = `
         <td class="border border-gray-300 px-2 py-2 text-sm">${row['Identifier'] || ''}</td>
@@ -230,20 +237,16 @@ import PageLayout from "../layouts/PageLayout.astro";
       return;
     }
     
-    // Create Excel-compatible CSV with proper encoding
-    const headers = Object.keys(tableData[0]);
-    const csvContent = [
-      headers.join(','),
-      ...tableData.map(row => headers.map(header => `"${(row[header] || '').replace(/"/g, '""')}"`).join(','))
-    ].join('\r\n');
+    const worksheet = XLSX.utils.json_to_sheet(tableData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
     
-    // Add BOM for Excel compatibility
-    const BOM = '\uFEFF';
-    const blob = new Blob([BOM + csvContent], { type: 'application/vnd.ms-excel' });
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'chinese-violence-dataset.xls';
+    a.download = 'chinese-violence-dataset.xlsx';
     a.click();
     window.URL.revokeObjectURL(url);
   }
@@ -254,38 +257,75 @@ import PageLayout from "../layouts/PageLayout.astro";
       return;
     }
     
-    // Wait for jsPDF to load
-    setTimeout(() => {
-      try {
-        if (typeof window.jspdf === 'undefined') {
-          alert('PDF export failed: jsPDF not loaded. Please refresh the page and try again.');
-          return;
+    try {
+      // Create a temporary container for the PDF
+      const pdfContainer = document.createElement('div');
+      pdfContainer.style.padding = '20px';
+      pdfContainer.style.fontFamily = 'Arial, sans-serif';
+      
+      // Add title
+      const title = document.createElement('h1');
+      title.textContent = 'Chinese Violence Dataset (1850-1915)';
+      title.style.fontSize = '18px';
+      title.style.marginBottom = '10px';
+      title.style.color = '#333';
+      pdfContainer.appendChild(title);
+      
+      // Add date
+      const date = document.createElement('p');
+      date.textContent = 'Generated on: ' + new Date().toLocaleDateString();
+      date.style.fontSize = '12px';
+      date.style.marginBottom = '20px';
+      date.style.color = '#666';
+      pdfContainer.appendChild(date);
+      
+      // Clone the table for PDF
+      const table = document.getElementById('data-table').cloneNode(true);
+      table.style.fontSize = '8px';
+      table.style.width = '100%';
+      table.style.borderCollapse = 'collapse';
+      
+      // Style the table for PDF
+      const cells = table.querySelectorAll('th, td');
+      cells.forEach(cell => {
+        cell.style.border = '1px solid #ccc';
+        cell.style.padding = '2px 4px';
+        cell.style.fontSize = '8px';
+      });
+      
+      // Style headers
+      const headers = table.querySelectorAll('th');
+      headers.forEach(header => {
+        header.style.backgroundColor = '#f0f0f0';
+        header.style.fontWeight = 'bold';
+      });
+      
+      pdfContainer.appendChild(table);
+      
+      // Configure html2pdf options
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: 'chinese-violence-dataset.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          letterRendering: true
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'landscape' 
         }
-        
-        const doc = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'pt', format: 'A4' });
-        const headers = Object.keys(tableData[0]);
-        const data = tableData.map(row => headers.map(header => row[header] || ''));
-        
-        doc.text('Chinese Violence Dataset (1850-1915)', 40, 40);
-        doc.text('Generated on: ' + new Date().toLocaleDateString(), 40, 60);
-        
-        // Use autoTable plugin
-        doc.autoTable({
-          head: [headers],
-          body: data,
-          startY: 80,
-          styles: { fontSize: 6, cellPadding: 1 },
-          headStyles: { fillColor: [240,240,240], textColor: 20, fontStyle: 'bold' },
-          margin: { left: 40, right: 40 },
-          tableWidth: 'auto',
-        });
-        
-        doc.save('chinese-violence-dataset.pdf');
-      } catch (error) {
-        console.error('PDF generation error:', error);
-        alert('PDF export failed: ' + error.message + '. Please refresh the page and try again.');
-      }
-    }, 100);
+      };
+      
+      // Generate PDF
+      html2pdf().set(opt).from(pdfContainer).save();
+      
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      alert('PDF export failed: ' + error.message + '. Please try again.');
+    }
   }
 
   // Initialize
@@ -324,7 +364,7 @@ th, td {
   background-clip: padding-box;
 }
 th {
-  background-color: #f1f5f9;
+  background-color: #e5e7eb;
   font-weight: bold;
 }
 .bg-gray-50 {
