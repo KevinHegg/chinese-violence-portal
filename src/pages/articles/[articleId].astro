@@ -1,0 +1,158 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro";
+import articles from "../../data/articles.json";
+
+export async function getStaticPaths() {
+  return articles.map(article => ({
+    params: { articleId: article["article-id"] },
+    props: { article },
+  }));
+}
+
+const { article } = Astro.props;
+---
+
+<PageLayout title={article["article-title"]} currentPage="articles">
+  <div class="max-w-4xl mx-auto border border-gray-200 shadow-sm overflow-hidden bg-amber-50 rounded-lg">
+    <!-- Header -->
+    <div class="border-b border-amber-200 py-2" style="background-color: #fffbe6;">
+      <h1 class="text-3xl font-bold text-gray-900 mb-1" style="padding-left: 21px;">{article["article-title"]}</h1>
+    </div>
+
+    <!-- Metadata and Thumbnail -->
+    <div class="px-10 p-6 border-b border-gray-200 bg-white flex gap-6 items-start justify-between" style="padding-left: 20px;">
+      <!-- Metadata Table -->
+      <div class="flex-1 max-w-xs">
+        <table class="w-full text-left align-top" style="border-spacing:0;border-collapse:collapse;">
+          <tbody>
+            <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Newspaper:</th><td class="py-0.5 align-top">{article["newspaper"]}</td></tr>
+            <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Publication&nbsp;Date:&nbsp;&nbsp;&nbsp;</th><td class="py-0.5 align-top">{article["publication-date-expanded"]}</td></tr>
+            <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Published at:</th><td class="py-0.5 align-top">{article["newspaper-location"]}</td></tr>
+            <tr><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Page Number:</th><td class="py-0.5 align-top">{article["page"]}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Thumbnail -->
+      <div class="flex-shrink-0 flex items-start justify-end w-[200px]" style="margin-left:auto;">
+        <img 
+          src={`/article-scans/${article["image_name"]}`} 
+          alt={`Thumbnail for ${article["article-title"]}`}
+          class="w-[200px] h-[200px] object-cover rounded-lg border border-gray-200 cursor-pointer"
+          id="article-thumbnail"
+          style="width:200px;height:200px;"
+        />
+      </div>
+    </div>
+
+    <!-- Article Transcript -->
+    <div class="p-6 border-b border-gray-200" style="background-color: #faf9f6;">
+      <h2 class="text-xl font-semibold mb-4">Article Transcript</h2>
+      <div class="prose max-w-none w-full">
+        {article["article-transcript"]
+          .split('⏎')
+          .map(p => p.trim())
+          .filter(p => p.length > 0)
+          .map((p) => (
+            <p style="text-indent: 1.5em; margin-bottom: 0.5em; margin-top: 0.3em">{p}</p>
+          ))}
+      </div>
+    </div>
+
+    <!-- Citation -->
+    <div class="p-6 bg-white">
+      <h2 class="text-xl font-semibold mb-4">Citation</h2>
+      <div class="text-sm text-gray-700">{article["turabian-citation"]}</div>
+    </div>
+  </div>
+
+  <!-- Lightbox Modal -->
+  <div id="lightbox-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 z-50 flex flex-col items-center justify-center p-2 lg:p-4">
+    <div class="flex justify-end w-full max-w-4xl mb-2">
+      <button id="zoom-in" class="mx-1 px-3 py-1 bg-white rounded shadow text-lg font-bold">+</button>
+      <button id="zoom-out" class="mx-1 px-3 py-1 bg-white rounded shadow text-lg font-bold">-</button>
+      <button id="close-lightbox" class="mx-1 px-3 py-1 bg-white rounded shadow text-lg font-bold">×</button>
+    </div>
+    <div class="overflow-y-auto flex-1 w-full flex justify-center items-center" style="max-height:80vh;">
+      <img id="lightbox-image" class="rounded-lg shadow-xl transition-all duration-200" alt="Full article image" style="max-width:100%; max-height:none; width:auto; height:auto;" />
+    </div>
+  </div>
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', function() {
+      const thumbnail = document.getElementById('article-thumbnail');
+      const modal = document.getElementById('lightbox-modal');
+      const lightboxImage = document.getElementById('lightbox-image');
+      const zoomInBtn = document.getElementById('zoom-in');
+      const zoomOutBtn = document.getElementById('zoom-out');
+      const closeBtn = document.getElementById('close-lightbox');
+      let zoom = 1;
+      function setZoom(newZoom) {
+        zoom = Math.max(0.2, Math.min(newZoom, 5));
+        lightboxImage.style.transform = `scale(${zoom})`;
+      }
+      if (thumbnail && modal && lightboxImage && zoomInBtn && zoomOutBtn && closeBtn) {
+        thumbnail.addEventListener('click', function() {
+          lightboxImage.src = thumbnail.src;
+          setZoom(1);
+          modal.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+        });
+        zoomInBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          setZoom(zoom + 0.2);
+        });
+        zoomOutBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          setZoom(zoom - 0.2);
+        });
+        closeBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          modal.classList.add('hidden');
+          document.body.style.overflow = 'auto';
+          lightboxImage.src = '';
+        });
+        modal.addEventListener('click', function(e) {
+          if (e.target === modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            lightboxImage.src = '';
+          }
+        });
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            lightboxImage.src = '';
+          }
+        });
+      }
+    });
+  </script>
+
+  <style>
+    .bg-yellow-header {
+      background-color: #fffbe6;
+    }
+    .prose {
+      font-family: inherit;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    .prose p {
+      margin-bottom: 0.5em !important;
+    }
+    #lightbox-modal .overflow-y-auto {
+      max-height: 80vh;
+    }
+    #lightbox-image {
+      display: block;
+      margin: 0 auto;
+      transition: transform 0.2s;
+    }
+    #zoom-in, #zoom-out, #close-lightbox {
+      cursor: pointer;
+      border: none;
+      outline: none;
+    }
+  </style>
+</PageLayout> 

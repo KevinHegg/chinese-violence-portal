@@ -299,7 +299,7 @@ const decodeHtmlEntities = (text) => {
     imageError.classList.add('hidden');
     
     // Set image
-    const imagePath = `/articles/${article.image_name}`;
+    const imagePath = `/article-scans/${article.image_name}`;
     image.src = imagePath;
     image.alt = article['article-title'] || 'Article image';
     

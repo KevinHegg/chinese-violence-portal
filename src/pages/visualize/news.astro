@@ -331,7 +331,7 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
       imageError.classList.add('hidden');
       
       // Set image with fallback
-      const imagePath = `/articles/${article.image_name}`;
+      const imagePath = `/article-scans/${article.image_name}`;
       console.log('Loading image:', imagePath, 'for article:', article['article-title']);
       viewerImage.src = imagePath;
       viewerImage.alt = article['article-title'] || 'Article image';
