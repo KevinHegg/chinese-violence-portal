@@ -1,5 +1,6 @@
 ---
 import PageLayout from "../../layouts/PageLayout.astro";
+import ArticleViewer from "../../components/ArticleViewer.astro";
 import articles from "../../data/articles.json";
 import topNamedEntities from "../../data/top-named-entities.json";
 
@@ -114,78 +115,8 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
     <!-- Article Cards Grid -->
     <div id="cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
 
-    <!-- Article Viewer Modal -->
-    <div id="article-viewer" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 lg:p-4">
-      <div class="bg-newspaper-offwhite rounded-lg shadow-xl max-w-7xl w-full max-h-[95vh] lg:max-h-[95vh] overflow-hidden">
-        <div class="p-4 lg:p-6 border-b border-base-300">
-          <div class="flex justify-between items-start">
-            <h2 class="text-lg lg:text-2xl font-bold" id="viewer-title"></h2>
-            <button id="close-viewer" class="btn btn-ghost btn-sm" aria-label="Close article viewer">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-        
-        <div class="flex flex-col lg:flex-row h-[calc(95vh-120px)]">
-          <!-- Image Panel with Zoom/Pan -->
-          <div class="lg:w-1/2 p-2 lg:p-4 lg:border-r border-base-300 bg-newspaper-offwhite">
-            <div class="relative h-full">
-              <!-- Mobile: Fixed height, Desktop: Full height -->
-              <div id="image-container" class="relative w-full h-64 lg:h-full overflow-hidden bg-white border border-base-300 rounded-lg">
-                <img id="viewer-image" class="w-full h-full object-contain" alt="Article image" />
-                <div id="image-loading" class="absolute inset-0 bg-base-200 rounded-lg flex items-center justify-center">
-                  <div class="loading loading-spinner loading-lg"></div>
-                </div>
-                <div id="image-error" class="hidden absolute inset-0 bg-base-200 rounded-lg flex items-center justify-center">
-                  <div class="text-center text-gray-500">
-                    <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                    <p class="text-sm">Image not available</p>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Zoom Controls -->
-              <div class="absolute top-4 left-4 flex flex-col gap-2 rounded-lg p-2 shadow-lg" style="background-color: #faf9f6;">
-                <button id="zoom-in" class="btn btn-circle btn-sm btn-primary" title="Zoom In (Click)">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
-                  </svg>
-                </button>
-                <button id="zoom-out" class="btn btn-circle btn-sm btn-primary" title="Zoom Out (Shift+Click or Right Click)">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10h-6"></path>
-                  </svg>
-                </button>
-                <button id="reset-zoom" class="btn btn-circle btn-sm btn-outline" title="Reset Zoom">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Transcript Panel -->
-          <div class="lg:w-1/2 p-2 lg:p-4 flex flex-col bg-newspaper-offwhite">
-            <!-- Mobile: Scrollable transcript area, Desktop: Full height -->
-            <div class="flex-1 overflow-hidden">
-              <h3 class="text-lg font-semibold mb-2 lg:mb-3">Transcription</h3>
-              <div id="viewer-transcription" class="h-64 lg:h-full overflow-y-auto border border-base-300 rounded-lg p-4 bg-white text-sm leading-snug whitespace-pre-wrap"></div>
-            </div>
-            
-            <!-- Citation - Always at bottom -->
-            <div class="mt-4 p-3 bg-base-200 rounded-lg">
-              <h4 class="text-sm font-medium mb-2">Citation</h4>
-              <p class="text-xs text-gray-600" id="viewer-citation"></p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Article Viewer Component -->
+    <ArticleViewer />
 
     <!-- Loading State -->
     <div id="loading" class="hidden text-center py-12">
@@ -215,39 +146,14 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
     const sortByInput = document.getElementById('sort-by');
     const sortOrderInput = document.getElementById('sort-order');
     const clearBtn = document.getElementById('clear-filters');
-    const viewer = document.getElementById('article-viewer');
-    const closeViewer = document.getElementById('close-viewer');
-    const viewerTitle = document.getElementById('viewer-title');
-    const viewerImage = document.getElementById('viewer-image');
-    const imageContainer = document.getElementById('image-container');
-    const imageLoading = document.getElementById('image-loading');
-    const imageError = document.getElementById('image-error');
     
-    console.log('Image elements found:', {
-      viewerImage: !!viewerImage,
-      imageContainer: !!imageContainer,
-      imageLoading: !!imageLoading,
-      imageError: !!imageError
-    });
-
-    const viewerTranscription = document.getElementById('viewer-transcription');
-    const viewerCitation = document.getElementById('viewer-citation');
+    
     const resultsCount = document.getElementById('results-count');
     const loading = document.getElementById('loading');
     const noResults = document.getElementById('no-results');
     
-    // Zoom controls
-    const zoomIn = document.getElementById('zoom-in');
-    const zoomOut = document.getElementById('zoom-out');
-    const resetZoom = document.getElementById('reset-zoom');
 
-    // Zoom and pan state
-    let currentZoom = 1;
-    let isDragging = false;
-    let startX = 0;
-    let startY = 0;
-    let translateX = 0;
-    let translateY = 0;
+
 
     function formatDate(dateString) {
       if (!dateString) return '';
@@ -300,53 +206,20 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
       });
     }
 
-    function resetImageTransform() {
-      currentZoom = 1;
-      translateX = 0;
-      translateY = 0;
-      updateImageTransform();
-    }
 
-    function updateImageTransform() {
-      viewerImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentZoom})`;
-    }
 
     function renderViewer(article) {
       console.log('Opening article:', article);
       console.log('Article image_name:', article.image_name);
-      viewer.classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
       
       // Create title with newspaper metadata (without location since it's in citation)
       const newspaperName = article.newspaper || 'Unknown Publication';
       const publicationDate = formatDate(article['publication-date']);
       const titleWithMetadata = `${article['article-title'] || 'Untitled Article'} - ${newspaperName}, ${publicationDate}`;
-      viewerTitle.textContent = titleWithMetadata;
-      
-      // Reset zoom and pan
-      resetImageTransform();
-      
-      // Show loading state for image
-      imageLoading.classList.remove('hidden');
-      imageError.classList.add('hidden');
       
       // Set image with fallback
       const imagePath = `/article-scans/${article.image_name}`;
       console.log('Loading image:', imagePath, 'for article:', article['article-title']);
-      viewerImage.src = imagePath;
-      viewerImage.alt = article['article-title'] || 'Article image';
-      
-      // Handle image load events
-      viewerImage.onload = () => {
-        console.log('Image loaded successfully:', imagePath);
-        imageLoading.classList.add('hidden');
-      };
-      
-      viewerImage.onerror = () => {
-        console.error('Image failed to load:', imagePath);
-        imageLoading.classList.add('hidden');
-        imageError.classList.remove('hidden');
-      };
       
       // Transcription with proper formatting
       const transcript = (article['article-transcript'] || 'No transcription available.')
@@ -354,19 +227,22 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
         .split(/\n/)
         .map(paragraph => paragraph.trim())
         .filter(paragraph => paragraph.length > 0);
-      viewerTranscription.innerHTML = transcript.map((p, index) => {
+      const formattedTranscript = transcript.map((p, index) => {
         return `<p class='leading-snug' style='margin-bottom: 8px; text-indent: 8px;'>${p}</p>`;
       }).join('');
       
-      // Citation
-      viewerCitation.textContent = article['turabian-citation'] || 'Citation not available.';
+      // Use the new component's API
+      if (window.articleViewer) {
+        window.articleViewer.show({
+          title: titleWithMetadata,
+          imageUrl: imagePath,
+          transcription: formattedTranscript,
+          citation: article['turabian-citation'] || 'Citation not available.'
+        });
+      }
     }
 
-    function closeViewerModal() {
-      viewer.classList.add('hidden');
-      document.body.style.overflow = 'auto';
-      resetImageTransform();
-    }
+
 
     function applyFilters() {
       const decade = decadeInput.value;
@@ -528,120 +404,6 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
     sortByInput.addEventListener('change', applyFilters);
     sortOrderInput.addEventListener('change', applyFilters);
     clearBtn.addEventListener('click', clearAllFilters);
-    
-    closeViewer.addEventListener('click', closeViewerModal);
-    
-    // Close viewer when clicking outside
-    viewer.addEventListener('click', (e) => {
-      if (e.target === viewer) {
-        closeViewerModal();
-      }
-    });
-
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !viewer.classList.contains('hidden')) {
-        closeViewerModal();
-      }
-    });
-
-    // Zoom controls
-    zoomIn.addEventListener('click', () => {
-      currentZoom = Math.min(currentZoom * 1.5, 5);
-      updateImageTransform();
-    });
-
-    zoomOut.addEventListener('click', () => {
-      currentZoom = Math.max(currentZoom / 1.5, 0.5);
-      updateImageTransform();
-    });
-
-    resetZoom.addEventListener('click', resetImageTransform);
-
-    // Mouse wheel zoom
-    imageContainer.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? 0.9 : 1.1;
-      currentZoom = Math.max(0.5, Math.min(5, currentZoom * delta));
-      updateImageTransform();
-    });
-
-    // Click to zoom in, shift+click or right-click to zoom out
-    imageContainer.addEventListener('click', (e) => {
-      // Only zoom if not dragging and not just finished dragging
-      if (!isDragging && !hasDragged) {
-        if (e.shiftKey || e.button === 2) {
-          // Zoom out
-          currentZoom = Math.max(currentZoom / 1.5, 0.5);
-        } else {
-          // Zoom in
-          currentZoom = Math.min(currentZoom * 1.5, 5);
-        }
-        updateImageTransform();
-      }
-      // Reset the hasDragged flag after processing the click
-      hasDragged = false;
-    });
-
-    // Prevent context menu on right click
-    imageContainer.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-    });
-
-    // Mouse drag pan - always allow dragging when image is larger than container
-    let dragStartTime = 0;
-    let hasDragged = false;
-    let dragDistance = 0;
-
-    imageContainer.addEventListener('mousedown', (e) => {
-      if (!e.shiftKey && e.button === 0) {
-        isDragging = true;
-        hasDragged = false;
-        dragDistance = 0;
-        dragStartTime = Date.now();
-        startX = e.clientX - translateX;
-        startY = e.clientY - translateY;
-        imageContainer.style.cursor = 'grabbing';
-        e.preventDefault();
-      }
-    });
-
-    document.addEventListener('mousemove', (e) => {
-      if (isDragging) {
-        const deltaX = e.clientX - (startX + translateX);
-        const deltaY = e.clientY - (startY + translateY);
-        dragDistance += Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        
-        if (dragDistance > 5) { // Only mark as dragged if moved more than 5 pixels
-          hasDragged = true;
-        }
-        
-        translateX = e.clientX - startX;
-        translateY = e.clientY - startY;
-        updateImageTransform();
-      }
-    });
-
-    document.addEventListener('mouseup', () => {
-      if (isDragging) {
-        isDragging = false;
-        imageContainer.style.cursor = 'grab';
-      }
-    });
-
-    // Set grab cursor on hover when image is larger than container
-    imageContainer.addEventListener('mouseenter', () => {
-      if (currentZoom > 1 || (viewerImage.naturalWidth > imageContainer.offsetWidth || viewerImage.naturalHeight > imageContainer.offsetHeight)) {
-        imageContainer.style.cursor = 'grab';
-      }
-    });
-
-    // Double click to zoom in
-    imageContainer.addEventListener('dblclick', (e) => {
-      e.preventDefault();
-      currentZoom = Math.min(currentZoom * 1.5, 5);
-      updateImageTransform();
-    });
 
     // Initialize with sorted articles and set up filter options
     updateFilterOptions(articles);
@@ -693,10 +455,7 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
       background-color: #faf9f6;
     }
 
-    #viewer-image {
-      transition: transform 0.1s ease-out;
-      transform-origin: center;
-    }
+
 
     /* Style disabled options */
     select option:disabled {

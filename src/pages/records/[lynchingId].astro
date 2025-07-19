@@ -1,5 +1,6 @@
 ---
 import PageLayout from "../../layouts/PageLayout.astro";
+import ArticleViewer from "../../components/ArticleViewer.astro";
 import lynchingsData from "../../data/lynchings.json";
 import articlesData from "../../data/articles.json";
 
@@ -214,57 +215,8 @@ const decodeHtmlEntities = (text: string) => {
     </div>
   </div>
 
-  <!-- Article Viewer Modal (styled like visualize/news) -->
-  <div id="article-viewer" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 lg:p-4">
-    <div class="bg-newspaper-offwhite rounded-lg shadow-xl max-w-7xl w-full max-h-[95vh] lg:max-h-[95vh] overflow-hidden">
-      <div class="p-4 lg:p-6 border-b border-base-300">
-        <div class="flex justify-between items-start">
-          <h2 class="text-lg lg:text-2xl font-bold" id="viewer-title"></h2>
-          <button id="close-viewer" class="btn btn-ghost btn-sm" aria-label="Close article viewer">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
-      
-      <div class="flex flex-col lg:flex-row h-[calc(95vh-120px)]">
-        <!-- Image Panel -->
-        <div class="lg:w-1/2 p-2 lg:p-4 lg:border-r border-base-300 bg-newspaper-offwhite">
-          <div class="relative h-full">
-            <div id="image-container" class="relative w-full h-64 lg:h-full overflow-hidden bg-white border border-base-300 rounded-lg">
-              <img id="viewer-image" class="w-full h-full object-contain" alt="Article image" />
-              <div id="image-loading" class="absolute inset-0 bg-base-200 rounded-lg flex items-center justify-center">
-                <div class="loading loading-spinner loading-lg"></div>
-              </div>
-              <div id="image-error" class="hidden absolute inset-0 bg-base-200 rounded-lg flex items-center justify-center">
-                <div class="text-center text-gray-500">
-                  <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                  </svg>
-                  <p class="text-sm">Image not available</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Transcript Panel -->
-        <div class="lg:w-1/2 p-2 lg:p-4 flex flex-col bg-newspaper-offwhite">
-          <div class="flex-1 overflow-hidden">
-            <h3 class="text-lg font-semibold mb-2 lg:mb-3">Transcription</h3>
-            <div id="viewer-transcription" class="h-64 lg:h-full overflow-y-auto border border-base-300 rounded-lg p-4 bg-white text-sm leading-snug whitespace-pre-wrap"></div>
-          </div>
-          
-          <!-- Citation -->
-          <div class="mt-4 p-3 bg-base-200 rounded-lg">
-            <h4 class="text-sm font-medium mb-2">Citation</h4>
-            <p class="text-xs text-gray-600" id="viewer-citation"></p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Article Viewer Component -->
+  <ArticleViewer />
 </PageLayout>
 
 <script define:vars={{ relatedArticles }}>
@@ -297,38 +249,13 @@ const decodeHtmlEntities = (text: string) => {
   });
 
   function openArticleViewer(article) {
-    const viewer = document.getElementById('article-viewer');
-    const title = document.getElementById('viewer-title');
-    const image = document.getElementById('viewer-image');
-    const transcription = document.getElementById('viewer-transcription');
-    const citation = document.getElementById('viewer-citation');
-    const imageLoading = document.getElementById('image-loading');
-    const imageError = document.getElementById('image-error');
-    
     // Create title with newspaper metadata
     const newspaperName = article.newspaper || 'Unknown Publication';
     const publicationDate = formatDate(article['publication-date']);
     const titleWithMetadata = `${article['article-title'] || 'Untitled Article'} - ${newspaperName}, ${publicationDate}`;
-    title.textContent = titleWithMetadata;
     
-    // Show loading state for image
-    imageLoading.classList.remove('hidden');
-    imageError.classList.add('hidden');
-    
-    // Set image
+    // Set image path
     const imagePath = `/article-scans/${article.image_name}`;
-    image.src = imagePath;
-    image.alt = article['article-title'] || 'Article image';
-    
-    // Handle image load events
-    image.onload = () => {
-      imageLoading.classList.add('hidden');
-    };
-    
-    image.onerror = () => {
-      imageLoading.classList.add('hidden');
-      imageError.classList.remove('hidden');
-    };
     
     // Transcription with proper formatting
     const transcript = (article['article-transcript'] || 'No transcription available.')
@@ -336,39 +263,22 @@ const decodeHtmlEntities = (text: string) => {
       .split(/\n/)
       .map(paragraph => paragraph.trim())
       .filter(paragraph => paragraph.length > 0);
-    transcription.innerHTML = transcript.map((p, index) => {
+    const formattedTranscript = transcript.map((p, index) => {
       return `<p class='leading-snug' style='margin-bottom: 8px; text-indent: 8px;'>${p}</p>`;
     }).join('');
     
-    // Citation
-    citation.textContent = article['turabian-citation'] || 'Citation not available.';
-    
-    viewer.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+    // Use the new component's API
+    if (window.articleViewer) {
+      window.articleViewer.show({
+        title: titleWithMetadata,
+        imageUrl: imagePath,
+        transcription: formattedTranscript,
+        citation: article['turabian-citation'] || 'Citation not available.'
+      });
+    }
   }
   
-  function closeArticleViewer() {
-    const viewer = document.getElementById('article-viewer');
-    viewer.classList.add('hidden');
-    document.body.style.overflow = 'auto';
-  }
-  
-  // Close viewer on escape key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closeArticleViewer();
-    }
-  });
-  
-  // Close viewer on background click
-  document.getElementById('article-viewer').addEventListener('click', (e) => {
-    if (e.target.id === 'article-viewer') {
-      closeArticleViewer();
-    }
-  });
-  
-  // Close viewer on close button click
-  document.getElementById('close-viewer').addEventListener('click', closeArticleViewer);
+
 </script>
 
 <style>
@@ -398,7 +308,5 @@ const decodeHtmlEntities = (text: string) => {
     pointer-events: none;
   }
 
-  .bg-newspaper-offwhite {
-    background-color: #faf9f6;
-  }
+
 </style> 
