@@ -3,6 +3,9 @@ import PageLayout from "../../layouts/PageLayout.astro";
 import lynchingsData from "../../data/lynchings.json";
 import articlesData from "../../data/articles.json";
 
+// Enable prerendering for static generation
+export const prerender = true;
+
 // Generate static paths for all lynching records
 export async function getStaticPaths() {
   return lynchingsData.map(lynching => ({
@@ -12,11 +15,23 @@ export async function getStaticPaths() {
 }
 
 // Get the lynching data from props
-const { lynching } = Astro.props;
+const { lynching: lynchingFromProps } = Astro.props;
+
+// If lynching is not provided via props (development mode), try to find it in the data
+let lynching = lynchingFromProps;
+if (!lynching) {
+  const lynchingId = Astro.params.lynchingId;
+  lynching = lynchingsData.find(l => l["lynching-id"] === lynchingId);
+}
+
+// Check if lynching data exists
+if (!lynching) {
+  return Astro.redirect('/404');
+}
 
 // Get related articles
 const relatedArticles = [];
-if (lynching["article-ids"]) {
+if (lynching["article-ids"] && Array.isArray(lynching["article-ids"])) {
   for (const articleId of lynching["article-ids"]) {
     const article = articlesData.find(a => a["article-id"] === articleId);
     if (article) {
@@ -32,7 +47,7 @@ const prevLynching = currentIndex > 0 ? allLynchings[currentIndex - 1] : null;
 const nextLynching = currentIndex < allLynchings.length - 1 ? allLynchings[currentIndex + 1] : null;
 
 // Format date for display
-const formatDate = (dateStr) => {
+const formatDate = (dateStr: string) => {
   if (!dateStr) return "Unknown";
   // Handle YYYY-MM-DD or YYYY-MM-00 or YYYY-00-00
   const [year, month, day] = dateStr.split("-");
@@ -52,7 +67,7 @@ const formatDate = (dateStr) => {
 };
 
 // Improved HTML entity decoding for more entities
-const decodeHtmlEntities = (text) => {
+const decodeHtmlEntities = (text: string) => {
   if (!text) return '';
   return text
     .replace(/&amp;/g, '&')
@@ -142,13 +157,15 @@ const decodeHtmlEntities = (text) => {
           </div>
           <!-- Map Image -->
           <div class="flex-shrink-0">
-            <img 
-              src={`/mapimages/${lynching["lynching-id"]}.png`} 
-              alt={`Map showing location of ${lynching["city"]}, ${lynching["state"]}`}
-              class="w-[300px] h-[300px] object-cover rounded-lg border border-gray-200"
-              style="width:300px;height:300px;"
-              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-            />
+            <a href="/map.html" class="block hover:opacity-80 transition-opacity" title="View interactive map">
+              <img 
+                src={`/mapimages/${lynching["lynching-id"]}.png`} 
+                alt={`Map showing location of ${lynching["city"]}, ${lynching["state"]}`}
+                class="w-[300px] h-[300px] object-cover rounded-lg border border-gray-200 cursor-pointer"
+                style="width:300px;height:300px;"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              />
+            </a>
             <div class="hidden w-[300px] h-[300px] bg-gray-100 rounded-lg border border-gray-200 items-center justify-center text-gray-500">
               <div class="text-center">
                 <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
