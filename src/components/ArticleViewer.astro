@@ -9,12 +9,12 @@ const { id = "article-viewer", className = "" } = Astro.props;
 ---
 
 <!-- Article Viewer Modal -->
-<div id={id} class={`hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 lg:p-4 ${className}`}>
+<div id={id} class={`hidden fixed inset-0 bg-black/75 z-[100] flex items-center justify-center p-2 lg:p-4 ${className}`}>
   <div class="bg-newspaper-offwhite rounded-lg shadow-xl max-w-7xl w-full max-h-[95vh] lg:max-h-[95vh] overflow-hidden">
     <div class="p-4 lg:p-6 border-b border-base-300">
       <div class="flex justify-between items-start">
-        <h2 class="text-lg lg:text-2xl font-bold" id="viewer-title"></h2>
-        <button id="close-viewer" class="btn btn-ghost btn-sm" aria-label="Close article viewer">
+        <h2 class="text-lg lg:text-2xl font-bold text-white" id="viewer-title"></h2>
+        <button id="close-viewer" class="btn btn-ghost btn-sm text-white" aria-label="Close article viewer">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
@@ -280,4 +280,13 @@ const { id = "article-viewer", className = "" } = Astro.props;
   
   // Make it globally available for other scripts
   window.articleViewer = articleViewer;
-</script> 
+</script>
+
+<style>
+  #close-viewer svg {
+    stroke: white;
+  }
+  #close-viewer {
+    color: white;
+  }
+</style> 
