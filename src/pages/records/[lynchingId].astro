@@ -29,6 +29,7 @@ if (!lynching) {
 if (!lynching) {
   return Astro.redirect('/404');
 }
+lynching = lynching!;
 
 // Get related articles
 const relatedArticles = [];
@@ -158,7 +159,13 @@ const decodeHtmlEntities = (text: string) => {
           </div>
           <!-- Map Image -->
           <div class="flex-shrink-0 w-full md:w-auto">
-            <a id="map-link" href="/map.html" class="block hover:opacity-80 transition-opacity" title="View interactive map">
+            <a
+              id="map-link"
+              data-lynching-id={lynching["lynching-id"]}
+              href="#"
+              class="block hover:opacity-80 transition-opacity"
+              title="View interactive map"
+            >
               <img 
                 src={`/mapimages/${lynching["lynching-id"]}.png`} 
                 alt={`Map showing location of ${lynching["city"]}, ${lynching["state"]}`}
@@ -167,6 +174,17 @@ const decodeHtmlEntities = (text: string) => {
                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
               />
             </a>
+            <script is:inline>
+              document.addEventListener('DOMContentLoaded', function() {
+                var mapLink = document.getElementById('map-link');
+                if (mapLink) {
+                  var fromlink = encodeURIComponent(window.location.pathname + window.location.search);
+                  var lynchingId = mapLink.getAttribute('data-lynching-id');
+                  var linklabel = encodeURIComponent('Back to Record ' + lynchingId);
+                  mapLink.href = '/map.html?fromlink=' + fromlink + '&linklabel=' + linklabel;
+                }
+              });
+            </script>
             <div class="hidden md:w-[300px] md:h-[300px] w-full h-[100px] bg-gray-100 rounded-lg border border-gray-200 items-center justify-center text-gray-500">
               <div class="text-center">
                 <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -175,17 +193,6 @@ const decodeHtmlEntities = (text: string) => {
                 <p class="text-sm">Map not available</p>
               </div>
             </div>
-            <script is:inline>
-              document.addEventListener('DOMContentLoaded', function() {
-                var mapLink = document.getElementById('map-link');
-                if (mapLink) {
-                  var fromlink = encodeURIComponent(window.location.pathname + window.location.search);
-                  var lynchingId = "{lynching['lynching-id']}";
-                  var linklabel = encodeURIComponent("Back to Record " + lynchingId);
-                  mapLink.href = "/map.html?fromlink=" + fromlink + "&linklabel=" + linklabel;
-                }
-              });
-            </script>
           </div>
         </div>
       </div>
