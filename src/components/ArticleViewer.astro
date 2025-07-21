@@ -9,11 +9,12 @@ const { id = "article-viewer", className = "" } = Astro.props;
 ---
 
 <!-- Article Viewer Modal -->
-<div id={id} class={`hidden fixed inset-0 bg-black/75 z-[100] flex items-center justify-center p-2 lg:p-4 ${className}`}>
+<div id={id} class={`hidden fixed inset-0 bg-black/75 z-[100] flex items-center justify-center p-2 lg:p-4 ${className}`}
+  role="dialog" aria-modal="true" aria-labelledby="viewer-title">
   <div class="bg-newspaper-offwhite rounded-lg shadow-xl max-w-7xl w-full max-h-[95vh] lg:max-h-[95vh] overflow-hidden">
     <div class="p-4 lg:p-6 border-b border-base-300">
       <div class="flex justify-between items-start">
-        <h2 class="text-lg lg:text-2xl font-bold text-white" id="viewer-title"></h2>
+        <h2 class="text-lg lg:text-2xl font-bold text-white" id="viewer-title" tabindex="-1"></h2>
         <button id="close-viewer" class="btn btn-ghost btn-sm text-white" aria-label="Close article viewer">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -44,17 +45,17 @@ const { id = "article-viewer", className = "" } = Astro.props;
               
               <!-- Zoom Controls -->
               <div class="absolute top-4 left-4 flex flex-col gap-2 rounded-lg p-2 shadow-lg" style="background-color: #faf9f6;">
-                <button id="zoom-in" class="btn btn-circle btn-sm btn-primary" title="Zoom In (Click)">
+                <button id="zoom-in" class="btn btn-circle btn-sm btn-primary" title="Zoom In (Click)" aria-label="Zoom in on article image">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
                   </svg>
                 </button>
-                <button id="zoom-out" class="btn btn-circle btn-sm btn-primary" title="Zoom Out (Shift+Click or Right Click)">
+                <button id="zoom-out" class="btn btn-circle btn-sm btn-primary" title="Zoom Out (Shift+Click or Right Click)" aria-label="Zoom out of article image">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10h-6"></path>
                   </svg>
                 </button>
-                <button id="reset-zoom" class="btn btn-circle btn-sm btn-outline" title="Reset Zoom">
+                <button id="reset-zoom" class="btn btn-circle btn-sm btn-outline" title="Reset Zoom" aria-label="Reset image zoom and pan">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
                   </svg>
@@ -82,6 +83,13 @@ const { id = "article-viewer", className = "" } = Astro.props;
 </div>
 
 <script>
+  // Focus trap and accessibility helpers
+  function getFocusableElements(container) {
+    return Array.from(container.querySelectorAll(
+      'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    ));
+  }
+
   // Article Viewer functionality
   class ArticleViewer {
     constructor(containerId = 'article-viewer') {
@@ -97,36 +105,55 @@ const { id = "article-viewer", className = "" } = Astro.props;
       this.imageContainer = document.getElementById('image-container');
       this.imageLoading = document.getElementById('image-loading');
       this.imageError = document.getElementById('image-error');
-      
+      this.lastActiveElement = null;
       this.currentScale = 1;
       this.isDragging = false;
       this.dragStart = { x: 0, y: 0 };
       this.currentTranslate = { x: 0, y: 0 };
-      
       this.init();
     }
     
     init() {
       // Close modal
       this.closeBtn?.addEventListener('click', () => this.close());
-      
       // Close on backdrop click
       this.container?.addEventListener('click', (e) => {
         if (e.target === this.container) this.close();
       });
-      
       // Close on escape key
       document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') this.close();
+        if (e.key === 'Escape' && !this.container.classList.contains('hidden')) this.close();
+        // Focus trap
+        if (!this.container.classList.contains('hidden') && (e.key === 'Tab' || e.keyCode === 9)) {
+          this.trapFocus(e);
+        }
       });
-      
       // Zoom controls
       this.zoomInBtn?.addEventListener('click', () => this.zoomIn());
       this.zoomOutBtn?.addEventListener('click', () => this.zoomOut());
       this.resetZoomBtn?.addEventListener('click', () => this.resetZoom());
-      
       // Image panning
       this.setupImagePanning();
+    }
+
+    trapFocus(e) {
+      const focusableEls = getFocusableElements(this.container);
+      if (!focusableEls.length) return;
+      const firstEl = focusableEls[0];
+      const lastEl = focusableEls[focusableEls.length - 1];
+      const isTab = e.key === 'Tab' || e.keyCode === 9;
+      if (!isTab) return;
+      if (e.shiftKey) {
+        if (document.activeElement === firstEl) {
+          e.preventDefault();
+          lastEl.focus();
+        }
+      } else {
+        if (document.activeElement === lastEl) {
+          e.preventDefault();
+          firstEl.focus();
+        }
+      }
     }
     
     setupImagePanning() {
@@ -209,21 +236,28 @@ const { id = "article-viewer", className = "" } = Astro.props;
     
     show(articleData) {
       if (!this.container) return;
-      
+      // Store last focused element
+      this.lastActiveElement = document.activeElement;
       // Set content
       this.title.textContent = articleData.title || 'Article';
       this.transcription.innerHTML = articleData.transcription || 'No transcription available';
       this.citation.textContent = articleData.citation || 'Citation not available';
-      
       // Load image
       this.loadImage(articleData.imageUrl);
-      
       // Show modal
       this.container.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
-      
       // Reset zoom
       this.resetZoom();
+      // Focus the modal title (or close button)
+      setTimeout(() => {
+        const focusableEls = getFocusableElements(this.container);
+        if (focusableEls.length) {
+          focusableEls[0].focus();
+        } else {
+          this.title.focus();
+        }
+      }, 0);
     }
     
     loadImage(imageUrl) {
@@ -272,6 +306,10 @@ const { id = "article-viewer", className = "" } = Astro.props;
       
       this.container.classList.add('hidden');
       document.body.style.overflow = '';
+      // Restore focus to last active element
+      if (this.lastActiveElement && typeof this.lastActiveElement.focus === 'function') {
+        setTimeout(() => this.lastActiveElement.focus(), 0);
+      }
     }
   }
   
