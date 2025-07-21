@@ -38,8 +38,18 @@ const { currentPage } = Astro.props;
   });
 </script>
 
+<!-- Aggressive content fade at very top of viewport -->
+<div class="pointer-events-none fixed left-0 right-0" style="top: 0; height: 40px; z-index: 60;">
+  <div class="fade-content-mask w-full h-full"></div>
+</div>
+
+<!-- Aggressive fade mask above navbar -->
+<div class="pointer-events-none fixed left-0 right-0" style="top: 0; height: 40px; z-index: 50;">
+  <div class="fade-navbar-mask w-full h-full"></div>
+</div>
+
 <!-- Global navbar -->
-<nav class="navbar bg-amber-50 border-b border-amber-200 shadow-sm fixed top-0 z-50 min-h-10">
+<nav class="navbar bg-amber-50 border-b border-t border-amber-200 shadow-sm fixed left-0 right-0 z-50 min-h-10" style="top: 30px;">
   <div class="navbar-start">
     <!-- Mobile menu button - visible on screens smaller than 800px -->
     <button id="mobile-menu-button" class="btn btn-ghost btn-sm p-2 mobile-menu-btn" aria-label="Toggle mobile menu" aria-expanded="false">
@@ -187,7 +197,7 @@ const { currentPage } = Astro.props;
 </div>
 
 <!-- Spacer to prevent content from being hidden behind fixed navbar -->
-<div class="h-12"></div>
+<div class="h-[75px]"></div>
 
 <style>
   /* Ensure navbar layout works correctly */
@@ -196,6 +206,7 @@ const { currentPage } = Astro.props;
     align-items: center !important;
     justify-content: space-between !important;
     width: 100% !important;
+    margin-top: 0 !important;
   }
   
   .navbar-start {
@@ -284,5 +295,14 @@ const { currentPage } = Astro.props;
     .mobile-menu-overlay:not(.hidden) {
       display: block !important;
     }
+  }
+
+  .fade-navbar-mask {
+    background: linear-gradient(to top, rgba(251, 246, 232, 1) 0%, rgba(251, 246, 232, 0) 100%);
+    /* rgba(251,246,232) is close to Tailwind's amber-50 */
+  }
+  .fade-content-mask {
+    background: linear-gradient(to top, rgba(251, 246, 232, 0) 0%, rgba(255,255,255,1) 100%);
+    /* Fades from transparent at bottom to opaque white at top */
   }
 </style> 
