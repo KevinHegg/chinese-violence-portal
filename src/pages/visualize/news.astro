@@ -12,7 +12,10 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
 ---
 
 <PageLayout title="In the News - Visualize the Data" currentPage="visualize">
-  <div class="max-w-7xl mx-auto px-4 relative z-10">
+  <head>
+    <meta name="description" content="Explore a searchable archive of historical newspaper articles documenting anti-Chinese violence and exclusion. Filter by decade, state, publication, or named entities to discover contemporary perspectives on these events.">
+  </head>
+  <div class="max-w-7xl mx-auto px-4">
     <div class="mb-6 pt-4">
       <a href="/visualize" class="text-accent hover:text-accent-focus flex items-center gap-2 mb-4">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -272,9 +275,10 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
       const availableDecades = [...new Set(currentFiltered.map(article => article.decade).filter(Boolean))].sort();
       const availableStates = [...new Set(currentFiltered.map(article => article.state).filter(Boolean))].sort();
       const availablePublications = [...new Set(currentFiltered.map(article => article.newspaper).filter(Boolean))].sort();
+      // Only include entities from topNamedEntities (entities)
       const availableEntities = [...new Set(currentFiltered.flatMap(article => 
         article['named-entities'] ? article['named-entities'].split('@') : []
-      ).filter(Boolean).filter(entity => entity !== 'nan' && entity !== 'NaN'))].sort();
+      ).filter(Boolean).filter(entity => entity !== 'nan' && entity !== 'NaN' && entities.includes(entity)))].sort();
 
       // Update decade options
       updateSelectOptions(decadeInput, availableDecades, 'All Decades');

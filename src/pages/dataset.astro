@@ -3,6 +3,9 @@ import PageLayout from "../layouts/PageLayout.astro";
 ---
 
 <PageLayout title="Dataset" currentPage="dataset">
+  <head>
+    <meta name="description" content="Browse and download a living dataset of anti-Chinese violence (1850–1915) compiled from newspapers and archival sources. Sort, filter, and export records of lynchings, massacres, and exclusion events for research and education.">
+  </head>
   <div class="container mx-auto px-4 py-8">
     <h1 class="text-4xl font-bold mb-6">Anti-Chinese Lynching Dataset</h1>
     
@@ -30,7 +33,7 @@ import PageLayout from "../layouts/PageLayout.astro";
         <table id="data-table" style="table-layout:fixed; min-width:1700px; font-size: 0.875rem;">
           <colgroup>
             <col style="width:110px;">
-            <col style="width:60px;">
+            <col style="width:140px;">
             <col style="width:140px;">
             <col style="width:40px;">
             <col style="width:100px;">
@@ -170,7 +173,7 @@ import PageLayout from "../layouts/PageLayout.astro";
       tr.innerHTML = `
         <td class="border border-gray-300 px-2 py-2 text-sm">${row['Identifier'] || ''}</td>
         <td class="border border-gray-300 px-2 py-2 text-sm">
-          ${row['Link'] ? `<a href="${row['Link']}" target="_blank" class="text-blue-600 hover:underline text-sm">[more]</a>` : ''}
+          ${row['Link'] ? `<a href="${row['Link']}" target="_blank" class="text-blue-600 hover:underline text-sm">[View full record]</a>` : ''}
         </td>
         <td class="border border-gray-300 px-2 py-2 text-sm">${row['Name'] || ''}</td>
         <td class="border border-gray-300 px-2 py-2 text-sm">${row['Gender'] || ''}</td>
