@@ -180,7 +180,7 @@ const decodeHtmlEntities = (text: string) => {
                 var mapLink = document.getElementById('map-link');
                 if (mapLink) {
                   var fromlink = encodeURIComponent(window.location.pathname + window.location.search);
-                  var lynchingId = "${lynching['lynching-id']}";
+                  var lynchingId = "{lynching['lynching-id']}";
                   var linklabel = encodeURIComponent("Back to Record " + lynchingId);
                   mapLink.href = "/map.html?fromlink=" + fromlink + "&linklabel=" + linklabel;
                 }
