@@ -172,13 +172,13 @@
     <div class="info-panel-header">
       <span class="drag-handle">⋮⋮</span>
       <h1>Anti-Chinese Violence Map</h1>
-      <a href="/visualize/" class="back-link collapsed-back-link">&lt; Back to Visualizations</a>
+      <a id="back-link" href="/visualize/" class="back-link collapsed-back-link">&lt; Back to Visualizations</a>
       <button class="collapse-btn" title="Roll up" aria-label="Roll up">&#x25B2;</button>
       <button class="expand-btn" title="Expand" aria-label="Expand">&#x25BC;</button>
     </div>
     <div class="info-panel-content">
       <p>Interactive map and timeline of anti-Chinese violence events (1850-1915). Click on a red marker to view more details about the event.</p>
-      <a href="/visualize/" class="back-link">&lt; Back to Visualizations</a>
+      <a id="back-link-expanded" href="/visualize/" class="back-link">&lt; Back to Visualizations</a>
     </div>
   </div>
   <script>
@@ -394,6 +394,30 @@
       }).catch(error => {
         console.error("Error loading JSON:", error);
       });
+
+    // Backlink logic
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+    function decode(s) {
+      try { return decodeURIComponent(s); } catch { return s; }
+    }
+    let fromlink = decode(getQueryParam('fromlink'));
+    let linklabel = decode(getQueryParam('linklabel'));
+    if (!fromlink || fromlink === 'null') fromlink = '/';
+    if (!linklabel || linklabel === 'null') linklabel = 'Go to JohnCrow.org';
+    // Update both expanded and collapsed back links
+    const backLink = document.getElementById('back-link');
+    const backLinkExpanded = document.getElementById('back-link-expanded');
+    if (backLink) {
+      backLink.href = fromlink;
+      backLink.innerHTML = '&lt; ' + linklabel;
+    }
+    if (backLinkExpanded) {
+      backLinkExpanded.href = fromlink;
+      backLinkExpanded.innerHTML = '&lt; ' + linklabel;
+    }
 
     // Moveable info panel
     const infoPanel = document.getElementById('infoPanel');

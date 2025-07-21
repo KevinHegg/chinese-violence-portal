@@ -35,7 +35,7 @@ import PageLayout from "../layouts/PageLayout.astro";
         <p class="text-sm text-gray-600">Chronological view of events and data points</p>
       </a>
 
-      <a href="/visualize/map" class="block group rounded-xl shadow-vintage border border-amber-200 p-4 hover:shadow-lg transition-all duration-200 bg-white w-full max-w-xs mx-auto">
+      <a id="map-card-link" href="/visualize/map" class="block group rounded-xl shadow-vintage border border-amber-200 p-4 hover:shadow-lg transition-all duration-200 bg-white w-full max-w-xs mx-auto">
         <div class="flex items-center gap-2 mb-2">
           <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"></path>
@@ -57,3 +57,14 @@ import PageLayout from "../layouts/PageLayout.astro";
     </div>
   </div>
 </PageLayout> 
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', function() {
+    var mapCardLink = document.getElementById('map-card-link');
+    if (mapCardLink) {
+      var fromlink = encodeURIComponent('/visualize');
+      var linklabel = encodeURIComponent('Back to Visualizations');
+      mapCardLink.href = '/map.html?fromlink=' + fromlink + '&linklabel=' + linklabel;
+    }
+  });
+</script> 
