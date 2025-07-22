@@ -89,27 +89,7 @@
     "eventType": "Legal & Policy",
     "link": "https://en.wikipedia.org/wiki/People_v._Hall"
   },
-  {
-    "year": "1854",
-    "month": "04",
-    "day": "29",
-    "displayDate": "1854-04-29",
-    "headline": "People v. Hall (Calif. Supreme Ct.)",
-    "text": "The court ruled Chinese witnesses could not testify against whites, effectively granting immunity to white attackers. Violence against Chinese surged because assailants knew victims were barred from the stand.",
-    "eventType": "Legal & Policy",
-    "link": "https://en.wikipedia.org/wiki/People_v._Hall"
-  },
-  {
-    "year": "1854",
-    "month": "09",
-    "day": "00",
-    "displayDate": "1854-09-00",
-    "headline": "Shasta County lynching (first documented Chinese lynching)",
-    "text": "A Chinese miner near Millville, CA was hanged by a white mob on an unproved molestation charge—the earliest confirmed Chinese lynching in the U.S. It foreshadowed dozens of similar extrajudicial killings across the West.",
-    "eventType": "Legal & Policy",
-    "link": ""
-  },
-  {
+ {
     "year": "1856",
     "month": "03",
     "day": "00",
@@ -240,16 +220,6 @@
     "link": "https://en.wikipedia.org/wiki/Burlingame_Treaty"
   },
   {
-    "year": "1868",
-    "month": "07",
-    "day": "28",
-    "displayDate": "1868-07-28",
-    "headline": "Burlingame Treaty (U.S.–China treaty)",
-    "text": "Established mutual freedom of migration and residence between the United States and China, declaring that “the inalienable right of man” includes changing one’s home and allegiance. This pro-immigration stance was later reversed.",
-    "eventType": "Legal & Policy",
-    "link": "https://en.wikipedia.org/wiki/Burlingame_Treaty"
-  },
-  {
     "year": "1870",
     "month": "01",
     "day": "00",
@@ -298,16 +268,6 @@
     "text": "In the summer of 1870 in Red Bluff, California, a Chinese man was found hanged. Contemporary accounts reported his death without details or identification of the victim. This incident, occurring alongside other anti-Chinese violence that year, highlights the ongoing threats faced by Chinese immigrants.",
     "eventType": "Anti-Chinese Violence",
     "link": "/records/CA1870-10-00/"
-  },
-  {
-    "year": "1871",
-    "month": "10",
-    "day": "24",
-    "displayDate": "1871-10-24",
-    "headline": "Los Angeles Chinatown massacre",
-    "text": "An Anglo-Latino mob, inflamed by a policeman’s death, rampaged through LA’s Calle de los Negros, killing at least 18 Chinese in the largest mass lynching in U.S. history. All convicted rioters were later released, signaling official indifference to Chinese lives.",
-    "eventType": "Legal & Policy",
-    "link": "https://en.wikipedia.org/wiki/Los_Angeles_Chinese_massacre_of_1871"
   },
   {
     "year": "1871",
@@ -368,16 +328,6 @@
     "text": "In June 1874 at Happy Camp, California, a mob of miners lynched an unnamed Chinese man accused of murder. About fifty men stormed the jail, seized the suspect, and hanged him without trial. The details of the alleged crime were not recorded, illustrating how vague accusations could trigger deadly mob justice.",
     "eventType": "Anti-Chinese Violence",
     "link": "/records/CA1874-06-04/"
-  },
-  {
-    "year": "1875",
-    "month": "03",
-    "day": "03",
-    "displayDate": "1875-03-03",
-    "headline": "Page Act",
-    "text": "The first U.S. federal immigration restriction barred Chinese “contract laborers” and women suspected of prostitution. In practice officials used moral pretexts to keep most working-class Chinese women out, skewing the gender ratio and hindering family formation.",
-    "eventType": "Legal & Policy",
-    "link": "https://en.wikipedia.org/wiki/Page_Act_of_1875"
   },
   {
     "year": "1875",
@@ -494,16 +444,6 @@
     "month": "11",
     "day": "17",
     "displayDate": "1880-11-17",
-    "headline": "Angell Treaty",
-    "text": "Revising Burlingame, China conceded the U.S. right to “regulate, limit or suspend” but not “absolutely prohibit” labor immigration, clearing a diplomatic path for federal exclusion legislation.",
-    "eventType": "Legal & Policy",
-    "link": "https://en.wikipedia.org/wiki/Angell_Treaty"
-  },
-  {
-    "year": "1880",
-    "month": "11",
-    "day": "17",
-    "displayDate": "1880-11-17",
     "headline": "Angell Treaty (U.S.–China treaty)",
     "text": "Modified Burlingame by allowing the U.S. to “suspend” Chinese labor immigration while protecting merchants, students, and those already resident—paving the way for statutory exclusion.",
     "eventType": "Legal & Policy",
@@ -534,18 +474,8 @@
     "month": "05",
     "day": "06",
     "displayDate": "1882-05-06",
-    "headline": "Chinese Exclusion Act",
-    "text": "Congress suspended immigration of Chinese laborers for ten years, barred state courts from naturalizing them and required certificates for re-entry. It marked the first U.S. law to ban an ethnic group and became the cornerstone of a racialized immigration regime.",
-    "eventType": "Legal & Policy",
-    "link": "https://en.wikipedia.org/wiki/Chinese_Exclusion_Act"
-  },
-  {
-    "year": "1882",
-    "month": "05",
-    "day": "06",
-    "displayDate": "1882-05-06",
     "headline": "Chinese Exclusion Act (U.S. federal law)",
-    "text": "Banned immigration of Chinese laborers for 10 years, barred naturalization, and required certificates for re-entry—the first U.S. law to exclude an entire ethnic group. Renewed and expanded thereafter.",
+    "text": "Congress suspended immigration of Chinese laborers for ten years, barred state courts from naturalizing them and required certificates for re-entry. It marked the first U.S. law to ban an ethnic group and became the cornerstone of a racialized immigration regime.",
     "eventType": "Legal & Policy",
     "link": "https://en.wikipedia.org/wiki/Chinese_Exclusion_Act"
   },
@@ -694,16 +624,6 @@
     "month": "09",
     "day": "02",
     "displayDate": "1885-09-02",
-    "headline": "Rock Springs massacre, Wyoming Territory",
-    "text": "White coal miners armed with guns and dynamite attacked Chinese coworkers, killing at least 28 and razing Chinatown. Federal troops restored order but no white assailant was convicted, underscoring the limits of federal protection.",
-    "eventType": "Legal & Policy",
-    "link": "https://en.wikipedia.org/wiki/Rock_Springs_massacre"
-  },
-  {
-    "year": "1885",
-    "month": "09",
-    "day": "02",
-    "displayDate": "1885-09-02",
     "headline": "Infamous Massacre of at Least 28 Chinese Miners",
     "text": "In September 1885 in Rock Springs, Wyoming, white miners attacked a Chinese mining community. They killed at least 28 Chinese miners and wounded many others, setting fire to houses and driving the survivors from the area. This massacre was one of the deadliest and most notorious examples of anti-Chinese violence in U.S. history.",
     "eventType": "Anti-Chinese Violence",
@@ -738,16 +658,6 @@
     "text": "City leaders and vigilantes loaded 700 Chinese residents onto trains and burned their homes. The Tacoma Method inspired similar expulsions across the Pacific Northwest.",
     "eventType": "Legal & Policy",
     "link": "https://en.wikipedia.org/wiki/Tacoma_riot_of_1885"
-  },
-  {
-    "year": "1886",
-    "month": "05",
-    "day": "10",
-    "displayDate": "1886-05-10",
-    "headline": "Yick Wo v. Hopkins",
-    "text": "The U.S. Supreme Court struck down San Francisco’s discriminatory laundry ordinance, ruling that laws applied unequally violate the 14th Amendment even if neutral on paper—a landmark equal-protection precedent won by a Chinese plaintiff.",
-    "eventType": "Legal & Policy",
-    "link": "https://en.wikipedia.org/wiki/Yick_Wo_v._Hopkins"
   },
   {
     "year": "1886",
@@ -801,16 +711,6 @@
   },
   {
     "year": "1887",
-    "month": "05",
-    "day": "27",
-    "displayDate": "1887-05-27",
-    "headline": "Hells Canyon massacre (OR–ID)",
-    "text": "Horse thieves ambushed Chinese placer miners along the Snake River, murdering at least 34 and stealing their gold. A botched trial ended in acquittal, reaffirming impunity for crimes against Chinese workers.",
-    "eventType": "Legal & Policy",
-    "link": "https://en.wikipedia.org/wiki/Hells_Canyon_massacre"
-  },
-  {
-    "year": "1887",
     "month": "07",
     "day": "00",
     "displayDate": "1887-07-00",
@@ -834,18 +734,8 @@
     "month": "10",
     "day": "01",
     "displayDate": "1888-10-01",
-    "headline": "Scott Act",
-    "text": "Congress barred returning Chinese laborers—even certificate holders—from re-entry and voided 20,000 travel documents, splintering trans-Pacific families and trade ties.",
-    "eventType": "Legal & Policy",
-    "link": "https://en.wikipedia.org/wiki/Scott_Act"
-  },
-  {
-    "year": "1888",
-    "month": "10",
-    "day": "01",
-    "displayDate": "1888-10-01",
     "headline": "Scott Act (U.S. federal law)",
-    "text": "Canceled all re-entry certificates and barred returning Chinese laborers, stranding ~20,000 abroad and repudiating treaty promises.",
+    "text": "Congress barred returning Chinese laborers—even certificate holders—from re-entry and voided 20,000 travel documents, splintering trans-Pacific families and trade ties.",
     "eventType": "Legal & Policy",
     "link": "https://en.wikipedia.org/wiki/Scott_Act"
   },
@@ -944,37 +834,17 @@
     "month": "05",
     "day": "05",
     "displayDate": "1892-05-05",
-    "headline": "Geary Act",
+    "headline": "Geary Act (U.S. federal law)",
     "text": "Renewed exclusion for another decade, introduced photo-bearing “certificates of residence” and authorized summary deportation of any Chinese without papers, criminalizing daily life and provoking nationwide registry protests.",
     "eventType": "Legal & Policy",
     "link": "https://en.wikipedia.org/wiki/Geary_Act"
-  },
-  {
-    "year": "1892",
-    "month": "05",
-    "day": "05",
-    "displayDate": "1892-05-05",
-    "headline": "Geary Act (U.S. federal law)",
-    "text": "Extended exclusion 10 years and required Chinese residents to carry Certificates of Residence on pain of deportation, tightening the exclusion regime.",
-    "eventType": "Legal & Policy",
-    "link": "https://en.wikipedia.org/wiki/Geary_Act"
-  },
-  {
-    "year": "1893",
-    "month": "05",
-    "day": "13",
-    "displayDate": "1893-05-13",
-    "headline": "Fong Yue Ting v. United States (U.S. Supreme Court)",
-    "text": "Sustained the Geary Act, ruling that deportation is an administrative, not criminal, action; affirmed congressional plenary power to expel Chinese without jury trial.",
-    "eventType": "Legal & Policy",
-    "link": "https://en.wikipedia.org/wiki/Fong_Yue_Ting_v._United_States"
   },
   {
     "year": "1893",
     "month": "05",
     "day": "15",
     "displayDate": "1893-05-15",
-    "headline": "Fong Yue Ting v. United States",
+    "headline": "Fong Yue Ting v. United States (U.S. Supreme Court)",
     "text": "The Supreme Court upheld Geary Act deportation provisions, affirming near-plenary congressional power over immigration and leaving Chinese residents vulnerable to expulsion without jury trial.",
     "eventType": "Legal & Policy",
     "link": "https://en.wikipedia.org/wiki/Fong_Yue_Ting_v._United_States"
