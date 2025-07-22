@@ -2,23 +2,221 @@
 import PageLayout from "../../layouts/PageLayout.astro";
 ---
 
-<PageLayout title="Charts - Visualize the Data" currentPage="visualize">
-  <head>
-    <meta name="description" content="Analyze statistical patterns and trends in anti-Chinese violence through interactive charts and data visualizations. Reveal quantitative insights and correlations hidden in the historical record.">
-  </head>
-  <div class="max-w-6xl mx-auto px-4">
-    <div class="mb-6">
-      <a href="/visualize" class="text-accent hover:text-accent-focus flex items-center gap-2 mb-4">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-        Back to Visualizations
-      </a>
-      <h1 class="text-4xl font-bold mb-6">Charts</h1>
-    </div>
-    
-    <p class="mb-8 text-lg">
-      <strong>Coming Soon — Charts Visualization!</strong> Explore statistical patterns and trends through interactive charts and data visualizations—tools that reveal quantitative relationships and insights hidden in raw numbers, helping researchers pinpoint outliers, emerging stories, and key correlations.
+<PageLayout title="Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)" currentPage="visualize/charts">
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold mb-8">Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)</h1>
+    <p class="mb-2 text-lg max-w-3xl leading-snug">
+      This dashboard visualizes the history and impact of anti-Chinese violence in the U.S. through three interactive charts:
     </p>
+    <ol class="mb-8 text-base max-w-3xl leading-normal list-decimal list-inside space-y-1 pl-4" style="text-indent:-1.1em;">
+      <li><strong>Incidents of Anti-Chinese Violence Over Time:</strong> A line chart showing the annual count of violent events from 1850–1920.</li>
+      <li><strong>Types of Anti-Chinese Violence:</strong> A bar chart breaking down the types of violence recorded in the lynching records.</li>
+      <li><strong>Anti-Chinese Violence & Chinese Population (1850–1915):</strong> A combo chart showing the number of victims per year (bar), the Chinese population (line), and key policy events (vertical markers for the Chinese Exclusion Act, Geary Act, and SF School Segregation).</li>
+    </ol>
+    <style>
+      ol.list-decimal > li {
+        text-indent: -1.1em;
+        padding-left: 1.1em;
+      }
+    </style>
+
+    <!-- Chart 1: Incidents Over Time -->
+    <div class="bg-white border border-amber-200 rounded-xl shadow p-6 mb-14 mt-8">
+      <h2 class="text-xl font-semibold mb-2">Incidents of Anti-Chinese Violence Over Time</h2>
+      <p class="mb-4 text-sm text-gray-600">Annual count of anti-Chinese violence events, 1850–1920.</p>
+      <div id="chart-timeline" style="width:100%;height:350px;"></div>
+    </div>
+
+    <!-- Chart 2: Types of Violence -->
+    <div class="bg-white border border-amber-200 rounded-xl shadow p-6 mb-14">
+      <h2 class="text-xl font-semibold mb-2">Types of Anti-Chinese Violence</h2>
+      <p class="mb-4 text-sm text-gray-600">Breakdown of event types in the lynching records.</p>
+      <div id="chart-types" style="width:100%;height:350px;"></div>
+    </div>
+
+    <!-- Chart 3: Combo Chart -->
+    <div class="bg-white border border-amber-200 rounded-xl shadow p-6 mb-12">
+      <h2 class="text-xl font-semibold mb-2">Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)</h2>
+      <p class="mb-4 text-sm text-gray-600">A combo chart showing the number of victims per year (bar), the Chinese population (line), and key policy events (vertical markers).</p>
+      <div id="chart-combo" style="width:100%;height:400px;"></div>
+    </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <script type="module">
+    // Load data
+    const timelineData = await fetch('/src/data/timeline.json').then(r => r.json());
+    const lynchingsData = await fetch('/src/data/lynchings.json').then(r => r.json());
+
+    // --- Chart 1: Incidents Over Time ---
+    const timelineEvents = timelineData.filter(e => e.eventType && e.eventType.toLowerCase().includes('anti-chinese violence'));
+    const yearCounts = {};
+    timelineEvents.forEach(e => {
+      const y = e.year;
+      if (y) yearCounts[y] = (yearCounts[y] || 0) + 1;
+    });
+    const years = Object.keys(yearCounts).sort();
+    const counts = years.map(y => yearCounts[y]);
+    const chartTimeline = echarts.init(document.getElementById('chart-timeline'));
+    chartTimeline.setOption({
+      title: { text: '', left: 'center' },
+      tooltip: { trigger: 'axis' },
+      xAxis: { 
+        type: 'category', 
+        data: years, 
+        axisLabel: { align: 'center' },
+        axisTick: { alignWithLabel: true }
+      },
+      yAxis: { 
+        type: 'value', 
+        name: 'Number of Incidents', 
+        nameLocation: 'center', 
+        nameGap: 50, 
+        nameRotate: 90, 
+        nameTextStyle: { fontWeight: 'bold', fontSize: 16, fontFamily: 'sans-serif' },
+        position: 'left' 
+      },
+      series: [{
+        data: counts,
+        type: 'line',
+        smooth: true,
+        lineStyle: { color: '#b91c1c', width: 3 },
+        areaStyle: { color: '#fde68a' },
+        symbol: 'circle',
+        symbolSize: 8
+      }],
+      grid: { left: 80, right: 30, top: 50, bottom: 60 },
+      responsive: true
+    });
+
+    // --- Chart 2: Types of Violence ---
+    const typeCounts = {};
+    lynchingsData.forEach(e => {
+      const t = e['event-type'] || 'Unknown';
+      typeCounts[t] = (typeCounts[t] || 0) + 1;
+    });
+    const typeNames = Object.keys(typeCounts).map(t => t === 'Possible Lynching' ? 'Possible\nLynching' : t);
+    const typeVals = typeNames.map((t, i) => typeCounts[Object.keys(typeCounts)[i]]);
+    const chartTypes = echarts.init(document.getElementById('chart-types'));
+    chartTypes.setOption({
+      tooltip: { trigger: 'item' },
+      xAxis: { type: 'category', data: typeNames, name: 'Category', axisLabel: { rotate: 0, formatter: v => v.replace(/\n/g, '\n'), align: 'center' }, axisTick: { alignWithLabel: true } },
+      yAxis: { 
+        type: 'value', 
+        name: 'Number of Victims', 
+        nameLocation: 'center', 
+        nameGap: 50, 
+        nameRotate: 90, 
+        nameTextStyle: { fontWeight: 'bold', fontSize: 16, fontFamily: 'sans-serif' },
+        position: 'left' 
+      },
+      series: [{
+        data: typeVals,
+        type: 'bar',
+        itemStyle: { color: '#b91c1c', borderRadius: [6, 6, 0, 0] },
+        barWidth: '60%'
+      }],
+      grid: { left: 80, right: 30, top: 50, bottom: 80 },
+      responsive: true
+    });
+
+    // --- Chart 3: Combo Chart ---
+    // Extract population data from timeline.json
+    const censusEntries = timelineData.filter(e => e.eventType && e.eventType.toLowerCase().includes('census'));
+    // Parse year and population from text
+    const popData = censusEntries.map(e => {
+      const match = e.text.match(/Total Asian Population: ([\d,]+)/);
+      return {
+        year: Number(e.year),
+        population: match ? Number(match[1].replace(/,/g, '')) : null
+      };
+    }).filter(e => e.population !== null);
+    // Interpolate population for all years 1850-1915
+    const popByYear = {};
+    for (let i = 0; i < popData.length - 1; i++) {
+      const start = popData[i];
+      const end = popData[i + 1];
+      const span = end.year - start.year;
+      for (let y = start.year; y < end.year; y++) {
+        const t = (y - start.year) / span;
+        popByYear[y] = Math.round(start.population + t * (end.population - start.population));
+      }
+    }
+    // Fill last census year
+    popByYear[popData[popData.length - 1].year] = popData[popData.length - 1].population;
+
+    // Victims per year from lynchings.json
+    const victimsByYear = {};
+    lynchingsData.forEach(e => {
+      const y = Number(e.year);
+      const n = Number(e['number-of-victims']) || 0;
+      if (y && n > 0) victimsByYear[y] = (victimsByYear[y] || 0) + n;
+    });
+    // Years to plot: 1850-1915
+    const comboYears = [];
+    for (let y = 1850; y <= 1915; y++) comboYears.push(y);
+    const victimsSeries = comboYears.map(y => victimsByYear[y] || 0);
+    const popSeries = comboYears.map(y => popByYear[y] || null);
+
+    const chartCombo = echarts.init(document.getElementById('chart-combo'));
+    chartCombo.setOption({
+      tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+      legend: { data: ['Victims', 'Chinese Population'], bottom: 10 },
+      xAxis: {
+        type: 'category',
+        data: comboYears,
+        axisLabel: { align: 'center' },
+        axisTick: { alignWithLabel: true }
+      },
+      yAxis: [
+        {
+          type: 'value',
+          position: 'left',
+          nameLocation: 'center',
+          nameGap: 50,
+          nameRotate: 90,
+          nameTextStyle: { fontWeight: 'bold', fontSize: 16, fontFamily: 'sans-serif' }
+        },
+        {
+          type: 'value',
+          position: 'right',
+          nameLocation: 'center',
+          nameGap: 50,
+          nameRotate: 90,
+          nameTextStyle: { fontWeight: 'bold', fontSize: 16, fontFamily: 'sans-serif' },
+          splitLine: { show: false }
+        }
+      ],
+      series: [
+        {
+          name: 'Victims',
+          type: 'bar',
+          data: victimsSeries,
+          yAxisIndex: 0,
+          itemStyle: { color: 'rgba(185, 28, 28, 0.7)', borderColor: 'rgba(185, 28, 28, 1)' },
+          barWidth: '60%',
+          markLine: {
+            symbol: 'none',
+            data: [
+              { xAxis: '1852', label: { show: true, formatter: 'Foreign Miners’ Tax', position: 'end', color: '#222', fontWeight: 'bold', fontSize: 13, align: 'center', verticalAlign: 'top', rotate: 0, distance: 30 }, lineStyle: { color: '#222', width: 2, type: 'dashed' } },
+              { xAxis: '1882', label: { show: true, formatter: 'Exclusion Act', position: 'end', color: '#222', fontWeight: 'bold', fontSize: 13, align: 'center', verticalAlign: 'top', rotate: 0, distance: 30 }, lineStyle: { color: '#222', width: 2, type: 'dashed' } },
+              { xAxis: '1892', label: { show: true, formatter: 'Geary Act', position: 'end', color: '#222', fontWeight: 'bold', fontSize: 13, align: 'center', verticalAlign: 'top', rotate: 0, distance: 30 }, lineStyle: { color: '#222', width: 2, type: 'dashed' } },
+              { xAxis: '1905', label: { show: true, formatter: 'SF Segregation', position: 'end', color: '#222', fontWeight: 'bold', fontSize: 13, align: 'center', verticalAlign: 'top', rotate: 0, distance: 30 }, lineStyle: { color: '#222', width: 2, type: 'dashed' } }
+            ]
+          }
+        },
+        {
+          name: 'Chinese Population',
+          type: 'line',
+          data: popSeries,
+          yAxisIndex: 1,
+          lineStyle: { color: 'rgba(30, 64, 175, 1)', width: 3 },
+          areaStyle: { color: 'rgba(30, 64, 175, 0.1)' },
+          symbol: 'circle',
+          symbolSize: 7
+        }
+      ],
+      grid: { left: 80, right: 80, top: 60, bottom: 60 },
+      responsive: true
+    });
+  </script>
 </PageLayout> 
