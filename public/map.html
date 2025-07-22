@@ -198,9 +198,13 @@
 
     // Set up the Leaflet map
     const map = L.map('map').setView([39.8283, -98.5795], 5);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
+    L.tileLayer('https://api.mapbox.com/styles/v1/kevinhegg/cmd4pgf7p01ud01s4awo3b3yd/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoia2V2aW5oZWdnIiwiYSI6ImNscmprbG80NzA0aW8ybm94bXFveG1qcmYifQ.z0za-koZbyVbgwJ5AVg9LA', {
+    tileSize: 512,
+    zoomOffset: -1,
+    attribution: '© Mapbox © OpenStreetMap',
+    accessToken: 'pk.eyJ1Ijoia2V2aW5oZWdnIiwiYSI6ImNscmprbG80NzA0aW8ybm94bXFveG1qcmYifQ.z0za-koZbyVbgwJ5AVg9LA'
     }).addTo(map);
+
     const markersLayer = L.layerGroup().addTo(map);
 
     // Simple responsive zoom based on browser width at load time only
