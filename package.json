@@ -3,8 +3,9 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
-    "prebuild": "cp src/data/lynchings.json public/lynchings.json",
+    "dev": "npm run sync-data && astro dev",
+    "sync-data": "node ./src/scripts/sync-data-to-public.cjs",
+    "prebuild": "npm run sync-data",
     "build": "npm run prebuild && astro build",
     "preview": "astro preview",
     "astro": "astro"
