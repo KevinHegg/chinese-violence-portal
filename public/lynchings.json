@@ -104,6 +104,31 @@
     "narrative-summary": "In October 1853 near Chico, California, a mob massacred several Chinese miners. The brutality caused widespread horror and indignation, and authorities offered rewards for the killers. This event highlights the extreme violence Chinese immigrants faced during the Gold Rush era."
   },
   {
+    "lynching-id": "CA1854-09-00",
+    "victim-names": [
+      "Unnamed"
+    ],
+    "victim-gender": "Male",
+    "number-of-victims": 1,
+    "date": "1854-09-00",
+    "year": 1854,
+    "decade": "1850",
+    "state": "California",
+    "county": "Shasta",
+    "city": "Redding",
+    "latitude": 40.58654,
+    "longitude": -122.39168,
+    "event-type": "Lynching",
+    "accusation": "Molestation charge",
+    "job": "Miner",
+    "newly-documented": "No",
+    "source": "Ken Gonzales-Day; Jean Pfaelzer",
+    "narrative-title": "September 1854 – Shasta County, California: Shasta County Lynching",
+    "narrative-short-title": "Shasta County Lynching",
+    "narrative-body": "In September 1854 in Shasta County, California, a Chinese miner near Millville, CA, was hanged by a white mob on an unproved molestation charge. This is an early confirmed Chinese lynching in the U.S. It foreshadowed dozens of similar extrajudicial killings across the West.",
+    "narrative-summary": "A white mob lynched a Chinese miner near Millville in Shasta County, California, in September 1854 after a false molestation accusation—one of the earliest documented anti-Chinese lynchings in the United States."
+  },  
+  {
     "lynching-id": "CA1856-03-00",
     "victim-names": [
       "Unnamed"
