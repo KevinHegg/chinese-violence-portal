@@ -1,0 +1,375 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro";
+import ArticleViewer from "../../components/ArticleViewer.astro";
+import articles from "../../data/articles.json";
+import newscloud from "../../data/newscloud.json";
+
+// Process newscloud data to count entity occurrences
+const entityCounts: Record<string, number> = {};
+const articleEntityMap: Record<string, string[]> = {};
+
+newscloud.forEach((item: any) => {
+  if (item["named-entities"]) {
+    const entities = item["named-entities"].split("@");
+    entities.forEach((entity: string) => {
+      if (entity.trim()) {
+        entityCounts[entity] = (entityCounts[entity] || 0) + 1;
+        if (!articleEntityMap[entity]) {
+          articleEntityMap[entity] = [];
+        }
+        articleEntityMap[entity].push(item["article-id"]);
+      }
+    });
+  }
+});
+
+// Filter entities that appear 3 or more times and randomize order
+const filteredEntities = Object.entries(entityCounts)
+  .filter(([entity, count]) => count >= 3)
+  .sort((a, b) => b[1] - a[1]) // Sort by count descending first
+  .sort(() => Math.random() - 0.5); // Then randomize the order
+
+// Calculate font sizes based on counts
+const maxCount = Math.max(...filteredEntities.map(([_, count]) => count));
+const minCount = Math.min(...filteredEntities.map(([_, count]) => count));
+const maxFontSize = 48; // 3-4 times larger than minimum
+const minFontSize = 16;
+
+function getFontSize(count: number): number {
+  const ratio = (count - minCount) / (maxCount - minCount);
+  return Math.round(minFontSize + (ratio * (maxFontSize - minFontSize)));
+}
+
+// Generate text colors with good contrast
+const textColors = [
+  '#1f2937', '#374151', '#4b5563', '#6b7280', '#9ca3af',
+  '#dc2626', '#ea580c', '#d97706', '#ca8a04', '#65a30d', 
+  '#16a34a', '#0d9488', '#0891b2', '#2563eb', '#7c3aed',
+  '#9333ea', '#c026d3', '#db2777', '#e11d48'
+];
+
+// Generate background colors for word cloud items (lighter, better contrast)
+const backgroundColors = [
+  '#fef3c7', '#fde68a', '#fcd34d', '#fbbf24', '#f59e0b',
+  '#fef2f2', '#fecaca', '#fca5a5', '#f87171', '#fca5a5',
+  '#f0f9ff', '#bae6fd', '#7dd3fc', '#38bdf8', '#0ea5e9',
+  '#f0fdf4', '#bbf7d0', '#86efac', '#4ade80', '#22c55e',
+  '#fdf4ff', '#fae8ff', '#f3e8ff', '#e9d5ff', '#c084fc',
+  '#fef7cd', '#fef3c7', '#fde68a', '#fcd34d', '#fbbf24'
+];
+
+function getRandomTextColor() {
+  return textColors[Math.floor(Math.random() * textColors.length)];
+}
+
+function getRandomBackgroundColor() {
+  return backgroundColors[Math.floor(Math.random() * backgroundColors.length)];
+}
+---
+
+<PageLayout title="News Cloud - Visualize the Data" currentPage="visualize">
+  <head>
+    <meta name="description" content="Explore a word cloud visualization of named entities from historical newspaper articles documenting anti-Chinese violence. Click on entities to filter articles and discover patterns in the coverage.">
+  </head>
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="mb-6 pt-4">
+      <a href="/visualize" class="text-accent hover:text-accent-focus flex items-center gap-2 mb-4">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Back to Visualizations
+      </a>
+      <h1 class="text-4xl font-bold mb-2">News Cloud</h1>
+      <p class="text-lg text-gray-600 mb-6">
+        Explore the most frequently mentioned locations, people, and organizations in our newspaper archive. 
+        Click on any entity in the word cloud to filter articles and discover how these names appear across different publications and time periods.
+      </p>
+    </div>
+
+         <!-- Word Cloud -->
+     <div class="bg-amber-50/90 border-2 border-amber-200 rounded-lg p-4 mb-6 shadow-lg">
+               <div class="bg-white rounded-lg p-4 border border-amber-300">
+          <div id="word-cloud" class="flex flex-wrap gap-1 justify-center items-center min-h-[300px] mb-4">
+            {filteredEntities.map(([entity, count]) => {
+              const fontSize = getFontSize(count);
+              const color = getRandomTextColor();
+              const bgColor = getRandomBackgroundColor();
+              return (
+                <span 
+                  class="word-cloud-item cursor-pointer hover:scale-110 transition-all duration-200 font-medium shadow-sm" 
+                  style={`font-size: ${fontSize}px; color: ${color}; background: ${bgColor};`}
+                  data-entity={entity}
+                  data-count={count}
+                  title={`${entity} (${count} occurrences)`}
+                >
+                  {entity}
+                </span>
+              );
+            })}
+          </div>
+         <div class="flex justify-between items-center pt-4 border-t border-amber-200">
+           <div id="article-count" class="text-sm text-amber-700 bg-amber-100 rounded-lg px-3 py-2">
+             Showing all {articles.length} articles
+           </div>
+           <button id="reset-filter" class="btn btn-outline btn-sm">
+             Reset Filter
+           </button>
+         </div>
+       </div>
+     </div>
+
+    <!-- Article Cards Grid -->
+    <div id="cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
+
+    <!-- Article Viewer Component -->
+    <ArticleViewer />
+
+    <!-- Loading State -->
+    <div id="loading" class="hidden text-center py-12">
+      <div class="loading loading-spinner loading-lg"></div>
+      <p class="mt-4 text-gray-600">Loading articles...</p>
+    </div>
+
+    <!-- No Results State -->
+    <div id="no-results" class="hidden text-center py-12">
+      <div class="text-gray-400 mb-4">
+        <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+      </div>
+      <h3 class="text-xl font-semibold mb-2">No articles found</h3>
+      <p class="text-gray-600 mb-4">Try selecting a different entity from the word cloud.</p>
+      <button id="reset-filters" class="btn btn-outline">Show All Articles</button>
+    </div>
+  </div>
+
+     <script define:vars={{ articles, filteredEntities, articleEntityMap }}>
+     const container = document.getElementById('cards-container');
+     const wordCloud = document.getElementById('word-cloud');
+     const articleCount = document.getElementById('article-count');
+     const resetBtn = document.getElementById('reset-filter');
+     const loading = document.getElementById('loading');
+     const noResults = document.getElementById('no-results');
+     
+     let currentFilter = null;
+
+    function formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+    }
+
+    function renderCards(filtered) {
+      container.innerHTML = '';
+      
+      if (filtered.length === 0) {
+        container.classList.add('hidden');
+        noResults.classList.remove('hidden');
+        articleCount.textContent = 'No articles found';
+        return;
+      }
+
+      container.classList.remove('hidden');
+      noResults.classList.add('hidden');
+      articleCount.textContent = `Showing ${filtered.length} of ${articles.length} articles`;
+
+      filtered.forEach((article, index) => {
+        const card = document.createElement('div');
+        card.className = 'card bg-base-100 shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-base-300';
+        card.innerHTML = `
+          <div class="card-body p-4">
+            <div class="flex justify-between items-start mb-3">
+              <h3 class="card-title text-base font-semibold line-clamp-3 flex-1 mr-3">${article['article-title'] || 'Untitled'}</h3>
+              <span class="badge badge-primary badge-sm flex-shrink-0">${article['publication-year'] || 'Unknown'}</span>
+            </div>
+            <p class="text-sm text-gray-600 mb-2">
+              <span class="font-medium">${article.newspaper || 'Unknown Publication'}</span>${article['newspaper-location'] ? ` (${article['newspaper-location']})` : ''}
+            </p>
+            <p class="text-sm text-gray-500 mb-3">
+              ${formatDate(article['publication-date'])}${article.page ? ` (Page ${article.page})` : ''}
+            </p>
+            <div class="summary-container relative">
+              <p class="text-sm text-gray-700 summary-text">${article['article-summary'] || 'No summary available.'}</p>
+              <div class="summary-fade"></div>
+            </div>
+          </div>
+        `;
+        
+        card.addEventListener('click', () => renderViewer(article));
+        container.appendChild(card);
+      });
+    }
+
+    function renderViewer(article) {
+      console.log('Opening article:', article);
+      console.log('Article image_name:', article.image_name);
+      
+      // Create title with newspaper metadata
+      const newspaperName = article.newspaper || 'Unknown Publication';
+      const publicationDate = formatDate(article['publication-date']);
+      const titleWithMetadata = `${article['article-title'] || 'Untitled Article'} - ${newspaperName}, ${publicationDate}`;
+      
+      // Set image with fallback
+      const imagePath = `/article-scans/${article.image_name}`;
+      console.log('Loading image:', imagePath, 'for article:', article['article-title']);
+      
+      // Transcription with proper formatting
+      const transcript = (article['article-transcript'] || 'No transcription available.')
+        .replace(/⏎/g, '\n')
+        .split(/\n/)
+        .map(paragraph => paragraph.trim())
+        .filter(paragraph => paragraph.length > 0);
+      const formattedTranscript = transcript.map((p, index) => {
+        return `<p class='leading-snug' style='margin-bottom: 8px; text-indent: 8px;'>${p}</p>`;
+      }).join('');
+      
+      // Use the new component's API
+      if (window.articleViewer) {
+        window.articleViewer.show({
+          title: titleWithMetadata,
+          imageUrl: imagePath,
+          transcription: formattedTranscript,
+          citation: article['turabian-citation'] || 'Citation not available.'
+        });
+      }
+    }
+
+         function filterByEntity(entity) {
+       if (!entity || !articleEntityMap[entity]) {
+         renderCards(articles);
+         currentFilter = null;
+         return;
+       }
+
+       const articleIds = articleEntityMap[entity];
+       const filtered = articles.filter(article => articleIds.includes(article['article-id']));
+       
+       currentFilter = entity;
+       renderCards(filtered);
+     }
+
+     function resetFilter() {
+       currentFilter = null;
+       renderCards(articles);
+       
+       // Remove active state from all word cloud items
+       document.querySelectorAll('.word-cloud-item').forEach(item => {
+         item.classList.remove('ring-2', 'ring-amber-400', 'ring-offset-2');
+       });
+     }
+
+    // Event listeners
+    wordCloud.addEventListener('click', (e) => {
+      if (e.target.classList.contains('word-cloud-item')) {
+        const entity = e.target.dataset.entity;
+        
+        // Remove active state from all items
+        document.querySelectorAll('.word-cloud-item').forEach(item => {
+          item.classList.remove('ring-2', 'ring-amber-400', 'ring-offset-2');
+        });
+        
+        // Add active state to clicked item
+        e.target.classList.add('ring-2', 'ring-amber-400', 'ring-offset-2');
+        
+        filterByEntity(entity);
+      }
+    });
+
+    resetBtn.addEventListener('click', resetFilter);
+
+    // Initialize with all articles
+    renderCards(articles);
+  </script>
+
+  <style>
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .line-clamp-4 {
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .line-clamp-5 {
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .summary-container {
+      max-height: 120px;
+      overflow: hidden;
+    }
+
+    .summary-text {
+      margin-bottom: 0;
+    }
+
+    .summary-fade {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background: linear-gradient(transparent, white);
+      pointer-events: none;
+    }
+
+    .word-cloud-item {
+      display: inline-block;
+      margin: 2px;
+      padding: 4px 8px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+      font-weight: 600;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .word-cloud-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .word-cloud-item:hover {
+      transform: scale(1.15);
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      border-color: rgba(0, 0, 0, 0.2);
+    }
+
+    .word-cloud-item:hover::before {
+      left: 100%;
+    }
+
+    @media (max-width: 1024px) {
+      .article-viewer-flex {
+        flex-direction: column;
+      }
+      .article-viewer-flex > div {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+    }
+  </style>
+</PageLayout> 

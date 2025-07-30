@@ -1,0 +1,826 @@
+[
+  {
+    "article-id": "0001",
+    "named-entities": "Rev. L. Hamilton@Pacific Hall@San Francisco"
+  },
+  {
+    "article-id": "0002",
+    "named-entities": "Joaquin Murrieta@Jacksonville@Sutter Creek@San Andreas@Cooks Gulch@Jackson Creek"
+  },
+  {
+    "article-id": "0003",
+    "named-entities": "Friars Point@Helena"
+  },
+  {
+    "article-id": "0004",
+    "named-entities": "Friars Point@Helena@Santa Cruz"
+  },
+  {
+    "article-id": "0005",
+    "named-entities": "Eagle City@Coeur D'Alene"
+  },
+  {
+    "article-id": "0006",
+    "named-entities": "Rogue River@Evans Ferry@Waggoners@Major Fitzgerald@Major Lupton"
+  },
+  {
+    "article-id": "0007",
+    "named-entities": "Lewiston@Camas Creek@Gamaway"
+  },
+  {
+    "article-id": "0008",
+    "named-entities": "Gothic@Andrew Wilson@S. A. Flagg@A. L. Holcomb"
+  },
+  {
+    "article-id": "0009",
+    "named-entities": "Oakland@Joe Kenner@Bailiff Mitchell"
+  },
+  {
+    "article-id": "0010",
+    "named-entities": "Denver"
+  },
+  {
+    "article-id": "0011",
+    "named-entities": "Denver@Hon. Lee@President Garfield@Winfield Scott Hancock"
+  },
+  {
+    "article-id": "0012",
+    "named-entities": "Los Angeles"
+  },
+  {
+    "article-id": "0013",
+    "named-entities": "Henderson Gulch@Caplice & Smith"
+  },
+  {
+    "article-id": "0014",
+    "named-entities": "Los Angeles@Negro Alley@Judge@Officer Bill Tuck"
+  },
+  {
+    "article-id": "0015",
+    "named-entities": "Milwaukee@Sam Yip@Ha Sing"
+  },
+  {
+    "article-id": "0016",
+    "named-entities": "Snake River@Portland"
+  },
+  {
+    "article-id": "0018",
+    "named-entities": "Snake River@Lewiston"
+  },
+  {
+    "article-id": "0019",
+    "named-entities": "Diamondville@Timothy O'Mera"
+  },
+  {
+    "article-id": "0020",
+    "named-entities": "Corinne@Brigham City@Bornstein"
+  },
+  {
+    "article-id": "0021",
+    "named-entities": "Happy Camp@Del Norte County"
+  },
+  {
+    "article-id": "0022",
+    "named-entities": "Corinne@Brigham City@Bornstein@Detective Thayer"
+  },
+  {
+    "article-id": "0023",
+    "named-entities": "Happy Camp"
+  },
+  {
+    "article-id": "0024",
+    "named-entities": "Cheney"
+  },
+  {
+    "article-id": "0025",
+    "named-entities": "Colusa@Hong Di@Billyon"
+  },
+  {
+    "article-id": "0026",
+    "named-entities": "Colusa@Hong Di@Billyon@William Weaver"
+  },
+  {
+    "article-id": "0027",
+    "named-entities": "Sacramento"
+  },
+  {
+    "article-id": "0028",
+    "named-entities": "Bridgeport@Chinese Consul@San Francisco"
+  },
+  {
+    "article-id": "0029",
+    "named-entities": "Bakersfield@Mount Breckenridge@Young Fook@Kenney"
+  },
+  {
+    "article-id": "0030",
+    "named-entities": "Young Fook@Kenney@Mount Breckenridge@Bakersfield"
+  },
+  {
+    "article-id": "0031",
+    "named-entities": "William Curran@Ah Sam@Ah Coon@Ah Sin@Fort Logan@Denver"
+  },
+  {
+    "article-id": "0032",
+    "named-entities": "William Curran@Ah Sam@Ah Coon@Ah Sin@Fort Logan@Denver"
+  },
+  {
+    "article-id": "0033",
+    "named-entities": "Young Fook@Kenney@Mount Breckenridge@Bakersfield"
+  },
+  {
+    "article-id": "0034",
+    "named-entities": "Alfonso Yong@José Huiegn@Indefonso Fong@Villa Aldama@Chihuahua@Mexico"
+  },
+  {
+    "article-id": "0035",
+    "named-entities": "Harbin@Manchuria@C. T. Woodruff"
+  },
+  {
+    "article-id": "0036",
+    "named-entities": "Milwaukee@Ha Ding@Sam Yip"
+  },
+  {
+    "article-id": "0037",
+    "named-entities": "Villa Aldama@Chihuahua@Mexico"
+  },
+  {
+    "article-id": "0038",
+    "named-entities": "Wee Lee@May Wagner@Maggie Polzynski@Julia Schmitt@Chicago"
+  },
+  {
+    "article-id": "0039",
+    "named-entities": "Young Fook@Kenney@Mount Breckenridge@Bakersfield"
+  },
+  {
+    "article-id": "0040",
+    "named-entities": "Chu Chin@Tessie Lee@Tessie Walsh@Sing Lee"
+  },
+  {
+    "article-id": "0041",
+    "named-entities": "Lee Quan@Colonel Shaw@Ouray"
+  },
+  {
+    "article-id": "0042",
+    "named-entities": "Kingsburg@Fresno@Sheriff@Roeding"
+  },
+  {
+    "article-id": "0043",
+    "named-entities": "Superior@George W. Irvine"
+  },
+  {
+    "article-id": "0044",
+    "named-entities": "Butte@Dan Haffy@Tim Collins@General Warren"
+  },
+  {
+    "article-id": "0045",
+    "named-entities": "Redlands@National Guard@Mexicans@San Bernardino"
+  },
+  {
+    "article-id": "0046",
+    "named-entities": "Redlands@National Guard@Mexicans@San Bernardino"
+  },
+  {
+    "article-id": "0047",
+    "named-entities": "Carboline"
+  },
+  {
+    "article-id": "0048",
+    "named-entities": "Cheyenne@Laundry@Workingman"
+  },
+  {
+    "article-id": "0049",
+    "named-entities": "Chinese Treaty"
+  },
+  {
+    "article-id": "0050",
+    "named-entities": "Oakland@Warrenton"
+  },
+  {
+    "article-id": "0051",
+    "named-entities": "Emporia@Fox & Co."
+  },
+  {
+    "article-id": "0052",
+    "named-entities": "Kansas City@Miners"
+  },
+  {
+    "article-id": "0053",
+    "named-entities": "Idaho Springs@Argonaut Mine@Denver@Miners"
+  },
+  {
+    "article-id": "0054",
+    "named-entities": "Lincoln"
+  },
+  {
+    "article-id": "0055",
+    "named-entities": "Prattville@Cuba@Spain@China"
+  },
+  {
+    "article-id": "0056",
+    "named-entities": "Chicago@Mr. Mills"
+  },
+  {
+    "article-id": "0057",
+    "named-entities": "Rock Springs@Union Pacific@Beckwith Quinn & Co.@U. S. Army"
+  },
+  {
+    "article-id": "0058",
+    "named-entities": "Cheney"
+  },
+  {
+    "article-id": "0059",
+    "named-entities": "Black Diamond@Seattle@Puget Sound@Lewiston@Daniel Fraser"
+  },
+  {
+    "article-id": "0060",
+    "named-entities": "Cheney"
+  },
+  {
+    "article-id": "0061",
+    "named-entities": "Mowry Station@Newark@Coroner Evers"
+  },
+  {
+    "article-id": "0062",
+    "named-entities": "Mowry Station@Newark@Coroner Evers"
+  },
+  {
+    "article-id": "0063",
+    "named-entities": "Mowrys Landing@Newark@Coroner Evers"
+  },
+  {
+    "article-id": "0064",
+    "named-entities": "Pomona@Los Angeles@Coroner@Herr Neitzke"
+  },
+  {
+    "article-id": "0065",
+    "named-entities": "Elko County@Mountain City@New York Charley@G. W. Mardis"
+  },
+  {
+    "article-id": "0066",
+    "named-entities": "Elko County@Mountain City@New York Charley@G. W. Mardis"
+  },
+  {
+    "article-id": "0067",
+    "named-entities": "El Paso"
+  },
+  {
+    "article-id": "0068",
+    "named-entities": "Los Angeles@Richard L. King@Emile Harris@Sheriff@Crenshaw"
+  },
+  {
+    "article-id": "0069",
+    "named-entities": "El Paso"
+  },
+  {
+    "article-id": "0070",
+    "named-entities": "China@Buffalo Times"
+  },
+  {
+    "article-id": "0071",
+    "named-entities": "Lewiston@Daniel Frazier@Pierce City@Citizens Court"
+  },
+  {
+    "article-id": "0072",
+    "named-entities": "Hong Di@Colusa@Billyon@National Guard"
+  },
+  {
+    "article-id": "0073",
+    "named-entities": "Hong Di@Colusa@Billyon@William Weaver"
+  },
+  {
+    "article-id": "0074",
+    "named-entities": "Astoria@Bagatelle Table"
+  },
+  {
+    "article-id": "0075",
+    "named-entities": "Oakland@Perri Calou@Laundry"
+  },
+  {
+    "article-id": "0076",
+    "named-entities": "Happy Camp@Del Norte County@Timothy O'Mera"
+  },
+  {
+    "article-id": "0077",
+    "named-entities": "Rock Springs@Union Pacific@Knights of Labor@Gen. Howard"
+  },
+  {
+    "article-id": "0078",
+    "named-entities": "San Francisco@Judge@Hupeh Province"
+  },
+  {
+    "article-id": "0079",
+    "named-entities": "Takoa@Railroad Laborers"
+  },
+  {
+    "article-id": "0080",
+    "named-entities": "Lee Quan@Ouray@General Shaw"
+  },
+  {
+    "article-id": "0081",
+    "named-entities": "Honomu@Hawaii Island@Steamer Lehua@Highbinders"
+  },
+  {
+    "article-id": "0082",
+    "named-entities": "Milwaukee@Twenty Seventh Street@Chestnut Street"
+  },
+  {
+    "article-id": "0083",
+    "named-entities": "Yreka@Chinese Quarter"
+  },
+  {
+    "article-id": "0084",
+    "named-entities": "Yreka@J. B. Russell@Vance & Walbridge@Henry Repp"
+  },
+  {
+    "article-id": "0085",
+    "named-entities": "Yreka@Pacific Coast"
+  },
+  {
+    "article-id": "0086",
+    "named-entities": "Yreka@J. B. Russell@Vance & Walbridge@Nehrbass & Harmon@Henry Repp"
+  },
+  {
+    "article-id": "0087",
+    "named-entities": "Truckee@Boycott Committee@Chinatown"
+  },
+  {
+    "article-id": "0088",
+    "named-entities": "Truckee@Highbinders"
+  },
+  {
+    "article-id": "0089",
+    "named-entities": "Seattle@Knights of Labor@Queen of The Pacific@Gen. John Gibbon@Vancouver Barracks"
+  },
+  {
+    "article-id": "0090",
+    "named-entities": "Corinne@Brigham City@Detective Thayer@Bornstein@Denver"
+  },
+  {
+    "article-id": "0091",
+    "named-entities": "Richard H. Frees@Coronel Building@Los Angeles Street@Negro Alley@Los Angeles"
+  },
+  {
+    "article-id": "0092",
+    "named-entities": "Weatherby@Baker County@Jessop"
+  },
+  {
+    "article-id": "0093",
+    "named-entities": "Silver Bow@Rocker"
+  },
+  {
+    "article-id": "0094",
+    "named-entities": "Yreka@Ukiah@Mendocino County@Lawrence Johnson@Garland Semler"
+  },
+  {
+    "article-id": "0095",
+    "named-entities": "Denver@President Garfield"
+  },
+  {
+    "article-id": "0096",
+    "named-entities": "Gothic"
+  },
+  {
+    "article-id": "0097",
+    "named-entities": "Idaho Springs@Lou Sing@Nellie Merchen"
+  },
+  {
+    "article-id": "0098",
+    "named-entities": "Chicago@John Lee@John Mcdonald@May Wagner@Desplaines Street"
+  },
+  {
+    "article-id": "0099",
+    "named-entities": "Los Angeles@Ku Klux"
+  },
+  {
+    "article-id": "0100",
+    "named-entities": "Quigley@Big Hank@Ed Moore@Supt Babock@Golden Scepter Mining Co."
+  },
+  {
+    "article-id": "0101",
+    "named-entities": "Tonopah@Ping Ling@American Labor Union"
+  },
+  {
+    "article-id": "0102",
+    "named-entities": "Josephine Modelski@Charles Sing@Alice Sing@Chicago"
+  },
+  {
+    "article-id": "0103",
+    "named-entities": "Pierce City@Daniel Frazer@Citizens Court"
+  },
+  {
+    "article-id": "0104",
+    "named-entities": "Silver Bow@Tom Mills@Coroner"
+  },
+  {
+    "article-id": "0105",
+    "named-entities": "Pierce City@Daniel Frazer"
+  },
+  {
+    "article-id": "0106",
+    "named-entities": "Los Angeles@Negro Alley@Hop Company@Ah Chop Company"
+  },
+  {
+    "article-id": "0107",
+    "named-entities": "Cheney"
+  },
+  {
+    "article-id": "0108",
+    "named-entities": "United States@Judge Lynch@Statistics"
+  },
+  {
+    "article-id": "0109",
+    "named-entities": "Friars Point@Helena@Vigilantes"
+  },
+  {
+    "article-id": "0110",
+    "named-entities": "Colusa@Hong Di@Billiou@William Weaver@St. John@Sacramento River"
+  },
+  {
+    "article-id": "0111",
+    "named-entities": "Colusa@Hong Di@Billiou@William Weaver"
+  },
+  {
+    "article-id": "0112",
+    "named-entities": "Colusa@Hong Di@Billiou@William Weaver"
+  },
+  {
+    "article-id": "0113",
+    "named-entities": "Denver@William Curran@Fort Logan@Ah Sam@Ah Coon@Ah Sin"
+  },
+  {
+    "article-id": "0114",
+    "named-entities": "Bakersfield@Young Fook@Kenney@Mount Breckenridge"
+  },
+  {
+    "article-id": "0115",
+    "named-entities": "United States@Chicago Tribune@Raleigh News And Observer"
+  },
+  {
+    "article-id": "0116",
+    "named-entities": "Clarkdale@A. H. Cage@Ed Moy@Yancey Dean"
+  },
+  {
+    "article-id": "0117",
+    "named-entities": "Clarkdale@Ed Moy@Yancey Dean@A. H. Cage"
+  },
+  {
+    "article-id": "0118",
+    "named-entities": "Cheney@Chung Sow@Lee Chow@Ritzville"
+  },
+  {
+    "article-id": "0119",
+    "named-entities": "Lewiston@Pierce City@Daniel Frazier"
+  },
+  {
+    "article-id": "0120",
+    "named-entities": "Lewiston@Daniel Frazier"
+  },
+  {
+    "article-id": "0121",
+    "named-entities": "Butte@Young Fook@Kenney@Mount Breckenridge"
+  },
+  {
+    "article-id": "0122",
+    "named-entities": "Chico@Governor William Irwin@Butte County"
+  },
+  {
+    "article-id": "0123",
+    "named-entities": "Diamond Springs"
+  },
+  {
+    "article-id": "0124",
+    "named-entities": "Truckee@Caucasian League"
+  },
+  {
+    "article-id": "0125",
+    "named-entities": "Truckee@Sacramento Daily Union"
+  },
+  {
+    "article-id": "0126",
+    "named-entities": "Auburn@Charles Helwig@Louis Seibert@Nevada County"
+  },
+  {
+    "article-id": "0127",
+    "named-entities": "San Francisco@Denis Kearney@Chicago Tribune"
+  },
+  {
+    "article-id": "0128",
+    "named-entities": "San Francisco@Denis Kearney@Chicago Tribune"
+  },
+  {
+    "article-id": "0129",
+    "named-entities": "Cheney@Chung Sow@Lee Chow@Ritzville"
+  },
+  {
+    "article-id": "0130",
+    "named-entities": "Friars Point@River Lynching@Vigilantes"
+  },
+  {
+    "article-id": "0131",
+    "named-entities": "Santa Cruz@Employment Bias"
+  },
+  {
+    "article-id": "0132",
+    "named-entities": "Butte County@Hong Di@James Hogan"
+  },
+  {
+    "article-id": "0133",
+    "named-entities": "Silver Bow@Tom Mills@Sheepherder"
+  },
+  {
+    "article-id": "0134",
+    "named-entities": "Chicago@John Lee@Mob"
+  },
+  {
+    "article-id": "0135",
+    "named-entities": "Quigley@Big Hank@Ed Moore"
+  },
+  {
+    "article-id": "0136",
+    "named-entities": "Chicago@Charles Sing@Alice Sing@Josephine Modelski"
+  },
+  {
+    "article-id": "0137",
+    "named-entities": "Corinne@Bornstein Murder@Detective Thayer"
+  },
+  {
+    "article-id": "0138",
+    "named-entities": "Diamond Springs@Vigilantes"
+  },
+  {
+    "article-id": "0139",
+    "named-entities": "Truckee@Caucasian League@Anti Chinese Arson"
+  },
+  {
+    "article-id": "0140",
+    "named-entities": "Racine@Child Assault@Mob"
+  },
+  {
+    "article-id": "0141",
+    "named-entities": "Rocklin@Anti Chinese Riot@Mass Expulsion"
+  },
+  {
+    "article-id": "0142",
+    "named-entities": "Bakersfield@Young Fook@Kenney"
+  },
+  {
+    "article-id": "0143",
+    "named-entities": "Clarksville@A. H. Cage@Dual Lynching"
+  },
+  {
+    "article-id": "0144",
+    "named-entities": "Idaho Springs@Lou Sing@Nellie Merchen"
+  },
+  {
+    "article-id": "0145",
+    "named-entities": "Forest Hill@Spaniard Munas@Chinese Opium Den"
+  },
+  {
+    "article-id": "0146",
+    "named-entities": "Denver@Wing Lee@Mob"
+  },
+  {
+    "article-id": "0147",
+    "named-entities": "Butte County@John Braden@Saw Attack"
+  },
+  {
+    "article-id": "0148",
+    "named-entities": "Laundry@Race Satire"
+  },
+  {
+    "article-id": "0149",
+    "named-entities": "Rocklin@Sargent Murders@Ah Sam@Ah Jim"
+  },
+  {
+    "article-id": "0150",
+    "named-entities": "Butte@John Braden@Reward"
+  },
+  {
+    "article-id": "0151",
+    "named-entities": "Eddy@Assault Charge@Dual Targets"
+  },
+  {
+    "article-id": "0152",
+    "named-entities": "Fond Du Lac@Sun Wah@Boxer Panic"
+  },
+  {
+    "article-id": "0153",
+    "named-entities": "Jersey City@Jan Lee@False Rumor"
+  },
+  {
+    "article-id": "0154",
+    "named-entities": "Rock Springs@Indemnity"
+  },
+  {
+    "article-id": "0155",
+    "named-entities": "Colusa@Hong Di@Militia"
+  },
+  {
+    "article-id": "0156",
+    "named-entities": "London@Uk@Cartoon@Imperialism"
+  },
+  {
+    "article-id": "0157",
+    "named-entities": "Lincoln@Ranch"
+  },
+  {
+    "article-id": "0158",
+    "named-entities": "Ogden@Frank Louie@Interracial Tension"
+  },
+  {
+    "article-id": "0159",
+    "named-entities": "Colusa@Hong Di@Bridge Lynching"
+  },
+  {
+    "article-id": "0160",
+    "named-entities": "Denver@Wing Lee@Mob"
+  },
+  {
+    "article-id": "0161",
+    "named-entities": "Milwaukee@Sam Yip@Hop Ding"
+  },
+  {
+    "article-id": "0162",
+    "named-entities": "San Marcial@Opium Death@Lynch Fear"
+  },
+  {
+    "article-id": "0163",
+    "named-entities": "New Haven@Mob"
+  },
+  {
+    "article-id": "0164",
+    "named-entities": "Baltimore@Kok Kong You@Child Assault"
+  },
+  {
+    "article-id": "0165",
+    "named-entities": "Bridgeport@Ah Quong Tir@Dismemberment"
+  },
+  {
+    "article-id": "0166",
+    "named-entities": "Elko County@New York Charley@Citizens Court"
+  },
+  {
+    "article-id": "0167",
+    "named-entities": "Tucson@Wong@Halloween Shooting"
+  },
+  {
+    "article-id": "0168",
+    "named-entities": "Los Angeles@Gene Tong@1871 Massacre"
+  },
+  {
+    "article-id": "0169",
+    "named-entities": "Colusa@Hong Di@Militia"
+  },
+  {
+    "article-id": "0170",
+    "named-entities": "Colusa@Hong Di@Bridge Hanging"
+  },
+  {
+    "article-id": "0171",
+    "named-entities": "Denver@Wing Lee@Hygiene Panic"
+  },
+  {
+    "article-id": "0172",
+    "named-entities": "Sacramento@Sarah Neal"
+  },
+  {
+    "article-id": "0173",
+    "named-entities": "Coroner@Justice Cole@Granite Township@Prairie City"
+  },
+  {
+    "article-id": "0174",
+    "named-entities": "Justice Cole@Granite Township@County Clerks Office@Prairie City@W. S. Kendall@Dressers Saloon@W. B. Lawler@Edward Cady@W. Doran@Henry Keefe@Peter Willson@Unas Bitzer@John Holser@Patrick Dempsey@M. Mcdonald@J. H. Welle@W. King@Patrick Fitzpatrick@Willow Springs@Folsom"
+  },
+  {
+    "article-id": "0175",
+    "named-entities": "Central Pacific Railroad@Placer@Stars And Stripes"
+  },
+  {
+    "article-id": "0177",
+    "named-entities": "Henderson Gulch@Citizens Court@Tuesday Morning"
+  },
+  {
+    "article-id": "0178",
+    "named-entities": "Henderson Gulch@Caplice & Smith@Citizens Court@Tuesday Morning"
+  },
+  {
+    "article-id": "0179",
+    "named-entities": "New Northwest@Henderson Gulch@Chicago Tribune"
+  },
+  {
+    "article-id": "0180",
+    "named-entities": "Helena@Ah Chow@John R. Batzer@Vigilantes@Hangmans Tree"
+  },
+  {
+    "article-id": "0181",
+    "named-entities": "Silver Creek@Rocker@Butte@Daniel Haffey@Mclaughlin@Butte@Sheriff@S. F. Chronicle"
+  },
+  {
+    "article-id": "0182",
+    "named-entities": "American Eagle@4Th of July"
+  },
+  {
+    "article-id": "0183",
+    "named-entities": "John@Chinatown@Sacramento@Madame De Stael@Mr. Mills"
+  },
+  {
+    "article-id": "0184",
+    "named-entities": "Rawhide@Mormon Slough@Western Tannery@Stockton"
+  },
+  {
+    "article-id": "0185",
+    "named-entities": "Judge@Henderson Gulch@Deer Lodge County@Supreme Bench@Territorial Judges@Federal Court@Anaconda"
+  },
+  {
+    "article-id": "0186",
+    "named-entities": "Gazette@Chipps Flat@Friday"
+  },
+  {
+    "article-id": "0187",
+    "named-entities": "San Francisco@Rincon Hill@Pacific Mail Steamship Company@Old Tebos Dock@Fourth Street@Brannan Street@Second Street@Harrison Street@Bryant Street@First Street@Third Street@Fremont Street@Beale Street@Hamilton Hall@Citizens Court@Fire Department@Mayor@Chinese@Anti Coolie Club@White Labor Must Rule"
+  },
+  {
+    "article-id": "0188",
+    "named-entities": "San Francisco@Chinese@Anti Coolie Club@Police@Gen. John Mccomb@Militia@Wm. T. Coleman@Citizens Court"
+  },
+  {
+    "article-id": "0189",
+    "named-entities": "Davisville@Ranch@Briggs"
+  },
+  {
+    "article-id": "0190",
+    "named-entities": "Davisville@Coroner"
+  },
+  {
+    "article-id": "0191",
+    "named-entities": "Gothic@Denver@The Tribune@Andrew Wilson@S. A. Flagg@A. L. Holcomb@Anti Chinese Organization"
+  },
+  {
+    "article-id": "0192",
+    "named-entities": "Denver@Gothic@Gunnison County@Wang Foo@Laundry@Committee"
+  },
+  {
+    "article-id": "0193",
+    "named-entities": "Gothic@Saturday@Miners@Laundry"
+  },
+  {
+    "article-id": "0194",
+    "named-entities": "Oregon Short Line@Jessop@Millville@Cache County"
+  },
+  {
+    "article-id": "0195",
+    "named-entities": "Oregon Short Line@Graders of The Road@Child"
+  },
+  {
+    "article-id": "0196",
+    "named-entities": "Millville@Oregon Short Line@San Jose@Shenandoah@L. Pritchet@Mount Pleasant@J. M. Barlow@Ogden@C. Mason Kinne@Irving M. Scott@Chronicle@Palo Alto"
+  },
+  {
+    "article-id": "0197",
+    "named-entities": "Weatherby@Baker County@Jessop@Celestial@Sheriff@Astoria@Albert Baker@Portland@Mayor@Police"
+  },
+  {
+    "article-id": "0198",
+    "named-entities": "Mayor@Deputy Sheriff@Mexicans@Providence@Chinaman@Pest House@Today"
+  },
+  {
+    "article-id": "0199",
+    "named-entities": "Denver@Chinese Quarter@Firemen@Police@Chinaman@White Man"
+  },
+  {
+    "article-id": "0200",
+    "named-entities": "Coroner@Pomona@Herr Neitzke@Sunday@Chinese"
+  },
+  {
+    "article-id": "0201",
+    "named-entities": "Los Angeles@Bessie Eldridge@Pomona@Examiner@Eldridge@Chinaman@Harvesting Camp@Creek@Canyon"
+  },
+  {
+    "article-id": "0202",
+    "named-entities": "Denver@President Garfield@Hancock@Hon. Lee@Chinese@Democrats@Democratic Procession@St. Albans Daily Messenger"
+  },
+  {
+    "article-id": "0203",
+    "named-entities": "Denver@Chinese Quarter@Chinaman@Tipton Times"
+  },
+  {
+    "article-id": "0204",
+    "named-entities": "Tom Wong@Monterey@Pacific Grove@Chinese Mission"
+  },
+  {
+    "article-id": "0205",
+    "named-entities": "Ah Yo@Richards@P. J. Murphy@Pat Reynolds@Mayor@Friars Point@Vicksburg@Circuit Court"
+  },
+  {
+    "article-id": "0206",
+    "named-entities": "Joaquin Murrieta@Jackson@Mokelumne River@San Andreas@Ranch@Allen@Jesu Maria Camp@Calaveras County@Nevada Journal"
+  },
+  {
+    "article-id": "0207",
+    "named-entities": "Willie Wong@Avon@Washington County@New Orleans@The Boston Globe"
+  },
+  {
+    "article-id": "0208",
+    "named-entities": "Times Herald"
+  }
+]
