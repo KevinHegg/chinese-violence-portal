@@ -1,0 +1,83 @@
+/* Roy Rogers Western-themed Color Palette */
+/* Authentic western board game colors with good contrast */
+
+:root {
+  /* Primary Western Colors */
+  --western-saddle-brown: #8B4513;
+  --western-chocolate: #D2691E;
+  --western-peru: #CD853F;
+  --western-burlywood: #DEB887;
+  --western-sandy-brown: #F4A460;
+  --western-goldenrod: #DAA520;
+  --western-dark-goldenrod: #B8860B;
+  --western-tan: #8B7355;
+  --western-sienna: #A0522D;
+  --western-rosy-brown: #BC8F8F;
+  --western-wheat: #F5DEB3;
+  --western-light-tan: #D2B48C;
+  --western-medium-wood: #C19A6B;
+
+  /* Text Colors for Contrast */
+  --western-text-light: #FFFFFF;
+  --western-text-dark: #000000;
+
+  /* Color Sets for Components */
+  --western-color-1: var(--western-saddle-brown);
+  --western-color-2: var(--western-chocolate);
+  --western-color-3: var(--western-peru);
+  --western-color-4: var(--western-burlywood);
+  --western-color-5: var(--western-sandy-brown);
+  --western-color-6: var(--western-goldenrod);
+  --western-color-7: var(--western-dark-goldenrod);
+  --western-color-8: var(--western-tan);
+  --western-color-9: var(--western-sienna);
+  --western-color-10: var(--western-rosy-brown);
+  --western-color-11: var(--western-wheat);
+  --western-color-12: var(--western-light-tan);
+  --western-color-13: var(--western-medium-wood);
+}
+
+/* Western Color Classes for Charts */
+.western-chart-color-1 { background-color: var(--western-color-1); }
+.western-chart-color-2 { background-color: var(--western-color-2); }
+.western-chart-color-3 { background-color: var(--western-color-3); }
+.western-chart-color-4 { background-color: var(--western-color-4); }
+.western-chart-color-5 { background-color: var(--western-color-5); }
+.western-chart-color-6 { background-color: var(--western-color-6); }
+.western-chart-color-7 { background-color: var(--western-color-7); }
+.western-chart-color-8 { background-color: var(--western-color-8); }
+.western-chart-color-9 { background-color: var(--western-color-9); }
+.western-chart-color-10 { background-color: var(--western-color-10); }
+.western-chart-color-11 { background-color: var(--western-color-11); }
+.western-chart-color-12 { background-color: var(--western-color-12); }
+.western-chart-color-13 { background-color: var(--western-color-13); }
+
+/* Western Color Classes for Borders */
+.western-border-color-1 { border-color: var(--western-color-1); }
+.western-border-color-2 { border-color: var(--western-color-2); }
+.western-border-color-3 { border-color: var(--western-color-3); }
+.western-border-color-4 { border-color: var(--western-color-4); }
+.western-border-color-5 { border-color: var(--western-color-5); }
+.western-border-color-6 { border-color: var(--western-color-6); }
+.western-border-color-7 { border-color: var(--western-color-7); }
+.western-border-color-8 { border-color: var(--western-color-8); }
+.western-border-color-9 { border-color: var(--western-color-9); }
+.western-border-color-10 { border-color: var(--western-color-10); }
+.western-border-color-11 { border-color: var(--western-color-11); }
+.western-border-color-12 { border-color: var(--western-color-12); }
+.western-border-color-13 { border-color: var(--western-color-13); }
+
+/* Western Color Classes for Text */
+.western-text-color-1 { color: var(--western-color-1); }
+.western-text-color-2 { color: var(--western-color-2); }
+.western-text-color-3 { color: var(--western-color-3); }
+.western-text-color-4 { color: var(--western-color-4); }
+.western-text-color-5 { color: var(--western-color-5); }
+.western-text-color-6 { color: var(--western-color-6); }
+.western-text-color-7 { color: var(--western-color-7); }
+.western-text-color-8 { color: var(--western-color-8); }
+.western-text-color-9 { color: var(--western-color-9); }
+.western-text-color-10 { color: var(--western-color-10); }
+.western-text-color-11 { color: var(--western-color-11); }
+.western-text-color-12 { color: var(--western-color-12); }
+.western-text-color-13 { color: var(--western-color-13); } 

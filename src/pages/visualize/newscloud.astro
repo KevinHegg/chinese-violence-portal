@@ -3,6 +3,7 @@ import PageLayout from "../../layouts/PageLayout.astro";
 import ArticleViewer from "../../components/ArticleViewer.astro";
 import articles from "../../data/articles.json";
 import newscloud from "../../data/newscloud.json";
+import "../../styles/western-colors.css";
 
 // Process newscloud data to count entity occurrences
 const entityCounts: Record<string, number> = {};
@@ -40,30 +41,40 @@ function getFontSize(count: number): number {
   return Math.round(minFontSize + (ratio * (maxFontSize - minFontSize)));
 }
 
-// Generate text colors with good contrast
-const textColors = [
-  '#1f2937', '#374151', '#4b5563', '#6b7280', '#9ca3af',
-  '#dc2626', '#ea580c', '#d97706', '#ca8a04', '#65a30d', 
-  '#16a34a', '#0d9488', '#0891b2', '#2563eb', '#7c3aed',
-  '#9333ea', '#c026d3', '#db2777', '#e11d48'
+// Roy Rogers Western-themed color palette
+// Authentic western board game colors with good contrast
+const westernColorPalette = [
+  { bg: '#8B4513', text: '#FFFFFF' }, // Saddle Brown - classic leather
+  { bg: '#D2691E', text: '#FFFFFF' }, // Chocolate - rich brown
+  { bg: '#CD853F', text: '#000000' }, // Peru - warm tan
+  { bg: '#DEB887', text: '#000000' }, // Burlywood - light wood
+  { bg: '#F4A460', text: '#000000' }, // Sandy Brown - desert sand
+  { bg: '#DAA520', text: '#000000' }, // Goldenrod - golden wheat
+  { bg: '#B8860B', text: '#FFFFFF' }, // Dark Goldenrod - deep gold
+  { bg: '#8B7355', text: '#FFFFFF' }, // Tan - earth tone
+  { bg: '#A0522D', text: '#FFFFFF' }, // Sienna - reddish brown
+  { bg: '#BC8F8F', text: '#000000' }, // Rosy Brown - dusty rose
+  { bg: '#F5DEB3', text: '#000000' }, // Wheat - pale gold
+  { bg: '#D2B48C', text: '#000000' }, // Tan - light brown
+  { bg: '#C19A6B', text: '#000000' }, // Medium Wood - wood grain
+  { bg: '#8B7355', text: '#FFFFFF' }, // Tan - medium brown
+  { bg: '#A0522D', text: '#FFFFFF' }, // Sienna - terra cotta
+  { bg: '#BC8F8F', text: '#000000' }, // Rosy Brown - muted pink
+  { bg: '#F5DEB3', text: '#000000' }, // Wheat - cream
+  { bg: '#D2B48C', text: '#000000' }, // Tan - beige
+  { bg: '#C19A6B', text: '#000000' }, // Medium Wood - oak
+  { bg: '#8B7355', text: '#FFFFFF' }  // Tan - taupe
 ];
 
-// Generate background colors for word cloud items (lighter, better contrast)
-const backgroundColors = [
-  '#fef3c7', '#fde68a', '#fcd34d', '#fbbf24', '#f59e0b',
-  '#fef2f2', '#fecaca', '#fca5a5', '#f87171', '#fca5a5',
-  '#f0f9ff', '#bae6fd', '#7dd3fc', '#38bdf8', '#0ea5e9',
-  '#f0fdf4', '#bbf7d0', '#86efac', '#4ade80', '#22c55e',
-  '#fdf4ff', '#fae8ff', '#f3e8ff', '#e9d5ff', '#c084fc',
-  '#fef7cd', '#fef3c7', '#fde68a', '#fcd34d', '#fbbf24'
-];
+// Create a consistent color assignment for each entity
+const entityColorMap: Record<string, { bg: string; text: string }> = {};
 
-function getRandomTextColor() {
-  return textColors[Math.floor(Math.random() * textColors.length)];
-}
-
-function getRandomBackgroundColor() {
-  return backgroundColors[Math.floor(Math.random() * backgroundColors.length)];
+function getEntityColor(entity: string) {
+  if (!entityColorMap[entity]) {
+    const colorIndex = Object.keys(entityColorMap).length % westernColorPalette.length;
+    entityColorMap[entity] = westernColorPalette[colorIndex];
+  }
+  return entityColorMap[entity];
 }
 ---
 
@@ -88,16 +99,15 @@ function getRandomBackgroundColor() {
 
          <!-- Word Cloud -->
      <div class="bg-amber-50/90 border-2 border-amber-200 rounded-lg p-4 mb-6 shadow-lg">
-               <div class="bg-white rounded-lg p-4 border border-amber-300">
+               <div class="bg-white rounded-lg p-1 border border-amber-300">
           <div id="word-cloud" class="flex flex-wrap gap-1 justify-center items-center min-h-[300px] mb-4">
             {filteredEntities.map(([entity, count]) => {
               const fontSize = getFontSize(count);
-              const color = getRandomTextColor();
-              const bgColor = getRandomBackgroundColor();
+              const colorSet = getEntityColor(entity);
               return (
                 <span 
                   class="word-cloud-item cursor-pointer hover:scale-110 transition-all duration-200 font-medium shadow-sm" 
-                  style={`font-size: ${fontSize}px; color: ${color}; background: ${bgColor};`}
+                  style={`font-size: ${fontSize}px; color: ${colorSet.text}; background: ${colorSet.bg};`}
                   data-entity={entity}
                   data-count={count}
                   title={`${entity} (${count} occurrences)`}
@@ -107,14 +117,14 @@ function getRandomBackgroundColor() {
               );
             })}
           </div>
-         <div class="flex justify-between items-center pt-4 border-t border-amber-200">
-           <div id="article-count" class="text-sm text-amber-700 bg-amber-100 rounded-lg px-3 py-2">
-             Showing all {articles.length} articles
-           </div>
-           <button id="reset-filter" class="btn btn-outline btn-sm">
-             Reset Filter
-           </button>
-         </div>
+                   <div class="flex justify-between items-center pt-2 pb-1 border-t border-amber-200">
+            <div id="article-count" class="text-sm text-amber-700 bg-amber-100 rounded-lg px-3 py-2 flex items-center ml-2.5">
+              Showing all {articles.length} articles
+            </div>
+            <button id="reset-filter" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm mr-2.5">
+              Reset Filter
+            </button>
+          </div>
        </div>
      </div>
 
@@ -328,16 +338,21 @@ function getRandomBackgroundColor() {
 
     .word-cloud-item {
       display: inline-block;
-      margin: 2px;
-      padding: 4px 8px;
-      border-radius: 8px;
+      margin: 3px;
+      padding: 6px 12px;
+      border-radius: 12px;
       transition: all 0.3s ease;
-      border: 1px solid rgba(0, 0, 0, 0.1);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border: 2px solid rgba(0, 0, 0, 0.15);
+      box-shadow: 
+        0 3px 6px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
       position: relative;
       overflow: hidden;
-      font-weight: 600;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-family: 'Georgia', serif;
     }
 
     .word-cloud-item::before {
@@ -352,24 +367,31 @@ function getRandomBackgroundColor() {
     }
 
     .word-cloud-item:hover {
-      transform: scale(1.15);
+      transform: scale(1.1) translateY(-2px);
       z-index: 10;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      border-color: rgba(0, 0, 0, 0.2);
+      box-shadow: 
+        0 6px 16px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      border-color: rgba(0, 0, 0, 0.25);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     .word-cloud-item:hover::before {
       left: 100%;
     }
 
-    @media (max-width: 1024px) {
-      .article-viewer-flex {
-        flex-direction: column;
-      }
-      .article-viewer-flex > div {
-        width: 100% !important;
-        max-width: 100% !important;
-      }
-    }
+         @media (max-width: 1024px) {
+       .article-viewer-flex {
+         flex-direction: column;
+       }
+       .article-viewer-flex > div {
+         width: 100% !important;
+         max-width: 100% !important;
+       }
+     }
+
+     .p-4 {
+       padding: .5rem;
+     }
   </style>
 </PageLayout> 

@@ -1,10 +1,11 @@
 ---
 import PageLayout from "../../layouts/PageLayout.astro";
+import "../../styles/western-colors.css";
 ---
 
 <PageLayout title="Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)" currentPage="visualize/charts">
   <div class="max-w-6xl mx-auto px-4 py-8">
-    <h1 class="text-4xl font-bold mb-8">Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)</h1>
+    <h1 class="text-4xl font-bold mb-8 text-amber-800">Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)</h1>
     <p class="mb-2 text-lg max-w-3xl leading-snug">
       This dashboard visualizes the history and impact of anti-Chinese violence in the U.S. through three interactive charts:
     </p>
@@ -18,26 +19,28 @@ import PageLayout from "../../layouts/PageLayout.astro";
         text-indent: -1.1em;
         padding-left: 1.1em;
       }
+      
+      
     </style>
 
     <!-- Chart 1: Incidents Over Time -->
-    <div class="bg-white border border-amber-200 rounded-xl shadow p-6 mb-14 mt-8">
-      <h2 class="text-xl font-semibold mb-2">Incidents of Anti-Chinese Violence Over Time</h2>
-      <p class="mb-4 text-sm text-gray-600">Annual count of anti-Chinese violence events, 1850–1920.</p>
+         <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14 mt-8">
+      <h2 class="text-xl font-semibold mb-2 text-amber-800">Incidents of Anti-Chinese Violence Over Time</h2>
+             <p class="mb-4 text-sm text-amber-700">Annual count of anti-Chinese violence events, 1850–1920.</p>
       <div id="chart-timeline" style="width:100%;height:350px;"></div>
     </div>
 
     <!-- Chart 2: Types of Violence -->
-    <div class="bg-white border border-amber-200 rounded-xl shadow p-6 mb-14">
-      <h2 class="text-xl font-semibold mb-2">Types of Anti-Chinese Violence</h2>
-      <p class="mb-4 text-sm text-gray-600">Breakdown of event types in the lynching records.</p>
+         <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
+      <h2 class="text-xl font-semibold mb-2 text-amber-800">Types of Anti-Chinese Violence</h2>
+             <p class="mb-4 text-sm text-amber-700">Breakdown of event types in the lynching records.</p>
       <div id="chart-types" style="width:100%;height:350px;"></div>
     </div>
 
     <!-- Chart 3: Combo Chart -->
-    <div class="bg-white border border-amber-200 rounded-xl shadow p-6 mb-12">
-      <h2 class="text-xl font-semibold mb-2">Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)</h2>
-      <p class="mb-4 text-sm text-gray-600">A combination chart showing the number of victims per year (bar), the Chinese population (line), and key policy events (vertical markers).</p>
+         <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-12">
+      <h2 class="text-xl font-semibold mb-2 text-amber-800">Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)</h2>
+             <p class="mb-4 text-sm text-amber-700">A combination chart showing the number of victims per year (bar), the Chinese population (line), and key policy events (vertical markers).</p>
       <div id="chart-combo" style="width:100%;height:400px;"></div>
     </div>
   </div>
@@ -59,12 +62,18 @@ import PageLayout from "../../layouts/PageLayout.astro";
     const chartTimeline = echarts.init(document.getElementById('chart-timeline'));
     chartTimeline.setOption({
       title: { text: '', left: 'center' },
-      tooltip: { trigger: 'axis' },
+      tooltip: { 
+        trigger: 'axis',
+        backgroundColor: 'var(--western-wheat)',
+        borderColor: 'var(--western-saddle-brown)',
+        textStyle: { color: 'var(--western-saddle-brown)' }
+      },
       xAxis: { 
         type: 'category', 
         data: years, 
-        axisLabel: { align: 'center' },
-        axisTick: { alignWithLabel: true }
+        axisLabel: { align: 'center', color: 'var(--western-saddle-brown)' },
+        axisTick: { alignWithLabel: true },
+        axisLine: { lineStyle: { color: 'var(--western-sienna)' } }
       },
       yAxis: { 
         type: 'value', 
@@ -72,17 +81,30 @@ import PageLayout from "../../layouts/PageLayout.astro";
         nameLocation: 'center', 
         nameGap: 50, 
         nameRotate: 90, 
-        nameTextStyle: { fontWeight: 'bold', fontSize: 16, fontFamily: 'sans-serif' },
-        position: 'left' 
+        nameTextStyle: { fontWeight: 'bold', fontSize: 16, fontFamily: 'sans-serif', color: 'var(--western-saddle-brown)' },
+        position: 'left',
+        axisLabel: { color: 'var(--western-saddle-brown)' },
+        axisLine: { lineStyle: { color: 'var(--western-sienna)' } },
+        splitLine: { lineStyle: { color: 'var(--western-burlywood)', opacity: 0.3 } }
       },
       series: [{
         data: counts,
         type: 'line',
         smooth: true,
-        lineStyle: { color: '#b91c1c', width: 3 },
-        areaStyle: { color: '#fde68a' },
+        lineStyle: { color: 'var(--western-saddle-brown)', width: 3 },
+        areaStyle: { color: '#DEB887', opacity: 0.6 }, // burlywood
         symbol: 'circle',
-        symbolSize: 8
+        symbolSize: 8,
+        emphasis: {
+          focus: 'series',
+          lineStyle: { color: 'var(--western-saddle-brown)', width: 4 },
+          areaStyle: { color: '#DEB887', opacity: 0.8 }, // burlywood
+          itemStyle: {
+            color: 'var(--western-saddle-brown)',
+            borderColor: 'var(--western-sienna)',
+            borderWidth: 2
+          }
+        }
       }],
       grid: { left: 80, right: 30, top: 50, bottom: 60 },
       responsive: true
@@ -98,26 +120,98 @@ import PageLayout from "../../layouts/PageLayout.astro";
     const typeVals = typeNames.map((t, i) => typeCounts[Object.keys(typeCounts)[i]]);
     const chartTypes = echarts.init(document.getElementById('chart-types'));
     chartTypes.setOption({
-      tooltip: { trigger: 'item' },
-      xAxis: { type: 'category', data: typeNames, name: 'Category', axisLabel: { rotate: 0, formatter: v => v.replace(/\n/g, '\n'), align: 'center' }, axisTick: { alignWithLabel: true } },
+      tooltip: { 
+        trigger: 'item',
+        backgroundColor: 'var(--western-wheat)',
+        borderColor: 'var(--western-saddle-brown)',
+        textStyle: { color: 'var(--western-saddle-brown)' }
+      },
+      xAxis: { 
+        type: 'category', 
+        data: typeNames, 
+        name: 'Category', 
+        axisLabel: { rotate: 0, formatter: v => v.replace(/\n/g, '\n'), align: 'center', color: 'var(--western-saddle-brown)' }, 
+        axisTick: { alignWithLabel: true },
+        axisLine: { lineStyle: { color: 'var(--western-sienna)' } }
+      },
       yAxis: { 
         type: 'value', 
         name: 'Number of Victims', 
         nameLocation: 'center', 
         nameGap: 50, 
         nameRotate: 90, 
-        nameTextStyle: { fontWeight: 'bold', fontSize: 16, fontFamily: 'sans-serif' },
-        position: 'left' 
+        nameTextStyle: { fontWeight: 'bold', fontSize: 16, fontFamily: 'sans-serif', color: 'var(--western-saddle-brown)' },
+        position: 'left',
+        axisLabel: { color: 'var(--western-saddle-brown)' },
+        axisLine: { lineStyle: { color: 'var(--western-sienna)' } },
+        splitLine: { lineStyle: { color: 'var(--western-burlywood)', opacity: 0.3 } }
       },
       series: [{
         data: typeVals,
         type: 'bar',
-        itemStyle: { color: '#b91c1c', borderRadius: [6, 6, 0, 0] },
-        barWidth: '60%'
+        itemStyle: { 
+          color: function(params) {
+            const fillColors = [
+              '#F4A460', // sandy-brown
+              '#DEB887', // burlywood
+              '#8B7355', // tan
+              '#D2B48C', // light-tan
+              '#F5DEB3', // wheat
+              '#DAA520', // goldenrod
+              '#BC8F8F', // rosy-brown
+              '#CD853F', // peru
+              '#D2691E', // chocolate
+              '#A0522D', // sienna
+              '#B8860B', // dark-goldenrod
+              '#C19A6B', // medium-wood
+              '#8B4513'  // saddle-brown
+            ];
+            return fillColors[params.dataIndex % fillColors.length];
+          },
+          borderColor: '#8B7355', // tan - warm neutral brown
+          borderWidth: 2,
+          borderRadius: [6, 6, 0, 0] 
+        },
+        barWidth: '60%',
+        emphasis: {
+          focus: 'series',
+          itemStyle: {
+            color: function(params) {
+              const fillColors = [
+                '#F4A460', // sandy-brown
+                '#DEB887', // burlywood
+                '#8B7355', // tan
+                '#D2B48C', // light-tan
+                '#F5DEB3', // wheat
+                '#DAA520', // goldenrod
+                '#BC8F8F', // rosy-brown
+                '#CD853F', // peru
+                '#D2691E', // chocolate
+                '#A0522D', // sienna
+                '#B8860B', // dark-goldenrod
+                '#C19A6B', // medium-wood
+                '#8B4513'  // saddle-brown
+              ];
+              return fillColors[params.dataIndex % fillColors.length];
+            },
+                                     borderColor: '#8B7355', // tan - warm neutral brown
+            borderWidth: 3,
+            shadowBlur: 10,
+            shadowColor: 'rgba(0, 0, 0, 0.3)'
+          }
+        }
       }],
       grid: { left: 80, right: 30, top: 50, bottom: 80 },
       responsive: true
     });
+    
+    // Update markLine colors after chart is rendered
+    setTimeout(() => {
+      const markLines = document.querySelectorAll('#chart-types .echarts-mark-line');
+      markLines.forEach(line => {
+        line.style.color = 'var(--western-sienna)';
+      });
+    }, 100);
 
     // --- Chart 3: Combo Chart ---
     // Extract population data from timeline.json
@@ -159,13 +253,24 @@ import PageLayout from "../../layouts/PageLayout.astro";
 
     const chartCombo = echarts.init(document.getElementById('chart-combo'));
     chartCombo.setOption({
-      tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
-      legend: { data: ['Victims', 'Chinese Population'], bottom: 10 },
+      tooltip: { 
+        trigger: 'axis', 
+        axisPointer: { type: 'cross' },
+        backgroundColor: 'var(--western-wheat)',
+        borderColor: 'var(--western-saddle-brown)',
+        textStyle: { color: 'var(--western-saddle-brown)' }
+      },
+      legend: { 
+        data: ['Victims', 'Chinese Population'], 
+        bottom: 10,
+        textStyle: { color: 'var(--western-saddle-brown)' }
+      },
       xAxis: {
         type: 'category',
         data: comboYears,
-        axisLabel: { align: 'center' },
-        axisTick: { alignWithLabel: true }
+        axisLabel: { align: 'center', color: 'var(--western-saddle-brown)' },
+        axisTick: { alignWithLabel: true },
+        axisLine: { lineStyle: { color: 'var(--western-sienna)' } }
       },
       yAxis: [
         {
@@ -174,7 +279,10 @@ import PageLayout from "../../layouts/PageLayout.astro";
           nameLocation: 'center',
           nameGap: 50,
           nameRotate: 90,
-          nameTextStyle: { fontWeight: 'bold', fontSize: 16, fontFamily: 'sans-serif' }
+          nameTextStyle: { fontWeight: 'bold', fontSize: 16, fontFamily: 'sans-serif', color: 'var(--western-saddle-brown)' },
+          axisLabel: { color: 'var(--western-saddle-brown)' },
+          axisLine: { lineStyle: { color: 'var(--western-sienna)' } },
+          splitLine: { lineStyle: { color: 'var(--western-burlywood)', opacity: 0.3 } }
         },
         {
           type: 'value',
@@ -182,8 +290,10 @@ import PageLayout from "../../layouts/PageLayout.astro";
           nameLocation: 'center',
           nameGap: 50,
           nameRotate: 90,
-          nameTextStyle: { fontWeight: 'bold', fontSize: 16, fontFamily: 'sans-serif' },
-          splitLine: { show: false }
+          nameTextStyle: { fontWeight: 'bold', fontSize: 16, fontFamily: 'sans-serif', color: 'var(--western-saddle-brown)' },
+          splitLine: { show: false },
+          axisLabel: { color: 'var(--western-saddle-brown)' },
+          axisLine: { lineStyle: { color: 'var(--western-sienna)' } }
         }
       ],
       series: [
@@ -192,8 +302,22 @@ import PageLayout from "../../layouts/PageLayout.astro";
           type: 'bar',
           data: victimsSeries,
           yAxisIndex: 0,
-          itemStyle: { color: 'rgba(185, 28, 28, 0.7)', borderColor: 'rgba(185, 28, 28, 1)' },
+          itemStyle: { 
+            color: 'var(--western-saddle-brown)', 
+            borderColor: 'var(--western-saddle-brown)',
+            opacity: 0.8
+          },
           barWidth: '60%',
+          emphasis: {
+            focus: 'series',
+            itemStyle: {
+              color: 'var(--western-saddle-brown)',
+              borderColor: 'var(--western-sienna)',
+              borderWidth: 2,
+              shadowBlur: 10,
+              shadowColor: 'rgba(0, 0, 0, 0.3)'
+            }
+          },
           markLine: {
             symbol: 'none',
             data: [
@@ -210,14 +334,32 @@ import PageLayout from "../../layouts/PageLayout.astro";
           type: 'line',
           data: popSeries,
           yAxisIndex: 1,
-          lineStyle: { color: 'rgba(30, 64, 175, 1)', width: 3 },
-          areaStyle: { color: 'rgba(30, 64, 175, 0.1)' },
+          lineStyle: { color: 'var(--western-goldenrod)', width: 3 },
+          areaStyle: { color: '#DEB887', opacity: 0.3 }, // burlywood
           symbol: 'circle',
-          symbolSize: 7
+          symbolSize: 7,
+          emphasis: {
+            focus: 'series',
+            lineStyle: { color: 'var(--western-goldenrod)', width: 4 },
+            areaStyle: { color: '#DEB887', opacity: 0.5 }, // burlywood
+            itemStyle: {
+              color: 'var(--western-goldenrod)',
+              borderColor: 'var(--western-sienna)',
+              borderWidth: 2
+            }
+          }
         }
       ],
       grid: { left: 80, right: 80, top: 60, bottom: 60 },
       responsive: true
     });
+    
+    // Update markLine colors for combo chart after rendering
+    setTimeout(() => {
+      const markLines = document.querySelectorAll('#chart-combo .echarts-mark-line');
+      markLines.forEach(line => {
+        line.style.color = 'var(--western-sienna)';
+      });
+    }, 100);
   </script>
 </PageLayout> 
