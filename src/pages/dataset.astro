@@ -1,5 +1,6 @@
 ---
 import PageLayout from "../layouts/PageLayout.astro";
+import "../styles/western-colors.css";
 ---
 
 <PageLayout title="Dataset" currentPage="dataset">
@@ -25,13 +26,13 @@ import PageLayout from "../layouts/PageLayout.astro";
       </p>
       
       <div class="flex flex-wrap gap-4 mb-6">
-        <button id="download-csv" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+        <button id="download-csv" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded font-medium shadow-sm hover:shadow-md transition-all duration-200">
           Download CSV
         </button>
-        <button id="download-excel" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+        <button id="download-excel" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded font-medium shadow-sm hover:shadow-md transition-all duration-200">
           Download Excel
         </button>
-        <button id="download-pdf" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">
+        <button id="download-pdf" class="bg-amber-800 hover:bg-amber-900 text-white px-4 py-2 rounded font-medium shadow-sm hover:shadow-md transition-all duration-200">
           Download PDF
         </button>
       </div>
