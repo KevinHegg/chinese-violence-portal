@@ -33,12 +33,19 @@ const filteredEntities = Object.entries(entityCounts)
 // Calculate font sizes based on counts
 const maxCount = Math.max(...filteredEntities.map(([_, count]) => count));
 const minCount = Math.min(...filteredEntities.map(([_, count]) => count));
-const maxFontSize = 48; // 3-4 times larger than minimum
-const minFontSize = 16;
+const maxFontSize = 28; // Further reduced from 36px
+const minFontSize = 10; // Further reduced from 12px
 
 function getFontSize(count: number): number {
   const ratio = (count - minCount) / (maxCount - minCount);
-  return Math.round(minFontSize + (ratio * (maxFontSize - minFontSize)));
+  const baseSize = Math.round(minFontSize + (ratio * (maxFontSize - minFontSize)));
+  
+  // Reduce font size on mobile devices
+  if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+    return Math.max(6, Math.round(baseSize * 0.6)); // 40% smaller on mobile
+  }
+  
+  return baseSize;
 }
 
 // Roy Rogers Western-themed color palette
@@ -83,6 +90,7 @@ function getEntityColor(entity: string) {
     <meta name="description" content="Explore a word cloud visualization of named entities from historical newspaper articles documenting anti-Chinese violence. Click on entities to filter articles and discover patterns in the coverage.">
   </head>
   <div class="max-w-7xl mx-auto px-4">
+
     <div class="mb-6 pt-4">
       <a href="/visualize" class="text-accent hover:text-accent-focus flex items-center gap-2 mb-4">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,15 +100,20 @@ function getEntityColor(entity: string) {
       </a>
       <h1 class="text-4xl font-bold mb-2">News Cloud</h1>
       <p class="text-lg text-gray-600 mb-6">
-        Explore the most frequently mentioned locations, people, and organizations in our newspaper archive. 
-        Click on any entity in the word cloud to filter articles and discover how these names appear across different publications and time periods.
+        Explore frequently mentioned locations, people, and organizations in our newspaper archive. 
+        Click on any entity in the word cloud to filter articles and discover patterns across publications and time periods.
       </p>
     </div>
 
          <!-- Word Cloud -->
-     <div class="bg-amber-50/90 border-2 border-amber-200 rounded-lg p-4 mb-6 shadow-lg">
-               <div class="bg-white rounded-lg p-1 border border-amber-300">
-          <div id="word-cloud" class="flex flex-wrap gap-1 justify-center items-center min-h-[300px] mb-4">
+     <div class="bg-amber-50/90 border-2 border-amber-200 rounded-lg p-3 mb-4 shadow-lg relative">
+       <!-- Notification for filter changes -->
+       <div id="filter-notification" class="hidden absolute -top-8 left-1/2 transform -translate-x-1/2 z-10 transition-all duration-500 ease-out" style="transform: translate(-50%, -100%);">
+         <span class="text-sm text-amber-700 bg-amber-100 px-4 py-2 rounded-full border border-amber-300 shadow-lg">
+           Filter applied • <span id="filtered-count">0</span> articles found
+         </span>
+       </div>
+          <div id="word-cloud" class="flex flex-wrap gap-1 justify-center items-center min-h-[160px] mb-3">
             {filteredEntities.map(([entity, count]) => {
               const fontSize = getFontSize(count);
               const colorSet = getEntityColor(entity);
@@ -117,7 +130,7 @@ function getEntityColor(entity: string) {
               );
             })}
           </div>
-                   <div class="flex justify-between items-center pt-2 pb-1 border-t border-amber-200">
+          <div class="flex justify-between items-center pt-2 pb-0 border-t border-amber-200">
             <div id="article-count" class="text-sm text-amber-700 bg-amber-100 rounded-lg px-3 py-2 flex items-center ml-2.5">
               Showing all {articles.length} articles
             </div>
@@ -125,7 +138,6 @@ function getEntityColor(entity: string) {
               Reset Filter
             </button>
           </div>
-       </div>
      </div>
 
     <!-- Article Cards Grid -->
@@ -160,6 +172,8 @@ function getEntityColor(entity: string) {
      const resetBtn = document.getElementById('reset-filter');
      const loading = document.getElementById('loading');
      const noResults = document.getElementById('no-results');
+     const filterNotification = document.getElementById('filter-notification');
+     const filteredCount = document.getElementById('filtered-count');
      
      let currentFilter = null;
 
@@ -252,6 +266,7 @@ function getEntityColor(entity: string) {
        if (!entity || !articleEntityMap[entity]) {
          renderCards(articles);
          currentFilter = null;
+         hideFilterNotification();
          return;
        }
 
@@ -260,11 +275,55 @@ function getEntityColor(entity: string) {
        
        currentFilter = entity;
        renderCards(filtered);
+       showFilterNotification(filtered.length);
+     }
+
+     function showFilterNotification(count) {
+       // Clear any existing timeout
+       if (window.filterNotificationTimeout) {
+         clearTimeout(window.filterNotificationTimeout);
+       }
+       
+       // First, clear the count to show transition
+       filteredCount.textContent = '';
+       
+       // Show notification with slide-in effect
+       filterNotification.classList.remove('hidden');
+       filterNotification.style.transform = 'translate(-50%, 0)';
+       
+       // After a brief delay, show the new count
+       setTimeout(() => {
+         filteredCount.textContent = count;
+       }, 200);
+       
+       // Auto-hide after 5 seconds (longer duration)
+       window.filterNotificationTimeout = setTimeout(() => {
+         filterNotification.style.opacity = '0';
+         setTimeout(() => {
+           filterNotification.classList.add('hidden');
+           filterNotification.style.opacity = '1';
+         }, 500);
+       }, 5000);
+     }
+
+     function hideFilterNotification() {
+       // Clear any existing timeout
+       if (window.filterNotificationTimeout) {
+         clearTimeout(window.filterNotificationTimeout);
+       }
+       
+       // Fade out effect
+       filterNotification.style.opacity = '0';
+       setTimeout(() => {
+         filterNotification.classList.add('hidden');
+         filterNotification.style.opacity = '1';
+       }, 500);
      }
 
      function resetFilter() {
        currentFilter = null;
        renderCards(articles);
+       hideFilterNotification();
        
        // Remove active state from all word cloud items
        document.querySelectorAll('.word-cloud-item').forEach(item => {
@@ -338,13 +397,13 @@ function getEntityColor(entity: string) {
 
     .word-cloud-item {
       display: inline-block;
-      margin: 3px;
-      padding: 6px 12px;
-      border-radius: 12px;
+      margin: 1px;
+      padding: 3px 6px;
+      border-radius: 6px;
       transition: all 0.3s ease;
       border: 2px solid rgba(0, 0, 0, 0.15);
       box-shadow: 
-        0 3px 6px rgba(0, 0, 0, 0.2),
+        0 2px 4px rgba(0, 0, 0, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
       position: relative;
       overflow: hidden;
@@ -387,6 +446,39 @@ function getEntityColor(entity: string) {
        .article-viewer-flex > div {
          width: 100% !important;
          max-width: 100% !important;
+       }
+     }
+
+     /* Mobile-specific word cloud adjustments */
+     @media (max-width: 768px) {
+       #word-cloud {
+         min-height: 120px !important;
+         gap: 1px !important;
+       }
+       
+       .word-cloud-item {
+         margin: 1px !important;
+         padding: 1px 4px !important;
+         border-radius: 4px !important;
+         font-size: 8px !important;
+       }
+       
+       /* Reduce container padding on mobile */
+       .bg-amber-50\/90 {
+         padding: 0.75rem !important;
+         margin-bottom: 1rem !important;
+       }
+     }
+
+     /* Extra small screens */
+     @media (max-width: 480px) {
+       #word-cloud {
+         min-height: 120px !important;
+       }
+       
+       .word-cloud-item {
+         padding: 1px 4px !important;
+         font-size: 9px !important;
        }
      }
 
