@@ -2,21 +2,26 @@
 import PageLayout from "../../layouts/PageLayout.astro";
 import articles from "../../data/articles.json";
 
-export async function getStaticPaths() {
-  return articles.map(article => ({
-    params: { articleId: article["article-id"] },
-    props: { article },
-  }));
+export const prerender = false;
+
+const { articleId } = Astro.params;
+const article = articles.find(a => a["article-id"] === articleId);
+
+if (!article) {
+  return Astro.redirect('/404');
 }
 
-const { article } = Astro.props;
+// Debug logging
+console.log('Article ID:', articleId);
+console.log('Article found:', !!article);
+console.log('Article data:', article);
 ---
 
-<PageLayout title={article["article-title"]} currentPage="articles">
+<PageLayout title={article["article-title"] || "Article Not Found"} currentPage="articles">
   <div class="max-w-4xl mx-auto border border-gray-200 shadow-sm overflow-hidden bg-amber-50 rounded-lg">
     <!-- Header -->
     <div class="border-b border-amber-200 py-2" style="background-color: #fffbe6;">
-      <h1 class="text-3xl font-bold text-gray-900 mb-1" style="padding-left: 21px;">{article["article-title"]}</h1>
+      <h1 class="text-3xl font-bold text-gray-900 mb-1" style="padding-left: 21px;">{article["article-title"] || "Article Not Found"}</h1>
     </div>
 
     <!-- Metadata and Thumbnail -->
@@ -25,22 +30,29 @@ const { article } = Astro.props;
       <div class="flex-1 max-w-xs">
         <table class="w-full text-left align-top" style="border-spacing:0;border-collapse:collapse;">
           <tbody>
-            <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Newspaper:</th><td class="py-0.5 align-top">{article["newspaper"]}</td></tr>
-            <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Publication&nbsp;Date:&nbsp;&nbsp;&nbsp;</th><td class="py-0.5 align-top">{article["publication-date-expanded"]}</td></tr>
-            <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Published at:</th><td class="py-0.5 align-top">{article["newspaper-location"]}</td></tr>
-            <tr><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Page Number:</th><td class="py-0.5 align-top">{article["page"]}</td></tr>
+            <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Newspaper:</th><td class="py-0.5 align-top">{article["newspaper"] || "Unknown"}</td></tr>
+            <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Publication&nbsp;Date:&nbsp;&nbsp;&nbsp;</th><td class="py-0.5 align-top">{article["publication-date-expanded"] || "Unknown"}</td></tr>
+            <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Published at:</th><td class="py-0.5 align-top">{article["newspaper-location"] || "Unknown"}</td></tr>
+            <tr><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Page Number:</th><td class="py-0.5 align-top">{article["page"] || "Unknown"}</td></tr>
           </tbody>
         </table>
       </div>
       <!-- Thumbnail -->
       <div class="flex-shrink-0 flex items-start justify-end w-[200px]" style="margin-left:auto;">
-        <img 
-          src={`/article-scans/${article["image_name"]}`} 
-          alt={`Thumbnail for ${article["article-title"]}`}
-          class="w-[200px] h-[200px] object-cover rounded-lg border border-gray-200 cursor-pointer"
-          id="article-thumbnail"
-          style="width:200px;height:200px;"
-        />
+        {article["image_name"] ? (
+          <img 
+            src={`/article-scans/${article["image_name"]}`} 
+            alt={`Thumbnail for ${article["article-title"] || "article"}`}
+            class="w-[200px] h-[200px] object-cover rounded-lg border border-gray-200 cursor-pointer"
+            id="article-thumbnail"
+            style="width:200px;height:200px;"
+            onerror="this.style.display='none'"
+          />
+        ) : (
+          <div class="w-[200px] h-[200px] bg-gray-200 rounded-lg border border-gray-300 flex items-center justify-center text-gray-500 text-sm">
+            No Image Available
+          </div>
+        )}
       </div>
     </div>
 
@@ -48,20 +60,23 @@ const { article } = Astro.props;
     <div class="p-6 border-b border-gray-200" style="background-color: #faf9f6;">
       <h2 class="text-xl font-semibold mb-4">Article Transcript</h2>
       <div class="prose max-w-none w-full">
-        {article["article-transcript"]
-          .split('⏎')
-          .map(p => p.trim())
-          .filter(p => p.length > 0)
-          .map((p) => (
-            <p style="text-indent: 1.5em; margin-bottom: 0.5em; margin-top: 0.3em">{p}</p>
-          ))}
+        {article["article-transcript"] ? 
+          article["article-transcript"]
+            .split('⏎')
+            .map(p => p.trim())
+            .filter(p => p.length > 0)
+            .map((p) => (
+              <p style="text-indent: 1.5em; margin-bottom: 0.5em; margin-top: 0.3em">{p}</p>
+            ))
+          : <p>Transcript not available</p>
+        }
       </div>
     </div>
 
     <!-- Citation -->
     <div class="p-6 bg-white">
       <h2 class="text-xl font-semibold mb-4">Citation</h2>
-      <div class="text-sm text-gray-700">{article["turabian-citation"]}</div>
+      <div class="text-sm text-gray-700">{article["turabian-citation"] || "Citation not available"}</div>
     </div>
   </div>
 
@@ -79,53 +94,84 @@ const { article } = Astro.props;
 
   <script is:inline>
     document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM loaded, looking for elements...');
+      
       const thumbnail = document.getElementById('article-thumbnail');
       const modal = document.getElementById('lightbox-modal');
       const lightboxImage = document.getElementById('lightbox-image');
       const zoomInBtn = document.getElementById('zoom-in');
       const zoomOutBtn = document.getElementById('zoom-out');
       const closeBtn = document.getElementById('close-lightbox');
+      
+      console.log('Elements found:', {
+        thumbnail: !!thumbnail,
+        modal: !!modal,
+        lightboxImage: !!lightboxImage,
+        zoomInBtn: !!zoomInBtn,
+        zoomOutBtn: !!zoomOutBtn,
+        closeBtn: !!closeBtn
+      });
+      
+      // Check if all required elements exist before proceeding
+      if (!thumbnail || !modal || !lightboxImage || !zoomInBtn || !zoomOutBtn || !closeBtn) {
+        console.warn('Some lightbox elements not found, lightbox functionality disabled');
+        return;
+      }
+      
       let zoom = 1;
       function setZoom(newZoom) {
         zoom = Math.max(0.2, Math.min(newZoom, 5));
         lightboxImage.style.transform = `scale(${zoom})`;
       }
-      if (thumbnail && modal && lightboxImage && zoomInBtn && zoomOutBtn && closeBtn) {
+      
+      // Only add click handler if thumbnail exists and has a valid src
+      console.log('Thumbnail src:', thumbnail.src);
+      console.log('Current location:', window.location.href);
+      
+      if (thumbnail.src && thumbnail.src !== window.location.href) {
+        console.log('Adding click handler to thumbnail');
         thumbnail.addEventListener('click', function() {
           lightboxImage.src = thumbnail.src;
           setZoom(1);
           modal.classList.remove('hidden');
           document.body.style.overflow = 'hidden';
         });
-        zoomInBtn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          setZoom(zoom + 0.2);
-        });
-        zoomOutBtn.addEventListener('click', function(e) {
-          e.stopPropagation();
-          setZoom(zoom - 0.2);
-        });
-        closeBtn.addEventListener('click', function(e) {
-          e.stopPropagation();
+      } else {
+        console.log('Thumbnail click handler not added - invalid src or same as location');
+      }
+      
+      zoomInBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        setZoom(zoom + 0.2);
+      });
+      
+      zoomOutBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        setZoom(zoom - 0.2);
+      });
+      
+      closeBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        lightboxImage.src = '';
+      });
+      
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
           modal.classList.add('hidden');
           document.body.style.overflow = 'auto';
           lightboxImage.src = '';
-        });
-        modal.addEventListener('click', function(e) {
-          if (e.target === modal) {
-            modal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-            lightboxImage.src = '';
-          }
-        });
-        document.addEventListener('keydown', function(e) {
-          if (e.key === 'Escape') {
-            modal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-            lightboxImage.src = '';
-          }
-        });
-      }
+        }
+      });
+      
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          modal.classList.add('hidden');
+          document.body.style.overflow = 'auto';
+          lightboxImage.src = '';
+        }
+      });
     });
   </script>
 
