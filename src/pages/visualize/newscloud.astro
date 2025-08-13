@@ -9,7 +9,7 @@ import "../../styles/western-colors.css";
 const entityCounts: Record<string, number> = {};
 const articleEntityMap: Record<string, string[]> = {};
 
-newscloud.forEach((item: any) => {
+newscloud.forEach((item: { "named-entities"?: string; "article-id": string }) => {
   if (item["named-entities"]) {
     const entities = item["named-entities"].split("@");
     entities.forEach((entity: string) => {
@@ -89,7 +89,7 @@ function getEntityColor(entity: string) {
   <head>
     <meta name="description" content="Explore a word cloud visualization of named entities from historical newspaper articles documenting anti-Chinese violence. Click on entities to filter articles and discover patterns in the coverage.">
   </head>
-  <div class="max-w-6xl mx-auto">
+      <div class="container-wide">
 
     <div class="mb-6">
       <a href="/visualize" class="text-accent hover:text-accent-focus flex items-center gap-2 mb-4">

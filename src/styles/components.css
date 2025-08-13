@@ -1,0 +1,116 @@
+/* Optimized Component Classes - Reduces repetition and improves maintainability */
+
+/* Common Card/Button Styles */
+.card-vintage {
+  @apply block rounded-xl shadow-vintage border border-amber-200 p-3 hover:shadow-lg transition-all duration-200 bg-white;
+}
+
+.card-vintage-link {
+  @apply card-vintage w-full max-w-xs mx-auto;
+}
+
+.card-vintage-button {
+  @apply card-vintage w-full text-left h-full flex flex-col;
+}
+
+/* Common Layout Containers */
+.container-standard {
+  @apply max-w-4xl mx-auto;
+}
+
+.container-wide {
+  @apply max-w-6xl mx-auto;
+}
+
+.container-homepage {
+  @apply max-w-7xl mx-auto;
+}
+
+/* Common Table Styles */
+.table-layout-fixed {
+  table-layout: fixed;
+  font-size: 0.875rem;
+}
+
+.table-header {
+  @apply pr-0 font-semibold text-gray-600 align-top;
+  min-width: 140px;
+}
+
+.table-row {
+  @apply border-b border-dotted border-gray-200;
+}
+
+.table-cell {
+  @apply py-0.5 align-top;
+}
+
+/* Common Background Colors */
+.bg-paper {
+  background-color: #faf9f6;
+}
+
+.bg-yellow-tint {
+  background-color: #fffbe6;
+}
+
+.bg-submit-form {
+  background: #fefce8;
+  border-radius: 0.75rem;
+  display: block;
+}
+
+/* Common Positioning */
+.fixed-top-0 {
+  @apply fixed left-0 right-0;
+  top: 0;
+  height: 40px;
+}
+
+.fixed-top-30 {
+  @apply fixed left-0 right-0 z-50;
+  top: 30px;
+}
+
+/* Common Text Styles */
+.text-indent {
+  text-indent: 1.5em;
+  margin-bottom: 0.5em;
+  margin-top: 0.3em;
+}
+
+/* Chart Container */
+.chart-container {
+  width: 100%;
+  height: 350px;
+}
+
+.chart-container-large {
+  width: 100%;
+  height: 400px;
+}
+
+/* Fade Masks */
+.fade-navbar-mask {
+  background: linear-gradient(to top, rgba(251, 246, 232, 0.7) 0%, rgba(251, 246, 232, 0) 100%);
+}
+
+.fade-content-mask {
+  background: linear-gradient(to top, rgba(251, 246, 232, 0) 0%, rgba(255,255,255,1) 100%);
+}
+
+/* Table Column Widths */
+.col-date { width: 110px; }
+.col-newspaper { width: 140px; }
+.col-location { width: 140px; }
+.col-page { width: 40px; }
+.col-state { width: 100px; }
+.col-county { width: 50px; }
+.col-city { width: 50px; }
+.col-event-type { width: 70px; }
+.col-victims { width: 80px; }
+.col-accusation { width: 120px; }
+.col-source { width: 180px; }
+.col-narrative { width: 120px; }
+.col-notes { width: 100px; }
+.col-full-text { width: 280px; }

@@ -7,7 +7,7 @@ import "../styles/western-colors.css";
   <head>
     <meta name="description" content="Browse and download a living dataset of anti-Chinese violence (1850–1915) compiled from newspapers and archival sources. Sort, filter, and export records of lynchings, massacres, and exclusion events for research and education.">
   </head>
-  <div class="max-w-4xl mx-auto">
+  <div class="container-standard">
     <h1 class="text-4xl font-bold mb-6">Anti-Chinese Lynching Dataset</h1>
     <!-- Callout for Submit Form -->
     <div class="mb-6">
@@ -40,23 +40,23 @@ import "../styles/western-colors.css";
 
     <div style="max-height: 800px; overflow: hidden;">
       <div class="table-scroll" style="overflow-x:auto; overflow-y:auto; max-height:760px; background: #f8fafc; border-radius: 0.5rem; border: 2px solid #d1d5db;">
-        <table id="data-table" style="table-layout:fixed; min-width:1700px; font-size: 0.875rem;">
-          <colgroup>
-            <col style="width:110px;">
-            <col style="width:140px;">
-            <col style="width:140px;">
-            <col style="width:40px;">
-            <col style="width:100px;">
-            <col style="width:50px;">
-            <col style="width:50px;">
-            <col style="width:70px;">
-            <col style="width:80px;">
-            <col style="width:120px;">
-            <col style="width:180px;">
-            <col style="width:120px;">
-            <col style="width:100px;">
-            <col style="width:280px;">
-          </colgroup>
+              <table id="data-table" class="table-layout-fixed text-sm">
+        <colgroup>
+          <col class="col-date">
+          <col class="col-newspaper">
+          <col class="col-location">
+          <col class="col-page">
+          <col class="col-state">
+          <col class="col-county">
+          <col class="col-city">
+          <col class="col-event-type">
+          <col class="col-victims">
+          <col class="col-accusation">
+          <col class="col-source">
+          <col class="col-narrative">
+          <col class="col-notes">
+          <col class="col-full-text">
+        </colgroup>
           <thead>
             <tr class="bg-gray-200">
               <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Identifier">ID</th>
@@ -95,7 +95,7 @@ import "../styles/western-colors.css";
   // CSV URL from Google Sheets
   const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRNUFmt4rj08UFlhScGPJfiOTLPWS_HlT2eRukzdhTq24U2Y877iFBiyTWwHiG7OpHUsMich6giiluS/pub?gid=378919265&single=true&output=csv';
 
-  let tableData = [];
+  let tableData: Record<string, string>[] = [];
   let currentSort = { column: 'Year', direction: 'asc' };
 
   // Load and parse CSV data
@@ -118,17 +118,17 @@ import "../styles/western-colors.css";
       const headers = lines[0].split(',').map(h => h.trim());
       console.log('Headers:', headers);
       
-      const data = [];
-      for (let i = 1; i < lines.length; i++) {
-        if (lines[i].trim()) {
-          const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
-          const row = {};
-          headers.forEach((header, index) => {
-            row[header] = values[index] || '';
-          });
-          data.push(row);
-        }
-      }
+             const data: Record<string, string>[] = [];
+       for (let i = 1; i < lines.length; i++) {
+         if (lines[i].trim()) {
+           const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+           const row: Record<string, string> = {};
+           headers.forEach((header, index) => {
+             row[header] = values[index] || '';
+           });
+           data.push(row);
+         }
+       }
       
       console.log('Parsed data rows:', data.length);
       tableData = data;
@@ -141,13 +141,15 @@ import "../styles/western-colors.css";
       
     } catch (error) {
       console.error('Error loading data:', error);
-      document.getElementById('table-body').innerHTML = 
-        '<tr><td colspan="14" class="text-center py-8 text-red-600">Error loading data. Please try again.</td></tr>';
+      const tableBody = document.getElementById('table-body');
+      if (tableBody) {
+        tableBody.innerHTML = '<tr><td colspan="14" class="text-center py-8 text-red-600">Error loading data. Please try again.</td></tr>';
+      }
     }
   }
 
   // Sort data
-  function sortData(column, direction) {
+  function sortData(column: string, direction: 'asc' | 'desc') {
     tableData.sort((a, b) => {
       let aVal = a[column] || '';
       let bVal = b[column] || '';

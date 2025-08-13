@@ -83,8 +83,15 @@ const { id = "article-viewer", className = "" } = Astro.props;
 </div>
 
 <script>
+  // Global type declarations
+  declare global {
+    interface Window {
+      articleViewer: ArticleViewer;
+    }
+  }
+
   // Focus trap and accessibility helpers
-  function getFocusableElements(container) {
+  function getFocusableElements(container: HTMLElement): HTMLElement[] {
     return Array.from(container.querySelectorAll(
       'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
     ));
@@ -92,9 +99,27 @@ const { id = "article-viewer", className = "" } = Astro.props;
 
   // Article Viewer functionality
   class ArticleViewer {
+    private container: HTMLElement | null;
+    private image: HTMLImageElement | null;
+    private title: HTMLElement | null;
+    private transcription: HTMLElement | null;
+    private citation: HTMLElement | null;
+    private closeBtn: HTMLElement | null;
+    private zoomInBtn: HTMLElement | null;
+    private zoomOutBtn: HTMLElement | null;
+    private resetZoomBtn: HTMLElement | null;
+    private imageContainer: HTMLElement | null;
+    private imageLoading: HTMLElement | null;
+    private imageError: HTMLElement | null;
+    private lastActiveElement: Element | null;
+    private currentScale: number;
+    private isDragging: boolean;
+    private dragStart: { x: number; y: number };
+    private currentTranslate: { x: number; y: number };
+
     constructor(containerId = 'article-viewer') {
       this.container = document.getElementById(containerId);
-      this.image = document.getElementById('viewer-image');
+      this.image = document.getElementById('viewer-image') as HTMLImageElement;
       this.title = document.getElementById('viewer-title');
       this.transcription = document.getElementById('viewer-transcription');
       this.citation = document.getElementById('viewer-citation');
@@ -136,8 +161,8 @@ const { id = "article-viewer", className = "" } = Astro.props;
       this.setupImagePanning();
     }
 
-    trapFocus(e) {
-      const focusableEls = getFocusableElements(this.container);
+    trapFocus(e: KeyboardEvent) {
+      const focusableEls = getFocusableElements(this.container!);
       if (!focusableEls.length) return;
       const firstEl = focusableEls[0];
       const lastEl = focusableEls[focusableEls.length - 1];
@@ -185,19 +210,19 @@ const { id = "article-viewer", className = "" } = Astro.props;
       });
     }
     
-    startDrag(e) {
+    startDrag(e: MouseEvent | TouchEvent) {
       if (this.currentScale <= 1) return;
       
       this.isDragging = true;
-      const point = e.touches ? e.touches[0] : e;
+      const point = e instanceof TouchEvent ? e.touches[0] : e;
       this.dragStart = { x: point.clientX, y: point.clientY };
     }
     
-    drag(e) {
+    drag(e: MouseEvent | TouchEvent) {
       if (!this.isDragging) return;
       
       e.preventDefault();
-      const point = e.touches ? e.touches[0] : e;
+      const point = e instanceof TouchEvent ? e.touches[0] : e;
       const deltaX = point.clientX - this.dragStart.x;
       const deltaY = point.clientY - this.dragStart.y;
       
@@ -234,14 +259,14 @@ const { id = "article-viewer", className = "" } = Astro.props;
       this.updateImageTransform();
     }
     
-    show(articleData) {
+    show(articleData: { title?: string; transcription?: string; citation?: string; imageUrl?: string }) {
       if (!this.container) return;
       // Store last focused element
       this.lastActiveElement = document.activeElement;
       // Set content
-      this.title.textContent = articleData.title || 'Article';
-      this.transcription.innerHTML = articleData.transcription || 'No transcription available';
-      this.citation.textContent = articleData.citation || 'Citation not available';
+      if (this.title) this.title.textContent = articleData.title || 'Article';
+      if (this.transcription) this.transcription.innerHTML = articleData.transcription || 'No transcription available';
+      if (this.citation) this.citation.textContent = articleData.citation || 'Citation not available';
       // Load image
       this.loadImage(articleData.imageUrl);
       // Show modal
@@ -251,16 +276,16 @@ const { id = "article-viewer", className = "" } = Astro.props;
       this.resetZoom();
       // Focus the modal title (or close button)
       setTimeout(() => {
-        const focusableEls = getFocusableElements(this.container);
+        const focusableEls = getFocusableElements(this.container!);
         if (focusableEls.length) {
-          focusableEls[0].focus();
-        } else {
+          (focusableEls[0] as HTMLElement).focus();
+        } else if (this.title) {
           this.title.focus();
         }
       }, 0);
     }
     
-    loadImage(imageUrl) {
+    loadImage(imageUrl?: string) {
       if (!this.image || !imageUrl) {
         this.showImageError();
         return;
@@ -270,7 +295,7 @@ const { id = "article-viewer", className = "" } = Astro.props;
       
       const img = new Image();
       img.onload = () => {
-        this.image.src = imageUrl;
+        if (this.image) this.image.src = imageUrl;
         this.hideImageLoading();
         this.hideImageError();
       };

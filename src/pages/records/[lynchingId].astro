@@ -100,7 +100,7 @@ const decodeHtmlEntities = (text: string) => {
 ---
 
 <PageLayout title={decodeHtmlEntities(lynching["narrative-title"])} currentPage="records">
-  <div class="max-w-4xl mx-auto">
+      <div class="container-standard mt-4">
     <!-- Navigation -->
     <div class="mb-8" id="record-nav" style="display:none;">
       <a id="back-to-explore" href="/explore" class="text-accent hover:text-accent-focus flex items-center gap-2">
@@ -143,16 +143,16 @@ const decodeHtmlEntities = (text: string) => {
           <div class="flex-1 w-full">
             <table class="w-full text-left align-top" style="border-spacing:0;border-collapse:collapse;">
               <tbody>
-                <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Date:</th><td class="py-0.5 align-top">{formatDate(lynching["date"])}</td></tr>
-                <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Location:</th><td class="py-0.5 align-top">{(!lynching["city"] && lynching["county"]) ? `${lynching["county"]} County, ${lynching["state"]}` : `${lynching["city"]}, ${lynching["state"]}`}</td></tr>
-                <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Event Type:</th><td class="py-0.5 align-top">{lynching["event-type"]}</td></tr>
-                <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Victim Names:</th><td class="py-0.5 align-top">{lynching["victim-names"].join(", ")}</td></tr>
-                <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Victim Gender:</th><td class="py-0.5 align-top">{lynching["victim-gender"]}</td></tr>
-                <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top whitespace-nowrap" style="min-width: 140px;">No. of Victims:</th><td class="py-0.5 align-top">{lynching["number-of-victims"]}</td></tr>
-                <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Accusation:</th><td class="py-0.5 align-top">{lynching["accusation"] || "Unknown"}</td></tr>
-                <tr><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Source:</th><td class="py-0.5 align-top">{lynching["source"]}</td></tr>
+                <tr class="table-row"><th class="table-header">Date:</th><td class="table-cell">{formatDate(lynching["date"])}</td></tr>
+                <tr class="table-row"><th class="table-header">Location:</th><td class="table-cell">{(!lynching["city"] && lynching["county"]) ? `${lynching["county"]} County, ${lynching["state"]}` : `${lynching["city"]}, ${lynching["state"]}`}</td></tr>
+                <tr class="table-row"><th class="table-header">Event Type:</th><td class="table-cell">{lynching["event-type"]}</td></tr>
+                <tr class="table-row"><th class="table-header">Victim Names:</th><td class="table-cell">{lynching["victim-names"].join(", ")}</td></tr>
+                <tr class="table-row"><th class="table-header">Victim Gender:</th><td class="table-cell">{lynching["victim-gender"]}</td></tr>
+                <tr class="table-row"><th class="table-header whitespace-nowrap">No. of Victims:</th><td class="table-cell">{lynching["number-of-victims"]}</td></tr>
+                <tr class="table-row"><th class="table-header">Accusation:</th><td class="table-cell">{lynching["accusation"] || "Unknown"}</td></tr>
+                <tr><th class="table-header">Source:</th><td class="table-cell">{lynching["source"]}</td></tr>
                 {lynching["job"] && (
-                  <tr><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Occupation:</th><td class="py-0.5 align-top">{lynching["job"]}</td></tr>
+                  <tr><th class="table-header">Occupation:</th><td class="table-cell">{lynching["job"]}</td></tr>
                 )}
               </tbody>
             </table>

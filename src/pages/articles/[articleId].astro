@@ -18,7 +18,7 @@ console.log('Article data:', article);
 ---
 
 <PageLayout title={article["article-title"] || "Article Not Found"} currentPage="articles">
-  <div class="max-w-4xl mx-auto border border-gray-200 shadow-sm overflow-hidden bg-amber-50 rounded-lg">
+      <div class="container-standard border border-gray-200 shadow-sm overflow-hidden bg-amber-50 rounded-lg mt-4">
     <!-- Header -->
     <div class="border-b border-amber-200 py-2" style="background-color: #fffbe6;">
       <h1 class="text-3xl font-bold text-gray-900 mb-1" style="padding-left: 21px;">{article["article-title"] || "Article Not Found"}</h1>
@@ -30,10 +30,10 @@ console.log('Article data:', article);
       <div class="flex-1 max-w-xs">
         <table class="w-full text-left align-top" style="border-spacing:0;border-collapse:collapse;">
           <tbody>
-            <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Newspaper:</th><td class="py-0.5 align-top">{article["newspaper"] || "Unknown"}</td></tr>
-            <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Publication&nbsp;Date:&nbsp;&nbsp;&nbsp;</th><td class="py-0.5 align-top">{article["publication-date-expanded"] || "Unknown"}</td></tr>
-            <tr class="border-b border-dotted border-gray-200"><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Published at:</th><td class="py-0.5 align-top">{article["newspaper-location"] || "Unknown"}</td></tr>
-            <tr><th class="pr-0 font-semibold text-base-content/80 align-top" style="min-width: 140px;">Page Number:</th><td class="py-0.5 align-top">{article["page"] || "Unknown"}</td></tr>
+                    <tr class="table-row"><th class="table-header">Newspaper:</th><td class="table-cell">{article["newspaper"] || "Unknown"}</td></tr>
+        <tr class="table-row"><th class="table-header">Publication&nbsp;Date:&nbsp;&nbsp;&nbsp;</th><td class="table-cell">{article["publication-date-expanded"] || "Unknown"}</td></tr>
+        <tr class="table-row"><th class="table-header">Published at:</th><td class="table-cell">{article["newspaper-location"] || "Unknown"}</td></tr>
+        <tr><th class="table-header">Page Number:</th><td class="table-cell">{article["page"] || "Unknown"}</td></tr>
           </tbody>
         </table>
       </div>

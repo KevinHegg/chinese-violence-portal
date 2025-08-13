@@ -25,7 +25,7 @@ import Navbar from "../components/Navbar.astro";
     <Navbar currentPage="home" />
     
     <main class="p-6">
-      <div class="max-w-4xl mx-auto">
+      <div class="container-standard">
         <div class="text-center mb-12">
           <h1 class="text-3xl font-display font-bold mb-4 text-base-content">
             The John Crow Project
@@ -36,8 +36,8 @@ import Navbar from "../components/Navbar.astro";
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-7xl mx-auto">
-          <a href="/dataset" class="block group rounded-xl shadow-vintage border border-amber-200 p-3 hover:shadow-lg transition-all duration-200 bg-white w-full max-w-xs mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 container-homepage">
+          <a href="/dataset" class="card-vintage-link group">
             <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-amber-100 text-amber-700 mb-2">
               <!-- Exact icon from Lynching Records navbar item -->
               <svg class="nav-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -48,7 +48,7 @@ import Navbar from "../components/Navbar.astro";
             <span class="font-display font-semibold text-base">Lynching&nbsp;Records</span>
             <p class="text-sm text-gray-600 mt-1">View, download, and interact with the Lynching Records dataset.</p>
           </a>
-          <a href="/chat" class="block group rounded-xl shadow-vintage border border-amber-200 p-3 hover:shadow-lg transition-all duration-200 bg-white w-full max-w-xs mx-auto">
+          <a href="/chat" class="card-vintage-link group">
             <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-amber-100 text-amber-700 mb-2">
               <svg class="nav-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -58,7 +58,7 @@ import Navbar from "../components/Navbar.astro";
             <p class="text-sm text-gray-600 mt-1">Chat with AI about the data and historical context.</p>
           </a>
           <!-- Explore the Records Card (formerly Browse) -->
-          <a href="/explore" class="block group rounded-xl shadow-vintage border border-amber-200 p-3 hover:shadow-lg transition-all duration-200 bg-white w-full max-w-xs mx-auto">
+          <a href="/explore" class="card-vintage-link group">
             <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-amber-100 text-amber-700 mb-2">
               <svg class="nav-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5h10M11 9h7M11 13h4M7 5v14m0 0H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2v12z" />
@@ -69,7 +69,7 @@ import Navbar from "../components/Navbar.astro";
             <span class="font-display font-semibold text-base">Explore&nbsp;the&nbsp;Records</span>
             <p class="text-sm text-gray-600 mt-1">Browse and filter lynching records with interactive tools.</p>
           </a>
-          <a href="/visualize" class="block group rounded-xl shadow-vintage border border-amber-200 p-3 hover:shadow-lg transition-all duration-200 bg-white w-full max-w-xs mx-auto">
+          <a href="/visualize" class="card-vintage-link group">
             <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-amber-100 text-amber-700 mb-2">
               <svg class="nav-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -80,7 +80,7 @@ import Navbar from "../components/Navbar.astro";
           </a>
         </div>
 
-        <div class="prose prose-lg max-w-4xl mx-auto mt-12 mb-8">
+        <div class="prose prose-lg container-standard mt-12 mb-8">
           <p class="font-body text-base-content/90 leading-relaxed mb-6">
             Welcome to the John Crow Project. This site revives a neglected chapter of American history: the white supremacist violence and legal exclusion aimed at Chinese immigrants after the Gold Rush. The first attacks appeared in California’s goldfields in 1849, then rolled east along wagon roads, rail lines, and river towns. By the early 1900s the violence had crossed the Mississippi River and collided with the entrenched racism of Jim Crow. Drawing on newly compiled lynching databases, digitized newspapers, and recent scholarship, this website documents how vigilante terror and discriminatory laws worked hand-in-hand to drive Chinese communities from mines, rail camps, and towns.
 
