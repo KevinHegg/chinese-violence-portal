@@ -74,7 +74,7 @@ import PageLayout from "../layouts/PageLayout.astro";
     if (mapCardLink) {
       var fromlink = encodeURIComponent('/visualize');
       var linklabel = encodeURIComponent('Back to Visualizations');
-      mapCardLink.href = '/map.html?fromlink=' + fromlink + '&linklabel=' + linklabel;
+      mapCardLink.href = '/visualize/map?fromlink=' + fromlink + '&linklabel=' + linklabel;
     }
   });
 </script> 

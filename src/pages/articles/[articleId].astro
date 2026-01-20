@@ -1,20 +1,18 @@
 ---
 import PageLayout from "../../layouts/PageLayout.astro";
-import articles from "../../data/articles.json";
+import { fetchArticlesData } from "../../utils/googleSheets";
 
 export const prerender = false;
 
+// Fetch articles directly from Google Sheets
+
+const articles = await fetchArticlesData();
 const { articleId } = Astro.params;
-const article = articles.find(a => a["article-id"] === articleId);
+const article = articles.find((a: any) => a["article-id"] === articleId);
 
 if (!article) {
   return Astro.redirect('/404');
 }
-
-// Debug logging
-console.log('Article ID:', articleId);
-console.log('Article found:', !!article);
-console.log('Article data:', article);
 ---
 
 <PageLayout title={article["article-title"] || "Article Not Found"} currentPage="articles">
@@ -46,6 +44,8 @@ console.log('Article data:', article);
             class="w-[200px] h-[200px] object-cover rounded-lg border border-gray-200 cursor-pointer"
             id="article-thumbnail"
             style="width:200px;height:200px;"
+            loading="lazy"
+            decoding="async"
             onerror="this.style.display='none'"
           />
         ) : (
@@ -94,8 +94,6 @@ console.log('Article data:', article);
 
   <script is:inline>
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('DOM loaded, looking for elements...');
-      
       const thumbnail = document.getElementById('article-thumbnail');
       const modal = document.getElementById('lightbox-modal');
       const lightboxImage = document.getElementById('lightbox-image');
@@ -103,18 +101,11 @@ console.log('Article data:', article);
       const zoomOutBtn = document.getElementById('zoom-out');
       const closeBtn = document.getElementById('close-lightbox');
       
-      console.log('Elements found:', {
-        thumbnail: !!thumbnail,
-        modal: !!modal,
-        lightboxImage: !!lightboxImage,
-        zoomInBtn: !!zoomInBtn,
-        zoomOutBtn: !!zoomOutBtn,
-        closeBtn: !!closeBtn
-      });
-      
       // Check if all required elements exist before proceeding
       if (!thumbnail || !modal || !lightboxImage || !zoomInBtn || !zoomOutBtn || !closeBtn) {
-        console.warn('Some lightbox elements not found, lightbox functionality disabled');
+        if (import.meta.env.DEV) {
+          console.warn('Some lightbox elements not found, lightbox functionality disabled');
+        }
         return;
       }
       
@@ -125,19 +116,13 @@ console.log('Article data:', article);
       }
       
       // Only add click handler if thumbnail exists and has a valid src
-      console.log('Thumbnail src:', thumbnail.src);
-      console.log('Current location:', window.location.href);
-      
       if (thumbnail.src && thumbnail.src !== window.location.href) {
-        console.log('Adding click handler to thumbnail');
         thumbnail.addEventListener('click', function() {
           lightboxImage.src = thumbnail.src;
           setZoom(1);
           modal.classList.remove('hidden');
           document.body.style.overflow = 'hidden';
         });
-      } else {
-        console.log('Thumbnail click handler not added - invalid src or same as location');
       }
       
       zoomInBtn.addEventListener('click', function(e) {

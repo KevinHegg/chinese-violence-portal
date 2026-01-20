@@ -48,7 +48,7 @@ import "../../styles/western-colors.css";
   <script type="module">
     // Load data
     const timelineData = await fetch('/timeline.json').then(r => r.json());
-    const lynchingsData = await fetch('/lynchings.json').then(r => r.json());
+    const lynchingsData = await fetch('/api/lynchings').then(r => r.json());
 
     // --- Chart 1: Incidents Over Time ---
     const timelineEvents = timelineData.filter(e => e.eventType && e.eventType.toLowerCase().includes('anti-chinese violence'));

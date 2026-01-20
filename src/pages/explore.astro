@@ -1,12 +1,18 @@
 ---
 import PageLayout from "../layouts/PageLayout.astro";
-import lynchingsData from "../data/lynchings.json";
+import { fetchLynchingsData } from "../utils/googleSheets";
+
+export const prerender = false;
+
+// Fetch lynchings data directly from Google Sheets
+
+const lynchingsData = await fetchLynchingsData();
 
 // Extract unique filter options
-const decades = Array.from(new Set(lynchingsData.map(l => l.decade))).sort();
-const states = Array.from(new Set(lynchingsData.map(l => l.state))).sort();
-const eventTypes = Array.from(new Set(lynchingsData.map(l => l["event-type"]))).sort();
-const sources = Array.from(new Set(lynchingsData.map(l => l.source))).sort();
+const decades = Array.from(new Set(lynchingsData.map((l: any) => l.decade))).sort();
+const states = Array.from(new Set(lynchingsData.map((l: any) => l.state))).sort();
+const eventTypes = Array.from(new Set(lynchingsData.map((l: any) => l["event-type"]))).sort();
+const sources = Array.from(new Set(lynchingsData.map((l: any) => l.source))).sort();
 
 // Event Type dropdown: reorder values
 const eventTypeOrder = ["Lynching", "Possible Lynching", "Massacre", "Riot"];

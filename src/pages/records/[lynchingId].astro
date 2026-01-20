@@ -1,41 +1,32 @@
 ---
 import PageLayout from "../../layouts/PageLayout.astro";
 import ArticleViewer from "../../components/ArticleViewer.astro";
-import lynchingsData from "../../data/lynchings.json";
-import articlesData from "../../data/articles.json";
+import { fetchLynchingsData, fetchArticlesData } from "../../utils/googleSheets";
 
-// Enable prerendering for static generation
-export const prerender = true;
+// Disable prerendering to allow dynamic data from Google Sheets
+export const prerender = false;
 
-// Generate static paths for all lynching records
-export async function getStaticPaths() {
-  return lynchingsData.map(lynching => ({
-    params: { lynchingId: lynching["lynching-id"] },
-    props: { lynching }
-  }));
-}
+// Fetch data directly from Google Sheets (using utility functions)
 
-// Get the lynching data from props
-const { lynching: lynchingFromProps } = Astro.props;
+const [lynchingsData, articlesData] = await Promise.all([
+  fetchLynchingsData(),
+  fetchArticlesData()
+]);
 
-// If lynching is not provided via props (development mode), try to find it in the data
-let lynching = lynchingFromProps;
-if (!lynching) {
-  const lynchingId = Astro.params.lynchingId;
-  lynching = lynchingsData.find(l => l["lynching-id"] === lynchingId);
-}
+// Get the lynching ID from URL params
+const lynchingId = Astro.params.lynchingId;
+const lynching = lynchingsData.find((l: any) => l["lynching-id"] === lynchingId);
 
 // Check if lynching data exists
 if (!lynching) {
   return Astro.redirect('/404');
 }
-lynching = lynching!;
 
 // Get related articles
 const relatedArticles = [];
 if (lynching["article-ids"] && Array.isArray(lynching["article-ids"])) {
   for (const articleId of lynching["article-ids"]) {
-    const article = articlesData.find(a => a["article-id"] === articleId);
+    const article = articlesData.find((a: any) => a["article-id"] === articleId);
     if (article) {
       relatedArticles.push(article);
     }
@@ -44,7 +35,7 @@ if (lynching["article-ids"] && Array.isArray(lynching["article-ids"])) {
 
 // Get navigation data
 const allLynchings = lynchingsData; // Use original order from JSON (chronological)
-const currentIndex = allLynchings.findIndex(l => l["lynching-id"] === lynching["lynching-id"]);
+const currentIndex = allLynchings.findIndex((l: any) => l["lynching-id"] === lynching["lynching-id"]);
 const prevLynching = currentIndex > 0 ? allLynchings[currentIndex - 1] : null;
 const nextLynching = currentIndex < allLynchings.length - 1 ? allLynchings[currentIndex + 1] : null;
 
@@ -181,7 +172,7 @@ const decodeHtmlEntities = (text: string) => {
                   var fromlink = encodeURIComponent(window.location.pathname + window.location.search);
                   var lynchingId = mapLink.getAttribute('data-lynching-id');
                   var linklabel = encodeURIComponent('Back to Record ' + lynchingId);
-                  mapLink.href = '/map.html?fromlink=' + fromlink + '&linklabel=' + linklabel;
+                  mapLink.href = '/visualize/map?fromlink=' + fromlink + '&linklabel=' + linklabel;
                 }
               });
             </script>

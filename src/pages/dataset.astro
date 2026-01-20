@@ -86,10 +86,10 @@ import "../styles/western-colors.css";
   </div>
 </PageLayout>
 
-<!-- Add html2pdf for better PDF generation -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<!-- Add xlsx library for Excel file generation -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- Add html2pdf for better PDF generation - loaded on demand -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<!-- Add xlsx library for Excel file generation - loaded on demand -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
   // CSV URL from Google Sheets
@@ -101,22 +101,17 @@ import "../styles/western-colors.css";
   // Load and parse CSV data
   async function loadData() {
     try {
-      console.log('Fetching CSV data from:', CSV_URL);
       const response = await fetch(CSV_URL);
       const csvText = await response.text();
       
-      console.log('CSV Response received, length:', csvText.length);
-      
       // Parse CSV
       const lines = csvText.split('\n');
-      console.log('Number of lines:', lines.length);
       
       if (lines.length < 2) {
         throw new Error('Invalid CSV format');
       }
       
       const headers = lines[0].split(',').map(h => h.trim());
-      console.log('Headers:', headers);
       
              const data: Record<string, string>[] = [];
        for (let i = 1; i < lines.length; i++) {
@@ -130,17 +125,17 @@ import "../styles/western-colors.css";
          }
        }
       
-      console.log('Parsed data rows:', data.length);
       tableData = data;
       
       // Initial sort and display
       sortData(currentSort.column, currentSort.direction);
       displayData();
       
-      console.log('✅ Data loaded and displayed successfully');
-      
     } catch (error) {
-      console.error('Error loading data:', error);
+      // Only log errors in development
+      if (import.meta.env.DEV) {
+        console.error('Error loading data:', error);
+      }
       const tableBody = document.getElementById('table-body');
       if (tableBody) {
         tableBody.innerHTML = '<tr><td colspan="14" class="text-center py-8 text-red-600">Error loading data. Please try again.</td></tr>';
@@ -338,7 +333,9 @@ import "../styles/western-colors.css";
       html2pdf().set(opt).from(pdfContainer).save();
       
     } catch (error) {
-      console.error('PDF generation error:', error);
+      if (import.meta.env.DEV) {
+        console.error('PDF generation error:', error);
+      }
       alert('PDF export failed: ' + error.message + '. Please try again.');
     }
   }

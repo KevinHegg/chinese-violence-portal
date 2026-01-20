@@ -1,13 +1,19 @@
 ---
 import PageLayout from "../../layouts/PageLayout.astro";
 import ArticleViewer from "../../components/ArticleViewer.astro";
-import articles from "../../data/articles.json";
 import topNamedEntities from "../../data/top-named-entities.json";
+import { fetchArticlesData } from "../../utils/googleSheets";
+
+export const prerender = false;
+
+// Fetch articles directly from Google Sheets
+
+const articles = await fetchArticlesData();
 
 // Extract unique values for dropdowns
-const decades = [...new Set(articles.map(article => article.decade).filter(Boolean))].sort();
-const states = [...new Set(articles.map(article => article.state).filter(Boolean))].sort();
-const publications = [...new Set(articles.map(article => article.newspaper).filter(Boolean))].sort();
+const decades = [...new Set(articles.map((article: any) => article.decade).filter(Boolean))].sort();
+const states = [...new Set(articles.map((article: any) => article.state).filter(Boolean))].sort();
+const publications = [...new Set(articles.map((article: any) => article.newspaper).filter(Boolean))].sort();
 const entities = [...topNamedEntities].sort(); // Alphabetize the entities
 ---
 
@@ -212,9 +218,6 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
 
 
     function renderViewer(article) {
-      console.log('Opening article:', article);
-      console.log('Article image_name:', article.image_name);
-      
       // Create title with newspaper metadata (without location since it's in citation)
       const newspaperName = article.newspaper || 'Unknown Publication';
       const publicationDate = formatDate(article['publication-date']);
@@ -222,7 +225,6 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
       
       // Set image with fallback
       const imagePath = `/article-scans/${article.image_name}`;
-      console.log('Loading image:', imagePath, 'for article:', article['article-title']);
       
       // Transcription with proper formatting
       const transcript = (article['article-transcript'] || 'No transcription available.')

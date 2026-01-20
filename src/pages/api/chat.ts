@@ -7,41 +7,107 @@ marked.setOptions({
   gfm: true
 });
 
+// Simple rate limiting - store in memory (for production, use Redis or similar)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const RATE_LIMIT_MAX = 10; // 10 requests per minute
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const limit = rateLimitMap.get(ip);
+  
+  if (!limit || now > limit.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+    return true;
+  }
+  
+  if (limit.count >= RATE_LIMIT_MAX) {
+    return false;
+  }
+  
+  limit.count++;
+  return true;
+}
+
 export const POST: APIRoute = async ({ request }) => {
   try {
-    console.log('Chat API called');
+    // Rate limiting
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 
+               request.headers.get('x-real-ip') || 
+               'unknown';
+    
+    if (!checkRateLimit(ip)) {
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Please try again in a minute.' }),
+        {
+          status: 429,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    // Dev-only logging
+    if (import.meta.env.DEV) {
+      console.log('Chat API called');
+    }
+    
     const body = await request.text();
-    console.log('Request body:', body);
     let message;
     
     try {
       const parsed = JSON.parse(body);
       message = parsed.message;
-      console.log('Parsed message:', message);
     } catch (parseError) {
-      console.error('JSON parse error:', parseError);
+      if (import.meta.env.DEV) {
+        console.error('JSON parse error:', parseError);
+      }
       return new Response(JSON.stringify({ error: 'Invalid JSON' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    if (!message) {
+    if (!message || typeof message !== 'string' || message.trim().length === 0) {
       return new Response(JSON.stringify({ error: 'Message is required' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
+    // Sanitize input - limit length
+    if (message.length > 2000) {
+      return new Response(JSON.stringify({ error: 'Message too long' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Sanitize input - remove potentially dangerous characters and normalize
+    // Remove null bytes, control characters, and excessive whitespace
+    let sanitizedMessage = message
+      .replace(/\0/g, '') // Remove null bytes
+      .replace(/[\x00-\x1F\x7F]/g, '') // Remove control characters except newlines/tabs
+      .replace(/\n{3,}/g, '\n\n') // Limit consecutive newlines
+      .trim();
+    
+    // Validate after sanitization
+    if (sanitizedMessage.length === 0) {
+      return new Response(JSON.stringify({ error: 'Message is required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // Use sanitized message
+    message = sanitizedMessage;
+
     const openaiApiKey = import.meta.env.OPENAI_API_KEY;
     const assistantId = import.meta.env.ASSISTANT_ID;
 
-    console.log('Environment check:');
-    console.log('- OPENAI_API_KEY:', openaiApiKey ? 'Present' : 'Missing');
-    console.log('- ASSISTANT_ID:', assistantId ? 'Present' : 'Missing');
-
     if (!openaiApiKey || !assistantId) {
-      console.error('Missing environment variables');
+      if (import.meta.env.DEV) {
+        console.error('Missing environment variables');
+      }
       return new Response(JSON.stringify({ error: 'OpenAI configuration missing' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
@@ -49,7 +115,6 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Create a thread
-    console.log('Creating thread with API key:', openaiApiKey ? 'Present' : 'Missing');
     const threadResponse = await fetch('https://api.openai.com/v1/threads', {
       method: 'POST',
       headers: {
@@ -59,13 +124,12 @@ export const POST: APIRoute = async ({ request }) => {
       }
     });
 
-    console.log('Thread response status:', threadResponse.status);
-    console.log('Thread response status text:', threadResponse.statusText);
-
     if (!threadResponse.ok) {
       const errorText = await threadResponse.text();
-      console.error('Thread creation error response:', errorText);
-      throw new Error(`Failed to create thread: ${threadResponse.statusText} - ${errorText}`);
+      if (import.meta.env.DEV) {
+        console.error('Thread creation error response:', errorText);
+      }
+      throw new Error(`Failed to create thread: ${threadResponse.statusText}`);
     }
 
     const thread = await threadResponse.json();
@@ -80,7 +144,7 @@ export const POST: APIRoute = async ({ request }) => {
       },
       body: JSON.stringify({
         role: 'user',
-        content: message
+        content: message.trim()
       })
     });
 
@@ -107,10 +171,21 @@ export const POST: APIRoute = async ({ request }) => {
 
     const run = await runResponse.json();
 
-    // Poll for completion
+    // Poll for completion with exponential backoff
     let runStatus = run.status;
+    let pollDelay = 500; // Start with 500ms
+    const maxDelay = 5000; // Max 5 seconds
+    const maxPollTime = 60000; // Max 60 seconds total
+    const startTime = Date.now();
+    let pollCount = 0;
+
     while (runStatus === 'queued' || runStatus === 'in_progress') {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
+      // Check timeout
+      if (Date.now() - startTime > maxPollTime) {
+        throw new Error('Request timeout - assistant took too long to respond');
+      }
+
+      await new Promise(resolve => setTimeout(resolve, pollDelay));
 
       const statusResponse = await fetch(`https://api.openai.com/v1/threads/${thread.id}/runs/${run.id}`, {
         headers: {
@@ -125,6 +200,10 @@ export const POST: APIRoute = async ({ request }) => {
 
       const runData = await statusResponse.json();
       runStatus = runData.status;
+      pollCount++;
+
+      // Exponential backoff: increase delay after each poll, but cap at maxDelay
+      pollDelay = Math.min(pollDelay * 1.5, maxDelay);
 
       if (runStatus === 'failed') {
         throw new Error('Assistant run failed');
@@ -156,7 +235,9 @@ export const POST: APIRoute = async ({ request }) => {
     try {
       response = marked(response);
     } catch (markdownError) {
-      console.error('Markdown parsing error:', markdownError);
+      if (import.meta.env.DEV) {
+        console.error('Markdown parsing error:', markdownError);
+      }
       // If markdown parsing fails, return the original text
     }
 
@@ -177,7 +258,9 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
   } catch (error) {
-    console.error('Chat API error:', error);
+    if (import.meta.env.DEV) {
+      console.error('Chat API error:', error);
+    }
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }

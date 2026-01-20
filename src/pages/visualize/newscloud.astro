@@ -1,9 +1,15 @@
 ---
 import PageLayout from "../../layouts/PageLayout.astro";
 import ArticleViewer from "../../components/ArticleViewer.astro";
-import articles from "../../data/articles.json";
 import newscloud from "../../data/newscloud.json";
 import "../../styles/western-colors.css";
+import { fetchArticlesData } from "../../utils/googleSheets";
+
+export const prerender = false;
+
+// Fetch articles directly from Google Sheets
+
+const articles = await fetchArticlesData();
 
 // Process newscloud data to count entity occurrences
 const entityCounts: Record<string, number> = {};
@@ -230,9 +236,6 @@ function getEntityColor(entity: string) {
     }
 
     function renderViewer(article) {
-      console.log('Opening article:', article);
-      console.log('Article image_name:', article.image_name);
-      
       // Create title with newspaper metadata
       const newspaperName = article.newspaper || 'Unknown Publication';
       const publicationDate = formatDate(article['publication-date']);
@@ -240,7 +243,6 @@ function getEntityColor(entity: string) {
       
       // Set image with fallback
       const imagePath = `/article-scans/${article.image_name}`;
-      console.log('Loading image:', imagePath, 'for article:', article['article-title']);
       
       // Transcription with proper formatting
       const transcript = (article['article-transcript'] || 'No transcription available.')
