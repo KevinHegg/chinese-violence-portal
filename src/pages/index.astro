@@ -2,6 +2,14 @@
 // Landing page with navbar and cards
 import "../styles/tailwind.css";
 import Navbar from "../components/Navbar.astro";
+import { fetchLynchingsData } from "../utils/googleSheets";
+
+// Disable prerendering to allow dynamic data from Google Sheets
+export const prerender = false;
+
+// Fetch lynchings data to get count
+const lynchingsData = await fetchLynchingsData();
+const incidentCount = lynchingsData.length;
 ---
 
 <!doctype html>
@@ -26,7 +34,7 @@ import Navbar from "../components/Navbar.astro";
     
     <main class="p-6">
       <div class="container-standard">
-        <div class="text-center mb-12">
+        <div class="text-center mb-8">
           <h1 class="text-3xl font-display font-bold mb-4 text-base-content">
             The John Crow Project
           </h1>
@@ -36,73 +44,38 @@ import Navbar from "../components/Navbar.astro";
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 container-homepage">
-          <a href="/dataset" class="card-vintage-link group">
-            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-amber-100 text-amber-700 mb-2">
-              <!-- Exact icon from Lynching Records navbar item -->
-              <svg class="nav-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2" fill="none" />
-                <path stroke="currentColor" stroke-width="2" d="M3 9h18M3 13h18M7 5v14M17 5v14" />
-              </svg>
-            </span>
-            <span class="font-display font-semibold text-base">Lynching&nbsp;Records</span>
-            <p class="text-sm text-gray-600 mt-1">View, download, and interact with the Lynching Records dataset.</p>
-          </a>
-          <a href="/chat" class="card-vintage-link group">
-            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-amber-100 text-amber-700 mb-2">
-              <svg class="nav-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-            </span>
-            <span class="font-display font-semibold text-base">Ask&nbsp;the&nbsp;Archive</span>
-            <p class="text-sm text-gray-600 mt-1">Chat with AI about the data and historical context.</p>
-          </a>
-          <!-- Explore the Records Card (formerly Browse) -->
-          <a href="/explore" class="card-vintage-link group">
-            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-amber-100 text-amber-700 mb-2">
-              <svg class="nav-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5h10M11 9h7M11 13h4M7 5v14m0 0H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2v12z" />
-                <circle cx="17" cy="17" r="3" stroke="currentColor" stroke-width="2" fill="none" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-2-2" />
-              </svg>
-            </span>
-            <span class="font-display font-semibold text-base">Explore&nbsp;the&nbsp;Records</span>
-            <p class="text-sm text-gray-600 mt-1">Browse and filter lynching records with interactive tools.</p>
-          </a>
-          <a href="/visualize" class="card-vintage-link group">
-            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-amber-100 text-amber-700 mb-2">
-              <svg class="nav-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            </span>
-            <span class="font-display font-semibold text-base">Visualize&nbsp;Data</span>
-            <p class="text-sm text-gray-600 mt-1">Explore interactive charts, maps, and visualizations.</p>
-          </a>
-        </div>
-
-        <div class="prose prose-lg container-standard mt-12 mb-8">
+        <div class="prose prose-lg container-standard mb-8">
+          <h2 class="text-2xl font-display font-semibold mb-4 text-base-content">About the Project</h2>
           <p class="font-body text-base-content/90 leading-relaxed mb-6">
-            Welcome to the John Crow Project. This site revives a neglected chapter of American history: the white supremacist violence and legal exclusion aimed at Chinese immigrants after the Gold Rush. The first attacks appeared in California’s goldfields in 1849, then rolled east along wagon roads, rail lines, and river towns. By the early 1900s the violence had crossed the Mississippi River and collided with the entrenched racism of Jim Crow. Drawing on newly compiled lynching databases, digitized newspapers, and recent scholarship, this website documents how vigilante terror and discriminatory laws worked hand-in-hand to drive Chinese communities from mines, rail camps, and towns.
-
+            Welcome to the John Crow Project. This site revives a neglected chapter of American history: the white supremacist violence and legal exclusion aimed at Chinese immigrants after the Gold Rush. The first attacks appeared in California's goldfields in 1849, then rolled east along wagon roads, rail lines, and river towns. By the early 1900s the violence had crossed the Mississippi River and collided with the entrenched racism of Jim Crow. Drawing on newly compiled lynching databases, digitized newspapers, and recent scholarship, this website documents how vigilante terror and discriminatory laws worked hand-in-hand to drive Chinese communities from mines, rail camps, and towns.
           </p>
           
+          <h2 class="text-2xl font-display font-semibold mb-4 text-base-content mt-8">The Archive</h2>
           <p class="font-body text-base-content/90 leading-relaxed mb-6">
-            In the pages of this website, you will find interactive charts and maps of more than  documented lynchings and massacres, timelines that pair major exclusion laws with surges in mob violence, and primary-source newspaper articles that preserve the voices of victims, witnesses, and resisters. Our goal is to make this “red record” of the West impossible to ignore, to honor those who were lost, and to provide educators, descendants, and researchers the tools they need to confront the legacy of what we call <em>John Crow</em>—a western counterpart to Jim Crow that sought expulsion rather than segregation.
-
+            In the pages of this website, you will find interactive charts and maps of more than <strong>{incidentCount}</strong> documented incidents resulting in extralegal homicides, timelines that pair major exclusion laws with surges in mob violence, and primary-source newspaper articles that preserve the voices of victims, witnesses, and resisters. Our goal is to make this "red record" of the West impossible to ignore, to honor those who were lost, and to provide educators, descendants, and researchers the tools they need to confront the legacy of what we call <em>John Crow</em>—a western counterpart to Jim Crow that sought expulsion rather than segregation.
           </p>
-          <p class="font-body text-base-content/90 leading-relaxed mb-6">
-            The term <i>John Crow</i> is a deliberate conceptual framework, modeled in part on <i>Jane Crow</i>, 
-            which was coined to name the compounded racial and gendered oppression faced by Black women. 
-            Like <i>Jane Crow</i>, <i>John Crow</i> seeks to expose a distinct but parallel regime of racial terror—in this case, 
-            one that targeted Chinese immigrants in the American West. “Crow” evokes Jim Crow, the system of white supremacist control 
-            that subjugated African Americans in the post-Reconstruction South. “John” derives from John Chinaman, the 19th-century racial caricature 
-            that dehumanized Chinese immigrants as alien and unassimilable. By merging these terms, <i>John Crow</i> names a system not of enforced separation, 
-            but of violent exclusion: lynchings, purges, exclusion laws, and the destruction of Chinatowns worked to erase Chinese presence from the national body. 
-            This project uses John Crow to surface that hidden history and to extend <strong>Ida B. Wells’s “Red Record”</strong> into the western landscape of American racial terror.
-          </p>
+          
+          <!-- John Crow Explanation Callout -->
+          <div class="bg-amber-50 border-l-4 border-amber-500 rounded-lg p-6 mb-6 shadow-sm">
+            <h3 class="text-xl font-display font-semibold mb-3 text-amber-900">What is "John Crow"?</h3>
+            <p class="font-body text-base-content/90 leading-relaxed mb-3">
+              The term <i>John Crow</i> is a deliberate conceptual framework, modeled in part on <i>Jane Crow</i>, 
+              which was coined to name the compounded racial and gendered oppression faced by Black women. 
+              Like <i>Jane Crow</i>, <i>John Crow</i> seeks to expose a distinct but parallel regime of racial terror—in this case, 
+              one that targeted Chinese immigrants in the American West.
+            </p>
+            <p class="font-body text-base-content/90 leading-relaxed">
+              "Crow" evokes Jim Crow, the system of white supremacist control 
+              that subjugated African Americans in the post-Reconstruction South. "John" derives from John Chinaman, the 19th-century racial caricature 
+              that dehumanized Chinese immigrants as alien and unassimilable. By merging these terms, <i>John Crow</i> names a system not of enforced separation, 
+              but of violent exclusion: lynchings, purges, exclusion laws, and the destruction of Chinatowns worked to erase Chinese presence from the national body. 
+              This project uses John Crow to surface that hidden history and to extend <strong>Ida B. Wells's "Red Record"</strong> into the western landscape of American racial terror.
+            </p>
+          </div>
+          
+          <h2 class="text-2xl font-display font-semibold mb-4 text-base-content mt-8">Join the Effort</h2>
           <p class="font-body text-base-content/90 leading-relaxed">
             Explore the evidence, contribute your family's stories, and help us extend this record—what you see here is a starting point, not an endpoint. Together we can uncover, verify, and map new cases and perspectives, transforming collective memory and advancing justice through truth.
-
           </p>
           <!-- Callout for Submit Form -->
           <div class="mt-8 mb-8">

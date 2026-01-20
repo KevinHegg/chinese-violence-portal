@@ -2,11 +2,11 @@
 
 /* Common Card/Button Styles */
 .card-vintage {
-  @apply block rounded-xl shadow-vintage border border-amber-200 p-3 hover:shadow-lg transition-all duration-200 bg-white;
+  @apply block rounded-xl shadow-vintage border border-amber-200 p-1.5 hover:shadow-lg transition-all duration-200 bg-white;
 }
 
 .card-vintage-link {
-  @apply card-vintage w-full max-w-xs mx-auto;
+  @apply card-vintage w-full max-w-none;
 }
 
 .card-vintage-button {
