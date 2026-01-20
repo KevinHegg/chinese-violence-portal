@@ -7,9 +7,15 @@ import { fetchLynchingsData } from "../utils/googleSheets";
 // Disable prerendering to allow dynamic data from Google Sheets
 export const prerender = false;
 
-// Fetch lynchings data to get count
+// Fetch lynchings data to get count and featured record
 const lynchingsData = await fetchLynchingsData();
 const incidentCount = lynchingsData.length;
+
+// Select a featured record (Rock Springs Massacre - one of the most significant events)
+const featuredRecord = lynchingsData.find((l: any) => 
+  l["lynching-id"] === "WY1885-09-02" || 
+  l["narrative-short-title"]?.toLowerCase().includes("rock springs")
+) || lynchingsData[0]; // Fallback to first record if not found
 ---
 
 <!doctype html>
@@ -87,6 +93,36 @@ const incidentCount = lynchingsData.length;
             </div>
           </div>
         </div>
+
+        <!-- Featured Record Section -->
+        {featuredRecord && (
+          <div class="mb-8">
+            <h2 class="text-2xl font-display font-semibold mb-4 text-base-content">Featured Record</h2>
+            <a href={`/records/${featuredRecord["lynching-id"]}`} class="block bg-white border border-amber-200 rounded-lg p-5 shadow-md hover:shadow-lg transition-shadow">
+              <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-shrink-0">
+                  <img 
+                    src={`/mapimages/${featuredRecord["lynching-id"]}.png`}
+                    alt={`Map showing location of ${featuredRecord["city"] || featuredRecord["county"]}, ${featuredRecord["state"]}`}
+                    class="w-full md:w-48 h-32 object-cover rounded-lg border border-gray-200"
+                    onerror="this.style.display='none'"
+                  />
+                </div>
+                <div class="flex-1">
+                  <div class="flex justify-between items-start mb-2">
+                    <h3 class="text-lg font-display font-semibold text-gray-900">{featuredRecord["narrative-short-title"]}</h3>
+                    <span class="text-sm text-gray-500 ml-2 flex-shrink-0">{featuredRecord["date"]}</span>
+                  </div>
+                  <p class="text-sm text-gray-600 mb-2">
+                    {featuredRecord["city"] ? `${featuredRecord["city"]}, ` : ''}{featuredRecord["state"]} • {featuredRecord["event-type"]}
+                  </p>
+                  <p class="text-sm text-gray-700 line-clamp-3">{featuredRecord["narrative-summary"]}</p>
+                  <span class="inline-block mt-3 text-sm font-medium text-accent hover:text-accent-focus">Read full record →</span>
+                </div>
+              </div>
+            </a>
+          </div>
+        )}
 
         <footer class="text-center mt-12 pt-8 border-t border-base-300">
           <p class="text-sm font-body text-base-content/70">

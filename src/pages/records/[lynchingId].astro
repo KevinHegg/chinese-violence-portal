@@ -92,32 +92,58 @@ const decodeHtmlEntities = (text: string) => {
 
 <PageLayout title={decodeHtmlEntities(lynching["narrative-title"])} currentPage="records">
       <div class="container-standard mt-4">
-    <!-- Navigation -->
-    <div class="mb-8" id="record-nav" style="display:none;">
-      <a id="back-to-explore" href="/explore" class="text-accent hover:text-accent-focus flex items-center gap-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-        <span>Back to Explore</span>
-      </a>
-      <script is:inline>
-        document.addEventListener('DOMContentLoaded', function() {
-          if (window.location.search.includes('from=explore')) {
-            document.getElementById('record-nav').style.display = '';
-            const urlParams = new URLSearchParams(window.location.search);
-            const exploreParams = new URLSearchParams();
-            ['decade', 'state', 'eventType', 'newlyDocumented', 'sortBy', 'sortOrder', 'keyword'].forEach(param => {
-              if (urlParams.has(param)) {
-                exploreParams.set(param, urlParams.get(param));
-              }
-            });
-            const exploreLink = document.getElementById('back-to-explore');
-            if (exploreLink && exploreParams.toString()) {
-              exploreLink.href = '/explore?' + exploreParams.toString();
-            }
-          }
-        });
-      </script>
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="Breadcrumb" class="mb-4">
+      <ol class="flex items-center text-sm text-gray-600 flex-wrap">
+        <li class="flex items-center">
+          <a href="/" class="hover:text-accent transition-colors">Home</a>
+          <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </li>
+        <li class="flex items-center">
+          <a href="/explore" class="hover:text-accent transition-colors">Explore the Records</a>
+          <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </li>
+        <li class="text-gray-900 font-medium truncate max-w-xs" aria-current="page">
+          {decodeHtmlEntities(lynching["narrative-short-title"])}
+        </li>
+      </ol>
+    </nav>
+
+    <!-- Prev/Next Navigation - Always Visible -->
+    <div class="flex justify-between items-center mb-4 bg-amber-50 border border-amber-200 rounded-lg p-3">
+      <div class="flex-1">
+        {prevLynching ? (
+          <a href={`/records/${prevLynching["lynching-id"]}`} class="flex items-center gap-2 text-sm text-gray-700 hover:text-accent transition-colors group">
+            <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            <span class="hidden sm:inline truncate max-w-[150px]">{prevLynching["narrative-short-title"]}</span>
+            <span class="sm:hidden">Previous</span>
+          </a>
+        ) : (
+          <span class="text-sm text-gray-400">No previous record</span>
+        )}
+      </div>
+      <div class="text-center px-4">
+        <span class="text-xs text-gray-500">Record {currentIndex + 1} of {allLynchings.length}</span>
+      </div>
+      <div class="flex-1 text-right">
+        {nextLynching ? (
+          <a href={`/records/${nextLynching["lynching-id"]}`} class="inline-flex items-center gap-2 text-sm text-gray-700 hover:text-accent transition-colors group">
+            <span class="hidden sm:inline truncate max-w-[150px]">{nextLynching["narrative-short-title"]}</span>
+            <span class="sm:hidden">Next</span>
+            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+        ) : (
+          <span class="text-sm text-gray-400">No next record</span>
+        )}
+      </div>
     </div>
 
     <!-- Main Content -->

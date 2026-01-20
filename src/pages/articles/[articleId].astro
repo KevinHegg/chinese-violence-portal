@@ -1,22 +1,71 @@
 ---
 import PageLayout from "../../layouts/PageLayout.astro";
-import { fetchArticlesData } from "../../utils/googleSheets";
+import { fetchArticlesData, fetchLynchingsData } from "../../utils/googleSheets";
 
 export const prerender = false;
 
-// Fetch articles directly from Google Sheets
+// Fetch articles and lynchings data
+const [articles, lynchingsData] = await Promise.all([
+  fetchArticlesData(),
+  fetchLynchingsData()
+]);
 
-const articles = await fetchArticlesData();
 const { articleId } = Astro.params;
 const article = articles.find((a: any) => a["article-id"] === articleId);
 
 if (!article) {
   return Astro.redirect('/404');
 }
+
+// Find related lynching records that reference this article
+const relatedRecords = lynchingsData.filter((l: any) => {
+  const articleIds = l["article-ids"];
+  if (!articleIds || !Array.isArray(articleIds)) return false;
+  return articleIds.includes(articleId);
+});
+
+// Format date helper
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return "Unknown";
+  const [year, month, day] = dateStr.split("-");
+  if (!year) return dateStr;
+  if (month === "00" || !month) return year;
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+  const monthIndex = parseInt(month, 10) - 1;
+  if (isNaN(monthIndex) || monthIndex < 0 || monthIndex > 11) return year;
+  const monthName = monthNames[monthIndex];
+  if (day === "00" || !day) return `${monthName} ${year}`;
+  return `${monthName} ${parseInt(day, 10)}, ${year}`;
+};
 ---
 
 <PageLayout title={article["article-title"] || "Article Not Found"} currentPage="articles">
-      <div class="container-standard border border-gray-200 shadow-sm overflow-hidden bg-amber-50 rounded-lg mt-4">
+      <div class="container-standard mt-4">
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="Breadcrumb" class="mb-4">
+      <ol class="flex items-center text-sm text-gray-600 flex-wrap">
+        <li class="flex items-center">
+          <a href="/" class="hover:text-accent transition-colors">Home</a>
+          <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </li>
+        <li class="flex items-center">
+          <a href="/visualize/news" class="hover:text-accent transition-colors">News Articles</a>
+          <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </li>
+        <li class="text-gray-900 font-medium truncate max-w-xs" aria-current="page">
+          {article["article-title"] || "Article"}
+        </li>
+      </ol>
+    </nav>
+  </div>
+      <div class="container-standard border border-gray-200 shadow-sm overflow-hidden bg-amber-50 rounded-lg">
     <!-- Header -->
     <div class="border-b border-amber-200 py-2" style="background-color: #fffbe6;">
       <h1 class="text-3xl font-bold text-gray-900 mb-1" style="padding-left: 21px;">{article["article-title"] || "Article Not Found"}</h1>
@@ -74,10 +123,32 @@ if (!article) {
     </div>
 
     <!-- Citation -->
-    <div class="p-6 bg-white">
+    <div class="p-6 bg-white border-b border-gray-200">
       <h2 class="text-xl font-semibold mb-4">Citation</h2>
       <div class="text-sm text-gray-700">{article["turabian-citation"] || "Citation not available"}</div>
     </div>
+
+    <!-- Related Records -->
+    {relatedRecords.length > 0 && (
+      <div class="p-6 bg-amber-50">
+        <h2 class="text-xl font-semibold mb-4">Related Lynching Records</h2>
+        <p class="text-sm text-gray-600 mb-4">This article is referenced in the following records:</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {relatedRecords.map((record: any) => (
+            <a href={`/records/${record["lynching-id"]}`} class="block bg-white border border-amber-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="font-semibold text-gray-900 flex-1">{record["narrative-short-title"]}</h3>
+                <span class="text-xs text-gray-500 ml-2">{formatDate(record["date"])}</span>
+              </div>
+              <p class="text-sm text-gray-600 mb-2">
+                {record["city"] ? `${record["city"]}, ` : ''}{record["state"]} • {record["event-type"]}
+              </p>
+              <span class="text-sm text-accent hover:text-accent-focus">View full record →</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
   </div>
 
   <!-- Lightbox Modal -->

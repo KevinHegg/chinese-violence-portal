@@ -114,3 +114,118 @@
 .col-narrative { width: 120px; }
 .col-notes { width: 100px; }
 .col-full-text { width: 280px; }
+
+/* ==================== */
+/* Accessibility: Color Contrast Improvements */
+/* ==================== */
+
+/* Ensure text has sufficient contrast (WCAG AA) */
+.text-amber-800 {
+  color: #92400e !important; /* Darkened for better contrast */
+}
+
+.text-amber-900 {
+  color: #78350f !important; /* Dark amber for readability */
+}
+
+/* Links need clear contrast */
+.text-accent {
+  color: #6b5136 !important; /* Darker accent for accessibility */
+}
+
+.text-accent:hover,
+.text-accent-focus {
+  color: #4a3826 !important;
+}
+
+/* Gray text contrast fixes */
+.text-gray-500 {
+  color: #6b7280 !important; /* Ensure sufficient contrast on white */
+}
+
+.text-gray-600 {
+  color: #4b5563 !important;
+}
+
+/* ==================== */
+/* Mobile Experience Improvements */
+/* ==================== */
+
+@media (max-width: 768px) {
+  /* Improve text readability on mobile */
+  .prose {
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+  
+  .prose p {
+    margin-bottom: 1em;
+  }
+  
+  /* Larger touch targets for mobile */
+  .btn, button, a.card-vintage-link {
+    min-height: 44px;
+  }
+  
+  /* Filter panel improvements on mobile */
+  .select, .input {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    min-height: 44px;
+  }
+  
+  /* Better spacing on mobile */
+  .container-standard {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Stack filter controls better on mobile */
+  .form-control {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Readable text blocks on mobile */
+  .text-base {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  
+  /* Cards on mobile */
+  .card {
+    padding: 1rem;
+  }
+  
+  /* Breadcrumbs on mobile - allow wrapping */
+  nav[aria-label="Breadcrumb"] ol {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+  
+  nav[aria-label="Breadcrumb"] li {
+    white-space: nowrap;
+  }
+  
+  /* Prev/next nav on mobile */
+  .truncate.max-w-\[150px\] {
+    max-width: 80px;
+  }
+}
+
+/* Small mobile screens */
+@media (max-width: 480px) {
+  /* Even more compact on very small screens */
+  .text-3xl {
+    font-size: 1.5rem !important;
+    line-height: 2rem !important;
+  }
+  
+  .text-2xl {
+    font-size: 1.25rem !important;
+    line-height: 1.75rem !important;
+  }
+  
+  /* Filter grid becomes single column */
+  .grid-cols-1.md\\:grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+}

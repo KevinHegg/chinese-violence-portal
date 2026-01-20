@@ -27,8 +27,51 @@ body::before {
 }
 
 @layer utilities {
+  /* Typography scale for consistency */
   .text-4xl {
-    font-size: 1.85rem !important;
-    line-height: 2.1rem !important;
+    font-size: 2.25rem !important;
+    line-height: 2.5rem !important;
   }
+  .text-3xl {
+    font-size: 1.875rem !important;
+    line-height: 2.25rem !important;
+  }
+  .text-2xl {
+    font-size: 1.5rem !important;
+    line-height: 2rem !important;
+  }
+  .text-xl {
+    font-size: 1.25rem !important;
+    line-height: 1.75rem !important;
+  }
+}
+
+/* Focus states for accessibility */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #8b7355;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Skip link - always visible on focus */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #3c3c3b;
+  color: #f5f5eb;
+  padding: 8px 16px;
+  z-index: 100;
+  transition: top 0.3s;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.skip-link:focus {
+  top: 0;
 }
