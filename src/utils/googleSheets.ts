@@ -203,6 +203,39 @@ export function convertToArticleFormat(rows: Record<string, string>[]): any[] {
     const publicationYear = getField(["publication-year", "Publication Year", "publication_year", "Year"]) 
       || (publicationDate ? publicationDate.split('-')[0] : '');
     
+    // Derive decade from publication year if not explicitly provided
+    let decade = getField(["decade", "Decade"]);
+    if (!decade && publicationYear) {
+      const year = parseInt(publicationYear);
+      if (!isNaN(year)) {
+        decade = `${Math.floor(year / 10) * 10}s`;
+      }
+    }
+    
+    // Derive state from newspaper-location if not explicitly provided
+    let state = getField(["state", "State"]);
+    if (!state) {
+      const newspaperLocation = getField(["newspaper-location", "Newspaper Location", "newspaper_location"]);
+      if (newspaperLocation) {
+        // Try to extract state from location (e.g., "San Francisco, CA" -> "CA")
+        // Common patterns: "City, ST" or "City, State" or just "State"
+        const locationParts = newspaperLocation.split(',').map(s => s.trim());
+        if (locationParts.length > 1) {
+          // If it's a 2-letter code, use it; otherwise try to match common state abbreviations
+          const lastPart = locationParts[locationParts.length - 1];
+          if (lastPart.length === 2) {
+            state = lastPart.toUpperCase();
+          } else {
+            // Try to match full state names or use the last part
+            state = lastPart;
+          }
+        } else if (locationParts.length === 1) {
+          // If only one part, it might be just the state
+          state = locationParts[0];
+        }
+      }
+    }
+    
     return {
       "article-id": getField(["article-id", "Article ID", "article_id"]),
       "lynching-id": getField(["lynching-id", "Lynching ID", "lynching_id"]) || "",
@@ -218,8 +251,8 @@ export function convertToArticleFormat(rows: Record<string, string>[]): any[] {
       "article-summary": getField(["article-summary", "Article Summary", "article_summary"]),
       "turabian-citation": getField(["turabian-citation", "Turabian Citation", "turabian_citation"]),
       "clip_url": getField(["clip_url", "Clip URL", "clip-url"]),
-      "state": getField(["state", "State"]),
-      "decade": getField(["decade", "Decade"]),
+      "state": state || "",
+      "decade": decade || "",
       "named-entities": getField(["named-entities", "Named Entities", "named_entities"])
     };
   }).filter(item => item["article-id"] && item["article-id"].trim()); // Filter out empty rows
