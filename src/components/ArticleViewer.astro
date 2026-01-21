@@ -65,15 +65,15 @@ const { id = "article-viewer", className = "" } = Astro.props;
           </div>
           
           <!-- Transcript Panel -->
-          <div class="lg:w-1/2 p-3 lg:p-6 flex flex-col bg-gray-50">
+          <div class="lg:w-1/2 p-3 lg:p-6 flex flex-col bg-gray-50 min-h-0">
             <!-- Mobile: Scrollable transcript area, Desktop: Full height -->
-            <div class="flex-1 overflow-hidden">
+            <div class="flex-1 overflow-hidden min-h-0 mb-4">
               <h3 class="text-lg font-semibold mb-3 text-gray-900">Transcription</h3>
-              <div id="viewer-transcription" class="h-64 lg:h-full overflow-y-auto border-2 border-gray-200 rounded-lg p-4 lg:p-6 bg-white text-sm leading-relaxed"></div>
+              <div id="viewer-transcription" class="h-64 lg:h-full overflow-y-auto border-2 border-gray-200 rounded-lg p-4 lg:p-6 bg-white text-sm"></div>
             </div>
             
             <!-- Citation - Always at bottom -->
-            <div class="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <div class="flex-shrink-0 p-4 bg-amber-50 border border-amber-200 rounded-lg">
               <h4 class="text-sm font-semibold mb-2 text-gray-900">Citation</h4>
               <p class="text-xs text-gray-700 leading-relaxed" id="viewer-citation"></p>
             </div>
@@ -347,8 +347,9 @@ const { id = "article-viewer", className = "" } = Astro.props;
 
 <style>
   #viewer-transcription p {
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
     text-indent: 0;
+    line-height: 1.5;
   }
   
   #viewer-transcription p:last-child {
