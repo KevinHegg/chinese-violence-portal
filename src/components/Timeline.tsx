@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
 interface TimelineItem {
-  id: number;
+  id: string;
   date: string;
+  dateForSorting: string; // ISO date string for sorting
   title: string;
   description: string;
   eventType: string;
@@ -25,12 +26,19 @@ const Timeline: React.FC = () => {
   useEffect(() => {
     const fetchTimelineData = async () => {
       try {
-        const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vRs7Ox41PpOBoT4UM_pR7NbG9l5XabAFZdYxpIYLaoNkwlcs2LEVYb9xJAxzsyeG7UQQWhQ8MjzHt4L/pub?output=csv');
-        const csvText = await response.text();
+        // Fetch both data sources in parallel
+        const [timelineResponse, lynchingsResponse] = await Promise.all([
+          fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vRs7Ox41PpOBoT4UM_pR7NbG9l5XabAFZdYxpIYLaoNkwlcs2LEVYb9xJAxzsyeG7UQQWhQ8MjzHt4L/pub?output=csv'),
+          fetch('/api/lynchings')
+        ]);
         
-        // Parse CSV data
-        const lines = csvText.split('\n');
+        const csvText = await timelineResponse.text();
+        const lynchingsData = await lynchingsResponse.json();
+        
         const timelineItems: TimelineItem[] = [];
+        
+        // Parse CSV data for Legal & Policy and Census events
+        const lines = csvText.split('\n');
         
         // Process each line (skip header)
         for (let i = 1; i < lines.length; i++) {
@@ -65,13 +73,19 @@ const Timeline: React.FC = () => {
           const eventType = values[6] || 'Legal & Policy'; // Event Type column
           const link = values[7]; // Link column
           
-          // Create date string
+          // Skip Anti-Chinese Violence events from CSV (we'll get them from lynchings API)
+          if (eventType.toLowerCase() === 'anti-chinese violence') {
+            continue;
+          }
+          
+          // Create date string for sorting
           const dateStr = `${year}-${month}-${day}`;
           
           // Create timeline item
           const timelineItem: TimelineItem = {
-            id: i,
+            id: `timeline-${i}`,
             date: displayDate,
+            dateForSorting: dateStr,
             title: headline,
             description: text,
             eventType: eventType,
@@ -81,8 +95,65 @@ const Timeline: React.FC = () => {
           timelineItems.push(timelineItem);
         }
         
-        // Sort by date
-        timelineItems.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        // Convert lynchings data to timeline items
+        lynchingsData.forEach((lynching: any, index: number) => {
+          // Format date for display
+          const formatDate = (dateStr: string) => {
+            if (!dateStr) return "Unknown";
+            // Handle YYYY-MM-DD or YYYY-MM-00 or YYYY-00-00
+            const [year, month, day] = dateStr.split("-");
+            if (!year) return dateStr;
+            if (month === "00" || !month) return year;
+            const monthNames = [
+              "January", "February", "March", "April", "May", "June",
+              "July", "August", "September", "October", "November", "December"
+            ];
+            const monthIndex = parseInt(month, 10) - 1;
+            if (isNaN(monthIndex) || monthIndex < 0 || monthIndex > 11) return year;
+            const monthName = monthNames[monthIndex];
+            if (day === "00" || !day) {
+              return `${monthName} ${year}`;
+            }
+            return `${monthName} ${parseInt(day, 10)}, ${year}`;
+          };
+          
+          const displayDate = formatDate(lynching.date || '');
+          const location = lynching.city 
+            ? `${lynching.city}, ${lynching.state}` 
+            : lynching.county 
+              ? `${lynching.county} County, ${lynching.state}` 
+              : lynching.state || 'Unknown location';
+          
+          const title = lynching["narrative-short-title"] || lynching["narrative-title"] || `Incident in ${location}`;
+          const description = `${lynching["event-type"] || "Violence"} in ${location}. ${lynching["number-of-victims"] || 1} victim${lynching["number-of-victims"] > 1 ? 's' : ''}.`;
+          const link = `/records/${lynching["lynching-id"]}`;
+          
+          // Use the actual date field for sorting, or create a sortable date
+          const dateForSorting = lynching.date || '';
+          
+          const timelineItem: TimelineItem = {
+            id: `lynching-${lynching["lynching-id"]}`,
+            date: displayDate,
+            dateForSorting: dateForSorting,
+            title: title,
+            description: description,
+            eventType: 'Anti-Chinese Violence',
+            link: link
+          };
+          
+          timelineItems.push(timelineItem);
+        });
+        
+        // Sort by date using dateForSorting field
+        timelineItems.sort((a, b) => {
+          const dateA = a.dateForSorting ? new Date(a.dateForSorting).getTime() : NaN;
+          const dateB = b.dateForSorting ? new Date(b.dateForSorting).getTime() : NaN;
+          // Handle "Unknown" or invalid dates by putting them at the end
+          if (isNaN(dateA) && isNaN(dateB)) return 0;
+          if (isNaN(dateA)) return 1;
+          if (isNaN(dateB)) return -1;
+          return dateA - dateB;
+        });
         
         setItems(timelineItems);
         setLoading(false);
@@ -105,7 +176,11 @@ const Timeline: React.FC = () => {
     // Filter by decade
     if (selectedDecade !== 'all') {
       const [startYear, endYear] = selectedDecade.split('-').map(Number);
-      const itemYear = new Date(item.date).getFullYear();
+      const itemDate = item.dateForSorting ? new Date(item.dateForSorting) : null;
+      if (!itemDate || isNaN(itemDate.getTime())) {
+        return false; // Exclude items with invalid dates
+      }
+      const itemYear = itemDate.getFullYear();
       if (itemYear < startYear || itemYear > endYear) {
         return false;
       }
