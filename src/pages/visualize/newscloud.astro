@@ -93,9 +93,11 @@ const articles = await fetchArticlesData();
      let currentFilteredEntities = [];
      let articleEntityMap = {};
      
-     // Process articles to build entity counts and article mapping
+     // Process articles to build entity counts and article mapping (case-insensitive)
      function buildEntityData() {
-       const entityCounts = {};
+       const entityCounts = {}; // Key: lowercase entity name, Value: count
+       const entityCanonicalForm = {}; // Key: lowercase entity name, Value: most common original form
+       const entityFormCounts = {}; // Track different casings to find most common
        articleEntityMap = {};
        
        articles.forEach((article) => {
@@ -105,11 +107,30 @@ const articles = await fetchArticlesData();
              const trimmedEntity = entity.trim();
              // Filter out empty strings and 'nan' values
              if (trimmedEntity && trimmedEntity.toLowerCase() !== 'nan') {
-               entityCounts[trimmedEntity] = (entityCounts[trimmedEntity] || 0) + 1;
-               if (!articleEntityMap[trimmedEntity]) {
-                 articleEntityMap[trimmedEntity] = [];
+               const lowerKey = trimmedEntity.toLowerCase();
+               
+               // Count occurrences (case-insensitive)
+               entityCounts[lowerKey] = (entityCounts[lowerKey] || 0) + 1;
+               
+               // Track different casings to find the most common form
+               if (!entityFormCounts[lowerKey]) {
+                 entityFormCounts[lowerKey] = {};
                }
-               articleEntityMap[trimmedEntity].push(article['article-id']);
+               entityFormCounts[lowerKey][trimmedEntity] = (entityFormCounts[lowerKey][trimmedEntity] || 0) + 1;
+               
+               // Update canonical form to the most common casing
+               if (!entityCanonicalForm[lowerKey] || 
+                   entityFormCounts[lowerKey][trimmedEntity] > entityFormCounts[lowerKey][entityCanonicalForm[lowerKey]]) {
+                 entityCanonicalForm[lowerKey] = trimmedEntity;
+               }
+               
+               // Map to article IDs (using lowercase key)
+               if (!articleEntityMap[lowerKey]) {
+                 articleEntityMap[lowerKey] = [];
+               }
+               if (!articleEntityMap[lowerKey].includes(article['article-id'])) {
+                 articleEntityMap[lowerKey].push(article['article-id']);
+               }
              }
            });
          }
@@ -117,8 +138,12 @@ const articles = await fetchArticlesData();
        
        // Filter entities that appear 3 or more times
        const entitiesWithThreshold = Object.entries(entityCounts)
-         .filter(([entity, count]) => count >= 3)
+         .filter(([lowerKey, count]) => count >= 3)
+         .map(([lowerKey, count]) => [entityCanonicalForm[lowerKey] || lowerKey, count]) // Use canonical form for display
          .sort((a, b) => b[1] - a[1]); // Sort by count descending
+       
+       // Log total count of entities with 3+ occurrences
+       console.log(`Total entities with 3+ occurrences: ${entitiesWithThreshold.length}`);
        
        // Randomly select up to 50 entities
        function selectRandomEntities(entities, maxCount = 50) {
@@ -214,14 +239,16 @@ const articles = await fetchArticlesData();
     }
 
          function filterByEntity(entity) {
-       if (!entity || !articleEntityMap[entity]) {
+       // Use lowercase for lookup (case-insensitive matching)
+       const lowerKey = entity ? entity.toLowerCase() : null;
+       if (!lowerKey || !articleEntityMap[lowerKey]) {
          renderCards(articles);
          currentFilter = null;
          hideFilterNotification();
          return;
        }
 
-       const articleIds = articleEntityMap[entity];
+       const articleIds = articleEntityMap[lowerKey];
        const filtered = articles.filter(article => articleIds.includes(article['article-id']));
        
        currentFilter = entity;
