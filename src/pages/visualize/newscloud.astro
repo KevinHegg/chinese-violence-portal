@@ -1,94 +1,15 @@
 ---
 import PageLayout from "../../layouts/PageLayout.astro";
 import ArticleViewer from "../../components/ArticleViewer.astro";
-import newscloud from "../../data/newscloud.json";
 import "../../styles/western-colors.css";
 import { fetchArticlesData } from "../../utils/googleSheets";
 
 export const prerender = false;
 
 // Fetch articles directly from Google Sheets
-
 const articles = await fetchArticlesData();
 
-// Process newscloud data to count entity occurrences
-const entityCounts: Record<string, number> = {};
-const articleEntityMap: Record<string, string[]> = {};
-
-newscloud.forEach((item: { "named-entities"?: string; "article-id": string }) => {
-  if (item["named-entities"]) {
-    const entities = item["named-entities"].split("@");
-    entities.forEach((entity: string) => {
-      if (entity.trim()) {
-        entityCounts[entity] = (entityCounts[entity] || 0) + 1;
-        if (!articleEntityMap[entity]) {
-          articleEntityMap[entity] = [];
-        }
-        articleEntityMap[entity].push(item["article-id"]);
-      }
-    });
-  }
-});
-
-// Filter entities that appear 3 or more times and randomize order
-const filteredEntities = Object.entries(entityCounts)
-  .filter(([entity, count]) => count >= 3)
-  .sort((a, b) => b[1] - a[1]) // Sort by count descending first
-  .sort(() => Math.random() - 0.5); // Then randomize the order
-
-// Calculate font sizes based on counts
-const maxCount = Math.max(...filteredEntities.map(([_, count]) => count));
-const minCount = Math.min(...filteredEntities.map(([_, count]) => count));
-const maxFontSize = 28; // Further reduced from 36px
-const minFontSize = 10; // Further reduced from 12px
-
-function getFontSize(count: number): number {
-  const ratio = (count - minCount) / (maxCount - minCount);
-  const baseSize = Math.round(minFontSize + (ratio * (maxFontSize - minFontSize)));
-  
-  // Reduce font size on mobile devices
-  if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-    return Math.max(6, Math.round(baseSize * 0.6)); // 40% smaller on mobile
-  }
-  
-  return baseSize;
-}
-
-// Roy Rogers Western-themed color palette
-// Authentic western board game colors with good contrast
-const westernColorPalette = [
-  { bg: '#8B4513', text: '#FFFFFF' }, // Saddle Brown - classic leather
-  { bg: '#D2691E', text: '#FFFFFF' }, // Chocolate - rich brown
-  { bg: '#CD853F', text: '#000000' }, // Peru - warm tan
-  { bg: '#DEB887', text: '#000000' }, // Burlywood - light wood
-  { bg: '#F4A460', text: '#000000' }, // Sandy Brown - desert sand
-  { bg: '#DAA520', text: '#000000' }, // Goldenrod - golden wheat
-  { bg: '#B8860B', text: '#FFFFFF' }, // Dark Goldenrod - deep gold
-  { bg: '#8B7355', text: '#FFFFFF' }, // Tan - earth tone
-  { bg: '#A0522D', text: '#FFFFFF' }, // Sienna - reddish brown
-  { bg: '#BC8F8F', text: '#000000' }, // Rosy Brown - dusty rose
-  { bg: '#F5DEB3', text: '#000000' }, // Wheat - pale gold
-  { bg: '#D2B48C', text: '#000000' }, // Tan - light brown
-  { bg: '#C19A6B', text: '#000000' }, // Medium Wood - wood grain
-  { bg: '#8B7355', text: '#FFFFFF' }, // Tan - medium brown
-  { bg: '#A0522D', text: '#FFFFFF' }, // Sienna - terra cotta
-  { bg: '#BC8F8F', text: '#000000' }, // Rosy Brown - muted pink
-  { bg: '#F5DEB3', text: '#000000' }, // Wheat - cream
-  { bg: '#D2B48C', text: '#000000' }, // Tan - beige
-  { bg: '#C19A6B', text: '#000000' }, // Medium Wood - oak
-  { bg: '#8B7355', text: '#FFFFFF' }  // Tan - taupe
-];
-
-// Create a consistent color assignment for each entity
-const entityColorMap: Record<string, { bg: string; text: string }> = {};
-
-function getEntityColor(entity: string) {
-  if (!entityColorMap[entity]) {
-    const colorIndex = Object.keys(entityColorMap).length % westernColorPalette.length;
-    entityColorMap[entity] = westernColorPalette[colorIndex];
-  }
-  return entityColorMap[entity];
-}
+// Entity processing and rendering now happens client-side
 ---
 
 <PageLayout title="News Cloud - Visualize the Data" currentPage="visualize">
@@ -120,28 +41,14 @@ function getEntityColor(entity: string) {
          </span>
        </div>
           <div id="word-cloud" class="flex flex-wrap gap-1 justify-center items-center min-h-[160px] mb-3">
-            {filteredEntities.map(([entity, count]) => {
-              const fontSize = getFontSize(count);
-              const colorSet = getEntityColor(entity);
-              return (
-                <span 
-                  class="word-cloud-item cursor-pointer hover:scale-110 transition-all duration-200 font-medium shadow-sm" 
-                  style={`font-size: ${fontSize}px; color: ${colorSet.text}; background: ${colorSet.bg};`}
-                  data-entity={entity}
-                  data-count={count}
-                  title={`${entity} (${count} occurrences)`}
-                >
-                  {entity}
-                </span>
-              );
-            })}
+            <!-- Word cloud will be rendered client-side -->
           </div>
           <div class="flex justify-between items-center pt-2 pb-0 border-t border-amber-200">
             <div id="article-count" class="text-sm text-amber-700 bg-amber-100 rounded-lg px-3 py-2 flex items-center ml-2.5">
               Showing all {articles.length} articles
             </div>
             <button id="reset-filter" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm mr-2.5">
-              Reset Filter
+              Reset & Remix
             </button>
           </div>
      </div>
@@ -172,7 +79,7 @@ function getEntityColor(entity: string) {
   </div>
   </div>
 
-     <script define:vars={{ articles, filteredEntities, articleEntityMap }}>
+     <script define:vars={{ articles }}>
      const container = document.getElementById('cards-container');
      const wordCloud = document.getElementById('word-cloud');
      const articleCount = document.getElementById('article-count');
@@ -183,6 +90,47 @@ function getEntityColor(entity: string) {
      const filteredCount = document.getElementById('filtered-count');
      
      let currentFilter = null;
+     let currentFilteredEntities = [];
+     let articleEntityMap = {};
+     
+     // Process articles to build entity counts and article mapping
+     function buildEntityData() {
+       const entityCounts = {};
+       articleEntityMap = {};
+       
+       articles.forEach((article) => {
+         if (article['named-entities']) {
+           const entities = article['named-entities'].split('@');
+           entities.forEach((entity) => {
+             const trimmedEntity = entity.trim();
+             // Filter out empty strings and 'nan' values
+             if (trimmedEntity && trimmedEntity.toLowerCase() !== 'nan') {
+               entityCounts[trimmedEntity] = (entityCounts[trimmedEntity] || 0) + 1;
+               if (!articleEntityMap[trimmedEntity]) {
+                 articleEntityMap[trimmedEntity] = [];
+               }
+               articleEntityMap[trimmedEntity].push(article['article-id']);
+             }
+           });
+         }
+       });
+       
+       // Filter entities that appear 3 or more times
+       const entitiesWithThreshold = Object.entries(entityCounts)
+         .filter(([entity, count]) => count >= 3)
+         .sort((a, b) => b[1] - a[1]); // Sort by count descending
+       
+       // Randomly select up to 50 entities
+       function selectRandomEntities(entities, maxCount = 50) {
+         const shuffled = [...entities].sort(() => Math.random() - 0.5);
+         return shuffled.slice(0, Math.min(maxCount, shuffled.length));
+       }
+       
+       return selectRandomEntities(entitiesWithThreshold, 50);
+     }
+     
+     // Initialize entity data
+     currentFilteredEntities = buildEntityData();
 
     function formatDate(dateString) {
       if (!dateString) return '';
@@ -323,10 +271,96 @@ function getEntityColor(entity: string) {
        }, 500);
      }
 
+     // Calculate font sizes based on counts
+     function calculateFontSizes(entities) {
+       if (entities.length === 0) return { maxCount: 0, minCount: 0, maxFontSize: 28, minFontSize: 10 };
+       const counts = entities.map(([_, count]) => count);
+       const maxCount = Math.max(...counts);
+       const minCount = Math.min(...counts);
+       return { maxCount, minCount, maxFontSize: 28, minFontSize: 10 };
+     }
+     
+     function getFontSizeForEntity(count, maxCount, minCount, maxFontSize = 28, minFontSize = 10) {
+       if (maxCount === minCount) return maxFontSize;
+       const ratio = (count - minCount) / (maxCount - minCount);
+       const baseSize = Math.round(minFontSize + (ratio * (maxFontSize - minFontSize)));
+       
+       // Reduce font size on mobile devices
+       if (window.innerWidth <= 768) {
+         return Math.max(6, Math.round(baseSize * 0.6));
+       }
+       
+       return baseSize;
+     }
+     
+     // Western color palette
+     const westernColorPalette = [
+       { bg: '#8B4513', text: '#FFFFFF' },
+       { bg: '#D2691E', text: '#FFFFFF' },
+       { bg: '#CD853F', text: '#000000' },
+       { bg: '#DEB887', text: '#000000' },
+       { bg: '#F4A460', text: '#000000' },
+       { bg: '#DAA520', text: '#000000' },
+       { bg: '#B8860B', text: '#FFFFFF' },
+       { bg: '#8B7355', text: '#FFFFFF' },
+       { bg: '#A0522D', text: '#FFFFFF' },
+       { bg: '#BC8F8F', text: '#000000' },
+       { bg: '#F5DEB3', text: '#000000' },
+       { bg: '#D2B48C', text: '#000000' },
+       { bg: '#C19A6B', text: '#000000' },
+       { bg: '#8B7355', text: '#FFFFFF' },
+       { bg: '#A0522D', text: '#FFFFFF' },
+       { bg: '#BC8F8F', text: '#000000' },
+       { bg: '#F5DEB3', text: '#000000' },
+       { bg: '#D2B48C', text: '#000000' },
+       { bg: '#C19A6B', text: '#000000' },
+       { bg: '#8B7355', text: '#FFFFFF' }
+     ];
+     
+     const entityColorMap = {};
+     
+     function getEntityColor(entity) {
+       if (!entityColorMap[entity]) {
+         const colorIndex = Object.keys(entityColorMap).length % westernColorPalette.length;
+         entityColorMap[entity] = westernColorPalette[colorIndex];
+       }
+       return entityColorMap[entity];
+     }
+     
+     function renderWordCloud(entities) {
+       wordCloud.innerHTML = '';
+       
+       if (entities.length === 0) {
+         wordCloud.innerHTML = '<p class="text-gray-500">No entities found</p>';
+         return;
+       }
+       
+       const { maxCount, minCount, maxFontSize, minFontSize } = calculateFontSizes(entities);
+       
+       entities.forEach(([entity, count]) => {
+         const fontSize = getFontSizeForEntity(count, maxCount, minCount, maxFontSize, minFontSize);
+         const colorSet = getEntityColor(entity);
+         const span = document.createElement('span');
+         span.className = 'word-cloud-item cursor-pointer hover:scale-110 transition-all duration-200 font-medium shadow-sm';
+         span.style.fontSize = `${fontSize}px`;
+         span.style.color = colorSet.text;
+         span.style.background = colorSet.bg;
+         span.setAttribute('data-entity', entity);
+         span.setAttribute('data-count', count);
+         span.setAttribute('title', `${entity} (${count} occurrences)`);
+         span.textContent = entity;
+         wordCloud.appendChild(span);
+       });
+     }
+
      function resetFilter() {
        currentFilter = null;
        renderCards(articles);
        hideFilterNotification();
+       
+       // Remix: get a new random set of 50 entities
+       currentFilteredEntities = buildEntityData();
+       renderWordCloud(currentFilteredEntities);
        
        // Remove active state from all word cloud items
        document.querySelectorAll('.word-cloud-item').forEach(item => {
@@ -353,7 +387,8 @@ function getEntityColor(entity: string) {
 
     resetBtn.addEventListener('click', resetFilter);
 
-    // Initialize with all articles
+    // Initialize word cloud and render all articles
+    renderWordCloud(currentFilteredEntities);
     renderCards(articles);
   </script>
 
