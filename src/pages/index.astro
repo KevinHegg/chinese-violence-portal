@@ -17,6 +17,11 @@ const [publicResult, mainResult] = await Promise.allSettled([
 const lynchingsData = publicResult.status === "fulfilled" ? publicResult.value : [];
 const lynchingsMainData = mainResult.status === "fulfilled" ? mainResult.value : [];
 const incidentCount = lynchingsData.length;
+// Calculate total victim count from "number-of-victims" column
+const victimCount = lynchingsData.reduce((sum, record) => {
+  const victims = parseInt(record["number-of-victims"]) || 0;
+  return sum + victims;
+}, 0);
 
 // Select a random featured record on each request (prefer Main tab for Narrative Summary)
 const featuredSource = lynchingsMainData.length > 0 ? lynchingsMainData : lynchingsData;
@@ -65,7 +70,7 @@ const featuredRecord = featuredSource.length > 0
           
           <h2 class="text-2xl font-display font-semibold mb-4 text-base-content mt-8">The Archive</h2>
           <p class="font-body text-base-content/90 leading-relaxed mb-6">
-            In the pages of this website, you will find interactive charts and maps of more than <strong>{incidentCount}</strong> documented incidents resulting in extralegal homicides, timelines that pair major exclusion laws with surges in mob violence, and primary-source newspaper articles that preserve the voices of victims, witnesses, and resisters. Our goal is to make this "red record" of the West impossible to ignore, to honor those who were lost, and to provide educators, descendants, and researchers the tools they need to confront the legacy of what we call <em>John Crow</em>—a western counterpart to Jim Crow that sought expulsion rather than segregation.
+            In the pages of this website, you will find interactive charts and maps of more than <strong>{incidentCount}</strong> documented incidents resulting in <strong>{victimCount}</strong> extralegal homicides, timelines that pair major exclusion laws with surges in mob violence, and primary-source newspaper articles that preserve the voices of victims, witnesses, and resisters. Our goal is to make this "red record" of the West impossible to ignore, to honor those who were lost, and to provide educators, descendants, and researchers the tools they need to confront the legacy of what we call <em>John Crow</em>—a western counterpart to Jim Crow that sought expulsion rather than segregation.
           </p>
           
           <!-- John Crow Explanation Callout -->

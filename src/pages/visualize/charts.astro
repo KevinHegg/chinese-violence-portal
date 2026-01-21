@@ -30,6 +30,13 @@ import "../../styles/western-colors.css";
       <div id="chart-timeline" class="chart-container"></div>
     </div>
 
+    <!-- Chart 1b: Victims Over Time -->
+         <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
+      <h2 class="text-xl font-semibold mb-2 text-amber-800">Number of Victims of Anti-Chinese Violence Over Time</h2>
+             <p class="mb-4 text-sm text-amber-700">Annual count of victims, 1850–1920.</p>
+      <div id="chart-victims" class="chart-container"></div>
+    </div>
+
     <!-- Chart 2: Types of Violence -->
          <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
       <h2 class="text-xl font-semibold mb-2 text-amber-800">Types of Anti-Chinese Violence</h2>
@@ -109,6 +116,77 @@ import "../../styles/western-colors.css";
       },
       series: [{
         data: counts,
+        type: 'line',
+        smooth: true,
+        lineStyle: { color: 'var(--western-saddle-brown)', width: 3 },
+        areaStyle: { color: '#DEB887', opacity: 0.6 }, // burlywood
+        symbol: 'circle',
+        symbolSize: 8,
+        emphasis: {
+          focus: 'series',
+          lineStyle: { color: 'var(--western-saddle-brown)', width: 4 },
+          areaStyle: { color: '#DEB887', opacity: 0.8 }, // burlywood
+          itemStyle: {
+            color: 'var(--western-saddle-brown)',
+            borderColor: 'var(--western-sienna)',
+            borderWidth: 2
+          }
+        }
+      }],
+      grid: { left: 80, right: 30, top: 50, bottom: 60 },
+      responsive: true
+    });
+
+    // --- Chart 1b: Victims Over Time ---
+    const victimsByYearTimeline = {};
+    lynchingsData.forEach(record => {
+      let y = record.year;
+      if (!y || y === 0) {
+        if (record.date) {
+          const dateMatch = record.date.match(/^(\d{4})/);
+          if (dateMatch) {
+            y = parseInt(dateMatch[1]);
+          }
+        }
+      } else {
+        y = parseInt(y);
+      }
+      const victims = Number(record['number-of-victims']) || 0;
+      if (y && !isNaN(y) && y >= 1850 && y <= 1920) {
+        victimsByYearTimeline[y] = (victimsByYearTimeline[y] || 0) + victims;
+      }
+    });
+    const victimCounts = years.map(y => victimsByYearTimeline[parseInt(y)] || 0);
+    const chartVictims = echarts.init(document.getElementById('chart-victims'));
+    chartVictims.setOption({
+      title: { text: '', left: 'center' },
+      tooltip: { 
+        trigger: 'axis',
+        backgroundColor: 'var(--western-wheat)',
+        borderColor: 'var(--western-saddle-brown)',
+        textStyle: { color: 'var(--western-saddle-brown)' }
+      },
+      xAxis: { 
+        type: 'category', 
+        data: years, 
+        axisLabel: { align: 'center', color: 'var(--western-saddle-brown)' },
+        axisTick: { alignWithLabel: true },
+        axisLine: { lineStyle: { color: 'var(--western-sienna)' } }
+      },
+      yAxis: { 
+        type: 'value', 
+        name: 'Number of Victims', 
+        nameLocation: 'center', 
+        nameGap: 50, 
+        nameRotate: 90, 
+        nameTextStyle: { fontWeight: 'bold', fontSize: 16, fontFamily: 'sans-serif', color: 'var(--western-saddle-brown)' },
+        position: 'left',
+        axisLabel: { color: 'var(--western-saddle-brown)' },
+        axisLine: { lineStyle: { color: 'var(--western-sienna)' } },
+        splitLine: { lineStyle: { color: 'var(--western-burlywood)', opacity: 0.3 } }
+      },
+      series: [{
+        data: victimCounts,
         type: 'line',
         smooth: true,
         lineStyle: { color: 'var(--western-saddle-brown)', width: 3 },
@@ -266,12 +344,24 @@ import "../../styles/western-colors.css";
     // Fill last census year
     popByYear[popData[popData.length - 1].year] = popData[popData.length - 1].population;
 
-    // Victims per year from lynchings.json
+    // Victims per year from lynchings data (live spreadsheet)
     const victimsByYear = {};
-    lynchingsData.forEach(e => {
-      const y = Number(e.year);
-      const n = Number(e['number-of-victims']) || 0;
-      if (y && n > 0) victimsByYear[y] = (victimsByYear[y] || 0) + n;
+    lynchingsData.forEach(record => {
+      let y = record.year;
+      if (!y || y === 0) {
+        if (record.date) {
+          const dateMatch = record.date.match(/^(\d{4})/);
+          if (dateMatch) {
+            y = parseInt(dateMatch[1]);
+          }
+        }
+      } else {
+        y = parseInt(y);
+      }
+      const n = Number(record['number-of-victims']) || 0;
+      if (y && !isNaN(y) && n > 0) {
+        victimsByYear[y] = (victimsByYear[y] || 0) + n;
+      }
     });
     // Years to plot: 1850-1915
     const comboYears = [];
