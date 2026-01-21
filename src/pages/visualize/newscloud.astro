@@ -341,10 +341,22 @@ const articles = await fetchArticlesData();
          const fontSize = getFontSizeForEntity(count, maxCount, minCount, maxFontSize, minFontSize);
          const colorSet = getEntityColor(entity);
          const span = document.createElement('span');
-         span.className = 'word-cloud-item cursor-pointer hover:scale-110 transition-all duration-200 font-medium shadow-sm';
+         span.className = 'word-cloud-item cursor-pointer';
+         // Apply inline styles for dynamic properties
          span.style.fontSize = `${fontSize}px`;
          span.style.color = colorSet.text;
-         span.style.background = colorSet.bg;
+         span.style.backgroundColor = colorSet.bg;
+         // Ensure border and other styles from CSS are respected
+         span.style.border = '2px solid rgba(0, 0, 0, 0.15)';
+         span.style.borderRadius = '6px';
+         span.style.padding = '3px 6px';
+         span.style.margin = '1px';
+         span.style.display = 'inline-block';
+         span.style.fontWeight = '700';
+         span.style.textShadow = '0 1px 2px rgba(0, 0, 0, 0.2)';
+         span.style.letterSpacing = '0.5px';
+         span.style.textTransform = 'uppercase';
+         span.style.fontFamily = 'Georgia, serif';
          span.setAttribute('data-entity', entity);
          span.setAttribute('data-count', count);
          span.setAttribute('title', `${entity} (${count} occurrences)`);
