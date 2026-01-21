@@ -1,17 +1,45 @@
 ---
 import PageLayout from "../../layouts/PageLayout.astro";
 import ArticleViewer from "../../components/ArticleViewer.astro";
-import { fetchLynchingsData, fetchArticlesData } from "../../utils/googleSheets";
+import { fetchLynchingsData, fetchLynchingsMainData, fetchArticlesData } from "../../utils/googleSheets";
 
 // Disable prerendering to allow dynamic data from Google Sheets
 export const prerender = false;
 
-// Fetch data directly from Google Sheets (using utility functions)
-
-const [lynchingsData, articlesData] = await Promise.all([
+// Fetch data from both Public and Main tabs
+const mainTabGid = import.meta.env.PUBLIC_LYNCHINGS_MAIN_GID || "760826284";
+const [publicResult, mainResult, articlesData] = await Promise.allSettled([
   fetchLynchingsData(),
+  fetchLynchingsMainData(mainTabGid),
   fetchArticlesData()
 ]);
+
+const publicData = publicResult.status === "fulfilled" ? publicResult.value : [];
+const mainData = mainResult.status === "fulfilled" ? mainResult.value : [];
+const articlesDataResolved = articlesData.status === "fulfilled" ? articlesData.value : [];
+
+// Merge Main tab data (narrative-title, narrative-body/narrative-summary) with Public tab data
+const mainDataMap = new Map();
+mainData.forEach((record: any) => {
+  if (record["lynching-id"]) {
+    mainDataMap.set(record["lynching-id"], record);
+  }
+});
+
+// Merge: use Public data as base, enrich with Main data where available
+const lynchingsData = publicData.map((record: any) => {
+  const mainRecord = mainDataMap.get(record["lynching-id"]);
+  if (mainRecord) {
+    return {
+      ...record,
+      "narrative-title": mainRecord["narrative-title"] || record["narrative-title"],
+      "narrative-short-title": mainRecord["narrative-short-title"] || record["narrative-short-title"],
+      "narrative-body": mainRecord["narrative-body"] || mainRecord["narrative-summary"] || record["narrative-body"],
+      "narrative-summary": mainRecord["narrative-summary"] || mainRecord["narrative-body"] || record["narrative-summary"]
+    };
+  }
+  return record;
+});
 
 // Get the lynching ID from URL params
 const lynchingId = Astro.params.lynchingId;
@@ -26,7 +54,7 @@ if (!lynching) {
 const relatedArticles = [];
 if (lynching["article-ids"] && Array.isArray(lynching["article-ids"])) {
   for (const articleId of lynching["article-ids"]) {
-    const article = articlesData.find((a: any) => a["article-id"] === articleId);
+    const article = articlesDataResolved.find((a: any) => a["article-id"] === articleId);
     if (article) {
       relatedArticles.push(article);
     }
@@ -90,7 +118,7 @@ const decodeHtmlEntities = (text: string) => {
 };
 ---
 
-<PageLayout title={decodeHtmlEntities(lynching["narrative-title"])} currentPage="records">
+<PageLayout title={decodeHtmlEntities(lynching["narrative-title"] || lynching["narrative-short-title"] || lynching["lynching-id"])} currentPage="records">
       <div class="container-standard mt-4">
     <!-- Breadcrumb Navigation -->
     <nav aria-label="Breadcrumb" class="mb-4">
@@ -150,7 +178,7 @@ const decodeHtmlEntities = (text: string) => {
     <div class="border border-gray-200 shadow-sm overflow-hidden bg-amber-50 rounded-lg">
       <!-- Header (now part of the main content container for seamless background) -->
       <div class="border-b border-amber-200 py-2">
-        <h1 class="text-3xl font-bold text-gray-900 mb-1" style="padding-left: 21px;">{decodeHtmlEntities(lynching["narrative-short-title"])} </h1>
+        <h1 class="text-3xl font-bold text-gray-900 mb-1" style="padding-left: 21px;">{decodeHtmlEntities(lynching["narrative-title"] || lynching["narrative-short-title"])} </h1>
       </div>
 
       <!-- Metadata with Map -->
@@ -217,7 +245,7 @@ const decodeHtmlEntities = (text: string) => {
       <!-- Narrative -->
       <div class="p-6 border-b border-gray-200" style="background-color: #faf9f6;">
         <h2 class="text-xl font-semibold mb-4">Narrative</h2>
-        <div class="prose max-w-none w-full" style="width:100%; max-width:none;" set:html={decodeHtmlEntities(lynching["narrative-body"])}></div>
+        <div class="prose max-w-none w-full" style="width:100%; max-width:none;" set:html={decodeHtmlEntities(lynching["narrative-body"] || lynching["narrative-summary"] || "")}></div>
       </div>
 
       <!-- Related Articles -->
