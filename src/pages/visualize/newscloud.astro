@@ -139,19 +139,56 @@ const articles = await fetchArticlesData();
        // Filter entities that appear 3 or more times
        const entitiesWithThreshold = Object.entries(entityCounts)
          .filter(([lowerKey, count]) => count >= 3)
-         .map(([lowerKey, count]) => [entityCanonicalForm[lowerKey] || lowerKey, count]) // Use canonical form for display
+         .map(([lowerKey, count]) => [entityCanonicalForm[lowerKey] || lowerKey, count, lowerKey]) // Include lowerKey for reference
          .sort((a, b) => b[1] - a[1]); // Sort by count descending
        
        // Log total count of entities with 3+ occurrences
        console.log(`Total entities with 3+ occurrences: ${entitiesWithThreshold.length}`);
        
-       // Randomly select up to 50 entities
-       function selectRandomEntities(entities, maxCount = 50) {
-         const shuffled = [...entities].sort(() => Math.random() - 0.5);
-         return shuffled.slice(0, Math.min(maxCount, shuffled.length));
+       // Randomly remove between 0 and 20 of the top occurring entities
+       // This ensures entities with lower counts have a chance to appear
+       const numToRemove = Math.floor(Math.random() * 21); // Random number between 0 and 20
+       let entitiesAfterRemoval = [...entitiesWithThreshold];
+       
+       if (numToRemove > 0 && entitiesAfterRemoval.length > numToRemove) {
+         // Group entities by count to handle ties randomly
+         const entitiesByCount = {};
+         entitiesAfterRemoval.forEach(([canonical, count, lowerKey]) => {
+           if (!entitiesByCount[count]) {
+             entitiesByCount[count] = [];
+           }
+           entitiesByCount[count].push([canonical, count, lowerKey]);
+         });
+         
+         // Remove entities starting from the top, handling ties randomly
+         const counts = Object.keys(entitiesByCount).map(Number).sort((a, b) => b - a);
+         let removed = 0;
+         const toRemove = new Set();
+         
+         for (const count of counts) {
+           if (removed >= numToRemove) break;
+           
+           const entitiesAtThisCount = entitiesByCount[count];
+           // Shuffle to randomize which entities at this count level we remove
+           const shuffled = [...entitiesAtThisCount].sort(() => Math.random() - 0.5);
+           
+           for (const entity of shuffled) {
+             if (removed >= numToRemove) break;
+             toRemove.add(entity[2]); // Use lowerKey as unique identifier
+             removed++;
+           }
+         }
+         
+         entitiesAfterRemoval = entitiesAfterRemoval.filter(([canonical, count, lowerKey]) => !toRemove.has(lowerKey));
        }
        
-       return selectRandomEntities(entitiesWithThreshold, 50);
+       // Randomly select up to 50 entities from the remaining set
+       function selectRandomEntities(entities, maxCount = 50) {
+         const shuffled = [...entities].sort(() => Math.random() - 0.5);
+         return shuffled.slice(0, Math.min(maxCount, shuffled.length)).map(([canonical, count]) => [canonical, count]); // Remove lowerKey from output
+       }
+       
+       return selectRandomEntities(entitiesAfterRemoval, 50);
      }
      
      // Initialize entity data
