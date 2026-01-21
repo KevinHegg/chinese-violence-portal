@@ -9,13 +9,13 @@ const { id = "article-viewer", className = "" } = Astro.props;
 ---
 
 <!-- Article Viewer Modal -->
-<div id={id} class={`hidden fixed inset-0 bg-black/75 z-[100] flex items-center justify-center p-2 lg:p-4 ${className}`}
+<div id={id} class={`hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-2 lg:p-4 ${className}`}
   role="dialog" aria-modal="true" aria-labelledby="viewer-title">
-  <div class="bg-newspaper-offwhite rounded-lg shadow-xl max-w-7xl w-full max-h-[95vh] lg:max-h-[95vh] overflow-hidden">
-    <div class="p-4 lg:p-6 border-b border-base-300">
+  <div class="bg-white rounded-xl shadow-2xl max-w-7xl w-full max-h-[95vh] lg:max-h-[95vh] overflow-hidden border border-gray-200">
+    <div class="p-4 lg:p-6 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-amber-100">
       <div class="flex justify-between items-start">
-        <h2 class="text-lg lg:text-2xl font-bold text-white" id="viewer-title" tabindex="-1"></h2>
-        <button id="close-viewer" class="btn btn-ghost btn-sm text-white" aria-label="Close article viewer">
+        <h2 class="text-lg lg:text-2xl font-bold text-gray-900 pr-4" id="viewer-title" tabindex="-1"></h2>
+        <button id="close-viewer" class="btn btn-ghost btn-sm text-gray-700 hover:text-gray-900 hover:bg-white/50 rounded-full" aria-label="Close article viewer">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
@@ -25,15 +25,15 @@ const { id = "article-viewer", className = "" } = Astro.props;
     
             <div class="flex flex-col lg:flex-row h-[calc(95vh-120px)]">
           <!-- Image Panel with Zoom/Pan -->
-          <div class="lg:w-1/2 p-2 lg:p-4 lg:border-r border-base-300" style="background-color: #faf9f6;">
+          <div class="lg:w-1/2 p-3 lg:p-6 lg:border-r border-gray-200 bg-gray-50">
             <div class="relative h-full">
               <!-- Mobile: Fixed height, Desktop: Full height -->
-              <div id="image-container" class="relative w-full h-64 lg:h-full overflow-hidden bg-white border border-base-300 rounded-lg">
-                <img id="viewer-image" class="w-full h-full object-contain" alt="Article image" loading="eager" decoding="async" />
-                <div id="image-loading" class="absolute inset-0 bg-base-200 rounded-lg flex items-center justify-center">
-                  <div class="loading loading-spinner loading-lg"></div>
+              <div id="image-container" class="relative w-full h-64 lg:h-full overflow-hidden bg-white border-2 border-gray-200 rounded-lg shadow-inner">
+                <img id="viewer-image" class="w-full h-full object-contain transition-transform duration-200" alt="Article image" loading="eager" decoding="async" />
+                <div id="image-loading" class="absolute inset-0 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <div class="loading loading-spinner loading-lg text-amber-600"></div>
                 </div>
-                <div id="image-error" class="hidden absolute inset-0 bg-base-200 rounded-lg flex items-center justify-center">
+                <div id="image-error" class="hidden absolute inset-0 bg-gray-100 rounded-lg flex items-center justify-center">
                   <div class="text-center text-gray-500">
                     <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -44,18 +44,18 @@ const { id = "article-viewer", className = "" } = Astro.props;
               </div>
               
               <!-- Zoom Controls -->
-              <div class="absolute top-4 left-4 flex flex-col gap-2 rounded-lg p-2 shadow-lg" style="background-color: #faf9f6;">
-                <button id="zoom-in" class="btn btn-circle btn-sm btn-primary" title="Zoom In (Click)" aria-label="Zoom in on article image">
+              <div class="absolute top-4 left-4 flex flex-col gap-2 rounded-lg p-2 bg-white/95 backdrop-blur-sm shadow-lg border border-gray-200">
+                <button id="zoom-in" class="btn btn-circle btn-sm bg-amber-500 hover:bg-amber-600 text-white border-0" title="Zoom In (Click)" aria-label="Zoom in on article image">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
                   </svg>
                 </button>
-                <button id="zoom-out" class="btn btn-circle btn-sm btn-primary" title="Zoom Out (Shift+Click or Right Click)" aria-label="Zoom out of article image">
+                <button id="zoom-out" class="btn btn-circle btn-sm bg-amber-500 hover:bg-amber-600 text-white border-0" title="Zoom Out (Shift+Click or Right Click)" aria-label="Zoom out of article image">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10h-6"></path>
                   </svg>
                 </button>
-                <button id="reset-zoom" class="btn btn-circle btn-sm btn-outline" title="Reset Zoom" aria-label="Reset image zoom and pan">
+                <button id="reset-zoom" class="btn btn-circle btn-sm bg-gray-200 hover:bg-gray-300 text-gray-700 border-0" title="Reset Zoom" aria-label="Reset image zoom and pan">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
                   </svg>
@@ -65,17 +65,17 @@ const { id = "article-viewer", className = "" } = Astro.props;
           </div>
           
           <!-- Transcript Panel -->
-          <div class="lg:w-1/2 p-2 lg:p-4 flex flex-col" style="background-color: #faf9f6;">
+          <div class="lg:w-1/2 p-3 lg:p-6 flex flex-col bg-gray-50">
             <!-- Mobile: Scrollable transcript area, Desktop: Full height -->
             <div class="flex-1 overflow-hidden">
-              <h3 class="text-lg font-semibold mb-2 lg:mb-3">Transcription</h3>
-              <div id="viewer-transcription" class="h-64 lg:h-full overflow-y-auto border border-base-300 rounded-lg p-4 bg-white text-sm leading-snug whitespace-pre-wrap"></div>
+              <h3 class="text-lg font-semibold mb-3 text-gray-900">Transcription</h3>
+              <div id="viewer-transcription" class="h-64 lg:h-full overflow-y-auto border-2 border-gray-200 rounded-lg p-4 lg:p-6 bg-white text-sm leading-relaxed"></div>
             </div>
             
             <!-- Citation - Always at bottom -->
-            <div class="mt-4 p-3 bg-base-200 rounded-lg">
-              <h4 class="text-sm font-medium mb-2">Citation</h4>
-              <p class="text-xs text-gray-600" id="viewer-citation"></p>
+            <div class="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <h4 class="text-sm font-semibold mb-2 text-gray-900">Citation</h4>
+              <p class="text-xs text-gray-700 leading-relaxed" id="viewer-citation"></p>
             </div>
           </div>
         </div>
@@ -346,10 +346,20 @@ const { id = "article-viewer", className = "" } = Astro.props;
 </script>
 
 <style>
-  #close-viewer svg {
-    stroke: white;
+  #viewer-transcription p {
+    margin-bottom: 1rem;
+    text-indent: 0;
   }
-  #close-viewer {
-    color: white;
+  
+  #viewer-transcription p:last-child {
+    margin-bottom: 0;
+  }
+  
+  #viewer-image {
+    cursor: grab;
+  }
+  
+  #viewer-image:active {
+    cursor: grabbing;
   }
 </style> 

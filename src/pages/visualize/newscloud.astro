@@ -261,7 +261,7 @@ const articles = await fetchArticlesData();
         .map(paragraph => paragraph.trim())
         .filter(paragraph => paragraph.length > 0);
       const formattedTranscript = transcript.map((p, index) => {
-        return `<p class='leading-snug' style='margin-bottom: 8px; text-indent: 8px;'>${p}</p>`;
+        return `<p class='leading-relaxed'>${p}</p>`;
       }).join('');
       
       // Use the new component's API
