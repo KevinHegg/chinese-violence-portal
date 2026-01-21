@@ -54,8 +54,21 @@ import "../../styles/western-colors.css";
     // Count incidents by year from lynchings data
     const yearCounts = {};
     lynchingsData.forEach(record => {
-      const y = parseInt(record.year) || parseInt(record.date?.substring(0, 4));
-      if (y && y >= 1850 && y <= 1920) {
+      // Try to get year from year field, or extract from date field
+      let y = record.year;
+      if (!y || y === 0) {
+        // Try to extract from date field (format: YYYY-MM-DD or YYYY-MM-00)
+        if (record.date) {
+          const dateMatch = record.date.match(/^(\d{4})/);
+          if (dateMatch) {
+            y = parseInt(dateMatch[1]);
+          }
+        }
+      } else {
+        y = parseInt(y);
+      }
+      // Only count valid years in range
+      if (y && !isNaN(y) && y >= 1850 && y <= 1920) {
         yearCounts[y] = (yearCounts[y] || 0) + 1;
       }
     });
