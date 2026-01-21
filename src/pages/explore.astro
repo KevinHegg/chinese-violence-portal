@@ -1,12 +1,40 @@
 ---
 import PageLayout from "../layouts/PageLayout.astro";
-import { fetchLynchingsData } from "../utils/googleSheets";
+import { fetchLynchingsData, fetchLynchingsMainData } from "../utils/googleSheets";
 
 export const prerender = false;
 
-// Fetch lynchings data directly from Google Sheets
+// Fetch lynchings data from both Public and Main tabs
+const mainTabGid = import.meta.env.PUBLIC_LYNCHINGS_MAIN_GID || "760826284";
+const [publicResult, mainResult] = await Promise.allSettled([
+  fetchLynchingsData(),
+  fetchLynchingsMainData(mainTabGid)
+]);
 
-const lynchingsData = await fetchLynchingsData();
+const publicData = publicResult.status === "fulfilled" ? publicResult.value : [];
+const mainData = mainResult.status === "fulfilled" ? mainResult.value : [];
+
+// Merge Main tab data (narrative-short-title, narrative-summary) with Public tab data
+// Create a map of Main data by lynching-id for quick lookup
+const mainDataMap = new Map();
+mainData.forEach((record: any) => {
+  if (record["lynching-id"]) {
+    mainDataMap.set(record["lynching-id"], record);
+  }
+});
+
+// Merge: use Public data as base, enrich with Main data where available
+const lynchingsData = publicData.map((record: any) => {
+  const mainRecord = mainDataMap.get(record["lynching-id"]);
+  if (mainRecord) {
+    return {
+      ...record,
+      "narrative-short-title": mainRecord["narrative-short-title"] || record["narrative-short-title"],
+      "narrative-summary": mainRecord["narrative-body"] || mainRecord["narrative-summary"] || record["narrative-summary"]
+    };
+  }
+  return record;
+});
 
 // Extract unique filter options
 const decades = Array.from(new Set(lynchingsData.map((l: any) => l.decade))).sort();
@@ -266,13 +294,26 @@ const newlyDocumentedOptions = ['Yes', 'No'];
       const cardLink = `/records/${l["lynching-id"]}?${params.toString()}`;
       card.href = cardLink;
       card.className = 'block card bg-base-100 shadow-md hover:shadow-lg transition-shadow border border-base-300 p-4 h-full';
+      const mapImageSrc = `/mapimages/${l["lynching-id"]}.png`;
       card.innerHTML = `
-        <div class="flex justify-between items-center mb-2">
-          <span class="text-xs font-semibold text-gray-500">${l.date}</span>
-          <span class="text-xs font-semibold text-gray-500">${l.state}</span>
+        <div class="flex gap-4">
+          <div class="flex-shrink-0">
+            <img 
+              src="${mapImageSrc}" 
+              alt="Map showing location of ${l.city || ''}, ${l.state || ''}"
+              class="w-24 h-24 object-cover rounded-lg border border-gray-200"
+              onerror="this.style.display='none'"
+            />
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-semibold text-gray-500">${l.date || ''}</span>
+              <span class="text-xs font-semibold text-gray-500">${l.state || ''}</span>
+            </div>
+            <div class="font-bold text-base mb-1">${l["narrative-short-title"] || l["lynching-id"]}</div>
+            <div class="text-sm text-gray-700 summary-fade-container"><span class="summary-fade-text">${l["narrative-summary"] || ''}</span><span class="summary-fade"></span></div>
+          </div>
         </div>
-        <div class="font-bold text-base mb-1">${l["narrative-short-title"]}</div>
-        <div class="text-sm text-gray-700 summary-fade-container"><span class="summary-fade-text">${l["narrative-summary"] || ''}</span><span class="summary-fade"></span></div>
       `;
       container.appendChild(card);
     });
@@ -365,7 +406,7 @@ const newlyDocumentedOptions = ['Yes', 'No'];
     right: 0;
     bottom: 0;
     height: 40px;
-    background: linear-gradient(transparent, white);
+    background: linear-gradient(transparent, #ffffff);
     pointer-events: none;
     width: 100%;
     z-index: 2;
