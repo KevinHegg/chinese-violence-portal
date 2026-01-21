@@ -217,6 +217,7 @@ export function convertToArticleFormat(rows: Record<string, string>[]): any[] {
       "article-transcript": getField(["article-transcript", "Article Transcript", "article_transcript"]),
       "article-summary": getField(["article-summary", "Article Summary", "article_summary"]),
       "turabian-citation": getField(["turabian-citation", "Turabian Citation", "turabian_citation"]),
+      "clip_url": getField(["clip_url", "Clip URL", "clip-url"]),
       "state": getField(["state", "State"]),
       "decade": getField(["decade", "Decade"]),
       "named-entities": getField(["named-entities", "Named Entities", "named_entities"])
@@ -236,6 +237,21 @@ export async function fetchLynchingsData(): Promise<any[]> {
     gid: '378919265', // Public tab
   });
   
+  const rows = parseCSV(csv);
+  return convertToLynchingFormat(rows);
+}
+
+/**
+ * Fetch and parse lynchings data from the Main tab
+ */
+export async function fetchLynchingsMainData(gid?: string): Promise<any[]> {
+  // Sheet ID from the URL: 18Bo9acVyuQTsdQ1baxSntSUZur50Yla8NcZKe2nZWyQ
+  // Tab: "Main" (use provided gid; default to 0)
+  const csv = await fetchGoogleSheetCSV({
+    sheetId: '18Bo9acVyuQTsdQ1baxSntSUZur50Yla8NcZKe2nZWyQ',
+    gid: gid || '0',
+  });
+
   const rows = parseCSV(csv);
   return convertToLynchingFormat(rows);
 }

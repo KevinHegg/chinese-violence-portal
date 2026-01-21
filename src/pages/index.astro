@@ -2,20 +2,27 @@
 // Landing page with navbar and cards
 import "../styles/tailwind.css";
 import Navbar from "../components/Navbar.astro";
-import { fetchLynchingsData } from "../utils/googleSheets";
+import { fetchLynchingsData, fetchLynchingsMainData } from "../utils/googleSheets";
 
 // Disable prerendering to allow dynamic data from Google Sheets
 export const prerender = false;
 
-// Fetch lynchings data to get count and featured record
-const lynchingsData = await fetchLynchingsData();
+// Fetch lynchings data for count (Public tab) and featured record (Main tab)
+const mainTabGid = import.meta.env.PUBLIC_LYNCHINGS_MAIN_GID || "760826284";
+const [publicResult, mainResult] = await Promise.allSettled([
+  fetchLynchingsData(),
+  fetchLynchingsMainData(mainTabGid)
+]);
+
+const lynchingsData = publicResult.status === "fulfilled" ? publicResult.value : [];
+const lynchingsMainData = mainResult.status === "fulfilled" ? mainResult.value : [];
 const incidentCount = lynchingsData.length;
 
-// Select a featured record (Rock Springs Massacre - one of the most significant events)
-const featuredRecord = lynchingsData.find((l: any) => 
-  l["lynching-id"] === "WY1885-09-02" || 
-  l["narrative-short-title"]?.toLowerCase().includes("rock springs")
-) || lynchingsData[0]; // Fallback to first record if not found
+// Select a random featured record on each request (prefer Main tab for Narrative Summary)
+const featuredSource = lynchingsMainData.length > 0 ? lynchingsMainData : lynchingsData;
+const featuredRecord = featuredSource.length > 0
+  ? featuredSource[Math.floor(Math.random() * featuredSource.length)]
+  : null;
 ---
 
 <!doctype html>
@@ -116,7 +123,9 @@ const featuredRecord = lynchingsData.find((l: any) =>
                   <p class="text-sm text-gray-600 mb-2">
                     {featuredRecord["city"] ? `${featuredRecord["city"]}, ` : ''}{featuredRecord["state"]} • {featuredRecord["event-type"]}
                   </p>
-                  <p class="text-sm text-gray-700 line-clamp-3">{featuredRecord["narrative-summary"]}</p>
+                  <p class="text-sm text-gray-700 line-clamp-3">
+                    {featuredRecord["narrative-body"] || featuredRecord["narrative-summary"]}
+                  </p>
                   <span class="inline-block mt-3 text-sm font-medium text-accent hover:text-accent-focus">Read full record →</span>
                 </div>
               </div>

@@ -51,14 +51,21 @@ import "../../styles/western-colors.css";
     const lynchingsData = await fetch('/api/lynchings').then(r => r.json());
 
     // --- Chart 1: Incidents Over Time ---
-    const timelineEvents = timelineData.filter(e => e.eventType && e.eventType.toLowerCase().includes('anti-chinese violence'));
+    // Count incidents by year from lynchings data
     const yearCounts = {};
-    timelineEvents.forEach(e => {
-      const y = e.year;
-      if (y) yearCounts[y] = (yearCounts[y] || 0) + 1;
+    lynchingsData.forEach(record => {
+      const y = parseInt(record.year) || parseInt(record.date?.substring(0, 4));
+      if (y && y >= 1850 && y <= 1920) {
+        yearCounts[y] = (yearCounts[y] || 0) + 1;
+      }
     });
-    const years = Object.keys(yearCounts).sort();
-    const counts = years.map(y => yearCounts[y]);
+    // Fill in all years from 1850-1920 for continuity
+    const allYears = [];
+    for (let y = 1850; y <= 1920; y++) {
+      allYears.push(y);
+    }
+    const years = allYears.map(String);
+    const counts = years.map(y => yearCounts[parseInt(y)] || 0);
     const chartTimeline = echarts.init(document.getElementById('chart-timeline'));
     chartTimeline.setOption({
       title: { text: '', left: 'center' },
