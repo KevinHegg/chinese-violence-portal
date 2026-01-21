@@ -134,7 +134,8 @@ import "../../styles/western-colors.css";
     const typeCounts = {};
     lynchingsData.forEach(e => {
       const t = e['event-type'] || 'Unknown';
-      typeCounts[t] = (typeCounts[t] || 0) + 1;
+      const victims = Number(e['number-of-victims']) || 1;
+      typeCounts[t] = (typeCounts[t] || 0) + victims;
     });
     const typeNames = Object.keys(typeCounts).map(t => t === 'Possible Lynching' ? 'Possible\nLynching' : t);
     const typeVals = typeNames.map((t, i) => typeCounts[Object.keys(typeCounts)[i]]);
@@ -169,6 +170,13 @@ import "../../styles/western-colors.css";
       series: [{
         data: typeVals,
         type: 'bar',
+        label: {
+          show: true,
+          position: 'top',
+          color: 'var(--western-saddle-brown)',
+          fontWeight: 'bold',
+          fontSize: 14
+        },
         itemStyle: { 
           color: function(params) {
             const fillColors = [
