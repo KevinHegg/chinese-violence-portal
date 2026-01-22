@@ -176,6 +176,16 @@ export function convertToLynchingFormat(rows: Record<string, string>[]): any[] {
   }).filter(item => item["lynching-id"] && item["lynching-id"].trim()); // Filter out empty rows
 }
 
+// Valid US state abbreviations for validation
+const US_STATE_ABBREVIATIONS = new Set([
+  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+  'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+  'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+  'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+  'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY',
+  'DC' // Include District of Columbia
+]);
+
 /**
  * Convert Google Sheets row data to article format
  */
@@ -213,25 +223,26 @@ export function convertToArticleFormat(rows: Record<string, string>[]): any[] {
     }
     
     // Derive state from newspaper-location if not explicitly provided
+    // Only accept valid US state abbreviations
     let state = getField(["state", "State"]);
+    if (state) {
+      // Validate existing state field
+      state = state.toUpperCase().trim();
+      if (!US_STATE_ABBREVIATIONS.has(state)) {
+        state = ''; // Clear invalid state values
+      }
+    }
     if (!state) {
       const newspaperLocation = getField(["newspaper-location", "Newspaper Location", "newspaper_location"]);
       if (newspaperLocation) {
         // Try to extract state from location (e.g., "San Francisco, CA" -> "CA")
-        // Common patterns: "City, ST" or "City, State" or just "State"
         const locationParts = newspaperLocation.split(',').map(s => s.trim());
         if (locationParts.length > 1) {
-          // If it's a 2-letter code, use it; otherwise try to match common state abbreviations
-          const lastPart = locationParts[locationParts.length - 1];
-          if (lastPart.length === 2) {
-            state = lastPart.toUpperCase();
-          } else {
-            // Try to match full state names or use the last part
+          const lastPart = locationParts[locationParts.length - 1].toUpperCase();
+          // Only use if it's a valid 2-letter US state abbreviation
+          if (lastPart.length === 2 && US_STATE_ABBREVIATIONS.has(lastPart)) {
             state = lastPart;
           }
-        } else if (locationParts.length === 1) {
-          // If only one part, it might be just the state
-          state = locationParts[0];
         }
       }
     }
