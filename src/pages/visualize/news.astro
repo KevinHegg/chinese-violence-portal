@@ -315,24 +315,18 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
         article['named-entities'] ? article['named-entities'].split('@') : []
       ).filter(Boolean).filter(entity => entity !== 'nan' && entity !== 'NaN' && entities.includes(entity)))].sort();
 
-      // Update decade options - if this dropdown has a value, don't disable its options
-      updateSelectOptions(decadeInput, availableDecades, 'All Decades', decadeInput.value);
-      
-      // Update state options
-      updateSelectOptions(stateInput, availableStates, 'All Locations', stateInput.value);
-      
-      // Update publication options
-      updateSelectOptions(publicationInput, availablePublications, 'All Publications', publicationInput.value);
-      
-      // Update entities options
-      updateSelectOptions(entitiesInput, availableEntities, 'All Entities', entitiesInput.value);
+      // Check if ANY dropdown has an active filter - if so, don't disable options in any dropdown
+      const anyFilterActive = decadeInput.value || stateInput.value || publicationInput.value || entitiesInput.value;
+
+      // Update all dropdown options
+      updateSelectOptions(decadeInput, availableDecades, 'All Decades', anyFilterActive);
+      updateSelectOptions(stateInput, availableStates, 'All Locations', anyFilterActive);
+      updateSelectOptions(publicationInput, availablePublications, 'All Publications', anyFilterActive);
+      updateSelectOptions(entitiesInput, availableEntities, 'All Entities', anyFilterActive);
     }
 
-    function updateSelectOptions(selectElement, availableValues, defaultText, currentFilterValue) {
+    function updateSelectOptions(selectElement, availableValues, defaultText, anyFilterActive) {
       const currentValue = selectElement.value;
-      
-      // If this dropdown has a filter active, show all options (not disabled) so user can switch
-      const hasActiveFilter = currentFilterValue && currentFilterValue !== '';
       
       // Clear existing options except the first one
       selectElement.innerHTML = `<option value="">${defaultText}</option>`;
@@ -340,15 +334,15 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
       // Get all possible values for this filter
       const allValues = getFilterValues(selectElement.id);
       
-      // Add all options, disabling unavailable ones only if this dropdown doesn't have an active filter
+      // Add all options, disabling unavailable ones only if NO filter is active
       allValues.forEach(value => {
         const option = document.createElement('option');
         option.value = value;
         option.textContent = value;
         
-        // If this dropdown has an active filter, don't disable any options
+        // If any filter is active, don't disable any options
         // Otherwise, disable options that aren't in the available values
-        if (!hasActiveFilter && !availableValues.includes(value)) {
+        if (!anyFilterActive && !availableValues.includes(value)) {
           option.disabled = true;
           option.className = 'text-gray-400';
         }
