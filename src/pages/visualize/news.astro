@@ -64,10 +64,10 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
               </div>
               <div class="form-control">
                 <label class="label">
-                  <span class="label-text font-medium text-amber-800">Publication State</span>
+                  <span class="label-text font-medium text-amber-800">Publication State or Country</span>
                 </label>
                 <select id="filter-state" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
-                  <option value="">All States</option>
+                  <option value="">All Locations</option>
                   {states.map(state => <option value={state}>{state}</option>)}
                 </select>
               </div>
@@ -315,46 +315,44 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
         article['named-entities'] ? article['named-entities'].split('@') : []
       ).filter(Boolean).filter(entity => entity !== 'nan' && entity !== 'NaN' && entities.includes(entity)))].sort();
 
-      // Update decade options
-      updateSelectOptions(decadeInput, availableDecades, 'All Decades');
+      // Update decade options - if this dropdown has a value, don't disable its options
+      updateSelectOptions(decadeInput, availableDecades, 'All Decades', decadeInput.value);
       
       // Update state options
-      updateSelectOptions(stateInput, availableStates, 'All States');
+      updateSelectOptions(stateInput, availableStates, 'All Locations', stateInput.value);
       
       // Update publication options
-      updateSelectOptions(publicationInput, availablePublications, 'All Publications');
+      updateSelectOptions(publicationInput, availablePublications, 'All Publications', publicationInput.value);
       
       // Update entities options
-      updateSelectOptions(entitiesInput, availableEntities, 'All Entities');
+      updateSelectOptions(entitiesInput, availableEntities, 'All Entities', entitiesInput.value);
     }
 
-    function updateSelectOptions(selectElement, availableValues, defaultText) {
+    function updateSelectOptions(selectElement, availableValues, defaultText, currentFilterValue) {
       const currentValue = selectElement.value;
-      const currentOptions = Array.from(selectElement.options);
+      
+      // If this dropdown has a filter active, show all options (not disabled) so user can switch
+      const hasActiveFilter = currentFilterValue && currentFilterValue !== '';
       
       // Clear existing options except the first one
       selectElement.innerHTML = `<option value="">${defaultText}</option>`;
       
-      // Add available options
-      availableValues.forEach(value => {
+      // Get all possible values for this filter
+      const allValues = getFilterValues(selectElement.id);
+      
+      // Add all options, disabling unavailable ones only if this dropdown doesn't have an active filter
+      allValues.forEach(value => {
         const option = document.createElement('option');
         option.value = value;
         option.textContent = value;
-        option.disabled = false;
-        selectElement.appendChild(option);
-      });
-      
-      // Add disabled options for unavailable values
-      const allValues = getFilterValues(selectElement.id);
-      allValues.forEach(value => {
-        if (!availableValues.includes(value)) {
-          const option = document.createElement('option');
-          option.value = value;
-          option.textContent = value;
+        
+        // If this dropdown has an active filter, don't disable any options
+        // Otherwise, disable options that aren't in the available values
+        if (!hasActiveFilter && !availableValues.includes(value)) {
           option.disabled = true;
           option.className = 'text-gray-400';
-          selectElement.appendChild(option);
         }
+        selectElement.appendChild(option);
       });
       
       // Restore current value if it's still available
