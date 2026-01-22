@@ -298,62 +298,122 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
       });
       
       // Update filter options based on current selection
-      updateFilterOptions(filtered);
+      updateFilterOptions();
       
       // Sort the filtered results
       const sorted = sortArticles(filtered);
       renderCards(sorted);
     }
 
-    function updateFilterOptions(currentFiltered) {
-      // Get available values for each filter based on current filtered results
-      const availableDecades = [...new Set(currentFiltered.map(article => article.decade).filter(Boolean))].sort();
-      const availableStates = [...new Set(currentFiltered.map(article => article.state).filter(Boolean))].sort();
-      const availablePublications = [...new Set(currentFiltered.map(article => article.newspaper).filter(Boolean))].sort();
-      // Only include entities from topNamedEntities (entities)
-      const availableEntities = [...new Set(currentFiltered.flatMap(article => 
-        article['named-entities'] ? article['named-entities'].split('@') : []
-      ).filter(Boolean).filter(entity => entity !== 'nan' && entity !== 'NaN' && entities.includes(entity)))].sort();
-
-      // Check if ANY dropdown has an active filter - if so, don't disable options in any dropdown
-      const anyFilterActive = decadeInput.value || stateInput.value || publicationInput.value || entitiesInput.value;
+    function updateFilterOptions() {
+      // Get current filter values
+      const decade = decadeInput.value;
+      const state = stateInput.value;
+      const publication = publicationInput.value;
+      const entityFilter = entitiesInput.value;
+      const keyword = (keywordInput?.value || '').trim().replace(/\s+/g, ' ').toLowerCase();
+      
+      // Helper to filter articles by keyword
+      const filterByKeyword = (articleList) => {
+        if (!keyword) return articleList;
+        return articleList.filter(article => {
+          const title = (article['article-title'] || '').toLowerCase();
+          const summary = (article['article-summary'] || '').toLowerCase();
+          const transcript = (article['article-transcript'] || '').toLowerCase();
+          const newspaper = (article.newspaper || '').toLowerCase();
+          const location = (article['newspaper-location'] || '').toLowerCase();
+          return title.includes(keyword) || summary.includes(keyword) || 
+                 transcript.includes(keyword) || newspaper.includes(keyword) || location.includes(keyword);
+        });
+      };
+      
+      // For each dropdown, calculate available values:
+      // - If this dropdown has a selection, show ALL values (so user can switch)
+      // - If another dropdown has a selection, show only values that work with current filters
+      // - Keyword search always restricts all dropdowns
+      
+      // DECADE: If decade is selected, show all decades. Otherwise, filter by other selections.
+      const decadeBaseArticles = filterByKeyword(articles.filter(article => {
+        const stateMatch = !state || article.state === state;
+        const publicationMatch = !publication || article.newspaper === publication;
+        const entitiesMatch = !entityFilter || (article['named-entities'] && article['named-entities'].toLowerCase().includes(entityFilter.toLowerCase()));
+        return stateMatch && publicationMatch && entitiesMatch;
+      }));
+      const availableDecades = decade 
+        ? [...new Set(filterByKeyword(articles).map(a => a.decade).filter(Boolean))].sort()
+        : [...new Set(decadeBaseArticles.map(a => a.decade).filter(Boolean))].sort();
+      
+      // STATE: If state is selected, show all states. Otherwise, filter by other selections.
+      const stateBaseArticles = filterByKeyword(articles.filter(article => {
+        const decadeMatch = !decade || article.decade === decade;
+        const publicationMatch = !publication || article.newspaper === publication;
+        const entitiesMatch = !entityFilter || (article['named-entities'] && article['named-entities'].toLowerCase().includes(entityFilter.toLowerCase()));
+        return decadeMatch && publicationMatch && entitiesMatch;
+      }));
+      const availableStates = state
+        ? [...new Set(filterByKeyword(articles).map(a => a.state).filter(Boolean))].sort()
+        : [...new Set(stateBaseArticles.map(a => a.state).filter(Boolean))].sort();
+      
+      // PUBLICATION: If publication is selected, show all publications. Otherwise, filter by other selections.
+      const publicationBaseArticles = filterByKeyword(articles.filter(article => {
+        const decadeMatch = !decade || article.decade === decade;
+        const stateMatch = !state || article.state === state;
+        const entitiesMatch = !entityFilter || (article['named-entities'] && article['named-entities'].toLowerCase().includes(entityFilter.toLowerCase()));
+        return decadeMatch && stateMatch && entitiesMatch;
+      }));
+      const availablePublications = publication
+        ? [...new Set(filterByKeyword(articles).map(a => a.newspaper).filter(Boolean))].sort()
+        : [...new Set(publicationBaseArticles.map(a => a.newspaper).filter(Boolean))].sort();
+      
+      // ENTITIES: If entity is selected, show all entities. Otherwise, filter by other selections.
+      const entitiesBaseArticles = filterByKeyword(articles.filter(article => {
+        const decadeMatch = !decade || article.decade === decade;
+        const stateMatch = !state || article.state === state;
+        const publicationMatch = !publication || article.newspaper === publication;
+        return decadeMatch && stateMatch && publicationMatch;
+      }));
+      const availableEntities = entityFilter
+        ? [...new Set(filterByKeyword(articles).flatMap(a => 
+            a['named-entities'] ? a['named-entities'].split('@') : []
+          ).filter(Boolean).filter(e => e !== 'nan' && e !== 'NaN' && entities.includes(e)))].sort()
+        : [...new Set(entitiesBaseArticles.flatMap(a => 
+            a['named-entities'] ? a['named-entities'].split('@') : []
+          ).filter(Boolean).filter(e => e !== 'nan' && e !== 'NaN' && entities.includes(e)))].sort();
 
       // Update all dropdown options
-      updateSelectOptions(decadeInput, availableDecades, 'All Decades', anyFilterActive);
-      updateSelectOptions(stateInput, availableStates, 'All Locations', anyFilterActive);
-      updateSelectOptions(publicationInput, availablePublications, 'All Publications', anyFilterActive);
-      updateSelectOptions(entitiesInput, availableEntities, 'All Entities', anyFilterActive);
+      updateSelectOptions(decadeInput, availableDecades, 'All Decades', decade);
+      updateSelectOptions(stateInput, availableStates, 'All Locations', state);
+      updateSelectOptions(publicationInput, availablePublications, 'All Publications', publication);
+      updateSelectOptions(entitiesInput, availableEntities, 'All Entities', entityFilter);
     }
 
-    function updateSelectOptions(selectElement, availableValues, defaultText, anyFilterActive) {
+    function updateSelectOptions(selectElement, availableValues, defaultText, hasOwnSelection) {
       const currentValue = selectElement.value;
       
-      // Clear existing options except the first one
+      // Clear existing options
       selectElement.innerHTML = `<option value="">${defaultText}</option>`;
       
       // Get all possible values for this filter
       const allValues = getFilterValues(selectElement.id);
       
-      // Add all options, disabling unavailable ones only if NO filter is active
+      // Add all options
       allValues.forEach(value => {
         const option = document.createElement('option');
         option.value = value;
         option.textContent = value;
         
-        // If any filter is active, don't disable any options
-        // Otherwise, disable options that aren't in the available values
-        if (!anyFilterActive && !availableValues.includes(value)) {
+        // If this dropdown has its own selection, keep all options enabled
+        // Otherwise, disable options that aren't available based on other filters
+        if (!hasOwnSelection && !availableValues.includes(value)) {
           option.disabled = true;
           option.className = 'text-gray-400';
         }
         selectElement.appendChild(option);
       });
       
-      // Restore current value if it's still available
-      if (currentValue && availableValues.includes(currentValue)) {
+      // Restore current value
+      if (currentValue) {
         selectElement.value = currentValue;
-      } else if (currentValue && !availableValues.includes(currentValue)) {
-        selectElement.value = '';
       }
     }
 
@@ -424,8 +484,8 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
       if (keywordInput) keywordInput.value = '';
       lastKeyword = '';
       
-      // Reset all filter options to show all values
-      updateFilterOptions(articles);
+      // Reset all filter options and show all articles
+      updateFilterOptions();
       renderCards(sortArticles(articles));
     }
 
@@ -457,7 +517,7 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
     }
 
     // Initialize with sorted articles and set up filter options
-    updateFilterOptions(articles);
+    updateFilterOptions();
     renderCards(sortArticles(articles));
   </script>
 
