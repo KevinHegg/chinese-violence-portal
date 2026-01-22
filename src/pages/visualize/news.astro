@@ -81,11 +81,6 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
                 </select>
               </div>
             </div>
-            <div class="flex justify-end mt-3">
-              <button id="clear-filters" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm">
-                Clear All Filters
-              </button>
-            </div>
           </div>
         </div>
 
@@ -116,8 +111,21 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
           </div>
         </div>
       </div>
-      <div class="mt-3 text-sm text-amber-700 bg-amber-100 rounded-lg p-2 text-center">
-        <span id="results-count">Showing all {articles.length} articles</span>
+      <!-- Keyword Search Panel -->
+      <div class="mt-4 flex w-full">
+        <div class="bg-white rounded-lg p-3 border border-amber-300 flex-1 flex items-center gap-4" style="width: 100%;">
+          <label for="keyword-search" class="font-medium text-amber-800 whitespace-nowrap">Keyword Search:</label>
+          <input id="keyword-search" type="text" class="input input-bordered border-2 border-amber-300 bg-amber-50 w-full max-w-lg" placeholder="Search titles, summaries, transcripts..." />
+          <button id="keyword-clear" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm whitespace-nowrap" style="height: 40px;">Clear</button>
+        </div>
+      </div>
+      <div class="mt-3 flex justify-between items-center">
+        <div class="text-sm text-amber-700 bg-amber-100 rounded-lg p-2 flex-1 text-center">
+          <span id="results-count">Showing all {articles.length} articles</span>
+        </div>
+        <button id="clear-filters" class="ml-4 px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm">
+          Clear All Filters
+        </button>
       </div>
     </div>
 
@@ -155,11 +163,14 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
     const sortByInput = document.getElementById('sort-by');
     const sortOrderInput = document.getElementById('sort-order');
     const clearBtn = document.getElementById('clear-filters');
-    
+    const keywordInput = document.getElementById('keyword-search');
+    const keywordClearBtn = document.getElementById('keyword-clear');
     
     const resultsCount = document.getElementById('results-count');
     const loading = document.getElementById('loading');
     const noResults = document.getElementById('no-results');
+    
+    let lastKeyword = '';
     
 
 
@@ -253,15 +264,33 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
       const decade = decadeInput.value;
       const state = stateInput.value;
       const publication = publicationInput.value;
-      const entities = entitiesInput.value;
+      const entityFilter = entitiesInput.value;
+      const keyword = (keywordInput?.value || '').trim().replace(/\s+/g, ' ').toLowerCase();
+      lastKeyword = keyword;
       
       const filtered = articles.filter(article => {
         const decadeMatch = !decade || article.decade === decade;
         const stateMatch = !state || article.state === state;
         const publicationMatch = !publication || article.newspaper === publication;
-        const entitiesMatch = !entities || (article['named-entities'] && article['named-entities'].includes(entities));
+        const entitiesMatch = !entityFilter || (article['named-entities'] && article['named-entities'].toLowerCase().includes(entityFilter.toLowerCase()));
         
-        return decadeMatch && stateMatch && publicationMatch && entitiesMatch;
+        // Keyword search across title, summary, transcript, newspaper name
+        let keywordMatch = true;
+        if (keyword) {
+          const title = (article['article-title'] || '').toLowerCase();
+          const summary = (article['article-summary'] || '').toLowerCase();
+          const transcript = (article['article-transcript'] || '').toLowerCase();
+          const newspaper = (article.newspaper || '').toLowerCase();
+          const location = (article['newspaper-location'] || '').toLowerCase();
+          
+          keywordMatch = title.includes(keyword) || 
+                        summary.includes(keyword) || 
+                        transcript.includes(keyword) ||
+                        newspaper.includes(keyword) ||
+                        location.includes(keyword);
+        }
+        
+        return decadeMatch && stateMatch && publicationMatch && entitiesMatch && keywordMatch;
       });
       
       // Update filter options based on current selection
@@ -396,6 +425,8 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
       entitiesInput.value = '';
       sortByInput.value = 'date';
       sortOrderInput.value = 'asc';
+      if (keywordInput) keywordInput.value = '';
+      lastKeyword = '';
       
       // Reset all filter options to show all values
       updateFilterOptions(articles);
@@ -410,6 +441,24 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
     sortByInput.addEventListener('change', applyFilters);
     sortOrderInput.addEventListener('change', applyFilters);
     clearBtn.addEventListener('click', clearAllFilters);
+    
+    // Keyword search event listeners
+    if (keywordInput) {
+      keywordInput.addEventListener('input', (e) => {
+        const newKeyword = (e.target.value || '').trim().replace(/\s+/g, ' ').toLowerCase();
+        if (newKeyword !== lastKeyword) {
+          applyFilters();
+        }
+      });
+    }
+    
+    if (keywordClearBtn) {
+      keywordClearBtn.addEventListener('click', () => {
+        if (keywordInput) keywordInput.value = '';
+        lastKeyword = '';
+        applyFilters();
+      });
+    }
 
     // Initialize with sorted articles and set up filter options
     updateFilterOptions(articles);
