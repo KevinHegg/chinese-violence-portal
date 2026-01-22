@@ -176,16 +176,6 @@ export function convertToLynchingFormat(rows: Record<string, string>[]): any[] {
   }).filter(item => item["lynching-id"] && item["lynching-id"].trim()); // Filter out empty rows
 }
 
-// Valid US state abbreviations for validation
-const US_STATE_ABBREVIATIONS = new Set([
-  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
-  'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
-  'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
-  'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
-  'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY',
-  'DC' // Include District of Columbia
-]);
-
 /**
  * Convert Google Sheets row data to article format
  */
@@ -222,27 +212,17 @@ export function convertToArticleFormat(rows: Record<string, string>[]): any[] {
       }
     }
     
-    // Derive state from newspaper-location if not explicitly provided
-    // Only accept valid US state abbreviations
-    let state = getField(["state", "State"]);
-    if (state) {
-      // Validate existing state field
-      state = state.toUpperCase().trim();
-      if (!US_STATE_ABBREVIATIONS.has(state)) {
-        state = ''; // Clear invalid state values
-      }
-    }
-    if (!state) {
-      const newspaperLocation = getField(["newspaper-location", "Newspaper Location", "newspaper_location"]);
-      if (newspaperLocation) {
-        // Try to extract state from location (e.g., "San Francisco, CA" -> "CA")
-        const locationParts = newspaperLocation.split(',').map(s => s.trim());
-        if (locationParts.length > 1) {
-          const lastPart = locationParts[locationParts.length - 1].toUpperCase();
-          // Only use if it's a valid 2-letter US state abbreviation
-          if (lastPart.length === 2 && US_STATE_ABBREVIATIONS.has(lastPart)) {
-            state = lastPart;
-          }
+    // Extract full state name from newspaper-location column
+    // Format is typically "City, State" (e.g., "San Francisco, California")
+    let state = '';
+    const newspaperLocation = getField(["newspaper-location", "Newspaper Location", "newspaper_location"]);
+    if (newspaperLocation) {
+      const locationParts = newspaperLocation.split(',').map(s => s.trim());
+      if (locationParts.length > 1) {
+        // Take the last part as the state (e.g., "California" from "San Francisco, California")
+        const lastPart = locationParts[locationParts.length - 1];
+        if (lastPart && lastPart.length > 0) {
+          state = lastPart;
         }
       }
     }
