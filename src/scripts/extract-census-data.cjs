@@ -23,9 +23,9 @@ const censusData = timeline
   .filter(e => e.blackPopulation !== null && e.asianPopulation !== null)
   .sort((a, b) => a.year - b.year);
 
-// Interpolate for all years 1850-1920
+// Interpolate for all years 1850-1960
 const populationByYear = [];
-for (let y = 1850; y <= 1920; y++) {
+for (let y = 1850; y <= 1960; y++) {
   // Find surrounding census years
   let before = null;
   let after = null;
@@ -54,6 +54,18 @@ for (let y = 1850; y <= 1920; y++) {
   } else if (after && after.year === y) {
     blackPop = after.blackPopulation;
     asianPop = after.asianPopulation;
+  } else if (before && !after && y > before.year) {
+    // Extrapolate beyond last known census year using average growth rate from last two censuses
+    if (censusData.length >= 2) {
+      const lastCensus = censusData[censusData.length - 1];
+      const secondLastCensus = censusData[censusData.length - 2];
+      const yearsDiff = lastCensus.year - secondLastCensus.year;
+      const blackGrowthRate = (lastCensus.blackPopulation - secondLastCensus.blackPopulation) / yearsDiff;
+      const asianGrowthRate = (lastCensus.asianPopulation - secondLastCensus.asianPopulation) / yearsDiff;
+      const yearsSinceLastCensus = y - lastCensus.year;
+      blackPop = Math.round(lastCensus.blackPopulation + (blackGrowthRate * yearsSinceLastCensus));
+      asianPop = Math.round(lastCensus.asianPopulation + (asianGrowthRate * yearsSinceLastCensus));
+    }
   }
   
   if (blackPop !== null && asianPop !== null) {
