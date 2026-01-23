@@ -47,7 +47,7 @@ censusData.forEach((entry: any) => {
     
     <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg max-w-4xl">
       <p class="text-gray-700 mb-3">
-        This visualization compares the annual count of lynchings of Black Americans with incidents of anti-Chinese violence in the United States. While both represent forms of racialized mob violence, they occurred in different geographic and social contexts: anti-Black lynchings were concentrated in the South during the Jim Crow era, while anti-Chinese violence was concentrated in the West during the exclusion era. The second chart shows per capita rates, allowing for a more direct comparison of the relative frequency of these forms of violence across different population sizes.
+        This visualization compares the annual count of lynchings of Black Americans with incidents of anti-Chinese violence in the United States. While both represent forms of racialized mob violence, they occurred in different geographic and social contexts: anti-Black lynchings were concentrated in the South during the Jim Crow era, while anti-Chinese violence was concentrated in the West during the exclusion era. The second chart shows per capita rates during the overlap era (1875–1920), the period when both datasets have data. During this overlap era, a Chinese man in the American West was over three times more likely to be lynched than a Black man living in the American South (2.59 per 100,000 vs. 0.78 per 100,000, a ratio of 3.32).
       </p>
       <p class="text-sm text-gray-600">
         <strong>Sources:</strong><br>
@@ -83,29 +83,23 @@ censusData.forEach((entry: any) => {
 
     <!-- Per Capita Comparison Chart -->
     <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-8">
-      <h2 class="text-xl font-semibold mb-2 text-amber-800">Per Capita Lynchings: Black vs. Chinese Victims (1850–1920)</h2>
-      <p class="mb-4 text-sm text-amber-700">Annual lynchings per 100,000 population by race.</p>
-      <div id="chart-percapita" class="chart-container-large"></div>
+      <h2 class="text-xl font-semibold mb-1 text-amber-800">Per Capita Lynchings: Black vs. Chinese Victims (1875–1920)</h2>
+      <p class="mb-2 text-sm text-amber-700">Annual lynchings per 100,000 population by race during the overlap era.</p>
+      <div id="chart-percapita" style="height: 600px;"></div>
     </div>
     
     <!-- Per Capita Summary Stats -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       <div class="bg-gradient-to-br from-amber-100 to-yellow-100 border-2 border-amber-400 rounded-xl p-4">
         <h3 class="text-base font-semibold text-amber-800 mb-2">Black Lynching Rate (South)</h3>
-        <p class="text-2xl font-bold text-amber-900 mb-1">
-          <span id="black-percapita-avg">—</span>
-          <span class="text-base font-normal text-amber-700"> (<span id="black-percapita-avg-overlap">—</span>)</span>
-        </p>
-        <p class="text-xs text-amber-700 mb-1">Average per 100,000 (1877–1920)</p>
+        <p class="text-2xl font-bold text-amber-900 mb-1" id="black-percapita-avg">—</p>
+        <p class="text-xs text-amber-700 mb-1">Average per 100,000 (1875–1920)</p>
         <p class="text-xs text-amber-600" id="black-percapita-peak">Peak year: —</p>
       </div>
       <div class="bg-gradient-to-br from-amber-100 to-yellow-100 border-2 border-amber-400 rounded-xl p-4">
         <h3 class="text-base font-semibold text-amber-800 mb-2">Chinese Violence Rate (West)</h3>
-        <p class="text-2xl font-bold text-amber-900 mb-1">
-          <span id="chinese-percapita-avg">—</span>
-          <span class="text-base font-normal text-amber-700"> (<span id="chinese-percapita-avg-overlap">—</span>)</span>
-        </p>
-        <p class="text-xs text-amber-700 mb-1">Average per 100,000 (1850–1920)</p>
+        <p class="text-2xl font-bold text-amber-900 mb-1" id="chinese-percapita-avg">—</p>
+        <p class="text-xs text-amber-700 mb-1">Average per 100,000 (1875–1920)</p>
         <p class="text-xs text-amber-600" id="chinese-percapita-peak">Peak year: —</p>
       </div>
     </div>
@@ -113,10 +107,18 @@ censusData.forEach((entry: any) => {
   
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
   <script define:vars={{ blackLynchingsByYear }}>
-    // Fetch Chinese lynchings data
-    fetch('/api/lynchings')
-      .then(r => r.json())
-      .then(lynchingsData => {
+    // Wait for DOM and ECharts to be ready
+    function initCharts() {
+      if (typeof echarts === 'undefined') {
+        console.error('ECharts not loaded');
+        setTimeout(initCharts, 100);
+        return;
+      }
+      
+      // Fetch Chinese lynchings data
+      fetch('/api/lynchings')
+        .then(r => r.json())
+        .then(lynchingsData => {
         // Count Chinese victims by year
         const chineseByYear = {};
         let chineseTotal = 0;
@@ -189,7 +191,12 @@ censusData.forEach((entry: any) => {
         document.getElementById('chinese-avg-overlap').textContent = 'Avg (1877–1915): ' + chineseOverlapAvg + ' per year';
 
         // Create chart
-        const chart = echarts.init(document.getElementById('chart-compare'));
+        const chartContainer = document.getElementById('chart-compare');
+        if (!chartContainer) {
+          console.error('Chart container not found');
+          return;
+        }
+        const chart = echarts.init(chartContainer);
         chart.setOption({
           tooltip: {
             trigger: 'axis',
@@ -285,10 +292,12 @@ censusData.forEach((entry: any) => {
         window.addEventListener('resize', function() {
           chart.resize();
         });
+      }).catch(error => {
+        console.error('Error loading comparison chart data:', error);
       });
 
-    // Per Capita Chart
-    Promise.all([
+      // Per Capita Chart
+      Promise.all([
       fetch('/api/lynchings').then(r => r.json()),
       fetch('/us-census-population.json').then(r => r.json())
     ]).then(([lynchingsData, censusData]) => {
@@ -325,11 +334,11 @@ censusData.forEach((entry: any) => {
           }
         });
 
-        // Build year range 1850-1920
+        // Build year range 1875-1920 (overlap era)
         const years = [];
-        for (let y = 1850; y <= 1920; y++) years.push(y);
+        for (let y = 1875; y <= 1920; y++) years.push(y);
         
-        // Calculate per capita rates (per 100,000)
+        // Calculate per capita rates (per 100,000) for the overlap period
         const blackPerCapita = years.map(y => {
           const victims = blackLynchingsByYear[y] || 0;
           const pop = populationByYear[y]?.black;
@@ -344,11 +353,18 @@ censusData.forEach((entry: any) => {
           return (victims / pop) * 100000;
         });
         
+        // Set y-axis max to 42 (peaks can extend above, but 40 is the last label)
+        const yAxisMax = 42;
+        
         // Calculate stats for per capita chart
         let blackPeakRate = 0;
         let blackPeakYear = 0;
         let chinesePeakRate = 0;
         let chinesePeakYear = 0;
+        
+        // Find peaks above 30 for annotation
+        const blackPeaksAbove30 = [];
+        const chinesePeaksAbove30 = [];
         
         years.forEach((y, index) => {
           const blackRate = blackPerCapita[index];
@@ -361,48 +377,34 @@ censusData.forEach((entry: any) => {
             chinesePeakRate = chineseRate;
             chinesePeakYear = y;
           }
+          // Collect peaks above 30 (the two specific peaks: 42.76 and 33.22)
+          if (blackRate > 30) {
+            blackPeaksAbove30.push({ year: y, value: blackRate, index: index });
+          }
+          if (chineseRate > 30) {
+            chinesePeaksAbove30.push({ year: y, value: chineseRate, index: index });
+          }
         });
         
-        // Calculate averages for the overlap period (1877-1920)
-        const overlapStart = 1877;
-        const overlapEnd = 1920;
+        
+        // Calculate averages for 1875-1920
         let blackSum = 0;
         let chineseSum = 0;
-        let blackCount = 0;
-        let chineseCount = 0;
-        
-        // Calculate averages for 1877-1915
-        let blackOverlapSum = 0;
-        let chineseOverlapSum = 0;
-        let overlapCount = 0;
+        let count = 0;
         
         years.forEach((y, index) => {
-          if (y >= overlapStart && y <= overlapEnd) {
-            blackSum += blackPerCapita[index];
-            blackCount++;
-          }
-          if (y >= 1850 && y <= 1920) {
-            chineseSum += chinesePerCapita[index];
-            chineseCount++;
-          }
-          if (y >= 1877 && y <= 1915) {
-            blackOverlapSum += blackPerCapita[index];
-            chineseOverlapSum += chinesePerCapita[index];
-            overlapCount++;
-          }
+          blackSum += blackPerCapita[index];
+          chineseSum += chinesePerCapita[index];
+          count++;
         });
         
-        const blackAvgRate = (blackSum / blackCount).toFixed(2);
-        const chineseAvgRate = (chineseSum / chineseCount).toFixed(2);
-        const blackOverlapAvg = (blackOverlapSum / overlapCount).toFixed(2);
-        const chineseOverlapAvg = (chineseOverlapSum / overlapCount).toFixed(2);
+        const blackAvgRate = (blackSum / count).toFixed(2);
+        const chineseAvgRate = (chineseSum / count).toFixed(2);
         
         document.getElementById('black-percapita-avg').textContent = blackAvgRate;
         document.getElementById('black-percapita-peak').textContent = 'Peak year: ' + blackPeakYear + ' (' + blackPeakRate.toFixed(2) + ' per 100,000)';
-        document.getElementById('black-percapita-avg-overlap').textContent = '1877–1915: ' + blackOverlapAvg;
         document.getElementById('chinese-percapita-avg').textContent = chineseAvgRate;
         document.getElementById('chinese-percapita-peak').textContent = 'Peak year: ' + chinesePeakYear + ' (' + chinesePeakRate.toFixed(2) + ' per 100,000)';
-        document.getElementById('chinese-percapita-avg-overlap').textContent = '1877–1915: ' + chineseOverlapAvg;
 
         // Create per capita chart
         const percapitaContainer = document.getElementById('chart-percapita');
@@ -450,11 +452,18 @@ censusData.forEach((entry: any) => {
               nameLocation: 'center',
               nameGap: 50,
               nameRotate: 90,
+              min: 0,
+              max: yAxisMax,
               nameTextStyle: { fontWeight: 'bold', fontSize: 14, color: '#8B4513' },
               axisLabel: { 
                 color: '#8B4513', 
                 fontSize: 12, 
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                formatter: function(value) {
+                  // Don't show label for 42, only show up to 40
+                  if (value >= 42) return '';
+                  return value;
+                }
               },
               axisLine: { show: true, lineStyle: { color: '#8B4513', width: 3 } },
               splitLine: { lineStyle: { color: '#DEB887', opacity: 0.4 } }
@@ -466,11 +475,18 @@ censusData.forEach((entry: any) => {
               nameLocation: 'center',
               nameGap: 50,
               nameRotate: -90,
+              min: 0,
+              max: yAxisMax,
               nameTextStyle: { fontWeight: 'bold', fontSize: 14, color: '#C9A0A0' },
               axisLabel: { 
                 color: '#996666', 
                 fontSize: 12, 
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                formatter: function(value) {
+                  // Don't show label for 42, only show up to 40
+                  if (value >= 42) return '';
+                  return value;
+                }
               },
               axisLine: { show: true, lineStyle: { color: '#C9A0A0', width: 3 } },
               splitLine: { show: false }
@@ -500,7 +516,7 @@ censusData.forEach((entry: any) => {
               itemStyle: { color: '#C9A0A0' }
             }
           ],
-          grid: { left: 70, right: 70, top: 50, bottom: 60 }
+          grid: { left: 70, right: 70, top: 30, bottom: 60 }
         });
         
         // Handle resize
@@ -510,5 +526,13 @@ censusData.forEach((entry: any) => {
       }).catch(error => {
         console.error('Error loading per capita chart data:', error);
       });
+    }
+    
+    // Initialize charts when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initCharts);
+    } else {
+      initCharts();
+    }
   </script>
 </PageLayout>
