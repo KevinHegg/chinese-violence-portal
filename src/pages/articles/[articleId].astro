@@ -75,12 +75,12 @@ const formatDate = (dateStr: string) => {
     <div class="px-10 p-6 border-b border-gray-200 bg-white flex gap-6 items-start justify-between" style="padding-left: 20px;">
       <!-- Metadata Table -->
       <div class="flex-1 max-w-xs">
-        <table class="w-full text-left align-top" style="border-spacing:0;border-collapse:collapse;">
+        <table class="w-full text-left align-top" style="border-spacing:0;border-collapse:collapse;" aria-label="Article metadata">
           <tbody>
-                    <tr class="table-row"><th class="table-header">Newspaper:</th><td class="table-cell">{article["newspaper"] || "Unknown"}</td></tr>
-        <tr class="table-row"><th class="table-header">Publication&nbsp;Date:&nbsp;&nbsp;&nbsp;</th><td class="table-cell">{article["publication-date-expanded"] || "Unknown"}</td></tr>
-        <tr class="table-row"><th class="table-header">Published at:</th><td class="table-cell">{article["newspaper-location"] || "Unknown"}</td></tr>
-        <tr><th class="table-header">Page Number:</th><td class="table-cell">{article["page"] || "Unknown"}</td></tr>
+                    <tr class="table-row"><th class="table-header" scope="row">Newspaper:</th><td class="table-cell">{article["newspaper"] || "Unknown"}</td></tr>
+        <tr class="table-row"><th class="table-header" scope="row">Publication&nbsp;Date:&nbsp;&nbsp;&nbsp;</th><td class="table-cell">{article["publication-date-expanded"] || "Unknown"}</td></tr>
+        <tr class="table-row"><th class="table-header" scope="row">Published at:</th><td class="table-cell">{article["newspaper-location"] || "Unknown"}</td></tr>
+        <tr><th class="table-header" scope="row">Page Number:</th><td class="table-cell">{article["page"] || "Unknown"}</td></tr>
           </tbody>
         </table>
       </div>
@@ -89,7 +89,7 @@ const formatDate = (dateStr: string) => {
         {article["image_name"] ? (
           <img 
             src={`/article-scans/${article["image_name"]}`} 
-            alt={`Thumbnail for ${article["article-title"] || "article"}`}
+            alt={`Newspaper article thumbnail: ${article["article-title"] || "article"} from ${article.newspaper || "newspaper"}, ${article["publication-date"] || ""}`}
             class="w-[200px] h-[200px] object-cover rounded-lg border border-gray-200 cursor-pointer"
             id="article-thumbnail"
             style="width:200px;height:200px;"
@@ -159,7 +159,7 @@ const formatDate = (dateStr: string) => {
       <button id="close-lightbox" class="mx-1 px-3 py-1 bg-white rounded shadow text-lg font-bold">×</button>
     </div>
     <div class="overflow-y-auto flex-1 w-full flex justify-center items-center" style="max-height:80vh;">
-      <img id="lightbox-image" class="rounded-lg shadow-xl transition-all duration-200" alt="Full article image" style="max-width:100%; max-height:none; width:auto; height:auto;" />
+      <img id="lightbox-image" class="rounded-lg shadow-xl transition-all duration-200" alt="" style="max-width:100%; max-height:none; width:auto; height:auto;" />
     </div>
   </div>
 
@@ -190,6 +190,7 @@ const formatDate = (dateStr: string) => {
       if (thumbnail.src && thumbnail.src !== window.location.href) {
         thumbnail.addEventListener('click', function() {
           lightboxImage.src = thumbnail.src;
+          lightboxImage.alt = thumbnail.alt || `Full size image of newspaper article: ${document.querySelector('h1')?.textContent || 'article'}`;
           setZoom(1);
           modal.classList.remove('hidden');
           document.body.style.overflow = 'hidden';

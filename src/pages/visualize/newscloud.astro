@@ -40,14 +40,19 @@ const articles = await fetchArticlesData();
            Filter applied • <span id="filtered-count">0</span> articles found
          </span>
        </div>
-          <div id="word-cloud" class="flex flex-wrap gap-1 justify-center items-center min-h-[160px] mb-3">
+          <div id="word-cloud" class="flex flex-wrap gap-1 justify-center items-center min-h-[160px] mb-3" role="group" aria-label="Word cloud of named entities">
             <!-- Word cloud will be rendered client-side -->
+          </div>
+          <!-- Accessible alternative list for screen readers -->
+          <div id="entity-list-view" class="sr-only" role="region" aria-label="Accessible list of named entities">
+            <h3 class="sr-only">Named Entities (Accessible List)</h3>
+            <ul id="entity-list" role="list" aria-label="List of named entities with occurrence counts"></ul>
           </div>
           <div class="flex justify-between items-center pt-2 pb-0 border-t border-amber-200">
             <div id="article-count" class="text-sm text-amber-700 bg-amber-100 rounded-lg px-3 py-2 flex items-center ml-2.5">
               Showing all {articles.length} articles
             </div>
-            <button id="reset-filter" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm mr-2.5">
+            <button id="reset-filter" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm mr-2.5" aria-label="Reset word cloud filter and show all articles">
               Reset & Remix
             </button>
           </div>
@@ -74,7 +79,7 @@ const articles = await fetchArticlesData();
       </div>
       <h3 class="text-xl font-semibold mb-2">No articles found</h3>
       <p class="text-gray-600 mb-4">Try selecting a different entity from the word cloud.</p>
-      <button id="reset-filters" class="btn btn-outline">Show All Articles</button>
+      <button id="reset-filters" class="btn btn-outline" aria-label="Show all articles">Show All Articles</button>
     </div>
   </div>
   </div>
@@ -393,9 +398,16 @@ const articles = await fetchArticlesData();
      
      function renderWordCloud(entities) {
        wordCloud.innerHTML = '';
+       const entityList = document.getElementById('entity-list');
+       if (entityList) entityList.innerHTML = '';
        
        if (entities.length === 0) {
          wordCloud.innerHTML = '<p class="text-gray-500">No entities found</p>';
+         if (entityList) {
+           const li = document.createElement('li');
+           li.textContent = 'No entities found';
+           entityList.appendChild(li);
+         }
          return;
        }
        
@@ -406,6 +418,9 @@ const articles = await fetchArticlesData();
          const colorSet = getEntityColor(entity);
          const span = document.createElement('span');
          span.className = 'word-cloud-item cursor-pointer';
+         span.setAttribute('role', 'button');
+         span.setAttribute('tabindex', '0');
+         span.setAttribute('aria-label', `Filter articles by ${entity}, ${count} occurrences`);
          // Apply inline styles for dynamic properties
          span.style.fontSize = `${fontSize}px`;
          span.style.color = colorSet.text;
@@ -426,6 +441,25 @@ const articles = await fetchArticlesData();
          span.setAttribute('title', `${entity} (${count} occurrences)`);
          span.textContent = entity;
          wordCloud.appendChild(span);
+         
+         // Add to accessible list
+         if (entityList) {
+           const li = document.createElement('li');
+           const button = document.createElement('button');
+           button.type = 'button';
+           button.textContent = `${entity} (${count} occurrences)`;
+           button.setAttribute('aria-label', `Filter articles by ${entity}, ${count} occurrences`);
+           button.className = 'text-left';
+           button.addEventListener('click', () => filterByEntity(entity));
+           button.addEventListener('keydown', (e) => {
+             if (e.key === 'Enter' || e.key === ' ') {
+               e.preventDefault();
+               filterByEntity(entity);
+             }
+           });
+           li.appendChild(button);
+           entityList.appendChild(li);
+         }
        });
      }
 
@@ -455,6 +489,24 @@ const articles = await fetchArticlesData();
         });
         
         // Add active state to clicked item
+        e.target.classList.add('ring-2', 'ring-amber-400', 'ring-offset-2');
+        
+        filterByEntity(entity);
+      }
+    });
+    
+    // Keyboard support for word cloud items
+    wordCloud.addEventListener('keydown', (e) => {
+      if (e.target.classList.contains('word-cloud-item') && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        const entity = e.target.dataset.entity;
+        
+        // Remove active state from all items
+        document.querySelectorAll('.word-cloud-item').forEach(item => {
+          item.classList.remove('ring-2', 'ring-amber-400', 'ring-offset-2');
+        });
+        
+        // Add active state to focused item
         e.target.classList.add('ring-2', 'ring-amber-400', 'ring-offset-2');
         
         filterByEntity(entity);

@@ -42,8 +42,9 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
       <div class="mb-4">
         <div class="bg-white rounded-lg p-3 border border-amber-300 flex items-center gap-4">
           <label for="keyword-search" class="font-medium text-amber-800 whitespace-nowrap">Keyword Search:</label>
-          <input id="keyword-search" type="text" class="input input-bordered border-2 border-amber-300 bg-amber-50 flex-1" placeholder="Search titles, summaries, transcripts..." />
-          <button id="keyword-clear" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 text-sm whitespace-nowrap">Clear</button>
+          <input id="keyword-search" type="text" class="input input-bordered border-2 border-amber-300 bg-amber-50 flex-1" placeholder="Search titles, summaries, transcripts..." aria-describedby="keyword-search-hint" />
+          <span id="keyword-search-hint" class="sr-only">Search article titles, summaries, transcripts, newspaper names, and locations</span>
+          <button id="keyword-clear" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 text-sm whitespace-nowrap" aria-label="Clear keyword search">Clear</button>
         </div>
       </div>
       
@@ -127,14 +128,17 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
         <div class="text-sm text-amber-700 bg-amber-100 rounded-lg p-2 flex-1 text-center">
           <span id="results-count">Showing all {articles.length} articles</span>
         </div>
-        <button id="clear-filters" class="ml-4 px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm">
+        <button id="clear-filters" class="ml-4 px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm" aria-label="Clear all filters and show all articles">
           Clear All Filters
         </button>
       </div>
     </div>
 
+    <!-- ARIA live region for dynamic announcements -->
+    <div id="results-announcement" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
     <!-- Article Cards Grid -->
-    <div id="cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
+    <div id="cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8" aria-label="Newspaper articles"></div>
 
     <!-- Article Viewer Component -->
     <ArticleViewer />
@@ -191,17 +195,27 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
 
     function renderCards(filtered) {
       container.innerHTML = '';
+      const announcementEl = document.getElementById('results-announcement');
       
       if (filtered.length === 0) {
         container.classList.add('hidden');
         noResults.classList.remove('hidden');
         resultsCount.textContent = 'No articles found';
+        if (announcementEl) {
+          announcementEl.textContent = 'No articles found matching your filters.';
+          setTimeout(() => announcementEl.textContent = '', 1000);
+        }
         return;
       }
 
       container.classList.remove('hidden');
       noResults.classList.add('hidden');
-      resultsCount.textContent = `Showing ${filtered.length} of ${articles.length} articles`;
+      const message = `Showing ${filtered.length} of ${articles.length} articles`;
+      resultsCount.textContent = message;
+      if (announcementEl) {
+        announcementEl.textContent = message;
+        setTimeout(() => announcementEl.textContent = '', 1000);
+      }
 
       filtered.forEach((article, index) => {
         const card = document.createElement('div');

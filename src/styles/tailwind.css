@@ -46,16 +46,17 @@ body::before {
   }
 }
 
-/* Focus states for accessibility */
+/* Focus states for accessibility - WCAG 2.4.7 requires 2px minimum */
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
 [tabindex]:focus-visible {
-  outline: 2px solid #8b7355;
+  outline: 3px solid #005fcc;
   outline-offset: 2px;
   border-radius: 4px;
+  box-shadow: 0 0 0 2px rgba(0, 95, 204, 0.3);
 }
 
 /* Skip link - always visible on focus */
@@ -74,4 +75,26 @@ textarea:focus-visible,
 
 .skip-link:focus {
   top: 0;
+}
+
+/* Screen reader only class - visually hidden but accessible to assistive technology */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ARIA live region for dynamic announcements */
+[aria-live] {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }

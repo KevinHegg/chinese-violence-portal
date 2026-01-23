@@ -61,7 +61,13 @@ censusData.forEach((entry: any) => {
     <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-8">
       <h2 class="text-xl font-semibold mb-2 text-amber-800">Lynchings Over Time: Black vs. Chinese Victims (1850–1920)</h2>
       <p class="mb-4 text-sm text-amber-700">Annual count of lynchings by race of victim.</p>
-      <div id="chart-compare" class="chart-container-large"></div>
+      <div id="chart-compare" 
+           class="chart-container-large"
+           role="img"
+           aria-label="Line chart comparing annual lynchings of Black and Chinese victims from 1850 to 1920"
+           aria-describedby="chart-compare-desc"></div>
+      <p id="chart-compare-desc" class="sr-only">This chart displays annual counts of lynchings by race of victim. Use the data table below for detailed values.</p>
+      <div id="chart-compare-table" class="sr-only" role="region" aria-label="Data table for comparison chart"></div>
     </div>
     
     <!-- Summary Stats -->
@@ -86,7 +92,13 @@ censusData.forEach((entry: any) => {
     <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-8">
       <h2 class="text-xl font-semibold mb-1 text-amber-800">Per Capita Lynchings: Black vs. Chinese Victims (1875–1920)</h2>
       <p class="mb-2 text-sm text-amber-700">Annual lynchings per 100,000 population by race during the overlap era.</p>
-      <div id="chart-percapita" style="height: 600px;"></div>
+      <div id="chart-percapita" 
+           style="height: 600px;"
+           role="img"
+           aria-label="Line chart showing per capita lynchings of Black and Chinese victims from 1875 to 1920"
+           aria-describedby="chart-percapita-desc"></div>
+      <p id="chart-percapita-desc" class="sr-only">This chart displays annual lynchings per 100,000 population by race during the overlap era. Use the data table below for detailed values.</p>
+      <div id="chart-percapita-table" class="sr-only" role="region" aria-label="Data table for per capita chart"></div>
     </div>
     
     <!-- Per Capita Summary Stats -->

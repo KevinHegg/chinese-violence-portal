@@ -29,7 +29,7 @@ const { id = "article-viewer", className = "" } = Astro.props;
             <div class="relative h-full">
               <!-- Mobile: Fixed height, Desktop: Full height -->
               <div id="image-container" class="relative w-full h-64 lg:h-full overflow-hidden bg-white border-2 border-gray-200 rounded-lg shadow-inner">
-                <img id="viewer-image" class="w-full h-full object-contain transition-transform duration-200" alt="Article image" loading="eager" decoding="async" />
+                <img id="viewer-image" class="w-full h-full object-contain transition-transform duration-200" alt="" loading="eager" decoding="async" />
                 <div id="image-loading" class="absolute inset-0 bg-gray-100 rounded-lg flex items-center justify-center">
                   <div class="loading loading-spinner loading-lg text-amber-600"></div>
                 </div>
@@ -295,7 +295,12 @@ const { id = "article-viewer", className = "" } = Astro.props;
       
       const img = new Image();
       img.onload = () => {
-        if (this.image) this.image.src = imageUrl;
+        if (this.image) {
+          this.image.src = imageUrl;
+          // Update alt text with article title
+          const articleTitle = this.title?.textContent || 'Article';
+          this.image.alt = `Newspaper article image: ${articleTitle}`;
+        }
         this.hideImageLoading();
         this.hideImageError();
       };

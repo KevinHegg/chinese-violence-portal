@@ -78,8 +78,9 @@ const newlyDocumentedOptions = ['Yes', 'No'];
     <div class="mb-4">
       <div class="bg-white rounded-lg p-3 border border-amber-300 flex items-center gap-4">
         <label for="keyword-search" class="font-medium text-amber-800 whitespace-nowrap">Keyword Search:</label>
-        <input id="keyword-search" type="text" class="input input-bordered border-2 border-amber-300 bg-amber-50 flex-1" placeholder="Search titles, summaries..." />
-        <button id="keyword-clear" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 text-sm whitespace-nowrap">Clear</button>
+        <input id="keyword-search" type="text" class="input input-bordered border-2 border-amber-300 bg-amber-50 flex-1" placeholder="Search titles, summaries..." aria-describedby="keyword-search-hint" />
+        <span id="keyword-search-hint" class="sr-only">Search article titles, summaries, and narrative descriptions</span>
+        <button id="keyword-clear" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 text-sm whitespace-nowrap" aria-label="Clear keyword search">Clear</button>
       </div>
     </div>
     
@@ -87,7 +88,7 @@ const newlyDocumentedOptions = ['Yes', 'No'];
       <!-- Filter Section -->
       <div class="lg:col-span-2">
         <div class="bg-white rounded-lg p-3 border border-amber-300">
-          <h3 class="text-lg font-semibold mb-3 text-amber-800 border-b border-amber-200 pb-2">Filters</h3>
+          <h2 class="text-lg font-semibold mb-3 text-amber-800 border-b border-amber-200 pb-2">Filters</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div class="form-control">
               <label class="label">
@@ -131,7 +132,7 @@ const newlyDocumentedOptions = ['Yes', 'No'];
       <!-- Sort Section -->
       <div class="h-full flex flex-col justify-start">
         <div class="bg-white rounded-lg p-3 border border-amber-300 h-full">
-          <h3 class="text-lg font-semibold mb-3 text-amber-800 border-b border-amber-200 pb-2">Sort Options</h3>
+          <h2 class="text-lg font-semibold mb-3 text-amber-800 border-b border-amber-200 pb-2">Sort Options</h2>
           <div class="form-control">
             <label class="label">
               <span class="label-text font-medium text-amber-800">Sort By</span>
@@ -158,14 +159,17 @@ const newlyDocumentedOptions = ['Yes', 'No'];
       <div class="text-sm text-amber-700 bg-amber-100 rounded-lg p-2 flex-1 text-center">
         <span id="results-count">Showing all {lynchingsData.length} records</span>
       </div>
-      <button id="clear-filters" class="ml-4 px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm">
+      <button id="clear-filters" class="ml-4 px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm" aria-label="Clear all filters and show all records">
         Clear All Filters
       </button>
     </div>
   </div>
 
+  <!-- ARIA live region for dynamic announcements -->
+  <div id="results-announcement" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+
   <!-- Records Cards Grid -->
-  <div id="cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
+  <div id="cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8" aria-label="Lynching records"></div>
   </div>
 
 </PageLayout>
@@ -464,11 +468,23 @@ const newlyDocumentedOptions = ['Yes', 'No'];
 
   function renderCards(filtered = data) {
     container.innerHTML = '';
+    const announcementEl = document.getElementById('results-announcement');
+    
     if (filtered.length === 0) {
       resultsCount.textContent = 'No records found';
+      if (announcementEl) {
+        announcementEl.textContent = 'No records found matching your filters.';
+        setTimeout(() => announcementEl.textContent = '', 1000);
+      }
       return;
     }
-    resultsCount.textContent = `Showing ${filtered.length} of ${data.length} records`;
+    
+    const message = `Showing ${filtered.length} of ${data.length} records`;
+    resultsCount.textContent = message;
+    if (announcementEl) {
+      announcementEl.textContent = message;
+      setTimeout(() => announcementEl.textContent = '', 1000);
+    }
     
     // Build URL parameters for current filter state
     const params = new URLSearchParams();

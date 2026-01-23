@@ -29,21 +29,39 @@ import "../../styles/western-colors.css";
          <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14 mt-8">
       <h2 class="text-xl font-semibold mb-2 text-amber-800">Incidents of Anti-Chinese Violence Over Time</h2>
              <p class="mb-4 text-sm text-amber-700">Annual count of anti-Chinese violence events, 1850–1920.</p>
-      <div id="chart-timeline" class="chart-container"></div>
+      <div id="chart-timeline" 
+           class="chart-container"
+           role="img"
+           aria-label="Line chart showing incidents of anti-Chinese violence from 1850 to 1920"
+           aria-describedby="chart-timeline-desc"></div>
+      <p id="chart-timeline-desc" class="sr-only">This chart displays annual counts of anti-Chinese violence incidents. Peak years include 1885 with 15 incidents and 1886 with 12 incidents. Use the data table below for detailed values.</p>
+      <div id="chart-timeline-table" class="sr-only" role="region" aria-label="Data table for incidents over time chart"></div>
     </div>
 
     <!-- Chart 1b: Victims Over Time -->
          <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
       <h2 class="text-xl font-semibold mb-2 text-amber-800">Number of Victims of Anti-Chinese Violence Over Time</h2>
              <p class="mb-4 text-sm text-amber-700">Annual count of victims, 1850–1920.</p>
-      <div id="chart-victims" class="chart-container"></div>
+      <div id="chart-victims" 
+           class="chart-container"
+           role="img"
+           aria-label="Line chart showing number of victims of anti-Chinese violence from 1850 to 1920"
+           aria-describedby="chart-victims-desc"></div>
+      <p id="chart-victims-desc" class="sr-only">This chart displays annual counts of victims of anti-Chinese violence. Use the data table below for detailed values.</p>
+      <div id="chart-victims-table" class="sr-only" role="region" aria-label="Data table for victims over time chart"></div>
     </div>
 
     <!-- Chart 2: Types of Violence -->
          <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
       <h2 class="text-xl font-semibold mb-2 text-amber-800">Types of Anti-Chinese Violence</h2>
              <p class="mb-4 text-sm text-amber-700">Breakdown of event types in the lynching records.</p>
-      <div id="chart-types" class="chart-container"></div>
+      <div id="chart-types" 
+           class="chart-container"
+           role="img"
+           aria-label="Bar chart showing types of anti-Chinese violence by victim count"
+           aria-describedby="chart-types-desc"></div>
+      <p id="chart-types-desc" class="sr-only">This chart displays a breakdown of event types in the lynching records, showing the number of victims for each type. Use the data table below for detailed values.</p>
+      <div id="chart-types-table" class="sr-only" role="region" aria-label="Data table for types of violence chart"></div>
     </div>
 
     <!-- Chart 3: Dual Pie Charts -->
@@ -51,11 +69,23 @@ import "../../styles/western-colors.css";
       <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
         <div>
           <h2 class="text-lg font-semibold mb-1 text-amber-800 text-center">Categories of Violence</h2>
-          <div id="chart-pie-category" style="width: 100%; height: 280px;"></div>
+          <div id="chart-pie-category" 
+               style="width: 100%; height: 280px;"
+               role="img"
+               aria-label="Pie chart showing distribution of categories of violence"
+               aria-describedby="chart-pie-category-desc"></div>
+          <p id="chart-pie-category-desc" class="sr-only">This pie chart displays the distribution of categories of violence. Use the data table below for detailed values.</p>
+          <div id="chart-pie-category-table" class="sr-only" role="region" aria-label="Data table for categories of violence chart"></div>
         </div>
         <div>
           <h2 class="text-lg font-semibold mb-1 text-amber-800 text-center">Pretexts for Violence</h2>
-          <div id="chart-pie-pretext" style="width: 100%; height: 280px;"></div>
+          <div id="chart-pie-pretext" 
+               style="width: 100%; height: 280px;"
+               role="img"
+               aria-label="Pie chart showing distribution of pretexts for violence"
+               aria-describedby="chart-pie-pretext-desc"></div>
+          <p id="chart-pie-pretext-desc" class="sr-only">This pie chart displays the distribution of pretexts for violence. Use the data table below for detailed values.</p>
+          <div id="chart-pie-pretext-table" class="sr-only" role="region" aria-label="Data table for pretexts for violence chart"></div>
         </div>
       </div>
     </div>
@@ -64,7 +94,13 @@ import "../../styles/western-colors.css";
          <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-12">
       <h2 class="text-xl font-semibold mb-2 text-amber-800">Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)</h2>
              <p class="mb-4 text-sm text-amber-700">A combination chart showing the number of victims per year (bar), the Chinese population (line), and key policy events (vertical markers).</p>
-      <div id="chart-combo" class="chart-container-large"></div>
+      <div id="chart-combo" 
+           class="chart-container-large"
+           role="img"
+           aria-label="Combination chart showing victims per year, Chinese population, and key policy events from 1850 to 1915"
+           aria-describedby="chart-combo-desc"></div>
+      <p id="chart-combo-desc" class="sr-only">This combination chart displays the number of victims per year as bars, the Chinese population as a line, and key policy events as vertical markers. Use the data table below for detailed values.</p>
+      <div id="chart-combo-table" class="sr-only" role="region" aria-label="Data table for combination chart"></div>
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
@@ -104,6 +140,41 @@ import "../../styles/western-colors.css";
     }
     const years = allYears.map(String);
     const counts = years.map(y => yearCounts[parseInt(y)] || 0);
+    
+    // Create accessible data table for Chart 1
+    function createDataTable(containerId, headers, rows, caption) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      const table = document.createElement('table');
+      table.setAttribute('aria-label', caption);
+      const thead = document.createElement('thead');
+      const headerRow = document.createElement('tr');
+      headers.forEach(header => {
+        const th = document.createElement('th');
+        th.setAttribute('scope', 'col');
+        th.textContent = header;
+        headerRow.appendChild(th);
+      });
+      thead.appendChild(headerRow);
+      table.appendChild(thead);
+      const tbody = document.createElement('tbody');
+      rows.forEach(row => {
+        const tr = document.createElement('tr');
+        row.forEach(cell => {
+          const td = document.createElement('td');
+          td.textContent = cell;
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      container.appendChild(table);
+    }
+    
+    // Create table for incidents chart
+    const timelineTableRows = years.map((y, i) => [y, counts[i].toString()]);
+    createDataTable('chart-timeline-table', ['Year', 'Incidents'], timelineTableRows, 'Data table for incidents over time chart');
+    
     const chartTimeline = echarts.init(document.getElementById('chart-timeline'));
     chartTimeline.setOption({
       title: { text: '', left: 'center' },
@@ -175,6 +246,11 @@ import "../../styles/western-colors.css";
       }
     });
     const victimCounts = years.map(y => victimsByYearTimeline[parseInt(y)] || 0);
+    
+    // Create table for victims chart
+    const victimsTableRows = years.map((y, i) => [y, victimCounts[i].toString()]);
+    createDataTable('chart-victims-table', ['Year', 'Victims'], victimsTableRows, 'Data table for victims over time chart');
+    
     const chartVictims = echarts.init(document.getElementById('chart-victims'));
     chartVictims.setOption({
       title: { text: '', left: 'center' },
@@ -235,6 +311,11 @@ import "../../styles/western-colors.css";
     });
     const typeNames = Object.keys(typeCounts).map(t => t === 'Possible Lynching' ? 'Possible\nLynching' : t);
     const typeVals = typeNames.map((t, i) => typeCounts[Object.keys(typeCounts)[i]]);
+    
+    // Create table for types chart
+    const typesTableRows = typeNames.map((name, i) => [name.replace(/\n/g, ' '), typeVals[i].toString()]);
+    createDataTable('chart-types-table', ['Event Type', 'Victims'], typesTableRows, 'Data table for types of violence chart');
+    
     const chartTypes = echarts.init(document.getElementById('chart-types'));
     chartTypes.setOption({
       tooltip: { 
@@ -384,6 +465,13 @@ import "../../styles/western-colors.css";
       '#D2B48C', '#8B7355', '#F5DEB3'
     ];
 
+    // Create tables for pie charts
+    const categoryTableRows = categoryData.map(item => [item.name, item.value.toString()]);
+    createDataTable('chart-pie-category-table', ['Category', 'Count'], categoryTableRows, 'Data table for categories of violence chart');
+    
+    const pretextTableRows = pretextData.map(item => [item.name, item.value.toString()]);
+    createDataTable('chart-pie-pretext-table', ['Pretext', 'Count'], pretextTableRows, 'Data table for pretexts for violence chart');
+    
     // Category Pie Chart
     const chartPieCategory = echarts.init(document.getElementById('chart-pie-category'));
     chartPieCategory.setOption({
@@ -524,6 +612,14 @@ import "../../styles/western-colors.css";
       { year: 1913, label: 'CA Alien Land Law' }
     ];
 
+    // Create table for combo chart
+    const comboTableRows = comboYears.map((y, i) => [
+      y.toString(),
+      victimsSeries[i].toString(),
+      popSeries[i] ? popSeries[i].toLocaleString() : 'N/A'
+    ]);
+    createDataTable('chart-combo-table', ['Year', 'Victims', 'Chinese Population'], comboTableRows, 'Data table for combination chart');
+    
     const chartCombo = echarts.init(document.getElementById('chart-combo'));
     chartCombo.setOption({
       tooltip: { 

@@ -176,13 +176,18 @@ import PageLayout from "../layouts/PageLayout.astro";
       <div class="border-t border-gray-200 p-4">
         <form id="chat-form" class="flex space-x-3">
           <div class="flex-1">
+            <label for="message-input" class="sr-only">Ask a question about the archive</label>
             <input 
               type="text" 
               id="message-input"
               placeholder="Ask about lynchings, riots, specific locations, or historical patterns..."
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
+              aria-required="true"
+              aria-invalid="false"
+              aria-describedby="message-input-error"
             >
+            <span id="message-input-error" class="sr-only" role="alert" aria-live="polite"></span>
           </div>
                      <button 
              type="submit"
@@ -321,11 +326,23 @@ import PageLayout from "../layouts/PageLayout.astro";
     if (errorText) {
       errorText.textContent = message;
     }
+    // Update ARIA attributes for accessibility
+    messageInput.setAttribute('aria-invalid', 'true');
+    const errorSpan = document.getElementById('message-input-error');
+    if (errorSpan) {
+      errorSpan.textContent = message;
+    }
   }
-
+  
   function hideError() {
     errorMessage.classList.add('hidden');
+    messageInput.setAttribute('aria-invalid', 'false');
+    const errorSpan = document.getElementById('message-input-error');
+    if (errorSpan) {
+      errorSpan.textContent = '';
+    }
   }
+
 
   // Add conversation starter functionality
   const conversationStarters = document.querySelectorAll('.conversation-starter');
