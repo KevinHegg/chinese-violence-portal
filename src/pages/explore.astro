@@ -29,6 +29,7 @@ const lynchingsData = publicData.map((record: any) => {
   if (mainRecord) {
     return {
       ...record,
+      "decade": mainRecord["decade"] || record["decade"], // Use decade from Main tab
       "narrative-short-title": mainRecord["narrative-short-title"] || record["narrative-short-title"],
       "narrative-summary": mainRecord["narrative-body"] || mainRecord["narrative-summary"] || record["narrative-summary"]
     };
@@ -37,7 +38,8 @@ const lynchingsData = publicData.map((record: any) => {
 });
 
 // Extract unique filter options
-const decades = Array.from(new Set(lynchingsData.map((l: any) => l.decade))).sort();
+// Get decades from Main tab data (gid = 760826284)
+const decades = Array.from(new Set(mainData.map((l: any) => l.decade).filter(Boolean))).sort();
 const states = Array.from(new Set(lynchingsData.map((l: any) => l.state))).sort();
 const eventTypes = Array.from(new Set(lynchingsData.map((l: any) => l["event-type"]))).sort();
 const sources = Array.from(new Set(lynchingsData.map((l: any) => l.source))).sort();
@@ -72,6 +74,15 @@ const newlyDocumentedOptions = ['Yes', 'No'];
 
   <!-- Filter/Search Panel -->
   <div class="bg-amber-50/90 border-2 border-amber-200 rounded-lg p-4 mb-6 shadow-lg">
+    <!-- Keyword Search Panel - At Top -->
+    <div class="mb-4">
+      <div class="bg-white rounded-lg p-3 border border-amber-300 flex items-center gap-4">
+        <label for="keyword-search" class="font-medium text-amber-800 whitespace-nowrap">Keyword Search:</label>
+        <input id="keyword-search" type="text" class="input input-bordered border-2 border-amber-300 bg-amber-50 flex-1" placeholder="Search titles, summaries..." />
+        <button id="keyword-clear" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 text-sm whitespace-nowrap">Clear</button>
+      </div>
+    </div>
+    
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <!-- Filter Section -->
       <div class="lg:col-span-2">
@@ -115,11 +126,6 @@ const newlyDocumentedOptions = ['Yes', 'No'];
               </select>
             </div>
           </div>
-          <div class="flex justify-end mt-3">
-            <button id="clear-filters" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm">
-              Clear All Filters
-            </button>
-          </div>
         </div>
       </div>
       <!-- Sort Section -->
@@ -147,16 +153,14 @@ const newlyDocumentedOptions = ['Yes', 'No'];
         </div>
       </div>
     </div>
-    <!-- Keyword Search Panel -->
-    <div class="mt-4 flex w-full">
-      <div class="bg-white rounded-lg p-3 border border-amber-300 flex-1 flex items-center gap-4" style="width: 100%;">
-        <label for="keyword-search" class="font-medium text-amber-800 whitespace-nowrap">Keyword Search:</label>
-        <input id="keyword-search" type="text" class="input input-bordered border-2 border-amber-300 bg-amber-50 w-full max-w-lg" placeholder="Enter keyword(s)" />
-        <button id="keyword-clear" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm" style="height: 40px;">Clear</button>
+    
+    <div class="mt-3 flex justify-between items-center">
+      <div class="text-sm text-amber-700 bg-amber-100 rounded-lg p-2 flex-1 text-center">
+        <span id="results-count">Showing all {lynchingsData.length} records</span>
       </div>
-    </div>
-    <div class="mt-3 text-sm text-amber-700 bg-amber-100 rounded-lg p-2 text-center">
-      <span id="results-count">Showing all {lynchingsData.length} records</span>
+      <button id="clear-filters" class="ml-4 px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm">
+        Clear All Filters
+      </button>
     </div>
   </div>
 
@@ -166,13 +170,12 @@ const newlyDocumentedOptions = ['Yes', 'No'];
 
 </PageLayout>
 
-<script define:vars={{ lynchingsData }}>
+<script define:vars={{ lynchingsData, mainData }}>
   const data = lynchingsData;
   const container = document.getElementById('cards-container');
   const decadeInput = document.getElementById('filter-decade');
   const stateInput = document.getElementById('filter-state');
   const eventTypeInput = document.getElementById('filter-eventType');
-  const sourceInput = document.getElementById('filter-source');
   const sortByInput = document.getElementById('sort-by');
   const sortOrderInput = document.getElementById('sort-order');
   const clearBtn = document.getElementById('clear-filters');
@@ -204,16 +207,146 @@ const newlyDocumentedOptions = ['Yes', 'No'];
         l.county?.toLowerCase().includes(keyword);
       return decadeMatch && stateMatch && eventTypeMatch && newlyDocMatch && keywordMatch;
     });
-    updateFilterOptions(filtered);
+    updateFilterOptions();
     renderCards(sortRecords(filtered));
   }
 
-  function updateFilterOptions(currentFiltered = data) {
-    // Only disable options in OTHER dropdowns, never in the same dropdown
-    const availableDecades = [...new Set(currentFiltered.map(l => l.decade).filter(Boolean))].sort();
-    const availableStates = [...new Set(currentFiltered.map(l => l.state).filter(Boolean))].sort();
-    const availableEventTypes = [...new Set(currentFiltered.map(l => l['event-type']).filter(Boolean))].sort();
-    const availableNewlyDoc = ['Yes', 'No'];
+  function updateFilterOptions() {
+    // Get current filter values
+    const decade = decadeInput.value;
+    const state = stateInput.value;
+    const eventType = eventTypeInput.value;
+    const newlyDocumented = newlyDocumentedInput.value;
+    const keyword = (keywordInput?.value || '').trim().replace(/\s+/g, ' ').toLowerCase();
+    
+    // Count how many dropdown filters are active (not including keyword)
+    const activeDropdownCount = [decade, state, eventType, newlyDocumented].filter(Boolean).length;
+    
+    // Helper to filter records by keyword (searches ENTIRE dataset, ignoring dropdown filters)
+    const keywordFilteredRecords = keyword ? data.filter(record => {
+      const title = (record['narrative-short-title'] || '').toLowerCase();
+      const summary = (record['narrative-summary'] || '').toLowerCase();
+      const stateName = (record.state || '').toLowerCase();
+      const city = (record.city || '').toLowerCase();
+      const county = (record.county || '').toLowerCase();
+      return title.includes(keyword) || summary.includes(keyword) || 
+             stateName.includes(keyword) || city.includes(keyword) || county.includes(keyword);
+    }) : data;
+    
+    // RULE: Filter ALL dropdowns if keyword is present OR 2+ dropdowns are selected
+    // Otherwise (0-1 dropdown, no keyword): selected dropdown keeps all values, others filter
+    const filterAllDropdowns = keyword || activeDropdownCount >= 2;
+    
+    let availableDecades, availableStates, availableEventTypes, availableNewlyDoc;
+    
+    if (filterAllDropdowns) {
+      // ALL dropdowns get filtered based on other selections within keyword-filtered set
+      
+      // DECADE: filter by state, eventType, newlyDocumented (within keyword results)
+      const decadeBase = keywordFilteredRecords.filter(record => {
+        const stateMatch = !state || record.state === state;
+        const eventTypeMatch = !eventType || record['event-type'] === eventType;
+        const newlyDocMatch = !newlyDocumented || (newlyDocumented === 'Yes' ? (record['newly-documented'] === true || record['newly-documented'] === 'Yes') : (record['newly-documented'] === false || record['newly-documented'] === 'No'));
+        return stateMatch && eventTypeMatch && newlyDocMatch;
+      });
+      availableDecades = [...new Set(decadeBase.map(r => r.decade).filter(Boolean))].sort();
+      
+      // STATE: filter by decade, eventType, newlyDocumented (within keyword results)
+      const stateBase = keywordFilteredRecords.filter(record => {
+        const decadeMatch = !decade || record.decade === decade;
+        const eventTypeMatch = !eventType || record['event-type'] === eventType;
+        const newlyDocMatch = !newlyDocumented || (newlyDocumented === 'Yes' ? (record['newly-documented'] === true || record['newly-documented'] === 'Yes') : (record['newly-documented'] === false || record['newly-documented'] === 'No'));
+        return decadeMatch && eventTypeMatch && newlyDocMatch;
+      });
+      availableStates = [...new Set(stateBase.map(r => r.state).filter(Boolean))].sort();
+      
+      // EVENT TYPE: filter by decade, state, newlyDocumented (within keyword results)
+      const eventTypeBase = keywordFilteredRecords.filter(record => {
+        const decadeMatch = !decade || record.decade === decade;
+        const stateMatch = !state || record.state === state;
+        const newlyDocMatch = !newlyDocumented || (newlyDocumented === 'Yes' ? (record['newly-documented'] === true || record['newly-documented'] === 'Yes') : (record['newly-documented'] === false || record['newly-documented'] === 'No'));
+        return decadeMatch && stateMatch && newlyDocMatch;
+      });
+      availableEventTypes = [...new Set(eventTypeBase.map(r => r['event-type']).filter(Boolean))].sort();
+      
+      // NEWLY DOCUMENTED: filter by decade, state, eventType (within keyword results)
+      const newlyDocBase = keywordFilteredRecords.filter(record => {
+        const decadeMatch = !decade || record.decade === decade;
+        const stateMatch = !state || record.state === state;
+        const eventTypeMatch = !eventType || record['event-type'] === eventType;
+        return decadeMatch && stateMatch && eventTypeMatch;
+      });
+      // Check which values exist in filtered set
+      const hasYes = newlyDocBase.some(r => r['newly-documented'] === true || r['newly-documented'] === 'Yes');
+      const hasNo = newlyDocBase.some(r => r['newly-documented'] === false || r['newly-documented'] === 'No');
+      availableNewlyDoc = [];
+      if (hasYes) availableNewlyDoc.push('Yes');
+      if (hasNo) availableNewlyDoc.push('No');
+    } else {
+      // Only filter OTHER dropdowns, keep selected dropdown with all values
+      
+      // Get all possible values for each filter type
+      // Decades come from Main tab
+      const allDecades = [...new Set(mainData.map(r => r.decade).filter(Boolean))].sort();
+      const allStates = [...new Set(data.map(r => r.state).filter(Boolean))].sort();
+      const allEventTypes = [...new Set(data.map(r => r['event-type']).filter(Boolean))].sort();
+      
+      if (decade) {
+        // Decade is selected - filter others based on decade
+        const filteredByDecade = data.filter(r => r.decade === decade);
+        availableDecades = allDecades;
+        availableStates = [...new Set(filteredByDecade.map(r => r.state).filter(Boolean))].sort();
+        availableEventTypes = [...new Set(filteredByDecade.map(r => r['event-type']).filter(Boolean))].sort();
+        const hasYes = filteredByDecade.some(r => r['newly-documented'] === true || r['newly-documented'] === 'Yes');
+        const hasNo = filteredByDecade.some(r => r['newly-documented'] === false || r['newly-documented'] === 'No');
+        availableNewlyDoc = [];
+        if (hasYes) availableNewlyDoc.push('Yes');
+        if (hasNo) availableNewlyDoc.push('No');
+      } else if (state) {
+        // State is selected - filter others based on state
+        const filteredByState = data.filter(r => r.state === state);
+        availableDecades = [...new Set(filteredByState.map(r => r.decade).filter(Boolean))].sort();
+        availableStates = allStates;
+        availableEventTypes = [...new Set(filteredByState.map(r => r['event-type']).filter(Boolean))].sort();
+        const hasYes = filteredByState.some(r => r['newly-documented'] === true || r['newly-documented'] === 'Yes');
+        const hasNo = filteredByState.some(r => r['newly-documented'] === false || r['newly-documented'] === 'No');
+        availableNewlyDoc = [];
+        if (hasYes) availableNewlyDoc.push('Yes');
+        if (hasNo) availableNewlyDoc.push('No');
+      } else if (eventType) {
+        // Event Type is selected - filter others based on eventType
+        const filteredByEventType = data.filter(r => r['event-type'] === eventType);
+        availableDecades = [...new Set(filteredByEventType.map(r => r.decade).filter(Boolean))].sort();
+        availableStates = [...new Set(filteredByEventType.map(r => r.state).filter(Boolean))].sort();
+        availableEventTypes = allEventTypes;
+        const hasYes = filteredByEventType.some(r => r['newly-documented'] === true || r['newly-documented'] === 'Yes');
+        const hasNo = filteredByEventType.some(r => r['newly-documented'] === false || r['newly-documented'] === 'No');
+        availableNewlyDoc = [];
+        if (hasYes) availableNewlyDoc.push('Yes');
+        if (hasNo) availableNewlyDoc.push('No');
+      } else if (newlyDocumented) {
+        // Newly Documented is selected - filter others based on newlyDocumented
+        const filteredByNewlyDoc = data.filter(r => {
+          if (newlyDocumented === 'Yes') {
+            return r['newly-documented'] === true || r['newly-documented'] === 'Yes';
+          } else {
+            return r['newly-documented'] === false || r['newly-documented'] === 'No';
+          }
+        });
+        availableDecades = [...new Set(filteredByNewlyDoc.map(r => r.decade).filter(Boolean))].sort();
+        availableStates = [...new Set(filteredByNewlyDoc.map(r => r.state).filter(Boolean))].sort();
+        availableEventTypes = [...new Set(filteredByNewlyDoc.map(r => r['event-type']).filter(Boolean))].sort();
+        availableNewlyDoc = ['Yes', 'No'];
+      } else {
+        // No filters selected - show all options
+        // Decades come from Main tab, so use mainData
+        availableDecades = [...new Set(mainData.map(r => r.decade).filter(Boolean))].sort();
+        availableStates = allStates;
+        availableEventTypes = allEventTypes;
+        availableNewlyDoc = ['Yes', 'No'];
+      }
+    }
+    
     updateSelectOptions(decadeInput, availableDecades, 'All Decades', 'decade');
     updateSelectOptions(stateInput, availableStates, 'All States', 'state');
     updateSelectOptions(eventTypeInput, availableEventTypes, 'All Event Types', 'eventType');
@@ -223,26 +356,68 @@ const newlyDocumentedOptions = ['Yes', 'No'];
   function updateSelectOptions(selectElement, availableValues, defaultText, filterType) {
     const currentValue = selectElement.value;
     selectElement.innerHTML = `<option value="">${defaultText}</option>`;
+    
     // Get all possible values for this filter type
-    const allValues = Array.from(new Set(data.map(l => filterType === 'eventType' ? l['event-type'] : filterType === 'newlyDocumented' ? (l['newly-documented'] === true || l['newly-documented'] === 'Yes' ? 'Yes' : 'No') : l[filterType]).filter(Boolean))).sort();
+    let allValues;
+    if (filterType === 'eventType') {
+      allValues = Array.from(new Set(data.map(l => l['event-type']).filter(Boolean))).sort();
+    } else if (filterType === 'newlyDocumented') {
+      allValues = ['Yes', 'No'];
+    } else if (filterType === 'decade') {
+      // Get decades from Main tab data
+      allValues = Array.from(new Set(mainData.map(l => l.decade).filter(Boolean))).sort();
+    } else {
+      allValues = Array.from(new Set(data.map(l => l[filterType]).filter(Boolean))).sort();
+    }
+    
+    // Separate enabled and disabled values
+    const enabledValues = [];
+    const disabledValues = [];
+    
     allValues.forEach(value => {
+      if (availableValues.includes(value)) {
+        enabledValues.push(value);
+      } else {
+        disabledValues.push(value);
+      }
+    });
+    
+    // Sort enabled values
+    enabledValues.sort();
+    disabledValues.sort();
+    
+    // Add enabled options first
+    enabledValues.forEach(value => {
       const option = document.createElement('option');
       option.value = value;
       option.textContent = value;
-      // Never disable options in the currently active dropdown
-      if (selectElement === document.activeElement) {
-        option.disabled = false;
-      } else {
-        option.disabled = !availableValues.includes(value);
-        if (!availableValues.includes(value)) {
-          option.className = 'text-gray-400';
-        }
-      }
+      option.disabled = false;
       selectElement.appendChild(option);
     });
-    if (currentValue && allValues.includes(currentValue)) {
+    
+    // Add separator if both enabled and disabled exist
+    if (enabledValues.length > 0 && disabledValues.length > 0) {
+      const separator = document.createElement('option');
+      separator.disabled = true;
+      separator.textContent = '──────────';
+      separator.style.color = '#9ca3af';
+      selectElement.appendChild(separator);
+    }
+    
+    // Add disabled options
+    disabledValues.forEach(value => {
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = value;
+      option.disabled = true;
+      option.className = 'text-gray-400';
+      selectElement.appendChild(option);
+    });
+    
+    // Restore current value if it's still available
+    if (currentValue && availableValues.includes(currentValue)) {
       selectElement.value = currentValue;
-    } else if (currentValue && !allValues.includes(currentValue)) {
+    } else if (currentValue && !availableValues.includes(currentValue)) {
       selectElement.value = '';
     }
   }
@@ -342,12 +517,12 @@ const newlyDocumentedOptions = ['Yes', 'No'];
     decadeInput.value = '';
     stateInput.value = '';
     eventTypeInput.value = '';
-    sourceInput.value = '';
+    newlyDocumentedInput.value = '';
     sortByInput.value = 'date';
     sortOrderInput.value = 'asc';
     if (keywordInput) keywordInput.value = '';
-    updateFilterOptions(data);
-    renderCards(sortRecords(data));
+    updateFilterOptions();
+    applyFilters();
   }
 
   if (decadeInput) decadeInput.addEventListener('change', applyFilters);
