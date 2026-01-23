@@ -7,12 +7,14 @@ import "../../styles/western-colors.css";
   <div class="container-wide">
     <h1 class="text-4xl font-bold mb-6 text-amber-800">Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)</h1>
     <p class="mb-2 text-lg max-w-3xl leading-snug">
-      This dashboard visualizes the history and impact of anti-Chinese violence in the U.S. through three interactive charts:
+      This dashboard visualizes the history and impact of anti-Chinese violence in the U.S. through interactive charts:
     </p>
     <ol class="mb-8 text-base max-w-3xl leading-normal list-decimal list-inside space-y-1 pl-4" style="text-indent:-1.1em;">
-      <li><strong>Incidents of Anti-Chinese Violence Over Time:</strong> A line chart showing the annual count of violent events from 1850–1920.</li>
-      <li><strong>Types of Anti-Chinese Violence:</strong> A bar chart breaking down the types of violence recorded in the lynching records.</li>
-      <li><strong>Anti-Chinese Violence & Chinese Population (1850–1915):</strong> A combination chart showing the number of victims per year (bar), the Chinese population (line), and key policy events (vertical markers for the Chinese Exclusion Act, Geary Act, and SF School Segregation).</li>
+      <li><strong>Incidents Over Time:</strong> Annual count of violent events from 1850–1920.</li>
+      <li><strong>Victims Over Time:</strong> Annual victim count from 1850–1920.</li>
+      <li><strong>Types of Violence:</strong> Breakdown of violence types by victim count.</li>
+      <li><strong>Categories & Pretexts:</strong> Distribution of violence categories and stated pretexts.</li>
+      <li><strong>Violence & Population:</strong> Victims per year alongside Chinese population growth and key policy events.</li>
     </ol>
     <style>
       ol.list-decimal > li {
@@ -44,7 +46,21 @@ import "../../styles/western-colors.css";
       <div id="chart-types" class="chart-container"></div>
     </div>
 
-    <!-- Chart 3: Combo Chart -->
+    <!-- Chart 3: Dual Pie Charts -->
+         <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-4 mb-14">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div>
+          <h2 class="text-lg font-semibold mb-1 text-amber-800 text-center">Categories of Violence</h2>
+          <div id="chart-pie-category" style="width: 100%; height: 280px;"></div>
+        </div>
+        <div>
+          <h2 class="text-lg font-semibold mb-1 text-amber-800 text-center">Pretexts for Violence</h2>
+          <div id="chart-pie-pretext" style="width: 100%; height: 280px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart 4: Combo Chart -->
          <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-12">
       <h2 class="text-xl font-semibold mb-2 text-amber-800">Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)</h2>
              <p class="mb-4 text-sm text-amber-700">A combination chart showing the number of victims per year (bar), the Chinese population (line), and key policy events (vertical markers).</p>
@@ -56,6 +72,8 @@ import "../../styles/western-colors.css";
     // Load data
     const timelineData = await fetch('/timeline.json').then(r => r.json());
     const lynchingsData = await fetch('/api/lynchings').then(r => r.json());
+    // Fetch Main tab data for pie charts (GID 760826284)
+    const mainTabData = await fetch('/api/lynchings?gid=760826284').then(r => r.json()).catch(() => lynchingsData);
 
     // --- Chart 1: Incidents Over Time ---
     // Count incidents by year from lynchings data
@@ -319,7 +337,132 @@ import "../../styles/western-colors.css";
       });
     }, 100);
 
-    // --- Chart 3: Combo Chart ---
+    // --- Chart 3: Dual Pie Charts (from Main tab) ---
+    const categoryCounts = {};
+    const pretextCounts = {};
+    mainTabData.forEach(record => {
+      // Category of Violence
+      const category = record['category-of-violence'] || record['Category of Violence'] || 'Unknown';
+      if (category && category !== 'Unknown') {
+        categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+      }
+
+      // Pretext Grouped - split on "; "
+      const pretextRaw = record['pretext-grouped'] || record['Pretext Grouped'] || '';
+      const pretexts = pretextRaw.split(';').map(value => value.trim()).filter(Boolean);
+      pretexts.forEach(pretext => {
+        if (pretext && pretext.toLowerCase() !== 'unknown') {
+          pretextCounts[pretext] = (pretextCounts[pretext] || 0) + 1;
+        }
+      });
+    });
+
+    const categoryData = Object.entries(categoryCounts)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
+    
+    // Group pretexts with only 1 occurrence into "Other"
+    const pretextEntries = Object.entries(pretextCounts);
+    let otherCount = 0;
+    const filteredPretexts = [];
+    pretextEntries.forEach(([name, value]) => {
+      if (value === 1) {
+        otherCount += 1;
+      } else {
+        filteredPretexts.push({ name, value });
+      }
+    });
+    if (otherCount > 0) {
+      filteredPretexts.push({ name: 'Other', value: otherCount });
+    }
+    const pretextData = filteredPretexts.sort((a, b) => b.value - a.value);
+
+    // Pie chart colors
+    const pieColors = [
+      '#F4A460', '#DEB887', '#DAA520', '#CD853F', '#D2691E', 
+      '#A0522D', '#8B4513', '#BC8F8F', '#C19A6B', '#B8860B',
+      '#D2B48C', '#8B7355', '#F5DEB3'
+    ];
+
+    // Category Pie Chart
+    const chartPieCategory = echarts.init(document.getElementById('chart-pie-category'));
+    chartPieCategory.setOption({
+      tooltip: {
+        trigger: 'item',
+        backgroundColor: '#FDF5E6',
+        borderColor: '#8B4513',
+        borderWidth: 2,
+        textStyle: { color: '#5D4037' },
+        formatter: function(params) {
+          return params.name + ': ' + params.value + ' (' + params.percent.toFixed(1) + '%)';
+        }
+      },
+      legend: { show: false },
+      color: pieColors,
+      series: [
+        {
+          name: 'Category of Violence',
+          type: 'pie',
+          radius: ['25%', '70%'],
+          center: ['50%', '50%'],
+          label: { 
+            color: '#5D4037', 
+            fontSize: 11,
+            formatter: '{b}: {c}'
+          },
+          labelLine: { lineStyle: { color: '#A0522D' } },
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.3)'
+            }
+          },
+          data: categoryData
+        }
+      ]
+    });
+
+    // Pretext Pie Chart
+    const chartPiePretext = echarts.init(document.getElementById('chart-pie-pretext'));
+    chartPiePretext.setOption({
+      tooltip: {
+        trigger: 'item',
+        backgroundColor: '#FDF5E6',
+        borderColor: '#8B4513',
+        borderWidth: 2,
+        textStyle: { color: '#5D4037' },
+        formatter: function(params) {
+          return params.name + ': ' + params.value + ' (' + params.percent.toFixed(1) + '%)';
+        }
+      },
+      legend: { show: false },
+      color: pieColors,
+      series: [
+        {
+          name: 'Pretext for Violence',
+          type: 'pie',
+          radius: ['25%', '70%'],
+          center: ['50%', '50%'],
+          label: { 
+            color: '#5D4037', 
+            fontSize: 11,
+            formatter: '{b}: {c}'
+          },
+          labelLine: { lineStyle: { color: '#A0522D' } },
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.3)'
+            }
+          },
+          data: pretextData
+        }
+      ]
+    });
+
+    // --- Chart 4: Combo Chart ---
     // Extract population data from timeline.json
     const censusEntries = timelineData.filter(e => e.eventType && e.eventType.toLowerCase().includes('census'));
     // Parse year and population from text
@@ -368,50 +511,117 @@ import "../../styles/western-colors.css";
     for (let y = 1850; y <= 1915; y++) comboYears.push(y);
     const victimsSeries = comboYears.map(y => victimsByYear[y] || 0);
     const popSeries = comboYears.map(y => popByYear[y] || null);
+    const maxVictims = victimsSeries.reduce((max, val) => Math.max(max, val), 0);
+    const labelTop = maxVictims + Math.max(3, Math.round(maxVictims * 0.15));
+    const labelTopAlt = labelTop - 3;
+
+    // Policy events with their years and labels
+    const policyEvents = [
+      { year: 1852, label: "Foreign Miners' Tax" },
+      { year: 1882, label: 'Exclusion Act' },
+      { year: 1888, label: 'Scott Act' },
+      { year: 1892, label: 'Geary Act' },
+      { year: 1913, label: 'CA Alien Land Law' }
+    ];
 
     const chartCombo = echarts.init(document.getElementById('chart-combo'));
     chartCombo.setOption({
       tooltip: { 
         trigger: 'axis', 
-        axisPointer: { type: 'cross' },
-        backgroundColor: 'var(--western-wheat)',
-        borderColor: 'var(--western-saddle-brown)',
-        textStyle: { color: 'var(--western-saddle-brown)' }
+        axisPointer: { 
+          type: 'cross',
+          crossStyle: { color: '#8B4513' },
+          lineStyle: { color: '#8B4513' },
+          label: {
+            formatter: function(params) {
+              if (params.axisDimension === 'y' && params.axisIndex === 0) {
+                return Math.round(params.value);
+              }
+              if (params.axisDimension === 'y' && params.axisIndex === 1) {
+                return Math.round(params.value / 1000) + 'k';
+              }
+              return params.value;
+            }
+          }
+        },
+        backgroundColor: '#FDF5E6',
+        borderColor: '#8B4513',
+        borderWidth: 2,
+        textStyle: { color: '#5D4037', fontSize: 13 },
+        formatter: function(params) {
+          var result = '<div style="font-weight:bold;margin-bottom:6px;color:#5D4037;font-size:14px;">' + params[0].axisValue + '</div>';
+          for (var i = 0; i < params.length; i++) {
+            var item = params[i];
+            var color = item.seriesName === 'Victims' ? '#C9A0A0' : '#DAA520';
+            var value;
+            if (item.seriesName === 'Chinese Population') {
+              value = item.value ? item.value.toLocaleString() : 'N/A';
+            } else {
+              value = Math.round(item.value || 0);
+            }
+            result += '<div style="display:flex;align-items:center;margin:4px 0;">' +
+              '<span style="display:inline-block;width:12px;height:12px;background:' + color + ';border-radius:2px;margin-right:8px;border:1px solid #5D4037;"></span>' +
+              '<span style="color:#5D4037;">' + item.seriesName + ': <strong style="color:#333;">' + value + '</strong></span>' +
+            '</div>';
+          }
+          return result;
+        }
       },
       legend: { 
         data: ['Victims', 'Chinese Population'], 
-        bottom: 10,
-        textStyle: { color: 'var(--western-saddle-brown)' }
+        bottom: 8,
+        left: 'center',
+        itemGap: 40,
+        itemWidth: 20,
+        itemHeight: 14,
+        textStyle: { color: '#5D4037', fontSize: 13, fontWeight: 'bold' }
       },
       xAxis: {
         type: 'category',
         data: comboYears,
-        axisLabel: { align: 'center', color: 'var(--western-saddle-brown)' },
+        axisLabel: { align: 'center', color: '#5D4037', fontSize: 11 },
         axisTick: { alignWithLabel: true },
-        axisLine: { lineStyle: { color: 'var(--western-sienna)' } }
+        axisLine: { lineStyle: { color: '#A0522D', width: 2 } }
       },
       yAxis: [
         {
           type: 'value',
+          name: 'Number of Victims',
           position: 'left',
           nameLocation: 'center',
           nameGap: 50,
           nameRotate: 90,
-          nameTextStyle: { fontWeight: 'bold', fontSize: 16, fontFamily: 'sans-serif', color: 'var(--western-saddle-brown)' },
-          axisLabel: { color: 'var(--western-saddle-brown)' },
-          axisLine: { lineStyle: { color: 'var(--western-sienna)' } },
-          splitLine: { lineStyle: { color: 'var(--western-burlywood)', opacity: 0.3 } }
+          nameTextStyle: { fontWeight: 'bold', fontSize: 14, fontFamily: 'sans-serif', color: '#C9A0A0' },
+          axisLabel: { 
+            color: '#996666', 
+            fontSize: 12, 
+            fontWeight: 'bold',
+            formatter: function(value) {
+              return value >= labelTop ? '' : Math.round(value);
+            }
+          },
+          axisLine: { show: true, lineStyle: { color: '#C9A0A0', width: 3 } },
+          max: labelTop + 2,
+          splitLine: { lineStyle: { color: '#DEB887', opacity: 0.4 } }
         },
         {
           type: 'value',
+          name: 'Chinese Population',
           position: 'right',
           nameLocation: 'center',
-          nameGap: 50,
-          nameRotate: 90,
-          nameTextStyle: { fontWeight: 'bold', fontSize: 16, fontFamily: 'sans-serif', color: 'var(--western-saddle-brown)' },
+          nameGap: 55,
+          nameRotate: -90,
+          nameTextStyle: { fontWeight: 'bold', fontSize: 14, fontFamily: 'sans-serif', color: '#DAA520' },
           splitLine: { show: false },
-          axisLabel: { color: 'var(--western-saddle-brown)' },
-          axisLine: { lineStyle: { color: 'var(--western-sienna)' } }
+          axisLabel: { 
+            color: '#B8860B', 
+            fontSize: 12, 
+            fontWeight: 'bold',
+            formatter: function(value) { 
+              return value >= 1000 ? (value/1000).toFixed(0) + 'k' : value; 
+            } 
+          },
+          axisLine: { show: true, lineStyle: { color: '#DAA520', width: 3 } }
         }
       ],
       series: [
@@ -421,30 +631,28 @@ import "../../styles/western-colors.css";
           data: victimsSeries,
           yAxisIndex: 0,
           itemStyle: { 
-            color: 'var(--western-saddle-brown)', 
-            borderColor: 'var(--western-saddle-brown)',
-            opacity: 0.8
+            color: '#C9A0A0',
+            borderColor: '#996666',
+            borderWidth: 1,
+            opacity: 0.9
           },
           barWidth: '60%',
           emphasis: {
             focus: 'series',
             itemStyle: {
-              color: 'var(--western-saddle-brown)',
-              borderColor: 'var(--western-sienna)',
+              color: '#D4B5B5',
+              borderColor: '#996666',
               borderWidth: 2,
               shadowBlur: 10,
               shadowColor: 'rgba(0, 0, 0, 0.3)'
             }
           },
           markLine: {
-            symbol: 'none',
-            data: [
-              { xAxis: '1852', label: { show: true, formatter: 'Foreign Miners’ Tax', position: 'end', color: '#222', fontWeight: 'bold', fontSize: 13, align: 'center', verticalAlign: 'top', rotate: 0, distance: 30 }, lineStyle: { color: '#222', width: 2, type: 'dashed' } },
-              { xAxis: '1882', label: { show: true, formatter: 'Exclusion Act', position: 'end', color: '#222', fontWeight: 'bold', fontSize: 13, align: 'center', verticalAlign: 'top', rotate: 0, distance: 15 }, lineStyle: { color: '#222', width: 2, type: 'dashed' } },
-              { xAxis: '1892', label: { show: true, formatter: 'Geary Act', position: 'end', color: '#222', fontWeight: 'bold', fontSize: 13, align: 'center', verticalAlign: 'top', rotate: 0, distance: 15 }, lineStyle: { color: '#222', width: 2, type: 'dashed' } },
-              { xAxis: '1888', label: { show: true, formatter: 'Scott Act', position: 'end', color: '#222', fontWeight: 'bold', fontSize: 13, align: 'center', verticalAlign: 'top', rotate: 0, distance: 30 }, lineStyle: { color: '#222', width: 2, type: 'dashed' } },
-              { xAxis: '1913', label: { show: true, formatter: 'CA Alien Land Law', position: 'end', color: '#222', fontWeight: 'bold', fontSize: 13, align: 'center', verticalAlign: 'top', rotate: 0, distance: 30 }, lineStyle: { color: '#222', width: 2, type: 'dashed' } }
-            ]
+            silent: true,
+            symbol: ['none', 'none'],
+            lineStyle: { color: '#7A6B5A', width: 1.5, type: 'dashed' },
+            label: { show: false },
+            data: policyEvents.map(function(e) { return { xAxis: e.year }; })
           }
         },
         {
@@ -452,32 +660,77 @@ import "../../styles/western-colors.css";
           type: 'line',
           data: popSeries,
           yAxisIndex: 1,
-          lineStyle: { color: 'var(--western-goldenrod)', width: 3 },
-          areaStyle: { color: '#DEB887', opacity: 0.3 }, // burlywood
+          lineStyle: { color: '#DAA520', width: 3 },
+          areaStyle: { color: '#DAA520', opacity: 0.15 },
           symbol: 'circle',
-          symbolSize: 7,
+          symbolSize: 4,
+          itemStyle: { color: '#DAA520', borderColor: '#B8860B', borderWidth: 1 },
           emphasis: {
             focus: 'series',
-            lineStyle: { color: 'var(--western-goldenrod)', width: 4 },
-            areaStyle: { color: '#DEB887', opacity: 0.5 }, // burlywood
+            lineStyle: { color: '#B8860B', width: 4 },
+            areaStyle: { color: '#DAA520', opacity: 0.3 },
             itemStyle: {
-              color: 'var(--western-goldenrod)',
-              borderColor: 'var(--western-sienna)',
+              color: '#FFD700',
+              borderColor: '#B8860B',
               borderWidth: 2
             }
           }
         }
       ],
-      grid: { left: 80, right: 80, top: 60, bottom: 60 },
+      grid: { left: 70, right: 75, top: 70, bottom: 55 },
       responsive: true
     });
-    
-    // Update markLine colors for combo chart after rendering
-    setTimeout(() => {
-      const markLines = document.querySelectorAll('#chart-combo .echarts-mark-line');
-      markLines.forEach(line => {
-        line.style.color = 'var(--western-sienna)';
-      });
-    }, 100);
+
+    function renderPolicyEventGraphics() {
+      var graphics = policyEvents.map(function(event) {
+        var useAltRow = event.year === 1882 || event.year === 1892;
+        var labelValue = useAltRow ? labelTopAlt : labelTop;
+        var labelPixel = chartCombo.convertToPixel({ xAxisIndex: 0, yAxisIndex: 0 }, [String(event.year), labelValue]);
+        var axisPixel = chartCombo.convertToPixel({ xAxisIndex: 0, yAxisIndex: 0 }, [String(event.year), 0]);
+        if (!labelPixel || !axisPixel) return null;
+        return {
+          type: 'group',
+          silent: true,
+          z: 10,
+          zlevel: 2,
+          children: [
+            {
+              type: 'line',
+              shape: {
+                x1: labelPixel[0],
+                y1: labelPixel[1] + 4,
+                x2: labelPixel[0],
+                y2: axisPixel[1]
+              },
+              style: {
+                stroke: '#7A6B5A',
+                lineWidth: 1,
+                lineDash: [4, 4]
+              }
+            },
+            {
+              type: 'text',
+              style: {
+                text: event.label,
+                x: labelPixel[0],
+                y: labelPixel[1] - 4,
+                font: 'bold 11px sans-serif',
+                fill: '#333',
+                textAlign: 'center',
+                textVerticalAlign: 'bottom'
+              }
+            }
+          ]
+        };
+      }).filter(Boolean);
+      chartCombo.setOption({ graphic: graphics });
+    }
+
+    chartCombo.on('finished', renderPolicyEventGraphics);
+    renderPolicyEventGraphics();
+    window.addEventListener('resize', function() {
+      chartCombo.resize();
+      setTimeout(renderPolicyEventGraphics, 60);
+    });
   </script>
-</PageLayout> 
+</PageLayout>

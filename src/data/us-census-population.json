@@ -1,0 +1,357 @@
+[
+  {
+    "year": 1850,
+    "blackPopulation": 3638808,
+    "asianPopulation": 0
+  },
+  {
+    "year": 1851,
+    "blackPopulation": 3719110,
+    "asianPopulation": 3493
+  },
+  {
+    "year": 1852,
+    "blackPopulation": 3799412,
+    "asianPopulation": 6987
+  },
+  {
+    "year": 1853,
+    "blackPopulation": 3879715,
+    "asianPopulation": 10480
+  },
+  {
+    "year": 1854,
+    "blackPopulation": 3960017,
+    "asianPopulation": 13973
+  },
+  {
+    "year": 1855,
+    "blackPopulation": 4040319,
+    "asianPopulation": 17467
+  },
+  {
+    "year": 1856,
+    "blackPopulation": 4120621,
+    "asianPopulation": 20960
+  },
+  {
+    "year": 1857,
+    "blackPopulation": 4200923,
+    "asianPopulation": 24453
+  },
+  {
+    "year": 1858,
+    "blackPopulation": 4281226,
+    "asianPopulation": 27946
+  },
+  {
+    "year": 1859,
+    "blackPopulation": 4361528,
+    "asianPopulation": 31440
+  },
+  {
+    "year": 1860,
+    "blackPopulation": 4441830,
+    "asianPopulation": 34933
+  },
+  {
+    "year": 1861,
+    "blackPopulation": 4485648,
+    "asianPopulation": 37765
+  },
+  {
+    "year": 1862,
+    "blackPopulation": 4529466,
+    "asianPopulation": 40597
+  },
+  {
+    "year": 1863,
+    "blackPopulation": 4573284,
+    "asianPopulation": 43429
+  },
+  {
+    "year": 1864,
+    "blackPopulation": 4617102,
+    "asianPopulation": 46261
+  },
+  {
+    "year": 1865,
+    "blackPopulation": 4660920,
+    "asianPopulation": 49094
+  },
+  {
+    "year": 1866,
+    "blackPopulation": 4704737,
+    "asianPopulation": 51926
+  },
+  {
+    "year": 1867,
+    "blackPopulation": 4748555,
+    "asianPopulation": 54758
+  },
+  {
+    "year": 1868,
+    "blackPopulation": 4792373,
+    "asianPopulation": 57590
+  },
+  {
+    "year": 1869,
+    "blackPopulation": 4836191,
+    "asianPopulation": 60422
+  },
+  {
+    "year": 1870,
+    "blackPopulation": 4880009,
+    "asianPopulation": 63254
+  },
+  {
+    "year": 1871,
+    "blackPopulation": 5050087,
+    "asianPopulation": 67490
+  },
+  {
+    "year": 1872,
+    "blackPopulation": 5220166,
+    "asianPopulation": 71726
+  },
+  {
+    "year": 1873,
+    "blackPopulation": 5390244,
+    "asianPopulation": 75962
+  },
+  {
+    "year": 1874,
+    "blackPopulation": 5560323,
+    "asianPopulation": 80198
+  },
+  {
+    "year": 1875,
+    "blackPopulation": 5730401,
+    "asianPopulation": 84434
+  },
+  {
+    "year": 1876,
+    "blackPopulation": 5900479,
+    "asianPopulation": 88669
+  },
+  {
+    "year": 1877,
+    "blackPopulation": 6070558,
+    "asianPopulation": 92905
+  },
+  {
+    "year": 1878,
+    "blackPopulation": 6240636,
+    "asianPopulation": 97141
+  },
+  {
+    "year": 1879,
+    "blackPopulation": 6410715,
+    "asianPopulation": 101377
+  },
+  {
+    "year": 1880,
+    "blackPopulation": 6580793,
+    "asianPopulation": 105613
+  },
+  {
+    "year": 1881,
+    "blackPopulation": 6671581,
+    "asianPopulation": 106004
+  },
+  {
+    "year": 1882,
+    "blackPopulation": 6762370,
+    "asianPopulation": 106396
+  },
+  {
+    "year": 1883,
+    "blackPopulation": 6853158,
+    "asianPopulation": 106787
+  },
+  {
+    "year": 1884,
+    "blackPopulation": 6943946,
+    "asianPopulation": 107179
+  },
+  {
+    "year": 1885,
+    "blackPopulation": 7034735,
+    "asianPopulation": 107570
+  },
+  {
+    "year": 1886,
+    "blackPopulation": 7125523,
+    "asianPopulation": 107961
+  },
+  {
+    "year": 1887,
+    "blackPopulation": 7216311,
+    "asianPopulation": 108353
+  },
+  {
+    "year": 1888,
+    "blackPopulation": 7307099,
+    "asianPopulation": 108744
+  },
+  {
+    "year": 1889,
+    "blackPopulation": 7397888,
+    "asianPopulation": 109136
+  },
+  {
+    "year": 1890,
+    "blackPopulation": 7488676,
+    "asianPopulation": 109527
+  },
+  {
+    "year": 1891,
+    "blackPopulation": 7623208,
+    "asianPopulation": 109993
+  },
+  {
+    "year": 1892,
+    "blackPopulation": 7757740,
+    "asianPopulation": 110459
+  },
+  {
+    "year": 1893,
+    "blackPopulation": 7892271,
+    "asianPopulation": 110926
+  },
+  {
+    "year": 1894,
+    "blackPopulation": 8026803,
+    "asianPopulation": 111392
+  },
+  {
+    "year": 1895,
+    "blackPopulation": 8161335,
+    "asianPopulation": 111858
+  },
+  {
+    "year": 1896,
+    "blackPopulation": 8295867,
+    "asianPopulation": 112324
+  },
+  {
+    "year": 1897,
+    "blackPopulation": 8430399,
+    "asianPopulation": 112790
+  },
+  {
+    "year": 1898,
+    "blackPopulation": 8564930,
+    "asianPopulation": 113257
+  },
+  {
+    "year": 1899,
+    "blackPopulation": 8699462,
+    "asianPopulation": 113723
+  },
+  {
+    "year": 1900,
+    "blackPopulation": 8833994,
+    "asianPopulation": 114189
+  },
+  {
+    "year": 1901,
+    "blackPopulation": 8933371,
+    "asianPopulation": 117456
+  },
+  {
+    "year": 1902,
+    "blackPopulation": 9032748,
+    "asianPopulation": 120724
+  },
+  {
+    "year": 1903,
+    "blackPopulation": 9132125,
+    "asianPopulation": 123991
+  },
+  {
+    "year": 1904,
+    "blackPopulation": 9231502,
+    "asianPopulation": 127259
+  },
+  {
+    "year": 1905,
+    "blackPopulation": 9330879,
+    "asianPopulation": 130526
+  },
+  {
+    "year": 1906,
+    "blackPopulation": 9430255,
+    "asianPopulation": 133793
+  },
+  {
+    "year": 1907,
+    "blackPopulation": 9529632,
+    "asianPopulation": 137061
+  },
+  {
+    "year": 1908,
+    "blackPopulation": 9629009,
+    "asianPopulation": 140328
+  },
+  {
+    "year": 1909,
+    "blackPopulation": 9728386,
+    "asianPopulation": 143596
+  },
+  {
+    "year": 1910,
+    "blackPopulation": 9827763,
+    "asianPopulation": 146863
+  },
+  {
+    "year": 1911,
+    "blackPopulation": 9891300,
+    "asianPopulation": 150390
+  },
+  {
+    "year": 1912,
+    "blackPopulation": 9954837,
+    "asianPopulation": 153918
+  },
+  {
+    "year": 1913,
+    "blackPopulation": 10018373,
+    "asianPopulation": 157445
+  },
+  {
+    "year": 1914,
+    "blackPopulation": 10081910,
+    "asianPopulation": 160973
+  },
+  {
+    "year": 1915,
+    "blackPopulation": 10145447,
+    "asianPopulation": 164500
+  },
+  {
+    "year": 1916,
+    "blackPopulation": 10208984,
+    "asianPopulation": 168027
+  },
+  {
+    "year": 1917,
+    "blackPopulation": 10272521,
+    "asianPopulation": 171555
+  },
+  {
+    "year": 1918,
+    "blackPopulation": 10336057,
+    "asianPopulation": 175082
+  },
+  {
+    "year": 1919,
+    "blackPopulation": 10399594,
+    "asianPopulation": 178610
+  },
+  {
+    "year": 1920,
+    "blackPopulation": 10463131,
+    "asianPopulation": 182137
+  }
+]

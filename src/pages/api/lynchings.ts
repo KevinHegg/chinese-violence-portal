@@ -1,17 +1,20 @@
 import type { APIRoute } from 'astro';
-import { fetchLynchingsData } from '../../utils/googleSheets';
+import { fetchLynchingsData, fetchLynchingsMainData } from '../../utils/googleSheets';
 
 // Cache for 5 minutes to reduce API calls
-let cachedData: any[] | null = null;
-let cacheTime = 0;
+const cache: Record<string, { data: any[]; time: number }> = {};
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export const GET: APIRoute = async ({ request }) => {
   try {
+    const url = new URL(request.url);
+    const gid = url.searchParams.get('gid');
+    const cacheKey = gid || 'default';
+    
     // Check cache
     const now = Date.now();
-    if (cachedData && (now - cacheTime) < CACHE_DURATION) {
-      return new Response(JSON.stringify(cachedData), {
+    if (cache[cacheKey] && (now - cache[cacheKey].time) < CACHE_DURATION) {
+      return new Response(JSON.stringify(cache[cacheKey].data), {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
@@ -21,11 +24,16 @@ export const GET: APIRoute = async ({ request }) => {
     }
 
     // Fetch fresh data from Google Sheets
-    const data = await fetchLynchingsData();
+    let data;
+    if (gid) {
+      // Fetch from specific tab (e.g., Main tab with gid=760826284)
+      data = await fetchLynchingsMainData(gid);
+    } else {
+      data = await fetchLynchingsData();
+    }
     
     // Update cache
-    cachedData = data;
-    cacheTime = now;
+    cache[cacheKey] = { data, time: now };
 
     return new Response(JSON.stringify(data), {
       status: 200,

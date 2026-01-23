@@ -1,0 +1,514 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro";
+import "../../styles/western-colors.css";
+import { parse } from 'csv-parse/sync';
+import fs from 'fs';
+import path from 'path';
+
+// Read and parse the Beck-Tolnay Black lynching data CSV
+const csvPath = path.join(process.cwd(), 'src/data/beck-tolnay-black-lynchings.csv');
+const csvContent = fs.readFileSync(csvPath, 'utf-8');
+const blackLynchingData = parse(csvContent, {
+  columns: true,
+  skip_empty_lines: true
+});
+
+// Count by year
+const blackLynchingsByYear: Record<number, number> = {};
+blackLynchingData.forEach((record: any) => {
+  const year = parseInt(record.YEAR);
+  if (year && !isNaN(year) && year >= 1850 && year <= 1940) {
+    blackLynchingsByYear[year] = (blackLynchingsByYear[year] || 0) + 1;
+  }
+});
+
+// Read census population data
+const censusPath = path.join(process.cwd(), 'src/data/us-census-population.json');
+const censusData = JSON.parse(fs.readFileSync(censusPath, 'utf-8'));
+const populationByYear: Record<number, { black: number; asian: number }> = {};
+censusData.forEach((entry: any) => {
+  populationByYear[entry.year] = {
+    black: entry.blackPopulation,
+    asian: entry.asianPopulation
+  };
+});
+---
+
+<PageLayout title="Comparative Lynching Data" currentPage="visualize/compare">
+  <div class="container-wide">
+    <a href="/visualize" class="text-accent hover:text-accent-focus flex items-center gap-2 mb-4">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      </svg>
+      Back to Visualizations
+    </a>
+    
+    <h1 class="text-4xl font-bold mb-4 text-amber-800">Comparative Lynching Data: Black & Chinese Victims</h1>
+    
+    <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg max-w-4xl">
+      <p class="text-gray-700 mb-3">
+        This visualization compares the annual count of lynchings of Black Americans with incidents of anti-Chinese violence in the United States. While both represent forms of racialized mob violence, they occurred in different geographic and social contexts: anti-Black lynchings were concentrated in the South during the Jim Crow era, while anti-Chinese violence was concentrated in the West during the exclusion era. The second chart shows per capita rates, allowing for a more direct comparison of the relative frequency of these forms of violence across different population sizes.
+      </p>
+      <p class="text-sm text-gray-600">
+        <strong>Sources:</strong><br>
+        Black lynching data: Bailey, Amy Kate, and Stewart E. Tolnay. "CSDE Lynching Database." Accessed February 8, 2019.<br>
+        Chinese violence data: John Crow Project dataset.
+      </p>
+    </div>
+
+    <!-- Comparison Chart -->
+    <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-8">
+      <h2 class="text-xl font-semibold mb-2 text-amber-800">Lynchings Over Time: Black vs. Chinese Victims (1850–1920)</h2>
+      <p class="mb-4 text-sm text-amber-700">Annual count of lynchings by race of victim.</p>
+      <div id="chart-compare" class="chart-container-large"></div>
+    </div>
+    
+    <!-- Summary Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div class="bg-gradient-to-br from-amber-100 to-yellow-100 border-2 border-amber-400 rounded-xl p-4">
+        <h3 class="text-base font-semibold text-amber-800 mb-2">Black Lynching Victims (South)</h3>
+        <p class="text-2xl font-bold text-amber-900 mb-1" id="black-total">—</p>
+        <p class="text-xs text-amber-700 mb-1">Total victims (1877–1920)</p>
+        <p class="text-xs text-amber-600 mb-1" id="black-peak">Peak year: —</p>
+        <p class="text-xs text-amber-600" id="black-avg-overlap">Avg (1877–1915): —</p>
+      </div>
+      <div class="bg-gradient-to-br from-amber-100 to-yellow-100 border-2 border-amber-400 rounded-xl p-4">
+        <h3 class="text-base font-semibold text-amber-800 mb-2">Chinese Violence Victims (West)</h3>
+        <p class="text-2xl font-bold text-amber-900 mb-1" id="chinese-total">—</p>
+        <p class="text-xs text-amber-700 mb-1">Total victims (1850–1920)</p>
+        <p class="text-xs text-amber-600 mb-1" id="chinese-peak">Peak year: —</p>
+        <p class="text-xs text-amber-600" id="chinese-avg-overlap">Avg (1877–1915): —</p>
+      </div>
+    </div>
+
+    <!-- Per Capita Comparison Chart -->
+    <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-8">
+      <h2 class="text-xl font-semibold mb-2 text-amber-800">Per Capita Lynchings: Black vs. Chinese Victims (1850–1920)</h2>
+      <p class="mb-4 text-sm text-amber-700">Annual lynchings per 100,000 population by race.</p>
+      <div id="chart-percapita" class="chart-container-large"></div>
+    </div>
+    
+    <!-- Per Capita Summary Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div class="bg-gradient-to-br from-amber-100 to-yellow-100 border-2 border-amber-400 rounded-xl p-4">
+        <h3 class="text-base font-semibold text-amber-800 mb-2">Black Lynching Rate (South)</h3>
+        <p class="text-2xl font-bold text-amber-900 mb-1">
+          <span id="black-percapita-avg">—</span>
+          <span class="text-base font-normal text-amber-700"> (<span id="black-percapita-avg-overlap">—</span>)</span>
+        </p>
+        <p class="text-xs text-amber-700 mb-1">Average per 100,000 (1877–1920)</p>
+        <p class="text-xs text-amber-600" id="black-percapita-peak">Peak year: —</p>
+      </div>
+      <div class="bg-gradient-to-br from-amber-100 to-yellow-100 border-2 border-amber-400 rounded-xl p-4">
+        <h3 class="text-base font-semibold text-amber-800 mb-2">Chinese Violence Rate (West)</h3>
+        <p class="text-2xl font-bold text-amber-900 mb-1">
+          <span id="chinese-percapita-avg">—</span>
+          <span class="text-base font-normal text-amber-700"> (<span id="chinese-percapita-avg-overlap">—</span>)</span>
+        </p>
+        <p class="text-xs text-amber-700 mb-1">Average per 100,000 (1850–1920)</p>
+        <p class="text-xs text-amber-600" id="chinese-percapita-peak">Peak year: —</p>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <script define:vars={{ blackLynchingsByYear }}>
+    // Fetch Chinese lynchings data
+    fetch('/api/lynchings')
+      .then(r => r.json())
+      .then(lynchingsData => {
+        // Count Chinese victims by year
+        const chineseByYear = {};
+        let chineseTotal = 0;
+        lynchingsData.forEach(record => {
+          let y = record.year;
+          if (!y || y === 0) {
+            if (record.date) {
+              const dateMatch = record.date.match(/^(\d{4})/);
+              if (dateMatch) {
+                y = parseInt(dateMatch[1]);
+              }
+            }
+          } else {
+            y = parseInt(y);
+          }
+          const victims = parseInt(record['number-of-victims']) || 1;
+          if (y && !isNaN(y) && y >= 1850 && y <= 1920) {
+            chineseByYear[y] = (chineseByYear[y] || 0) + victims;
+            chineseTotal += victims;
+          }
+        });
+
+        // Build year range 1850-1920
+        const years = [];
+        for (let y = 1850; y <= 1920; y++) years.push(y);
+        
+        const blackData = years.map(y => blackLynchingsByYear[y] || 0);
+        const chineseData = years.map(y => chineseByYear[y] || 0);
+        
+        // Calculate totals and peaks for the displayed range
+        let blackTotal = 0;
+        let blackPeakYear = [0, 0];
+        years.forEach(y => {
+          const count = blackLynchingsByYear[y] || 0;
+          blackTotal += count;
+          if (count > blackPeakYear[1]) {
+            blackPeakYear = [y, count];
+          }
+        });
+        
+        let chinesePeakYear = [0, 0];
+        Object.entries(chineseByYear).forEach(([year, count]) => {
+          if (count > chinesePeakYear[1]) {
+            chinesePeakYear = [parseInt(year), count];
+          }
+        });
+        
+        // Calculate 1877-1915 averages
+        let blackOverlapTotal = 0;
+        let blackOverlapCount = 0;
+        let chineseOverlapTotal = 0;
+        let chineseOverlapCount = 0;
+        for (let y = 1877; y <= 1915; y++) {
+          const blackCount = blackLynchingsByYear[y] || 0;
+          blackOverlapTotal += blackCount;
+          blackOverlapCount++;
+          
+          const chineseCount = chineseByYear[y] || 0;
+          chineseOverlapTotal += chineseCount;
+          chineseOverlapCount++;
+        }
+        const blackOverlapAvg = (blackOverlapTotal / blackOverlapCount).toFixed(1);
+        const chineseOverlapAvg = (chineseOverlapTotal / chineseOverlapCount).toFixed(1);
+        
+        document.getElementById('black-total').textContent = blackTotal.toLocaleString();
+        document.getElementById('chinese-total').textContent = chineseTotal.toLocaleString();
+        document.getElementById('black-peak').textContent = 'Peak year: ' + blackPeakYear[0] + ' (' + blackPeakYear[1] + ' victims)';
+        document.getElementById('chinese-peak').textContent = 'Peak year: ' + chinesePeakYear[0] + ' (' + chinesePeakYear[1] + ' victims)';
+        document.getElementById('black-avg-overlap').textContent = 'Avg (1877–1915): ' + blackOverlapAvg + ' per year';
+        document.getElementById('chinese-avg-overlap').textContent = 'Avg (1877–1915): ' + chineseOverlapAvg + ' per year';
+
+        // Create chart
+        const chart = echarts.init(document.getElementById('chart-compare'));
+        chart.setOption({
+          tooltip: {
+            trigger: 'axis',
+            backgroundColor: '#FDF5E6',
+            borderColor: '#8B4513',
+            borderWidth: 2,
+            textStyle: { color: '#5D4037', fontSize: 13 },
+            formatter: function(params) {
+              let result = '<div style="font-weight:bold;margin-bottom:6px;color:#5D4037;font-size:14px;">' + params[0].axisValue + '</div>';
+              params.forEach(function(item) {
+                const color = item.seriesName.includes('Black') ? '#8B4513' : '#C9A0A0';
+                result += '<div style="display:flex;align-items:center;margin:4px 0;">' +
+                  '<span style="display:inline-block;width:12px;height:12px;background:' + color + ';border-radius:2px;margin-right:8px;"></span>' +
+                  '<span style="color:#5D4037;">' + item.seriesName + ': <strong>' + item.value + '</strong></span>' +
+                '</div>';
+              });
+              return result;
+            }
+          },
+          legend: {
+            data: ['Black Lynching Victims', 'Chinese Violence Victims'],
+            bottom: 10,
+            textStyle: { color: '#5D4037', fontSize: 12, fontWeight: 'bold' }
+          },
+          xAxis: {
+            type: 'category',
+            data: years,
+            axisLabel: { color: '#5D4037', fontSize: 11 },
+            axisLine: { lineStyle: { color: '#A0522D', width: 2 } }
+          },
+          yAxis: [
+            {
+              type: 'value',
+              name: 'Black Victims',
+              position: 'left',
+              nameLocation: 'center',
+              nameGap: 50,
+              nameRotate: 90,
+              nameTextStyle: { fontWeight: 'bold', fontSize: 14, color: '#8B4513' },
+              axisLabel: { 
+                color: '#8B4513', 
+                fontSize: 12, 
+                fontWeight: 'bold'
+              },
+              axisLine: { show: true, lineStyle: { color: '#8B4513', width: 3 } },
+              splitLine: { lineStyle: { color: '#DEB887', opacity: 0.4 } }
+            },
+            {
+              type: 'value',
+              name: 'Chinese Victims',
+              position: 'right',
+              nameLocation: 'center',
+              nameGap: 50,
+              nameRotate: -90,
+              nameTextStyle: { fontWeight: 'bold', fontSize: 14, color: '#C9A0A0' },
+              axisLabel: { 
+                color: '#996666', 
+                fontSize: 12, 
+                fontWeight: 'bold'
+              },
+              axisLine: { show: true, lineStyle: { color: '#C9A0A0', width: 3 } },
+              splitLine: { show: false }
+            }
+          ],
+          series: [
+            {
+              name: 'Black Lynching Victims',
+              type: 'line',
+              data: blackData,
+              yAxisIndex: 0,
+              lineStyle: { color: '#8B4513', width: 2 },
+              areaStyle: { color: '#8B4513', opacity: 0.2 },
+              symbol: 'circle',
+              symbolSize: 4,
+              itemStyle: { color: '#8B4513' }
+            },
+            {
+              name: 'Chinese Violence Victims',
+              type: 'line',
+              data: chineseData,
+              yAxisIndex: 1,
+              lineStyle: { color: '#C9A0A0', width: 2 },
+              areaStyle: { color: '#C9A0A0', opacity: 0.3 },
+              symbol: 'circle',
+              symbolSize: 4,
+              itemStyle: { color: '#C9A0A0' }
+            }
+          ],
+          grid: { left: 70, right: 70, top: 50, bottom: 60 }
+        });
+        
+        // Handle resize
+        window.addEventListener('resize', function() {
+          chart.resize();
+        });
+      });
+
+    // Per Capita Chart
+    Promise.all([
+      fetch('/api/lynchings').then(r => r.json()),
+      fetch('/us-census-population.json').then(r => r.json())
+    ]).then(([lynchingsData, censusData]) => {
+        if (!lynchingsData || !censusData) {
+          console.error('Failed to load data for per capita chart');
+          return;
+        }
+        // Build population lookup
+        const populationByYear = {};
+        censusData.forEach(entry => {
+          populationByYear[entry.year] = {
+            black: entry.blackPopulation,
+            asian: entry.asianPopulation
+          };
+        });
+
+        // Count Chinese victims by year
+        const chineseByYear = {};
+        lynchingsData.forEach(record => {
+          let y = record.year;
+          if (!y || y === 0) {
+            if (record.date) {
+              const dateMatch = record.date.match(/^(\d{4})/);
+              if (dateMatch) {
+                y = parseInt(dateMatch[1]);
+              }
+            }
+          } else {
+            y = parseInt(y);
+          }
+          const victims = parseInt(record['number-of-victims']) || 1;
+          if (y && !isNaN(y) && y >= 1850 && y <= 1920) {
+            chineseByYear[y] = (chineseByYear[y] || 0) + victims;
+          }
+        });
+
+        // Build year range 1850-1920
+        const years = [];
+        for (let y = 1850; y <= 1920; y++) years.push(y);
+        
+        // Calculate per capita rates (per 100,000)
+        const blackPerCapita = years.map(y => {
+          const victims = blackLynchingsByYear[y] || 0;
+          const pop = populationByYear[y]?.black;
+          if (!pop || pop === 0) return 0;
+          return (victims / pop) * 100000;
+        });
+        
+        const chinesePerCapita = years.map(y => {
+          const victims = chineseByYear[y] || 0;
+          const pop = populationByYear[y]?.asian;
+          if (!pop || pop === 0) return 0;
+          return (victims / pop) * 100000;
+        });
+        
+        // Calculate stats for per capita chart
+        let blackPeakRate = 0;
+        let blackPeakYear = 0;
+        let chinesePeakRate = 0;
+        let chinesePeakYear = 0;
+        
+        years.forEach((y, index) => {
+          const blackRate = blackPerCapita[index];
+          const chineseRate = chinesePerCapita[index];
+          if (blackRate > blackPeakRate) {
+            blackPeakRate = blackRate;
+            blackPeakYear = y;
+          }
+          if (chineseRate > chinesePeakRate) {
+            chinesePeakRate = chineseRate;
+            chinesePeakYear = y;
+          }
+        });
+        
+        // Calculate averages for the overlap period (1877-1920)
+        const overlapStart = 1877;
+        const overlapEnd = 1920;
+        let blackSum = 0;
+        let chineseSum = 0;
+        let blackCount = 0;
+        let chineseCount = 0;
+        
+        // Calculate averages for 1877-1915
+        let blackOverlapSum = 0;
+        let chineseOverlapSum = 0;
+        let overlapCount = 0;
+        
+        years.forEach((y, index) => {
+          if (y >= overlapStart && y <= overlapEnd) {
+            blackSum += blackPerCapita[index];
+            blackCount++;
+          }
+          if (y >= 1850 && y <= 1920) {
+            chineseSum += chinesePerCapita[index];
+            chineseCount++;
+          }
+          if (y >= 1877 && y <= 1915) {
+            blackOverlapSum += blackPerCapita[index];
+            chineseOverlapSum += chinesePerCapita[index];
+            overlapCount++;
+          }
+        });
+        
+        const blackAvgRate = (blackSum / blackCount).toFixed(2);
+        const chineseAvgRate = (chineseSum / chineseCount).toFixed(2);
+        const blackOverlapAvg = (blackOverlapSum / overlapCount).toFixed(2);
+        const chineseOverlapAvg = (chineseOverlapSum / overlapCount).toFixed(2);
+        
+        document.getElementById('black-percapita-avg').textContent = blackAvgRate;
+        document.getElementById('black-percapita-peak').textContent = 'Peak year: ' + blackPeakYear + ' (' + blackPeakRate.toFixed(2) + ' per 100,000)';
+        document.getElementById('black-percapita-avg-overlap').textContent = '1877–1915: ' + blackOverlapAvg;
+        document.getElementById('chinese-percapita-avg').textContent = chineseAvgRate;
+        document.getElementById('chinese-percapita-peak').textContent = 'Peak year: ' + chinesePeakYear + ' (' + chinesePeakRate.toFixed(2) + ' per 100,000)';
+        document.getElementById('chinese-percapita-avg-overlap').textContent = '1877–1915: ' + chineseOverlapAvg;
+
+        // Create per capita chart
+        const percapitaContainer = document.getElementById('chart-percapita');
+        if (!percapitaContainer) {
+          console.error('Chart container not found');
+          return;
+        }
+        const chartPercapita = echarts.init(percapitaContainer);
+        chartPercapita.setOption({
+          tooltip: {
+            trigger: 'axis',
+            backgroundColor: '#FDF5E6',
+            borderColor: '#8B4513',
+            borderWidth: 2,
+            textStyle: { color: '#5D4037', fontSize: 13 },
+            formatter: function(params) {
+              let result = '<div style="font-weight:bold;margin-bottom:6px;color:#5D4037;font-size:14px;">' + params[0].axisValue + '</div>';
+              params.forEach(function(item) {
+                const color = item.seriesName.includes('Black') ? '#8B4513' : '#C9A0A0';
+                const displayValue = item.value.toFixed(2);
+                result += '<div style="display:flex;align-items:center;margin:4px 0;">' +
+                  '<span style="display:inline-block;width:12px;height:12px;background:' + color + ';border-radius:2px;margin-right:8px;"></span>' +
+                  '<span style="color:#5D4037;">' + item.seriesName + ': <strong>' + displayValue + '</strong> per 100,000</span>' +
+                '</div>';
+              });
+              return result;
+            }
+          },
+          legend: {
+            data: ['Black Lynching Victims', 'Chinese Violence Victims'],
+            bottom: 10,
+            textStyle: { color: '#5D4037', fontSize: 12, fontWeight: 'bold' }
+          },
+          xAxis: {
+            type: 'category',
+            data: years,
+            axisLabel: { color: '#5D4037', fontSize: 11 },
+            axisLine: { lineStyle: { color: '#A0522D', width: 2 } }
+          },
+          yAxis: [
+            {
+              type: 'value',
+              name: 'Black Victims per 100,000',
+              position: 'left',
+              nameLocation: 'center',
+              nameGap: 50,
+              nameRotate: 90,
+              nameTextStyle: { fontWeight: 'bold', fontSize: 14, color: '#8B4513' },
+              axisLabel: { 
+                color: '#8B4513', 
+                fontSize: 12, 
+                fontWeight: 'bold'
+              },
+              axisLine: { show: true, lineStyle: { color: '#8B4513', width: 3 } },
+              splitLine: { lineStyle: { color: '#DEB887', opacity: 0.4 } }
+            },
+            {
+              type: 'value',
+              name: 'Chinese Victims per 100,000',
+              position: 'right',
+              nameLocation: 'center',
+              nameGap: 50,
+              nameRotate: -90,
+              nameTextStyle: { fontWeight: 'bold', fontSize: 14, color: '#C9A0A0' },
+              axisLabel: { 
+                color: '#996666', 
+                fontSize: 12, 
+                fontWeight: 'bold'
+              },
+              axisLine: { show: true, lineStyle: { color: '#C9A0A0', width: 3 } },
+              splitLine: { show: false }
+            }
+          ],
+          series: [
+            {
+              name: 'Black Lynching Victims',
+              type: 'line',
+              data: blackPerCapita,
+              yAxisIndex: 0,
+              lineStyle: { color: '#8B4513', width: 2 },
+              areaStyle: { color: '#8B4513', opacity: 0.2 },
+              symbol: 'circle',
+              symbolSize: 4,
+              itemStyle: { color: '#8B4513' }
+            },
+            {
+              name: 'Chinese Violence Victims',
+              type: 'line',
+              data: chinesePerCapita,
+              yAxisIndex: 1,
+              lineStyle: { color: '#C9A0A0', width: 2 },
+              areaStyle: { color: '#C9A0A0', opacity: 0.3 },
+              symbol: 'circle',
+              symbolSize: 4,
+              itemStyle: { color: '#C9A0A0' }
+            }
+          ],
+          grid: { left: 70, right: 70, top: 50, bottom: 60 }
+        });
+        
+        // Handle resize
+        window.addEventListener('resize', function() {
+          chartPercapita.resize();
+        });
+      }).catch(error => {
+        console.error('Error loading per capita chart data:', error);
+      });
+  </script>
+</PageLayout>
