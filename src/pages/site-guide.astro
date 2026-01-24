@@ -166,6 +166,46 @@ chinese-violence-portal/
       <li><strong>Client-Side Hydration</strong> - Interactive components hydrate after page load</li>
     </ul>
 
+    <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6 mb-8 not-prose">
+      <h4 class="text-lg font-semibold mb-3 text-blue-900">💡 What is Client-Side Hydration?</h4>
+      <p class="text-sm text-base-content/90 mb-3">
+        <strong>Hydration</strong> is the process of making static HTML interactive in the browser. Here's how it works:
+      </p>
+      
+      <div class="text-sm text-base-content/90 space-y-3">
+        <div>
+          <strong>1. Server Renders HTML (Fast)</strong>
+          <p>When you visit a page, the server generates complete HTML with all content visible. This happens instantly—users see content immediately, even before JavaScript loads.</p>
+        </div>
+        
+        <div>
+          <strong>2. Browser Receives Static HTML</strong>
+          <p>The browser displays this HTML. The page looks complete, but interactive features (buttons, animations, etc.) don't work yet.</p>
+        </div>
+        
+        <div>
+          <strong>3. JavaScript "Hydrates" Components (Adds Interactivity)</strong>
+          <p>JavaScript loads and attaches event listeners and state management to the static HTML, making it interactive. This is called "hydration" because you're adding life/interactivity to the dry/static HTML.</p>
+        </div>
+      </div>
+
+      <div class="mt-4 pt-4 border-t border-blue-200">
+        <p class="text-sm text-base-content/90 mb-2">
+          <strong>Example on This Site:</strong>
+        </p>
+        <ul class="text-sm text-base-content/90 space-y-2">
+          <li>• <strong>Timeline Component</strong> (<code class="text-xs bg-gray-100 px-1 rounded">Timeline.tsx</code>) - Server renders the timeline as static HTML. Once JavaScript loads, React "hydrates" it, enabling filtering, animations, and interactions.</li>
+          <li>• <strong>Navbar, ArticleViewer</strong> (<code class="text-xs bg-gray-100 px-1 rounded">.astro</code> files) - Pure Astro components with no hydration needed—they're just HTML/CSS.</li>
+        </ul>
+      </div>
+
+      <div class="mt-4 pt-4 border-t border-blue-200">
+        <p class="text-sm text-base-content/90">
+          <strong>Why This Matters:</strong> Astro's "islands architecture" only hydrates interactive components (like the Timeline), while keeping everything else as lightweight HTML. This makes the site fast—you get instant page loads with interactive features only where needed.
+        </p>
+      </div>
+    </div>
+
     <h2 id="technology-stack" class="text-3xl font-semibold mt-12 mb-6 text-base-content border-b-2 border-amber-300 pb-2">Technology Stack</h2>
 
     <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Core Framework</h3>
