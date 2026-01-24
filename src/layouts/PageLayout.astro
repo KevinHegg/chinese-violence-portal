@@ -32,6 +32,10 @@ const fullTitle = `${title} - John Crow Archive`;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <meta name="keywords" content="anti-Chinese violence, Chinese lynching, American West history, Chinese Exclusion Act, historical racism, Chinese American history, anti-Asian violence, 1850-1915, digital archive, primary sources" />
+    <meta name="author" content="Kevin Hegg" />
+    <meta name="robots" content="index, follow" />
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content={type} />
@@ -54,10 +58,35 @@ const fullTitle = `${title} - John Crow Archive`;
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "name": "John Crow Archive",
+      "name": "The John Crow Archive",
+      "alternateName": "John Crow Project",
       "url": siteUrl,
       "description": description,
+      "about": {
+        "@type": "Thing",
+        "name": "Anti-Chinese Violence in American History",
+        "description": "Historical documentation of anti-Chinese lynchings, riots, and massacres in the American West (1850-1915)"
+      },
       "publisher": {
+        "@type": "Person",
+        "name": "Kevin Hegg",
+        "jobTitle": "Historian",
+        "affiliation": {
+          "@type": "EducationalOrganization",
+          "name": "History Graduate Program"
+        }
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": `${siteUrl}/explore?q={search_term_string}`
+        },
+        "query-input": "required name=search_term_string"
+      },
+      "inLanguage": "en-US",
+      "copyrightYear": 2025,
+      "copyrightHolder": {
         "@type": "Person",
         "name": "Kevin Hegg"
       }

@@ -46,6 +46,57 @@ const featuredRecord = featuredSource.length > 0
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>The John Crow Project</title>
     <meta name="description" content="Documenting the history of anti-Chinese lynching, exclusion, and resistance in the American West (1850–1915). Explore interactive records, maps, timelines, and primary-source newspaper articles to uncover this neglected chapter of American history." />
+    <meta name="keywords" content="John Crow, anti-Chinese violence, Chinese lynching, American West, Chinese Exclusion, anti-Asian racism, digital history, primary sources, 1850-1915" />
+    
+    <!-- Enhanced Structured Data for Homepage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "The John Crow Archive",
+      "description": "Comprehensive digital archive documenting anti-Chinese violence in the American West (1850-1915), including {incidentCount} documented incidents, {victimCount} victims, and 140+ primary source newspaper articles.",
+      "url": "https://johncrow.org",
+      "mainEntity": {
+        "@type": "DataCatalog",
+        "name": "Anti-Chinese Violence Database",
+        "description": "Searchable database of lynchings, riots, and massacres targeting Chinese immigrants in the American West",
+        "temporalCoverage": "1850/1915",
+        "spatialCoverage": {
+          "@type": "Place",
+          "name": "American West"
+        },
+        "numberOfItems": {incidentCount},
+        "license": "https://creativecommons.org/licenses/by-nc/4.0/"
+      },
+      "hasPart": [
+        {
+          "@type": "WebPage",
+          "name": "Explore Records",
+          "url": "https://johncrow.org/explore",
+          "description": "Search and filter {incidentCount} documented incidents of anti-Chinese violence"
+        },
+        {
+          "@type": "WebPage",
+          "name": "Data Visualizations",
+          "url": "https://johncrow.org/visualize",
+          "description": "Interactive charts, maps, and timelines showing patterns of violence over time"
+        },
+        {
+          "@type": "WebPage",
+          "name": "Primary Sources",
+          "url": "https://johncrow.org/visualize/news",
+          "description": "140+ digitized newspaper articles with full transcripts"
+        }
+      ],
+      "creator": {
+        "@type": "Person",
+        "name": "Kevin Hegg",
+        "jobTitle": "Historian"
+      },
+      "datePublished": "2025-01-24",
+      "inLanguage": "en-US"
+    }
+    </script>
   </head>
   <body class="font-serif" data-current-page="home">
     <Navbar currentPage="home" />
