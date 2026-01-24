@@ -38,18 +38,8 @@ const { currentPage } = Astro.props;
   });
 </script>
 
-<!-- Aggressive content fade at very top of viewport -->
-<div class="pointer-events-none fixed-top-0 z-60">
-  <div class="fade-content-mask w-full h-full"></div>
-</div>
-
-<!-- Aggressive fade mask above navbar -->
-<div class="pointer-events-none fixed-top-0 z-50">
-  <div class="fade-navbar-mask w-full h-full"></div>
-</div>
-
-<!-- Global navbar -->
-<nav class="navbar bg-amber-50 border-b border-t border-amber-200 shadow-sm fixed-top-30 h-10">
+<!-- Global navbar with gradient fade -->
+<nav class="navbar navbar-gradient border-b border-amber-200 shadow-sm fixed top-0 left-0 right-0 z-50 py-2">
   <div class="navbar-start">
     <!-- Mobile menu button - visible on screens smaller than 900px -->
     <button id="mobile-menu-button" class="btn btn-ghost btn-sm p-2 mobile-menu-btn" aria-label="Toggle mobile menu" aria-expanded="false">
@@ -197,7 +187,7 @@ const { currentPage } = Astro.props;
 </div>
 
 <!-- Spacer to prevent content from being hidden behind fixed navbar -->
-<div class="h-[60px]"></div>
+<div class="h-[56px]"></div>
 
 <style>
   /* Ensure navbar layout works correctly */
@@ -327,5 +317,17 @@ const { currentPage } = Astro.props;
     }
   }
 
-  /* Fade masks moved to components.css for reusability */
+  /* Navbar gradient background - fades from solid to transparent */
+  .navbar-gradient {
+    background: linear-gradient(to bottom, 
+      rgba(254, 243, 199, 1) 0%,     /* Darker amber - #fef3c7 */
+      rgba(254, 243, 199, 0.98) 20%,
+      rgba(254, 243, 199, 0.95) 40%,
+      rgba(254, 243, 199, 0.9) 60%,
+      rgba(254, 243, 199, 0.8) 80%,
+      rgba(254, 243, 199, 0.5) 100%
+    ) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
 </style> 
