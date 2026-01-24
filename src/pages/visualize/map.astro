@@ -170,14 +170,55 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
     .collapsed-back-link {
       display: none;
     }
+    /* Screen reader only content */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
   </style>
 </head>
 <body>
-  <div id="map"></div>
+  <!-- Hidden keyboard instructions for screen readers -->
+  <div class="sr-only" id="map-keyboard-instructions">
+    <h2>Keyboard Navigation Instructions</h2>
+    <p>This interactive map can be navigated using your keyboard:</p>
+    <ul>
+      <li>Arrow keys: Pan the map in any direction</li>
+      <li>Plus (+) or Equals (=) key: Zoom in</li>
+      <li>Minus (-) or Underscore (_) key: Zoom out</li>
+      <li>Space bar: Play or pause the timeline animation</li>
+      <li>Left/Right arrow keys (when timeline is focused): Move through years</li>
+      <li>Tab: Navigate between map, timeline slider, and play button</li>
+      <li>Enter: Activate buttons and links</li>
+    </ul>
+    <p>A complete list of all violence incidents is provided below the map for accessible browsing.</p>
+  </div>
+  
+  <div id="map" 
+       role="application" 
+       tabindex="0"
+       aria-label="Interactive map showing locations of anti-Chinese violence incidents from 1850 to 1915. Use keyboard controls to navigate: arrow keys to pan, plus and minus to zoom, space bar to play timeline. See keyboard instructions and data list below for accessible alternatives."
+       aria-describedby="map-keyboard-instructions"></div>
   <div id="overlay">
-    <button id="playButton" class="btn btn-primary">Play</button>
-    <input type="range" id="yearSlider" step="1">
-    <span id="yearLabel"></span>
+    <button id="playButton" class="btn btn-primary" aria-label="Play timeline animation">Play</button>
+    <input type="range" id="yearSlider" step="1" aria-label="Timeline year slider">
+    <span id="yearLabel" aria-live="polite" aria-atomic="true"></span>
+  </div>
+  
+  <!-- Accessible data list for screen readers -->
+  <div id="map-data-list" class="sr-only" role="region" aria-label="List of anti-Chinese violence incidents">
+    <h2>Complete List of Violence Incidents</h2>
+    <p>This list contains all incidents shown on the map, organized by year. Each entry includes location, date, event type, and victim information.</p>
+    <div id="incidents-list-content">
+      <!-- Will be populated by JavaScript -->
+    </div>
   </div>
   <div id="infoPanel" class="info-panel">
     <div class="info-panel-header">
@@ -488,6 +529,124 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
         infoPanel.classList.remove('collapsed');
       });
     }
+    
+    // Keyboard navigation for map
+    const mapElement = document.getElementById('map');
+    if (mapElement) {
+      mapElement.addEventListener('keydown', function(e) {
+        const panDistance = 50; // pixels
+        switch(e.key) {
+          case 'ArrowUp':
+            e.preventDefault();
+            map.panBy([0, -panDistance]);
+            break;
+          case 'ArrowDown':
+            e.preventDefault();
+            map.panBy([0, panDistance]);
+            break;
+          case 'ArrowLeft':
+            e.preventDefault();
+            map.panBy([-panDistance, 0]);
+            break;
+          case 'ArrowRight':
+            e.preventDefault();
+            map.panBy([panDistance, 0]);
+            break;
+          case '+':
+          case '=':
+            e.preventDefault();
+            map.zoomIn();
+            break;
+          case '-':
+          case '_':
+            e.preventDefault();
+            map.zoomOut();
+            break;
+          case ' ':
+            e.preventDefault();
+            playButton.click();
+            break;
+        }
+      });
+    }
+    
+    // Populate accessible data list
+    function populateAccessibleList() {
+      const listContent = document.getElementById('incidents-list-content');
+      if (!listContent || !dataRows) return;
+      
+      // Sort by year
+      const sortedData = [...dataRows].sort((a, b) => {
+        return (+getField(a, "year")) - (+getField(b, "year"));
+      });
+      
+      const ul = document.createElement('ul');
+      ul.setAttribute('aria-label', 'List of violence incidents');
+      
+      sortedData.forEach(d => {
+        const year = getField(d, "year");
+        const title = getField(d, "narrative-short-title");
+        const city = getField(d, "city");
+        const county = getField(d, "county");
+        const state = getField(d, "state");
+        const eventType = getField(d, "event-type");
+        const victims = getField(d, "number-of-victims");
+        const date = getField(d, "date");
+        const lynchingId = getField(d, "lynching-id");
+        
+        let location = '';
+        if(city && city.trim() !== '') {
+          location = [city, state].filter(Boolean).join(", ");
+        } else if(county && county.trim() !== '') {
+          location = [county + " County", state].filter(Boolean).join(", ");
+        } else {
+          location = state || '';
+        }
+        
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${year}: ${title}</strong> - ${location} (${date}). Event type: ${eventType}. Victims: ${victims}. <a href="/records/${lynchingId}">View full record</a>`;
+        ul.appendChild(li);
+      });
+      
+      listContent.appendChild(ul);
+    }
+    
+    // Call populateAccessibleList after data is loaded
+    fetch(jsonURL)
+      .then(response => response.json())
+      .then(data => {
+        dataRows = data;
+        dataRows.forEach(d => {
+          d.year = +getField(d, "year");
+          d["number-of-victims"] = +getField(d, "number-of-victims");
+          d.latitude = +getField(d, "latitude");
+          d.longitude = +getField(d, "longitude");
+        });
+        const allYears = dataRows.map(d => +getField(d, "year"));
+        minYear = Math.min(...allYears);
+        maxYear = Math.max(...allYears);
+        // Force timeline to start at 1852 if data has earlier years
+        if(minYear < 1852) {
+          minYear = 1852;
+        }
+        slider.min = minYear;
+        slider.max = maxYear;
+        slider.value = minYear;
+        yearLabel.textContent = minYear;
+        lastYear = minYear;
+        updateMarkers(minYear);
+        
+        // Populate accessible list
+        populateAccessibleList();
+
+        // AUTO-START PLAYBACK
+        setTimeout(() => {
+          playButton.click(); // Start playing automatically
+        }, 1000); // Wait 1 second after load
+
+      }).catch(error => {
+        console.error("Error loading JSON:", error);
+      });
     }
     
     // Start initialization when DOM is ready

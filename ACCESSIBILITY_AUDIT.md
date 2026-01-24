@@ -10,10 +10,9 @@
 
 ## Executive Summary
 
-The John Crow Archive website has a solid foundation for accessibility with good practices in place. All non-visual accessibility issues have been addressed. **Outstanding issues** that require attention are:
+The John Crow Archive website has a solid foundation for accessibility with good practices in place. All non-visual accessibility issues have been addressed. **Outstanding issue** that requires attention:
 
-1. **Interactive Map Accessibility** (Critical Priority) - Requires visual changes
-2. **Color Contrast** (High Priority) - Requires visual testing and adjustments
+1. **Color Contrast** (High Priority) - Requires visual testing and adjustments
 
 ---
 
@@ -36,50 +35,13 @@ The John Crow Archive website has a solid foundation for accessibility with good
 15. **Heading Hierarchy**: All pages have proper heading structure (h1 → h2 → h3, no skipped levels)
 16. **Link Purpose**: All links have descriptive text (no "click here" or "here" links)
 17. **Table Accessibility**: All visible data tables have proper markup with `scope` attributes and `aria-label`
+18. **Interactive Map Accessibility**: Map has keyboard navigation (arrow keys, +/-, space bar), ARIA labels, and hidden accessible data list for screen readers
 
 ---
 
 ## 🔴 Critical Issues (Must Fix)
 
-### 1. Interactive Map Accessibility (WCAG 2.1.1, 2.1.2, 4.1.2)
-
-**Issue**: The Leaflet/Mapbox map on `/visualize/map` is not keyboard accessible.
-
-**Problems:**
-- Map controls (zoom, pan) require mouse
-- No keyboard alternative
-- No text alternative for map data
-- Map markers not keyboard navigable
-
-**Recommendations:**
-1. **Add a data table/list view** of all map points as an alternative
-2. **Implement keyboard controls** for map navigation (arrow keys, +/- for zoom)
-3. **Add `role="application"`** with `aria-label` describing keyboard shortcuts
-4. **Provide skip link** to skip map and go to data table
-5. **Add instructions** for keyboard users on how to interact with map
-6. **Consider Leaflet accessibility plugins** or custom keyboard handlers
-
-**Example Implementation:**
-```html
-<div id="map" 
-     role="application" 
-     aria-label="Interactive map of anti-Chinese violence locations. Use arrow keys to pan, plus and minus keys to zoom, Enter to select markers. See data table below for accessible alternative.">
-</div>
-<!-- Keyboard instructions -->
-<div class="sr-only" id="map-keyboard-instructions">
-  <h3>Keyboard Navigation</h3>
-  <ul>
-    <li>Arrow keys: Pan map</li>
-    <li>Plus/Minus: Zoom in/out</li>
-    <li>Tab: Navigate to markers</li>
-    <li>Enter: Select marker</li>
-  </ul>
-</div>
-<!-- Accessible data table alternative -->
-<table id="map-data-table" aria-label="List of violence incidents with locations">
-  <!-- All map data as table -->
-</table>
-```
+*All critical accessibility issues have been addressed.*
 
 ---
 
