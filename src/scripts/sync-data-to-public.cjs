@@ -1,7 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const files = ['lynchings.json', 'timeline.json'];
+// Only timeline.json needs to be synced to public/
+// Lynching and article data now comes from Google Sheets API
+const files = ['timeline.json'];
 const srcDir = path.join(__dirname, '../data');
 const publicDir = path.join(__dirname, '../../public');
 
@@ -11,5 +13,7 @@ files.forEach(file => {
   if (fs.existsSync(src)) {
     fs.copyFileSync(src, dest);
     console.log(`Synced ${file} to public/`);
+  } else {
+    console.warn(`Warning: ${file} not found in ${srcDir}`);
   }
 }); 

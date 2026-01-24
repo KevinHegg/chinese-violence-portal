@@ -120,4 +120,4 @@ Or force a refresh by:
 
 ## Migration Notes
 
-The old JSON files (`src/data/lynchings.json` and `src/data/articles.json`) are no longer used by the website but are kept for reference. You can delete them once you've verified the Google Sheets integration is working correctly.
+The old JSON files (`src/data/lynchings.json` and `src/data/articles.json`) have been removed from the codebase. All lynching and article data now comes exclusively from Google Sheets via the API endpoints.
