@@ -12,7 +12,7 @@ export interface Props {
 
 const { title, currentPage, description = "The John Crow Project revives a neglected chapter of American history: the white supremacist violence and legal exclusion aimed at Chinese immigrants after the Gold Rush.", image = "https://johncrow.org/johnchinaman.png", type = "website" } = Astro.props;
 const siteUrl = "https://johncrow.org";
-const fullTitle = `${title} - John Crow Archive`;
+const fullTitle = `${title} - John Crow Project`;
 ---
 
 <!doctype html>
@@ -58,8 +58,8 @@ const fullTitle = `${title} - John Crow Archive`;
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "name": "The John Crow Archive",
-      "alternateName": "John Crow Project",
+      "name": "The John Crow Project",
+      "alternateName": "John Crow Archive",
       "url": siteUrl,
       "description": description,
       "about": {

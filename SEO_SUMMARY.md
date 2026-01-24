@@ -1,4 +1,4 @@
-# SEO Summary - The John Crow Archive
+# SEO Summary - The John Crow Project
 
 **Date:** January 24, 2026  
 **Status:** ✅ Fully Optimized for Search Engines
