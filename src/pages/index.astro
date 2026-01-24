@@ -62,7 +62,7 @@ const featuredRecord = featuredSource.length > 0
           </p>
         </div>
 
-        <div class="prose prose-lg mb-8">
+        <div class="prose prose-lg mb-8 max-w-none">
           <h2 class="text-2xl font-display font-semibold mb-4 text-base-content">About the Project</h2>
           <p class="font-body text-base-content/90 leading-relaxed mb-6">
             Welcome to the John Crow Project. This site revives a neglected chapter of American history: the white supremacist violence and legal exclusion aimed at Chinese immigrants after the Gold Rush. The first attacks appeared in California's goldfields in 1849, then rolled east along wagon roads, rail lines, and river towns. By the early 1900s the violence had crossed the Mississippi River and collided with the entrenched racism of Jim Crow. Drawing on newly compiled lynching databases, digitized newspapers, and recent scholarship, this website documents how vigilante terror and discriminatory laws worked hand-in-hand to drive Chinese communities from mines, rail camps, and towns.
@@ -74,15 +74,15 @@ const featuredRecord = featuredSource.length > 0
           </p>
           
           <!-- John Crow Explanation Callout -->
-          <div class="bg-amber-50 border-l-4 border-amber-500 rounded-lg p-6 mb-6 shadow-sm">
-            <h3 class="text-xl font-display font-semibold mb-3 text-amber-900">What is "John Crow"?</h3>
+          <div class="bg-amber-50 border-l-4 border-amber-500 rounded-lg p-6 mb-6 shadow-sm not-prose">
+            <h3 class="text-xl font-display font-semibold mb-3 text-vintage-ink">What is "John Crow"?</h3>
             <p class="font-body text-base-content/90 leading-relaxed mb-3">
               The term <i>John Crow</i> is a deliberate conceptual framework, modeled in part on <i>Jane Crow</i>, 
               which was coined to name the compounded racial and gendered oppression faced by Black women. 
               Like <i>Jane Crow</i>, <i>John Crow</i> seeks to expose a distinct but parallel regime of racial terror—in this case, 
               one that targeted Chinese immigrants in the American West.
             </p>
-            <p class="font-body text-base-content/90 leading-relaxed">
+            <p class="font-body text-base-content/90 leading-relaxed mb-0">
               "Crow" evokes Jim Crow, the system of white supremacist control 
               that subjugated African Americans in the post-Reconstruction South. "John" derives from John Chinaman, the 19th-century racial caricature 
               that dehumanized Chinese immigrants as alien and unassimilable. By merging these terms, <i>John Crow</i> names a system not of enforced separation, 
@@ -96,7 +96,7 @@ const featuredRecord = featuredSource.length > 0
             Explore the evidence, contribute your family's stories, and help us extend this record—what you see here is a starting point, not an endpoint. Together we can uncover, verify, and map new cases and perspectives, transforming collective memory and advancing justice through truth.
           </p>
           <!-- Callout for Submit Form -->
-          <div class="mt-8 mb-8">
+          <div class="mt-8 mb-8 not-prose">
             <div class="bg-amber-100 border-l-4 border-amber-400 rounded-lg p-4 flex flex-col md:flex-row md:items-center gap-3 shadow-sm">
               <div class="flex-1 text-amber-900 text-base">
                 <strong>Submit details about acts of lethal violence targeting Chinese immigrants in the U.S. between 1850 and World War I.</strong>
@@ -104,12 +104,11 @@ const featuredRecord = featuredSource.length > 0
               <a href="/submit" class="inline-block mt-2 md:mt-0 px-4 py-2 bg-amber-400 hover:bg-amber-500 text-amber-900 font-semibold rounded shadow transition-colors duration-150 text-sm text-center">Submit an Incident</a>
             </div>
           </div>
-        </div>
-
-        <!-- Featured Record Section -->
-        {featuredRecord && (
-          <div class="mb-8">
-            <h2 class="text-2xl font-display font-semibold mb-4 text-base-content">Featured Record</h2>
+        
+          <!-- Featured Record Section -->
+          {featuredRecord && (
+            <div class="mb-8 not-prose">
+              <h2 class="text-2xl font-display font-semibold mb-4 text-base-content">Featured Record</h2>
             <a href={`/records/${featuredRecord["lynching-id"]}`} class="block bg-white border border-amber-200 rounded-lg p-5 shadow-md hover:shadow-lg transition-shadow">
               <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex-shrink-0">
@@ -135,8 +134,9 @@ const featuredRecord = featuredSource.length > 0
                 </div>
               </div>
             </a>
-          </div>
-        )}
+            </div>
+          )}
+        </div>
 
         <footer class="text-center mt-12 pt-8 border-t border-base-300">
           <div class="mb-3">
