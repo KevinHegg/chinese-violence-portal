@@ -448,6 +448,9 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
         yearLabel.textContent = minYear;
         lastYear = minYear;
         updateMarkers(minYear);
+        
+        // Populate accessible list
+        populateAccessibleList();
 
         // AUTO-START PLAYBACK
         setTimeout(() => {
@@ -610,43 +613,6 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
       
       listContent.appendChild(ul);
     }
-    
-    // Call populateAccessibleList after data is loaded
-    fetch(jsonURL)
-      .then(response => response.json())
-      .then(data => {
-        dataRows = data;
-        dataRows.forEach(d => {
-          d.year = +getField(d, "year");
-          d["number-of-victims"] = +getField(d, "number-of-victims");
-          d.latitude = +getField(d, "latitude");
-          d.longitude = +getField(d, "longitude");
-        });
-        const allYears = dataRows.map(d => +getField(d, "year"));
-        minYear = Math.min(...allYears);
-        maxYear = Math.max(...allYears);
-        // Force timeline to start at 1852 if data has earlier years
-        if(minYear < 1852) {
-          minYear = 1852;
-        }
-        slider.min = minYear;
-        slider.max = maxYear;
-        slider.value = minYear;
-        yearLabel.textContent = minYear;
-        lastYear = minYear;
-        updateMarkers(minYear);
-        
-        // Populate accessible list
-        populateAccessibleList();
-
-        // AUTO-START PLAYBACK
-        setTimeout(() => {
-          playButton.click(); // Start playing automatically
-        }, 1000); // Wait 1 second after load
-
-      }).catch(error => {
-        console.error("Error loading JSON:", error);
-      });
     }
     
     // Start initialization when DOM is ready
