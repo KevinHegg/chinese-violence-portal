@@ -43,7 +43,7 @@ censusData.forEach((entry: any) => {
       Back to Visualizations
     </a>
     
-    <h1 class="text-4xl font-bold mb-4 text-amber-800">Comparative Lynching Data: Black & Chinese Victims</h1>
+    <h1 class="text-4xl font-bold mb-4 text-vintage-ink">Comparative Lynching Data: Black & Chinese Victims</h1>
     
     <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg max-w-4xl">
       <p class="text-gray-700 mb-3">
@@ -59,8 +59,8 @@ censusData.forEach((entry: any) => {
 
     <!-- Comparison Chart -->
     <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-8">
-      <h2 class="text-xl font-semibold mb-2 text-amber-800">Lynchings Over Time: Black vs. Chinese Victims (1850–1920)</h2>
-      <p class="mb-4 text-sm text-amber-700">Annual count of lynchings by race of victim.</p>
+      <h2 class="text-xl font-semibold mb-2 text-vintage-ink">Lynchings Over Time: Black vs. Chinese Victims (1850–1920)</h2>
+      <p class="mb-4 text-sm text-vintage-ink">Annual count of lynchings by race of victim.</p>
       <div id="chart-compare" 
            class="chart-container-large"
            role="img"
@@ -73,16 +73,16 @@ censusData.forEach((entry: any) => {
     <!-- Summary Stats -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       <div class="bg-gradient-to-br from-amber-100 to-yellow-100 border-2 border-amber-400 rounded-xl p-4">
-        <h3 class="text-base font-semibold text-amber-800 mb-2">Black Lynching Victims (South)</h3>
+        <h3 class="text-base font-semibold text-vintage-ink mb-2">Black Lynching Victims (South)</h3>
         <p class="text-2xl font-bold text-amber-900 mb-1" id="black-total">—</p>
-        <p class="text-xs text-amber-700 mb-1">Total victims (1877–1920)</p>
+        <p class="text-xs text-vintage-ink mb-1">Total victims (1877–1920)</p>
         <p class="text-xs text-amber-600 mb-1" id="black-peak">Peak year: —</p>
         <p class="text-xs text-amber-600" id="black-avg-overlap">Avg (1877–1915): —</p>
       </div>
       <div class="bg-gradient-to-br from-amber-100 to-yellow-100 border-2 border-amber-400 rounded-xl p-4">
-        <h3 class="text-base font-semibold text-amber-800 mb-2">Chinese Violence Victims (West)</h3>
+        <h3 class="text-base font-semibold text-vintage-ink mb-2">Chinese Violence Victims (West)</h3>
         <p class="text-2xl font-bold text-amber-900 mb-1" id="chinese-total">—</p>
-        <p class="text-xs text-amber-700 mb-1">Total victims (1850–1920)</p>
+        <p class="text-xs text-vintage-ink mb-1">Total victims (1850–1920)</p>
         <p class="text-xs text-amber-600 mb-1" id="chinese-peak">Peak year: —</p>
         <p class="text-xs text-amber-600" id="chinese-avg-overlap">Avg (1877–1915): —</p>
       </div>
@@ -90,8 +90,8 @@ censusData.forEach((entry: any) => {
 
     <!-- Per Capita Comparison Chart -->
     <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-8">
-      <h2 class="text-xl font-semibold mb-1 text-amber-800">Per Capita Lynchings: Black vs. Chinese Victims (1875–1920)</h2>
-      <p class="mb-2 text-sm text-amber-700">Annual lynchings per 100,000 population by race during the overlap era.</p>
+      <h2 class="text-xl font-semibold mb-1 text-vintage-ink">Per Capita Lynchings: Black vs. Chinese Victims (1875–1920)</h2>
+      <p class="mb-2 text-sm text-vintage-ink">Annual lynchings per 100,000 population by race during the overlap era.</p>
       <div id="chart-percapita" 
            style="height: 600px;"
            role="img"
@@ -104,23 +104,23 @@ censusData.forEach((entry: any) => {
     <!-- Per Capita Summary Stats -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       <div class="bg-gradient-to-br from-amber-100 to-yellow-100 border-2 border-amber-400 rounded-xl p-4">
-        <h3 class="text-base font-semibold text-amber-800 mb-2">Black Lynching Rate (South)</h3>
+        <h3 class="text-base font-semibold text-vintage-ink mb-2">Black Lynching Rate (South)</h3>
         <p class="text-2xl font-bold text-amber-900 mb-1" id="black-percapita-avg">—</p>
-        <p class="text-xs text-amber-700 mb-1">Average per 100,000 (1875–1920)</p>
+        <p class="text-xs text-vintage-ink mb-1">Average per 100,000 (1875–1920)</p>
         <p class="text-xs text-amber-600" id="black-percapita-peak">Peak year: —</p>
       </div>
       <div class="bg-gradient-to-br from-amber-100 to-yellow-100 border-2 border-amber-400 rounded-xl p-4">
-        <h3 class="text-base font-semibold text-amber-800 mb-2">Chinese Violence Rate (West)</h3>
+        <h3 class="text-base font-semibold text-vintage-ink mb-2">Chinese Violence Rate (West)</h3>
         <p class="text-2xl font-bold text-amber-900 mb-1" id="chinese-percapita-avg">—</p>
-        <p class="text-xs text-amber-700 mb-1">Average per 100,000 (1875–1920)</p>
+        <p class="text-xs text-vintage-ink mb-1">Average per 100,000 (1875–1920)</p>
         <p class="text-xs text-amber-600" id="chinese-percapita-peak">Peak year: —</p>
       </div>
     </div>
 
     <!-- Population Trends and Violence Chart -->
     <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-8">
-      <h2 class="text-xl font-semibold mb-1 text-amber-800">Population Trends & Violence: Black & Asian Americans (1850–1950)</h2>
-      <p class="mb-2 text-sm text-amber-700">Population trends (lines) and annual lynching/violence incidents (bars) by race over 100 years.</p>
+      <h2 class="text-xl font-semibold mb-1 text-vintage-ink">Population Trends & Violence: Black & Asian Americans (1850–1950)</h2>
+      <p class="mb-2 text-sm text-vintage-ink">Population trends (lines) and annual lynching/violence incidents (bars) by race over 100 years.</p>
       <div id="chart-population-black" style="height: 300px; margin-bottom: 20px;"></div>
       <div id="chart-population-asian" style="height: 300px;"></div>
     </div>

@@ -36,7 +36,7 @@ const articles = await fetchArticlesData();
      <div class="bg-amber-50/90 border-2 border-amber-200 rounded-lg p-3 mb-4 shadow-lg relative">
        <!-- Notification for filter changes -->
        <div id="filter-notification" class="hidden absolute -top-8 left-1/2 transform -translate-x-1/2 z-10 transition-all duration-500 ease-out" style="transform: translate(-50%, -100%);">
-         <span class="text-sm text-amber-700 bg-amber-100 px-4 py-2 rounded-full border border-amber-300 shadow-lg">
+         <span class="text-sm text-vintage-ink bg-amber-100 px-4 py-2 rounded-full border border-amber-300 shadow-lg">
            Filter applied • <span id="filtered-count">0</span> articles found
          </span>
        </div>
@@ -49,10 +49,10 @@ const articles = await fetchArticlesData();
             <ul id="entity-list" role="list" aria-label="List of named entities with occurrence counts"></ul>
           </div>
           <div class="flex justify-between items-center pt-2 pb-0 border-t border-amber-200">
-            <div id="article-count" class="text-sm text-amber-700 bg-amber-100 rounded-lg px-3 py-2 flex items-center ml-2.5">
+            <div id="article-count" class="text-sm text-vintage-ink bg-amber-100 rounded-lg px-3 py-2 flex items-center ml-2.5">
               Showing all {articles.length} articles
             </div>
-            <button id="reset-filter" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm mr-2.5" aria-label="Reset word cloud filter and show all articles">
+            <button id="reset-filter" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-vintage-ink font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm mr-2.5" aria-label="Reset word cloud filter and show all articles">
               Reset & Remix
             </button>
           </div>

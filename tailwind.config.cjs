@@ -17,6 +17,10 @@ module.exports = {
         subtle: '0 1px 2px rgba(0, 0, 0, 0.05)',
         vintage: '0 4px 6px rgba(60, 60, 59, 0.1)',
       },
+      colors: {
+        'vintage-ink': '#3d2817', // Dark walnut brown for vintage text (WCAG AA compliant)
+        'vintage-text': '#2d2520', // Slightly warmer dark brown for body text
+      },
     },
   },
   plugins: [

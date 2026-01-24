@@ -77,10 +77,10 @@ const newlyDocumentedOptions = ['Yes', 'No'];
     <!-- Keyword Search Panel - At Top -->
     <div class="mb-4">
       <div class="bg-white rounded-lg p-3 border border-amber-300 flex items-center gap-4">
-        <label for="keyword-search" class="font-medium text-amber-800 whitespace-nowrap">Keyword Search:</label>
+        <label for="keyword-search" class="font-medium text-vintage-ink whitespace-nowrap">Keyword Search:</label>
         <input id="keyword-search" type="text" class="input input-bordered border-2 border-amber-300 bg-amber-50 flex-1" placeholder="Search titles, summaries..." aria-describedby="keyword-search-hint" />
         <span id="keyword-search-hint" class="sr-only">Search article titles, summaries, and narrative descriptions</span>
-        <button id="keyword-clear" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 text-sm whitespace-nowrap" aria-label="Clear keyword search">Clear</button>
+        <button id="keyword-clear" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-vintage-ink font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 text-sm whitespace-nowrap" aria-label="Clear keyword search">Clear</button>
       </div>
     </div>
     
@@ -88,11 +88,11 @@ const newlyDocumentedOptions = ['Yes', 'No'];
       <!-- Filter Section -->
       <div class="lg:col-span-2">
         <div class="bg-white rounded-lg p-3 border border-amber-300">
-          <h2 class="text-lg font-semibold mb-3 text-amber-800 border-b border-amber-200 pb-2">Filters</h2>
+          <h2 class="text-lg font-semibold mb-3 text-vintage-ink border-b border-amber-200 pb-2">Filters</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div class="form-control">
               <label class="label">
-                <span class="label-text font-medium text-amber-800">Decade</span>
+                <span class="label-text font-medium text-vintage-ink">Decade</span>
               </label>
               <select id="filter-decade" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
                 <option value="">All Decades</option>
@@ -101,7 +101,7 @@ const newlyDocumentedOptions = ['Yes', 'No'];
             </div>
             <div class="form-control">
               <label class="label">
-                <span class="label-text font-medium text-amber-800">State</span>
+                <span class="label-text font-medium text-vintage-ink">State</span>
               </label>
               <select id="filter-state" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
                 <option value="">All States</option>
@@ -110,7 +110,7 @@ const newlyDocumentedOptions = ['Yes', 'No'];
             </div>
             <div class="form-control">
               <label class="label">
-                <span class="label-text font-medium text-amber-800">Event Type</span>
+                <span class="label-text font-medium text-vintage-ink">Event Type</span>
               </label>
               <select id="filter-eventType" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
                 <option value="">All Event Types</option>
@@ -119,7 +119,7 @@ const newlyDocumentedOptions = ['Yes', 'No'];
             </div>
             <div class="form-control">
               <label class="label">
-                <span class="label-text font-medium text-amber-800">Newly Documented</span>
+                <span class="label-text font-medium text-vintage-ink">Newly Documented</span>
               </label>
               <select id="filter-newlyDocumented" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
                 <option value="">All</option>
@@ -132,10 +132,10 @@ const newlyDocumentedOptions = ['Yes', 'No'];
       <!-- Sort Section -->
       <div class="h-full flex flex-col justify-start">
         <div class="bg-white rounded-lg p-3 border border-amber-300 h-full">
-          <h2 class="text-lg font-semibold mb-3 text-amber-800 border-b border-amber-200 pb-2">Sort Options</h2>
+          <h2 class="text-lg font-semibold mb-3 text-vintage-ink border-b border-amber-200 pb-2">Sort Options</h2>
           <div class="form-control">
             <label class="label">
-              <span class="label-text font-medium text-amber-800">Sort By</span>
+              <span class="label-text font-medium text-vintage-ink">Sort By</span>
             </label>
             <select id="sort-by" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
               <option value="date">Date</option>
@@ -144,7 +144,7 @@ const newlyDocumentedOptions = ['Yes', 'No'];
           </div>
           <div class="form-control mt-3">
             <label class="label">
-              <span class="label-text font-medium text-amber-800">Order</span>
+              <span class="label-text font-medium text-vintage-ink">Order</span>
             </label>
             <select id="sort-order" class="select select-bordered w-full border-2 border-amber-300 bg-amber-50">
               <option value="asc">Ascending</option>
@@ -156,10 +156,10 @@ const newlyDocumentedOptions = ['Yes', 'No'];
     </div>
     
     <div class="mt-3 flex justify-between items-center">
-      <div class="text-sm text-amber-700 bg-amber-100 rounded-lg p-2 flex-1 text-center">
+      <div class="text-sm text-vintage-ink bg-amber-100 rounded-lg p-2 flex-1 text-center">
         <span id="results-count">Showing all {lynchingsData.length} records</span>
       </div>
-      <button id="clear-filters" class="ml-4 px-4 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm" aria-label="Clear all filters and show all records">
+      <button id="clear-filters" class="ml-4 px-4 py-2 bg-amber-100 hover:bg-amber-200 text-vintage-ink font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 flex items-center gap-2 text-sm" aria-label="Clear all filters and show all records">
         Clear All Filters
       </button>
     </div>
