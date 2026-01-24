@@ -1,0 +1,434 @@
+---
+import PageLayout from "../layouts/PageLayout.astro";
+
+// This page is intentionally not linked in navigation
+// It serves as internal documentation for thesis committee review
+export const prerender = true;
+---
+
+<PageLayout 
+  title="Site Guide & Technical Documentation" 
+  currentPage="site-guide"
+  description="Comprehensive technical documentation and feature guide for The John Crow Archive website. Built with Astro, Tailwind CSS, and deployed on Netlify."
+>
+  <div class="prose prose-lg max-w-none">
+    <h1 class="text-4xl font-bold mb-6 text-base-content">Site Guide & Technical Documentation</h1>
+    
+    <p class="text-lg text-base-content/90 leading-relaxed mb-8">
+      This page provides comprehensive documentation of The John Crow Archive website, including its features, 
+      architecture, technology stack, and deployment infrastructure. This documentation is intended for thesis 
+      committee review and future maintainers.
+    </p>
+
+    <nav class="bg-amber-50 border-l-4 border-amber-500 rounded-lg p-6 mb-8 shadow-sm not-prose">
+      <h2 class="text-xl font-semibold mb-3 text-vintage-ink">Table of Contents</h2>
+      <ul class="text-sm text-base-content/90 space-y-2">
+        <li><a href="#features" class="text-accent hover:underline">• Site Features</a></li>
+        <li><a href="#architecture" class="text-accent hover:underline">• Technical Architecture</a></li>
+        <li><a href="#technology-stack" class="text-accent hover:underline">• Technology Stack</a></li>
+        <li><a href="#data-pipeline" class="text-accent hover:underline">• Data Pipeline</a></li>
+        <li><a href="#deployment" class="text-accent hover:underline">• Deployment Infrastructure</a></li>
+        <li><a href="#accessibility" class="text-accent hover:underline">• Accessibility Compliance</a></li>
+        <li><a href="#maintenance" class="text-accent hover:underline">• Maintenance & Updates</a></li>
+      </ul>
+    </nav>
+
+    <h2 id="features" class="text-3xl font-semibold mt-12 mb-6 text-base-content border-b-2 border-amber-300 pb-2">Site Features</h2>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Core Functionality</h3>
+
+    <div class="grid md:grid-cols-2 gap-6 mb-6 not-prose">
+      <div class="bg-white border border-amber-200 rounded-lg p-5">
+        <h4 class="text-lg font-semibold mb-3 text-vintage-ink">1. Interactive Data Exploration</h4>
+        <ul class="text-sm text-base-content/90 space-y-2">
+          <li><strong>Explore Records</strong> - Searchable archive of 70+ lynching incidents with keyword search and multi-facet filtering</li>
+          <li><strong>Advanced Filtering</strong> - Filter by decade, state, event type, and newly documented status</li>
+          <li><strong>Real-time Results</strong> - ARIA live regions announce filter results for screen readers</li>
+          <li><strong>Sorting Options</strong> - Sort by date, state, or number of victims</li>
+        </ul>
+      </div>
+
+      <div class="bg-white border border-amber-200 rounded-lg p-5">
+        <h4 class="text-lg font-semibold mb-3 text-vintage-ink">2. Data Visualization Suite</h4>
+        <ul class="text-sm text-base-content/90 space-y-2">
+          <li><strong>Timeline Charts</strong> - Annual incidents and victims over time (1850-1920)</li>
+          <li><strong>Comparative Analysis</strong> - Black vs. Chinese lynching data with per capita calculations</li>
+          <li><strong>Event Categorization</strong> - Pie charts showing violence types and pretexts</li>
+          <li><strong>Population Context</strong> - Overlay of violence data with census population trends</li>
+        </ul>
+      </div>
+
+      <div class="bg-white border border-amber-200 rounded-lg p-5">
+        <h4 class="text-lg font-semibold mb-3 text-vintage-ink">3. Interactive Map</h4>
+        <ul class="text-sm text-base-content/90 space-y-2">
+          <li><strong>Geographic Visualization</strong> - Mapbox-powered map showing incident locations</li>
+          <li><strong>Animated Timeline</strong> - Play/pause timeline showing incidents chronologically</li>
+          <li><strong>Keyboard Navigation</strong> - Arrow keys for panning, +/- for zoom, space for play/pause</li>
+          <li><strong>Accessible Alternative</strong> - Hidden data list for screen reader users</li>
+        </ul>
+      </div>
+
+      <div class="bg-white border border-amber-200 rounded-lg p-5">
+        <h4 class="text-lg font-semibold mb-3 text-vintage-ink">4. Primary Source Archive</h4>
+        <ul class="text-sm text-base-content/90 space-y-2">
+          <li><strong>Newspaper Articles</strong> - 140+ digitized newspaper articles with full transcripts</li>
+          <li><strong>Word Cloud</strong> - Interactive named entity visualization from articles</li>
+          <li><strong>Article Viewer</strong> - Lightbox modal for viewing high-resolution scans</li>
+          <li><strong>Filter by Entity</strong> - Click entities to filter articles</li>
+        </ul>
+      </div>
+
+      <div class="bg-white border border-amber-200 rounded-lg p-5">
+        <h4 class="text-lg font-semibold mb-3 text-vintage-ink">5. AI-Powered Chat Interface</h4>
+        <ul class="text-sm text-base-content/90 space-y-2">
+          <li><strong>Ask the Archive</strong> - Anthropic Claude Sonnet-powered Q&A</li>
+          <li><strong>Contextual Responses</strong> - Answers based on full dataset and articles</li>
+          <li><strong>Suggested Prompts</strong> - Pre-written questions to guide exploration</li>
+          <li><strong>Markdown Support</strong> - Formatted responses with citations</li>
+        </ul>
+      </div>
+
+      <div class="bg-white border border-amber-200 rounded-lg p-5">
+        <h4 class="text-lg font-semibold mb-3 text-vintage-ink">6. Community Contribution</h4>
+        <ul class="text-sm text-base-content/90 space-y-2">
+          <li><strong>Submit Form</strong> - Google Forms integration for new incident submissions</li>
+          <li><strong>Dataset Access</strong> - Downloadable CSV export of full dataset</li>
+          <li><strong>Sources Page</strong> - Primary and secondary source documentation</li>
+          <li><strong>Attribution</strong> - Proper citation and acknowledgment system</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">User Experience Features</h3>
+    <ul class="list-disc list-inside mb-6 text-base-content/90 space-y-2 ml-4">
+      <li><strong>Vintage Aesthetic</strong> - Authentic newspaper archive design with sepia tones and period typography</li>
+      <li><strong>Responsive Design</strong> - Fully responsive layout optimized for desktop, tablet, and mobile</li>
+      <li><strong>Performance</strong> - Server-side rendering with 5-minute data caching for fast load times</li>
+      <li><strong>SEO Optimized</strong> - Comprehensive meta tags, structured data, and sitemap</li>
+      <li><strong>Analytics</strong> - Google Analytics integration for usage tracking</li>
+    </ul>
+
+    <h2 id="architecture" class="text-3xl font-semibold mt-12 mb-6 text-base-content border-b-2 border-amber-300 pb-2">Technical Architecture</h2>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Application Structure</h3>
+
+    <div class="bg-gray-50 border border-gray-300 rounded-lg p-6 mb-6 font-mono text-sm not-prose">
+      <pre class="overflow-x-auto">
+chinese-violence-portal/
+├── src/
+│   ├── components/          # Reusable UI components
+│   │   ├── Navbar.astro    # Global navigation
+│   │   ├── ArticleViewer.astro  # Modal viewer
+│   │   └── Timeline.tsx    # React timeline component
+│   ├── layouts/
+│   │   └── PageLayout.astro     # Main layout wrapper
+│   ├── pages/
+│   │   ├── index.astro          # Homepage
+│   │   ├── explore.astro        # Records archive
+│   │   ├── visualize/           # Data visualization pages
+│   │   │   ├── charts.astro
+│   │   │   ├── compare.astro
+│   │   │   ├── news.astro
+│   │   │   ├── newscloud.astro
+│   │   │   ├── map.astro
+│   │   │   └── timeline.astro
+│   │   ├── articles/[articleId].astro   # Dynamic article pages
+│   │   ├── records/[lynchingId].astro   # Dynamic record pages
+│   │   ├── api/                # API endpoints
+│   │   │   ├── lynchings.ts
+│   │   │   ├── articles.ts
+│   │   │   └── chat.ts
+│   │   ├── chat.astro
+│   │   ├── dataset.astro
+│   │   ├── sources.astro
+│   │   ├── submit.astro
+│   │   ├── accessibility.astro
+│   │   └── 404.astro
+│   ├── styles/
+│   │   ├── tailwind.css         # Tailwind base + custom styles
+│   │   └── components.css       # Component-specific styles
+│   ├── utils/
+│   │   └── googleSheets.ts      # Data fetching utilities
+│   └── scripts/                 # Build-time data processing
+├── public/                      # Static assets
+│   ├── article-scans/           # Newspaper scans
+│   ├── mapimages/               # Location thumbnails
+│   ├── lynchings.json           # Cached dataset
+│   └── timeline.json            # Cached timeline data
+└── astro.config.mjs             # Astro configuration</pre>
+    </div>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Rendering Strategy</h3>
+    <ul class="list-disc list-inside mb-6 text-base-content/90 space-y-2 ml-4">
+      <li><strong>Server-Side Rendering (SSR)</strong> - Most pages rendered on-demand for fresh data</li>
+      <li><strong>Static Pre-rendering</strong> - Accessibility statement pre-rendered at build time</li>
+      <li><strong>Hybrid Approach</strong> - Combines static and dynamic content for optimal performance</li>
+      <li><strong>Client-Side Hydration</strong> - Interactive components hydrate after page load</li>
+    </ul>
+
+    <h2 id="technology-stack" class="text-3xl font-semibold mt-12 mb-6 text-base-content border-b-2 border-amber-300 pb-2">Technology Stack</h2>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Core Framework</h3>
+    <div class="bg-white border border-amber-200 rounded-lg p-5 mb-6 not-prose">
+      <h4 class="text-lg font-semibold mb-3 text-vintage-ink">Astro v5.16.11</h4>
+      <p class="text-sm text-base-content/90 mb-3">
+        <strong>Why Astro?</strong> Chosen for its islands architecture, excellent performance, 
+        and ability to use multiple frameworks together. Astro ships zero JavaScript by default, 
+        only hydrating interactive components when needed.
+      </p>
+      <ul class="text-sm text-base-content/90 space-y-2">
+        <li><strong>Islands Architecture</strong> - Interactive components load independently</li>
+        <li><strong>Server-First</strong> - Renders HTML on the server for fast initial loads</li>
+        <li><strong>Framework Agnostic</strong> - Uses Astro components and React where needed</li>
+        <li><strong>Built-in Optimizations</strong> - Automatic image optimization, CSS bundling</li>
+      </ul>
+    </div>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Frontend Technologies</h3>
+    <div class="grid md:grid-cols-2 gap-6 mb-6 not-prose">
+      <div class="bg-white border border-amber-200 rounded-lg p-5">
+        <h4 class="text-lg font-semibold mb-3 text-vintage-ink">Tailwind CSS v3</h4>
+        <ul class="text-sm text-base-content/90 space-y-2">
+          <li>Utility-first CSS framework</li>
+          <li>Custom color palette (vintage-ink, amber tones)</li>
+          <li>DaisyUI components for UI elements</li>
+          <li>Typography plugin for content styling</li>
+        </ul>
+      </div>
+
+      <div class="bg-white border border-amber-200 rounded-lg p-5">
+        <h4 class="text-lg font-semibold mb-3 text-vintage-ink">React v18</h4>
+        <ul class="text-sm text-base-content/90 space-y-2">
+          <li>Used for Timeline component only</li>
+          <li>Client-side interactivity with hooks</li>
+          <li>Partial hydration via Astro islands</li>
+          <li>Type-safe with TypeScript</li>
+        </ul>
+      </div>
+
+      <div class="bg-white border border-amber-200 rounded-lg p-5">
+        <h4 class="text-lg font-semibold mb-3 text-vintage-ink">Apache ECharts v5</h4>
+        <ul class="text-sm text-base-content/90 space-y-2">
+          <li>Professional data visualization library</li>
+          <li>Interactive charts with tooltips</li>
+          <li>Accessible with ARIA labels + data tables</li>
+          <li>Responsive and mobile-optimized</li>
+        </ul>
+      </div>
+
+      <div class="bg-white border border-amber-200 rounded-lg p-5">
+        <h4 class="text-lg font-semibold mb-3 text-vintage-ink">Leaflet + Mapbox</h4>
+        <ul class="text-sm text-base-content/90 space-y-2">
+          <li>Interactive mapping library</li>
+          <li>Custom Mapbox tileset</li>
+          <li>Animated timeline playback</li>
+          <li>Keyboard navigation support</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Backend & APIs</h3>
+    <ul class="list-disc list-inside mb-6 text-base-content/90 space-y-2 ml-4">
+      <li><strong>Google Sheets API</strong> - Primary data source, fetches CSV exports programmatically</li>
+      <li><strong>Anthropic Claude API</strong> - Powers AI chat interface with Sonnet 3.5 model</li>
+      <li><strong>Mapbox API</strong> - Provides map tiles and geocoding services</li>
+      <li><strong>Netlify Functions</strong> - Serverless API endpoints for data fetching and chat</li>
+    </ul>
+
+    <h2 id="data-pipeline" class="text-3xl font-semibold mt-12 mb-6 text-base-content border-b-2 border-amber-300 pb-2">Data Pipeline</h2>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Data Sources</h3>
+    
+    <div class="bg-amber-50 border-l-4 border-amber-500 rounded-lg p-6 mb-6 not-prose">
+      <h4 class="text-lg font-semibold mb-3 text-vintage-ink">Primary Data: Google Sheets</h4>
+      <p class="text-sm text-base-content/90 mb-3">
+        The site uses two Google Sheets as the canonical data source:
+      </p>
+      <ul class="text-sm text-base-content/90 space-y-2">
+        <li><strong>Lynchings Database</strong> - Sheet ID: <code class="text-xs bg-gray-100 px-2 py-1 rounded">18Bo9acVyuQTsdQ1baxSntSUZur50Yla8NcZKe2nZWyQ</code></li>
+        <li><strong>Articles Database</strong> - Sheet ID: <code class="text-xs bg-gray-100 px-2 py-1 rounded">1ZRNb-M7aO0-j58avDV9JyMsHMllKNmewWm7dmZy7JPw</code></li>
+      </ul>
+    </div>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Data Flow</h3>
+    <div class="bg-gray-50 border border-gray-300 rounded-lg p-6 mb-6 not-prose">
+      <ol class="text-sm text-base-content/90 space-y-3">
+        <li><strong>1. Source Data</strong> - Researcher updates Google Sheets with new records/articles</li>
+        <li><strong>2. Build-Time Sync</strong> - <code>sync-data-to-public.cjs</code> script exports sheets to JSON during build</li>
+        <li><strong>3. Static Cache</strong> - JSON files saved to <code>public/</code> directory for fast access</li>
+        <li><strong>4. Runtime Fetch</strong> - API endpoints fetch fresh data from Google Sheets (5-minute cache)</li>
+        <li><strong>5. Client Display</strong> - Pages render data with filtering, sorting, and visualization</li>
+      </ol>
+    </div>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Caching Strategy</h3>
+    <ul class="list-disc list-inside mb-6 text-base-content/90 space-y-2 ml-4">
+      <li><strong>Server Cache</strong> - API endpoints cache data for 5 minutes to reduce Google Sheets API calls</li>
+      <li><strong>Build Cache</strong> - JSON exports bundled with deployment for offline fallback</li>
+      <li><strong>Browser Cache</strong> - Standard HTTP caching headers for static assets</li>
+      <li><strong>CDN Cache</strong> - Netlify Edge caching for global performance</li>
+    </ul>
+
+    <h2 id="deployment" class="text-3xl font-semibold mt-12 mb-6 text-base-content border-b-2 border-amber-300 pb-2">Deployment Infrastructure</h2>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Domain & Hosting</h3>
+    <div class="bg-white border border-amber-200 rounded-lg p-5 mb-6 not-prose">
+      <ul class="text-sm text-base-content/90 space-y-3">
+        <li><strong>Domain</strong> - johncrow.org (registered through domain registrar)</li>
+        <li><strong>Hosting</strong> - Netlify (https://www.netlify.com/)</li>
+        <li><strong>SSL Certificate</strong> - Automatic HTTPS via Let's Encrypt</li>
+        <li><strong>CDN</strong> - Global edge network for fast content delivery</li>
+      </ul>
+    </div>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Build & Deploy Process</h3>
+    <div class="bg-gray-50 border border-gray-300 rounded-lg p-6 mb-6 not-prose">
+      <ol class="text-sm text-base-content/90 space-y-3">
+        <li><strong>1. Git Push</strong> - Developer pushes code to GitHub repository</li>
+        <li><strong>2. Webhook Trigger</strong> - Netlify detects changes via webhook</li>
+        <li><strong>3. Build Environment</strong> - Netlify creates Node.js build environment</li>
+        <li><strong>4. Install Dependencies</strong> - <code>npm install</code> installs all packages</li>
+        <li><strong>5. Data Sync</strong> - Pre-build script fetches latest Google Sheets data</li>
+        <li><strong>6. Astro Build</strong> - Compiles all pages, optimizes assets</li>
+        <li><strong>7. Deploy</strong> - Uploads built files to CDN</li>
+        <li><strong>8. Live</strong> - Site available at johncrow.org</li>
+      </ol>
+    </div>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Environment Variables</h3>
+    <p class="text-base-content/90 mb-4">
+      Sensitive configuration stored as Netlify environment variables:
+    </p>
+    <ul class="list-disc list-inside mb-6 text-base-content/90 space-y-2 ml-4">
+      <li><code>PUBLIC_MAPBOX_TOKEN</code> - Mapbox API access token</li>
+      <li><code>ANTHROPIC_API_KEY</code> - Claude AI API key (server-side only)</li>
+      <li><code>PUBLIC_LYNCHINGS_MAIN_GID</code> - Google Sheets tab ID for main data</li>
+    </ul>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Git Repository</h3>
+    <div class="bg-white border border-amber-200 rounded-lg p-5 mb-6 not-prose">
+      <ul class="text-sm text-base-content/90 space-y-2">
+        <li><strong>Platform</strong> - GitHub (private repository)</li>
+        <li><strong>Branch Strategy</strong> - Single main branch for simplicity</li>
+        <li><strong>Commit Hygiene</strong> - Descriptive commit messages with detailed descriptions</li>
+        <li><strong>Version Control</strong> - Full history of site development preserved</li>
+      </ul>
+    </div>
+
+    <h2 id="accessibility" class="text-3xl font-semibold mt-12 mb-6 text-base-content border-b-2 border-amber-300 pb-2">Accessibility Compliance</h2>
+
+    <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-6 mb-6 not-prose">
+      <h3 class="text-xl font-semibold mb-3 text-green-900">✓ WCAG 2.2 Level AA Compliant</h3>
+      <p class="text-sm text-base-content/90">
+        The site meets all Web Content Accessibility Guidelines 2.2 Level AA standards and 
+        Section 508 requirements. Full documentation available at <a href="/accessibility" class="text-accent hover:underline">/accessibility</a>.
+      </p>
+    </div>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Key Accessibility Features</h3>
+    <ul class="list-disc list-inside mb-6 text-base-content/90 space-y-2 ml-4">
+      <li><strong>Semantic HTML</strong> - Proper heading hierarchy, landmarks, and structure</li>
+      <li><strong>Keyboard Navigation</strong> - All interactive elements accessible via keyboard</li>
+      <li><strong>Screen Reader Support</strong> - ARIA labels, live regions, and descriptive text</li>
+      <li><strong>Color Contrast</strong> - 7:1+ contrast ratios throughout (exceeds WCAG AA 4.5:1)</li>
+      <li><strong>Chart Accessibility</strong> - Hidden data tables for all visualizations</li>
+      <li><strong>Form Accessibility</strong> - Labels, error messages, and ARIA attributes</li>
+      <li><strong>Focus Indicators</strong> - 3px high-contrast focus outlines (exceeds 2px minimum)</li>
+      <li><strong>Alt Text</strong> - Descriptive alternative text for all images</li>
+    </ul>
+
+    <h2 id="maintenance" class="text-3xl font-semibold mt-12 mb-6 text-base-content border-b-2 border-amber-300 pb-2">Maintenance & Updates</h2>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Updating Content</h3>
+    <div class="bg-amber-50 border border-amber-300 rounded-lg p-5 mb-6 not-prose">
+      <h4 class="text-lg font-semibold mb-3 text-vintage-ink">Adding New Records/Articles</h4>
+      <ol class="text-sm text-base-content/90 space-y-2">
+        <li>1. Update Google Sheets with new data</li>
+        <li>2. Upload article scans to <code>public/article-scans/</code> (if applicable)</li>
+        <li>3. Upload location thumbnails to <code>public/mapimages/</code> (if applicable)</li>
+        <li>4. Site automatically reflects changes within 5 minutes (or on next build)</li>
+      </ol>
+    </div>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Code Updates</h3>
+    <ul class="list-disc list-inside mb-6 text-base-content/90 space-y-2 ml-4">
+      <li><strong>Local Development</strong> - <code>npm run dev</code> starts development server</li>
+      <li><strong>Testing</strong> - <code>npm run build</code> tests production build locally</li>
+      <li><strong>Deployment</strong> - Push to GitHub main branch to deploy to production</li>
+      <li><strong>Rollback</strong> - Netlify preserves all deployments for instant rollback</li>
+    </ul>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Monitoring</h3>
+    <ul class="list-disc list-inside mb-6 text-base-content/90 space-y-2 ml-4">
+      <li><strong>Analytics</strong> - Google Analytics tracks usage, popular pages, and demographics</li>
+      <li><strong>Error Tracking</strong> - Server logs available in Netlify dashboard</li>
+      <li><strong>Performance</strong> - Lighthouse scores and Core Web Vitals monitored</li>
+      <li><strong>Uptime</strong> - Netlify provides 99.9% uptime SLA</li>
+    </ul>
+
+    <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Future Enhancements</h3>
+    <p class="text-base-content/90 mb-4">Potential improvements for future development:</p>
+    <ul class="list-disc list-inside mb-6 text-base-content/90 space-y-2 ml-4">
+      <li>Dark mode support for light-sensitive users</li>
+      <li>Spanish translation for broader accessibility</li>
+      <li>Advanced search with full-text indexing</li>
+      <li>Interactive timeline component improvements</li>
+      <li>User accounts for saving searches and annotations</li>
+      <li>Enhanced mobile experience with progressive web app features</li>
+    </ul>
+
+    <hr class="my-12 border-t-2 border-amber-300" />
+
+    <div class="bg-gray-50 border border-gray-300 rounded-lg p-6 mb-8 not-prose">
+      <h3 class="text-xl font-semibold mb-3 text-base-content">Technical Summary</h3>
+      <div class="grid md:grid-cols-2 gap-4 text-sm text-base-content/90">
+        <div>
+          <p class="font-semibold mb-2">Frontend</p>
+          <ul class="space-y-1">
+            <li>• Astro v5.16.11</li>
+            <li>• React v18</li>
+            <li>• Tailwind CSS v3</li>
+            <li>• TypeScript</li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-semibold mb-2">Backend</p>
+          <ul class="space-y-1">
+            <li>• Netlify Functions</li>
+            <li>• Google Sheets API</li>
+            <li>• Anthropic Claude API</li>
+            <li>• Server-Side Rendering</li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-semibold mb-2">Visualization</p>
+          <ul class="space-y-1">
+            <li>• Apache ECharts v5</li>
+            <li>• Leaflet + Mapbox</li>
+            <li>• Custom data processing</li>
+          </ul>
+        </div>
+        <div>
+          <p class="font-semibold mb-2">Infrastructure</p>
+          <ul class="space-y-1">
+            <li>• Netlify hosting</li>
+            <li>• GitHub version control</li>
+            <li>• Global CDN</li>
+            <li>• Automatic HTTPS</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-12 not-prose">
+      <p class="text-sm text-base-content/70 mb-4">
+        <strong>Site Guide Version:</strong> 1.0<br>
+        <strong>Last Updated:</strong> January 24, 2026<br>
+        <strong>For Questions:</strong> Contact site administrator
+      </p>
+      <a href="/" class="inline-block px-6 py-3 bg-amber-100 hover:bg-amber-200 text-vintage-ink font-semibold rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300">
+        Return to Home
+      </a>
+    </div>
+  </div>
+</PageLayout>

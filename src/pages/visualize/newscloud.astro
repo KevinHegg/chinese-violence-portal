@@ -147,8 +147,7 @@ const articles = await fetchArticlesData();
          .map(([lowerKey, count]) => [entityCanonicalForm[lowerKey] || lowerKey, count, lowerKey]) // Include lowerKey for reference
          .sort((a, b) => b[1] - a[1]); // Sort by count descending
        
-       // Log total count of entities with 3+ occurrences
-       console.log(`Total entities with 3+ occurrences: ${entitiesWithThreshold.length}`);
+       // Filter entities with 3+ occurrences
        
        // Randomly remove between 0 and 20 of the top occurring entities
        // This ensures entities with lower counts have a chance to appear
