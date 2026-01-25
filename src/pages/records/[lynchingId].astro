@@ -216,10 +216,10 @@ const decodeHtmlEntities = (text: string) => {
               const staticFileUrl = `/mapimages/${lynching["lynching-id"]}.png`;
               const imageSrc = mapboxUrl || staticFileUrl;
               
-              // Google Maps URL with coordinates - zoomed out to show regional context
-              // Using zoom level 5 for wider regional/state view (lower number = more zoomed out)
+              // Google Maps URL with coordinates - zoomed out to show state borders and nearby states
+              // Using zoom level 4 for multi-state regional view (lower number = more zoomed out)
               const googleMapsUrl = hasCoordinates 
-                ? `https://www.google.com/maps?q=${lynching.latitude},${lynching.longitude}&z=5`
+                ? `https://www.google.com/maps?q=${lynching.latitude},${lynching.longitude}&z=4`
                 : null;
               
               if (googleMapsUrl) {
@@ -420,10 +420,11 @@ const decodeHtmlEntities = (text: string) => {
   }
 
   .metadata-value {
-    text-align: left;
+    text-align: left !important;
     margin: 0;
     padding: 0;
     flex: 1;
+    align-self: flex-start;
   }
 
   @media (max-width: 800px) {
