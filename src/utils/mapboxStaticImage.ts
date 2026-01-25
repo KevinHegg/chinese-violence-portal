@@ -26,13 +26,15 @@ export function getMapboxStaticImageUrl(
   const token = options.token || import.meta.env.PUBLIC_MAPBOX_TOKEN || 'pk.eyJ1Ijoia2V2aW5oZWdnIiwiYSI6ImNscmprbG80NzA0aW8ybm94bXFveG1qcmYifQ.z0za-koZbyVbgwJ5AVg9LA';
   const style = options.style || 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
 
-  // Mapbox Static Images API format with marker overlay:
-  // https://api.mapbox.com/styles/v1/{username}/{style_id}/static/{overlay}/{lon},{lat},{zoom}/{width}x{height}@2x?access_token={token}
-  // Overlay format: pin-s-{color}({lon},{lat}) for small red pin marker
-  // Using pin-m-red for medium-sized red marker to match interactive map's circle markers
+  // Mapbox Static Images API format:
+  // https://api.mapbox.com/styles/v1/{username}/{style_id}/static/{lon},{lat},{zoom}/{width}x{height}@2x?access_token={token}
+  // For marker overlay: /static/{overlay}/{lon},{lat},{zoom}/...
+  // Overlay format: pin-{size}-{color}({lon},{lat}) - but this requires proper URL encoding
   const baseUrl = 'https://api.mapbox.com/styles/v1';
-  const markerOverlay = `pin-m-red(${longitude},${latitude})`;
-  const url = `${baseUrl}/${style}/static/${markerOverlay}/${longitude},${latitude},${zoom}/${width}x${height}@2x?access_token=${token}`;
+  
+  // TEMPORARY: Using basic format without marker to restore functionality
+  // TODO: Add marker overlay with correct format: pin-m-red(lon,lat) properly encoded
+  const url = `${baseUrl}/${style}/static/${longitude},${latitude},${zoom}/${width}x${height}@2x?access_token=${token}`;
 
   return url;
 }
