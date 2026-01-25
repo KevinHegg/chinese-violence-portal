@@ -21,7 +21,7 @@ const MAPBOX_TOKEN = 'pk.eyJ1Ijoia2V2aW5oZWdnIiwiYSI6ImNscmprbG80NzA0aW8ybm94bXF
 
 // Google Drive folder ID where images will be saved
 // To get this: Open the folder in Drive, copy the ID from the URL
-const DRIVE_FOLDER_ID = 'YOUR_DRIVE_FOLDER_ID_HERE';
+const DRIVE_FOLDER_ID = '1WcC8CIAGv4HtRiBNFLjLAm7MkeMeGZto';
 
 // Column indices (1-based for getRange, 0-based for array access)
 // Column A = 1 (Row ID / Identifier)
@@ -42,7 +42,9 @@ function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu("Tools")
     .addItem('Open AppSheet', 'openAppSheet')
-    .addItem("Generate Long/Lat Coordinates", "generateCoordinates")
+    .addItem("Generate Coordinates & Map Images", "generateCoordinatesAndImages")
+    .addSeparator()
+    .addItem("Generate All Map Images (Existing Rows)", "generateAllMapImages")
     .addToUi();
 }
 
@@ -54,7 +56,11 @@ function openAppSheet() {
   SpreadsheetApp.getUi().showModalDialog(html, 'Open AppSheet');
 }
 
-function generateCoordinates() {
+/**
+ * Main function: Generate coordinates and map images for rows missing coordinates
+ * Called from menu: Tools > Generate Coordinates & Map Images
+ */
+function generateCoordinatesAndImages() {
   // Use the active sheet (e.g., 'Main') to ensure it runs on the data you are viewing.
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); 
   
@@ -73,10 +79,15 @@ function generateCoordinates() {
   
   let updated = 0;
   let imagesGenerated = 0;
+  let imagesWithFallback = 0;
   
   // Start loop from i=1 to skip the header row (i=0).
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
+    const rowId = row[COLUMN_ROW_ID - 1]; // Convert to 0-based index
+    
+    // Skip if no row ID
+    if (!rowId) continue;
     
     // 0-based array indices for reading:
     // State (Column J) is the 10th column, so index 9 in the 0-based array.
@@ -84,8 +95,28 @@ function generateCoordinates() {
     // City (Column L) is the 12th column, so index 11 in the 0-based array.
     const city = row[11];
     
-    // Skip if City or State is empty.
-    if (!city || !state) continue;
+    // Get existing coordinates
+    const existingLat = row[COLUMN_LATITUDE - 1];
+    const existingLng = row[COLUMN_LONGITUDE - 1];
+    
+    // If coordinates exist, just generate/regenerate the image
+    if (existingLat && existingLng && existingLat !== 0 && existingLng !== 0) {
+      const imageGenerated = generateMapImageForRow(sheet, i + 1, rowId, existingLat, existingLng);
+      if (imageGenerated) {
+        imagesGenerated++;
+      }
+      continue;
+    }
+    
+    // If no coordinates, try to geocode
+    if (!city || !state) {
+      // No location info - use fallback image
+      const fallbackSet = setFallbackImage(sheet, i + 1, rowId);
+      if (fallbackSet) {
+        imagesWithFallback++;
+      }
+      continue;
+    }
     
     const address = `${city}, ${state}`;
     
@@ -101,26 +132,43 @@ function generateCoordinates() {
         sheet.getRange(i + 1, lngCol).setValue(location.lng);
         updated++;
         
-        // Generate map image for this row (if row ID exists)
-        const rowId = row[COLUMN_ROW_ID - 1]; // Convert to 0-based index
-        if (rowId) {
-          const imageGenerated = generateMapImageForRow(sheet, i + 1, rowId, location.lat, location.lng);
-          if (imageGenerated) {
-            imagesGenerated++;
-          }
+        // Generate map image for this row
+        const imageGenerated = generateMapImageForRow(sheet, i + 1, rowId, location.lat, location.lng);
+        if (imageGenerated) {
+          imagesGenerated++;
+        }
+      } else {
+        // Geocoding failed - use fallback image
+        const fallbackSet = setFallbackImage(sheet, i + 1, rowId);
+        if (fallbackSet) {
+          imagesWithFallback++;
         }
       }
     } catch (err) {
       Logger.log(`Error geocoding row ${i + 1}: ${err}`);
+      // On error, use fallback image
+      const fallbackSet = setFallbackImage(sheet, i + 1, rowId);
+      if (fallbackSet) {
+        imagesWithFallback++;
+      }
       continue;
     }
   }
   
-  let message = `Geocoding complete. Updated ${updated} row(s) on sheet '${sheet.getName()}'.`;
-  if (imagesGenerated > 0) {
-    message += ` Generated ${imagesGenerated} map image(s).`;
+  let message = `Processing complete on sheet '${sheet.getName()}':\n`;
+  message += `• Geocoded: ${updated} row(s)\n`;
+  message += `• Map images generated: ${imagesGenerated}\n`;
+  if (imagesWithFallback > 0) {
+    message += `• Fallback images set: ${imagesWithFallback}`;
   }
   SpreadsheetApp.getUi().alert(message);
+}
+
+/**
+ * Legacy function name for backward compatibility
+ */
+function generateCoordinates() {
+  generateCoordinatesAndImages();
 }
 
 function submitTestIncident() {
@@ -309,64 +357,83 @@ function generateMapImageForRow(sheet, rowNumber, rowId, latitude, longitude) {
   }
 }
 
-// ==================== TRIGGER FUNCTIONS ====================
+// ==================== FALLBACK IMAGE FUNCTIONS ====================
 
 /**
- * Triggered when a cell is edited
- * Only generates map images when latitude or longitude columns are updated
+ * Set fallback "No map thumbnail currently available" image for a row
+ * Creates/uses a generic fallback image in the Drive folder
  */
-function onEdit(e) {
-  const range = e.range;
-  const sheet = range.getSheet();
-  
-  // Only process the specified sheet
-  if (sheet.getName() !== SHEET_NAME) {
-    return;
-  }
-  
-  const row = range.getRow();
-  const column = range.getColumn();
-  
-  // Skip header row
-  if (row === 1) {
-    return;
-  }
-  
-  // Only trigger if latitude or longitude column was edited
-  if (column === COLUMN_LATITUDE || column === COLUMN_LONGITUDE) {
-    // Small delay to ensure sheet values are saved
-    Utilities.sleep(500);
-    
-    // Get the row data
-    const rowId = sheet.getRange(row, COLUMN_ROW_ID).getValue();
-    const latitude = sheet.getRange(row, COLUMN_LATITUDE).getValue();
-    const longitude = sheet.getRange(row, COLUMN_LONGITUDE).getValue();
-    
-    // Only generate if we have valid coordinates and a row ID
-    if (rowId && latitude && longitude && latitude !== 0 && longitude !== 0) {
-      generateMapImageForRow(sheet, row, rowId, latitude, longitude);
+function setFallbackImage(sheet, rowNumber, rowId) {
+  try {
+    if (!rowId) {
+      return false;
     }
+    
+    const folder = DriveApp.getFolderById(DRIVE_FOLDER_ID);
+    const fallbackFileName = 'no-map-thumbnail-available.png';
+    
+    // Check if fallback image exists in folder, create if not
+    let fallbackFile = null;
+    const existingFallback = folder.getFilesByName(fallbackFileName);
+    if (existingFallback.hasNext()) {
+      fallbackFile = existingFallback.next();
+    } else {
+      // Create a simple placeholder image (1x1 transparent PNG)
+      // In a real scenario, you'd want to upload a proper "No map available" image
+      // For now, we'll create a minimal PNG blob
+      const pngData = Utilities.base64Decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
+      const blob = Utilities.newBlob(pngData, 'image/png', fallbackFileName);
+      fallbackFile = folder.createFile(blob);
+      fallbackFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      Logger.log('Created fallback image in Drive folder');
+    }
+    
+    // Copy fallback image to row-specific filename
+    const fileName = `${rowId}.png`;
+    
+    // Delete existing image if it exists
+    const existingFiles = folder.getFilesByName(fileName);
+    while (existingFiles.hasNext()) {
+      existingFiles.next().setTrashed(true);
+    }
+    
+    // Copy fallback image with row-specific name
+    const rowImage = fallbackFile.makeCopy(fileName, folder);
+    rowImage.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    
+    // Store file ID in sheet
+    const headerRange = sheet.getRange(1, COLUMN_MAP_IMAGE_FILE_ID);
+    if (!headerRange.getValue() || headerRange.getValue().toString().trim() === '') {
+      headerRange.setValue('Map Image File ID');
+    }
+    sheet.getRange(rowNumber, COLUMN_MAP_IMAGE_FILE_ID).setValue(rowImage.getId());
+    
+    Logger.log(`✅ Set fallback image for ${rowId}: File ID ${rowImage.getId()}`);
+    return true;
+  } catch (error) {
+    Logger.log(`Error setting fallback image for row ${rowNumber}: ${error.toString()}`);
+    return false;
   }
 }
 
 /**
  * Manual function to generate images for all rows with coordinates
- * Run this once to generate images for existing records
+ * Called from menu: Tools > Generate All Map Images (Existing Rows)
+ * Generates images for rows that already have coordinates, or sets fallback for rows without
  */
 function generateAllMapImages() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(SHEET_NAME);
+  const sheet = ss.getActiveSheet(); // Use active sheet instead of hardcoded name
   
   if (!sheet) {
-    Logger.log(`Sheet "${SHEET_NAME}" not found`);
+    SpreadsheetApp.getUi().alert("Error: Could not find the active sheet.");
     return;
   }
   
   const data = sheet.getDataRange().getValues();
   let successCount = 0;
+  let fallbackCount = 0;
   let skipCount = 0;
-  
-  Logger.log(`Processing ${data.length - 1} rows...`);
   
   // Start from row 2 (skip header)
   for (let i = 1; i < data.length; i++) {
@@ -375,20 +442,34 @@ function generateAllMapImages() {
     const latitude = row[COLUMN_LATITUDE - 1]; // Convert to 0-based index
     const longitude = row[COLUMN_LONGITUDE - 1]; // Convert to 0-based index
     
-    if (!rowId || !latitude || !longitude || latitude === 0 || longitude === 0) {
+    if (!rowId) {
       skipCount++;
       continue;
     }
     
-    if (generateMapImageForRow(sheet, i + 1, rowId, latitude, longitude)) {
-      successCount++;
+    // If coordinates exist, generate map image
+    if (latitude && longitude && latitude !== 0 && longitude !== 0) {
+      if (generateMapImageForRow(sheet, i + 1, rowId, latitude, longitude)) {
+        successCount++;
+      }
+    } else {
+      // No coordinates - set fallback image
+      if (setFallbackImage(sheet, i + 1, rowId)) {
+        fallbackCount++;
+      }
     }
     
     // Small delay to avoid rate limiting
     Utilities.sleep(200);
   }
   
-  Logger.log(`✅ Complete! Generated: ${successCount}, Skipped: ${skipCount}`);
+  let message = `Image generation complete on sheet '${sheet.getName()}':\n`;
+  message += `• Map images generated: ${successCount}\n`;
+  message += `• Fallback images set: ${fallbackCount}`;
+  if (skipCount > 0) {
+    message += `\n• Skipped (no row ID): ${skipCount}`;
+  }
+  SpreadsheetApp.getUi().alert(message);
 }
 
 /**
@@ -420,23 +501,28 @@ function generateMapImageForRowId(rowId) {
   Logger.log(`Row ID "${rowId}" not found or missing coordinates`);
 }
 
-// ==================== SETUP TRIGGERS ====================
+// ==================== SETUP INSTRUCTIONS ====================
 /**
- * To set up automatic triggers:
+ * SETUP:
  * 
- * 1. In Apps Script editor, click the clock icon (Triggers) in the left sidebar
- * 2. Click "+ Add Trigger" at bottom right
- * 3. Configure:
- *    - Function: onEdit
- *    - Event source: From spreadsheet
- *    - Event type: On edit
- *    - Click Save
+ * 1. Enable required services:
+ *    - Resources > Advanced Google Services > Maps (enable)
+ *    - Resources > Advanced Google Services > Drive API (enable)
  * 
- * OPTIONAL: Set up time-driven trigger to regenerate all images periodically:
- * 1. Add Trigger
- * 2. Function: generateAllMapImages
- *    - Event source: Time-driven
- *    - Type: Day timer
- *    - Time: 3am to 4am (or your preference)
- *    - Click Save
+ * 2. Update configuration at top of script:
+ *    - DRIVE_FOLDER_ID (already set to your folder)
+ *    - Column numbers if your sheet structure differs
+ *    - SHEET_NAME if needed
+ * 
+ * 3. Upload fallback image (optional but recommended):
+ *    - Create a "No map thumbnail currently available" image
+ *    - Upload it to your Drive folder as: no-map-thumbnail-available.png
+ *    - Make it publicly viewable
+ *    - If you don't upload one, the script will create a minimal placeholder
+ * 
+ * 4. Usage:
+ *    - Tools > Generate Coordinates & Map Images: Geocodes rows missing coordinates and generates images
+ *    - Tools > Generate All Map Images: Regenerates images for all rows (existing coordinates or fallback)
+ * 
+ * NOTE: No automatic triggers needed - all functions are menu-driven for user control
  */
