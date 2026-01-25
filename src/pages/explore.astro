@@ -502,7 +502,15 @@ const newlyDocumentedOptions = ['Yes', 'No'];
       const cardLink = `/records/${l["lynching-id"]}?${params.toString()}`;
       card.href = cardLink;
       card.className = 'block card bg-base-100 shadow-md hover:shadow-lg transition-shadow border border-base-300 p-4 h-full';
-      const mapImageSrc = `/mapimages/${l["lynching-id"]}.png`;
+      
+      // Generate Mapbox URL if coordinates exist, otherwise use static file
+      const hasCoordinates = l.latitude && l.longitude && l.latitude !== 0 && l.longitude !== 0;
+      const mapboxToken = 'pk.eyJ1Ijoia2V2aW5oZWdnIiwiYSI6ImNscmprbG80NzA0aW8ybm94bXFveG1qcmYifQ.z0za-koZbyVbgwJ5AVg9LA';
+      const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
+      const mapImageSrc = hasCoordinates 
+        ? `https://api.mapbox.com/styles/v1/${mapboxStyle}/static/${l.longitude},${l.latitude},13/96x96@2x?access_token=${mapboxToken}`
+        : `/mapimages/${l["lynching-id"]}.png`;
+      
       const narrativeSummary = l["narrative-summary"] || '';
       const truncatedSummary = truncateAtWordBoundary(narrativeSummary, 250);
       card.innerHTML = `

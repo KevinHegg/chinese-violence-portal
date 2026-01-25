@@ -2,6 +2,7 @@
 import PageLayout from "../../layouts/PageLayout.astro";
 import ArticleViewer from "../../components/ArticleViewer.astro";
 import { fetchLynchingsData, fetchLynchingsMainData, fetchArticlesData } from "../../utils/googleSheets";
+import { getMapboxStaticImageUrl } from "../../utils/mapboxStaticImage";
 
 // Disable prerendering to allow dynamic data from Google Sheets
 export const prerender = false;
@@ -211,13 +212,30 @@ const decodeHtmlEntities = (text: string) => {
               class="block hover:opacity-80 transition-opacity"
               title="View interactive map"
             >
-              <img 
-                src={`/mapimages/${lynching["lynching-id"]}.png`} 
-                alt={`Map showing location of ${lynching["city"]}, ${lynching["state"]}`}
-                class="map-image-mobile md:w-[300px] md:h-[300px] w-full h-[100px] object-cover object-center rounded-lg border border-gray-200 cursor-pointer"
-                style="width:100%;max-width:300px;"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
-              />
+              {(() => {
+                // If coordinates exist, use Mapbox API to generate image on-demand
+                // Otherwise, try static file (for manually uploaded images)
+                const hasCoordinates = !!(lynching.latitude && lynching.longitude && 
+                                         lynching.latitude !== 0 && lynching.longitude !== 0);
+                
+                const mapboxUrl = hasCoordinates 
+                  ? getMapboxStaticImageUrl(lynching.longitude, lynching.latitude)
+                  : null;
+                
+                const staticFileUrl = `/mapimages/${lynching["lynching-id"]}.png`;
+                // Prefer Mapbox API if coordinates exist (auto-generated), otherwise try static file
+                const imageSrc = mapboxUrl || staticFileUrl;
+                
+                return (
+                  <img 
+                    src={imageSrc}
+                    alt={`Map showing location of ${lynching["city"]}, ${lynching["state"]}`}
+                    class="map-image-mobile md:w-[300px] md:h-[300px] w-full h-[100px] object-cover object-center rounded-lg border border-gray-200 cursor-pointer"
+                    style="width:100%;max-width:300px;"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                  />
+                );
+              })()}
             </a>
             <script is:inline>
               document.addEventListener('DOMContentLoaded', function() {
