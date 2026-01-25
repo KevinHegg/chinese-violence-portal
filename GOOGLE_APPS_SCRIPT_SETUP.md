@@ -15,13 +15,20 @@ The Apps Script will:
 
 1. Open your Chinese Lynchings Google Sheet
 2. Go to **Extensions** → **Apps Script**
-3. Delete any existing code in the editor
+3. **IMPORTANT:** If you already have a script with geocoding functions, you'll need to merge the code. See "Integration with Existing Script" below.
 
 ### 2. Copy the Script
 
-1. Open `GOOGLE_APPS_SCRIPT_MAP_IMAGES.js` from this repository
+**If you're starting fresh:**
+1. Open `GOOGLE_APPS_SCRIPT_INTEGRATED.js` from this repository (includes both geocoding and map image generation)
 2. Copy the entire contents
 3. Paste into the Apps Script editor
+
+**If you already have a geocoding script:**
+1. Open `GOOGLE_APPS_SCRIPT_INTEGRATED.js` and copy only the map image generation functions
+2. Add them to your existing script
+3. Add the `onEdit` trigger function
+4. Update your `generateCoordinates()` function to call `generateMapImageForRow()` after updating coordinates
 
 ### 3. Configure the Script
 
@@ -31,13 +38,14 @@ Update these values at the top of the script:
 // Google Drive folder ID where images will be saved
 const DRIVE_FOLDER_ID = 'YOUR_DRIVE_FOLDER_ID_HERE';
 
-// Column indices (adjust based on your sheet structure)
-const COLUMN_IDENTIFIER = 1; // Column with lynching-id
-const COLUMN_LATITUDE = 15;  // Your Latitude column number
-const COLUMN_LONGITUDE = 16; // Your Longitude column number
+// Column indices (1-based: Column A = 1, B = 2, etc.)
+const COLUMN_ROW_ID = 1; // Column with Row ID/Identifier (e.g., "CA1853-02-21")
+const COLUMN_LATITUDE = 13;  // Column M (Latitude)
+const COLUMN_LONGITUDE = 14; // Column N (Longitude)
+const COLUMN_MAP_IMAGE_FILE_ID = 20; // Empty column for storing file IDs (Column T)
 
 // Sheet name to monitor
-const SHEET_NAME = 'Public'; // or 'Main' if that's where coordinates are
+const SHEET_NAME = 'Main'; // or 'Public' if that's where coordinates are
 ```
 
 **To find your Drive Folder ID:**
