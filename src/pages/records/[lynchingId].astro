@@ -188,21 +188,19 @@ const decodeHtmlEntities = (text: string) => {
         <div class="flex gap-6 items-start md:flex-row flex-col-reverse md:gap-6 gap-2">
           <!-- Metadata Table -->
           <div class="flex-1 w-full">
-            <table class="w-full text-left align-top metadata-table" style="border-spacing:0;border-collapse:collapse;" aria-label="Lynching record metadata">
-              <tbody>
-                <tr class="table-row"><th class="table-header" scope="row">Date:</th><td class="table-cell">{formatDate(lynching["date"])}</td></tr>
-                <tr class="table-row"><th class="table-header" scope="row">Location:</th><td class="table-cell">{(!lynching["city"] && lynching["county"]) ? `${lynching["county"]} County, ${lynching["state"]}` : `${lynching["city"]}, ${lynching["state"]}`}</td></tr>
-                <tr class="table-row"><th class="table-header" scope="row">Event Type:</th><td class="table-cell">{lynching["event-type"]}</td></tr>
-                <tr class="table-row"><th class="table-header" scope="row">Victim Names:</th><td class="table-cell">{lynching["victim-names"].join(", ")}</td></tr>
-                <tr class="table-row"><th class="table-header" scope="row">Victim Gender:</th><td class="table-cell">{lynching["victim-gender"]}</td></tr>
-                <tr class="table-row"><th class="table-header whitespace-nowrap" scope="row">No. of Victims:</th><td class="table-cell">{lynching["number-of-victims"]}</td></tr>
-                <tr class="table-row"><th class="table-header" scope="row">Accusation:</th><td class="table-cell">{lynching["accusation"] || "Unknown"}</td></tr>
-                <tr><th class="table-header" scope="row">Source:</th><td class="table-cell">{lynching["source"]}</td></tr>
-                {lynching["job"] && (
-                  <tr><th class="table-header" scope="row">Occupation:</th><td class="table-cell">{lynching["job"]}</td></tr>
-                )}
-              </tbody>
-            </table>
+            <dl class="metadata-list" aria-label="Lynching record metadata">
+              <div class="metadata-item"><dt class="metadata-label">Date:</dt><dd class="metadata-value">{formatDate(lynching["date"])}</dd></div>
+              <div class="metadata-item"><dt class="metadata-label">Location:</dt><dd class="metadata-value">{(!lynching["city"] && lynching["county"]) ? `${lynching["county"]} County, ${lynching["state"]}` : `${lynching["city"]}, ${lynching["state"]}`}</dd></div>
+              <div class="metadata-item"><dt class="metadata-label">Event Type:</dt><dd class="metadata-value">{lynching["event-type"]}</dd></div>
+              <div class="metadata-item"><dt class="metadata-label">Victim Names:</dt><dd class="metadata-value">{lynching["victim-names"].join(", ")}</dd></div>
+              <div class="metadata-item"><dt class="metadata-label">Victim Gender:</dt><dd class="metadata-value">{lynching["victim-gender"]}</dd></div>
+              <div class="metadata-item"><dt class="metadata-label whitespace-nowrap">No. of Victims:</dt><dd class="metadata-value">{lynching["number-of-victims"]}</dd></div>
+              <div class="metadata-item"><dt class="metadata-label">Accusation:</dt><dd class="metadata-value">{lynching["accusation"] || "Unknown"}</dd></div>
+              <div class="metadata-item"><dt class="metadata-label">Source:</dt><dd class="metadata-value">{lynching["source"]}</dd></div>
+              {lynching["job"] && (
+                <div class="metadata-item"><dt class="metadata-label">Occupation:</dt><dd class="metadata-value">{lynching["job"]}</dd></div>
+              )}
+            </dl>
           </div>
           <!-- Map Image -->
           <div class="flex-shrink-0 w-full md:w-auto">
@@ -218,9 +216,10 @@ const decodeHtmlEntities = (text: string) => {
               const staticFileUrl = `/mapimages/${lynching["lynching-id"]}.png`;
               const imageSrc = mapboxUrl || staticFileUrl;
               
-              // Google Maps URL with coordinates - zoomed out to show regional context (z=6 = state/regional view)
+              // Google Maps URL with coordinates - zoomed out to show regional context
+              // Using zoom level 5 for wider regional/state view (lower number = more zoomed out)
               const googleMapsUrl = hasCoordinates 
-                ? `https://www.google.com/maps?q=${lynching.latitude},${lynching.longitude}&z=6`
+                ? `https://www.google.com/maps?q=${lynching.latitude},${lynching.longitude}&z=5`
                 : null;
               
               if (googleMapsUrl) {
@@ -396,30 +395,35 @@ const decodeHtmlEntities = (text: string) => {
     pointer-events: none;
   }
 
-  /* Metadata table styling - labels and values close together, both left-aligned */
-  .metadata-table {
-    border-spacing: 0 !important;
+  /* Metadata list styling - labels and values very close together, both left-aligned */
+  .metadata-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
   }
   
-  .metadata-table th.table-header {
-    text-align: left;
-    padding-right: 0.5rem !important;
+  .metadata-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.25rem;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
-    padding-left: 0 !important;
+  }
+  
+  .metadata-label {
+    text-align: left;
     font-weight: 600;
-    vertical-align: top;
-    width: auto;
     white-space: nowrap;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
   }
 
-  .metadata-table td.table-cell {
+  .metadata-value {
     text-align: left;
-    padding-left: 0 !important;
-    padding-right: 0;
-    padding-top: 0.25rem;
-    padding-bottom: 0.25rem;
-    vertical-align: top;
+    margin: 0;
+    padding: 0;
+    flex: 1;
   }
 
   @media (max-width: 800px) {
