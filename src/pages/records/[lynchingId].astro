@@ -188,19 +188,19 @@ const decodeHtmlEntities = (text: string) => {
         <div class="flex gap-6 items-start md:flex-row flex-col-reverse md:gap-6 gap-2">
           <!-- Metadata Table -->
           <div class="flex-1 w-full">
-            <dl class="metadata-list" aria-label="Lynching record metadata">
-              <div class="metadata-item"><dt class="metadata-label">Date:</dt><dd class="metadata-value">{formatDate(lynching["date"])}</dd></div>
-              <div class="metadata-item"><dt class="metadata-label">Location:</dt><dd class="metadata-value">{(!lynching["city"] && lynching["county"]) ? `${lynching["county"]} County, ${lynching["state"]}` : `${lynching["city"]}, ${lynching["state"]}`}</dd></div>
-              <div class="metadata-item"><dt class="metadata-label">Event Type:</dt><dd class="metadata-value">{lynching["event-type"]}</dd></div>
-              <div class="metadata-item"><dt class="metadata-label">Victim Names:</dt><dd class="metadata-value">{lynching["victim-names"].join(", ")}</dd></div>
-              <div class="metadata-item"><dt class="metadata-label">Victim Gender:</dt><dd class="metadata-value">{lynching["victim-gender"]}</dd></div>
-              <div class="metadata-item"><dt class="metadata-label whitespace-nowrap">No. of Victims:</dt><dd class="metadata-value">{lynching["number-of-victims"]}</dd></div>
-              <div class="metadata-item"><dt class="metadata-label">Accusation:</dt><dd class="metadata-value">{lynching["accusation"] || "Unknown"}</dd></div>
-              <div class="metadata-item"><dt class="metadata-label">Source:</dt><dd class="metadata-value">{lynching["source"]}</dd></div>
+            <div class="metadata-list" role="table" aria-label="Lynching record metadata">
+              <div class="metadata-item"><span class="metadata-label">Date:</span><span class="metadata-value">{formatDate(lynching["date"])}</span></div>
+              <div class="metadata-item"><span class="metadata-label">Location:</span><span class="metadata-value">{(!lynching["city"] && lynching["county"]) ? `${lynching["county"]} County, ${lynching["state"]}` : `${lynching["city"]}, ${lynching["state"]}`}</span></div>
+              <div class="metadata-item"><span class="metadata-label">Event Type:</span><span class="metadata-value">{lynching["event-type"]}</span></div>
+              <div class="metadata-item"><span class="metadata-label">Victim Names:</span><span class="metadata-value">{lynching["victim-names"].join(", ")}</span></div>
+              <div class="metadata-item"><span class="metadata-label">Victim Gender:</span><span class="metadata-value">{lynching["victim-gender"]}</span></div>
+              <div class="metadata-item"><span class="metadata-label whitespace-nowrap">No. of Victims:</span><span class="metadata-value">{lynching["number-of-victims"]}</span></div>
+              <div class="metadata-item"><span class="metadata-label">Accusation:</span><span class="metadata-value">{lynching["accusation"] || "Unknown"}</span></div>
+              <div class="metadata-item"><span class="metadata-label">Source:</span><span class="metadata-value">{lynching["source"]}</span></div>
               {lynching["job"] && (
-                <div class="metadata-item"><dt class="metadata-label">Occupation:</dt><dd class="metadata-value">{lynching["job"]}</dd></div>
+                <div class="metadata-item"><span class="metadata-label">Occupation:</span><span class="metadata-value">{lynching["job"]}</span></div>
               )}
-            </dl>
+            </div>
           </div>
           <!-- Map Image -->
           <div class="flex-shrink-0 w-full md:w-auto">
@@ -418,31 +418,15 @@ const decodeHtmlEntities = (text: string) => {
     font-weight: 600;
     white-space: nowrap;
     flex-shrink: 0;
-    margin: 0 !important;
-    padding: 0 !important;
+    margin: 0;
+    padding: 0;
   }
   
-  /* Override ALL default dd styles - browsers add left margin by default */
-  .metadata-list dd,
   .metadata-value {
-    text-align: left !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
+    text-align: left;
+    margin: 0;
+    padding: 0;
     flex: 1;
-    align-self: flex-start;
-    width: auto;
-  }
-  
-  /* Override dt defaults too */
-  .metadata-list dt {
-    margin: 0 !important;
-    padding: 0 !important;
   }
 
   @media (max-width: 800px) {
