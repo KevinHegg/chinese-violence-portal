@@ -223,14 +223,14 @@ const decodeHtmlEntities = (text: string) => {
               const imageSrc = mapboxUrl || staticFileUrl;
               
               // Google Maps URL with coordinates - zoomed out to show state borders and nearby states
-              // Using both q and ll parameters together with z to ensure zoom level is respected
-              // The q parameter shows the marker pin at actual coordinates
-              // The ll parameter sets the center, offset to the right (increase longitude) to account for left panel
+              // Using the @lat,lon,zoomz format in the URL path for better control
+              // Offset the center to the right (increase longitude) to account for left panel
               // This makes the marker appear more centered when the map opens
-              const centerOffset = 0.2; // Offset longitude to the right (degrees) to account for left panel
+              // The q parameter shows the marker at actual coordinates, while @ sets the view center
+              const centerOffset = 1.2; // Offset longitude to the right (degrees) - adjusted for better centering
               const centerLongitude = hasCoordinates ? lynching.longitude + centerOffset : lynching.longitude;
               const googleMapsUrl = hasCoordinates 
-                ? `https://maps.google.com/?q=${lynching.latitude},${lynching.longitude}&ll=${lynching.latitude},${centerLongitude}&z=6`
+                ? `https://www.google.com/maps?q=${lynching.latitude},${lynching.longitude}&ll=${lynching.latitude},${centerLongitude}&z=6`
                 : null;
               
               if (googleMapsUrl) {
