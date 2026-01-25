@@ -539,17 +539,18 @@ chinese-violence-portal/
       </ol>
       <div class="mt-4 pt-4 border-t border-amber-200">
         <p class="text-sm text-base-content/90 mb-2">
-          <strong>Map Image Automation & Caching:</strong>
+          <strong>Map Image Automation & Google Drive Integration:</strong>
         </p>
         <ul class="text-sm text-base-content/90 space-y-1 list-disc list-inside ml-2">
-          <li><strong>Automatic Generation:</strong> Map thumbnails are automatically generated on-demand using the Mapbox Static Images API when a record page is first loaded</li>
-          <li><strong>Smart Caching:</strong> Generated map images are cached by the browser and CDN for fast subsequent loads</li>
-          <li><strong>Style Consistency:</strong> Uses the same Mapbox style as the interactive map (vintage/historical appearance)</li>
-          <li><strong>Image Specs:</strong> Generates 300x300px @2x images (600x600px for retina displays) with red pin markers</li>
+          <li><strong>Automatic Generation:</strong> Map images are automatically generated when you add or update latitude/longitude coordinates in the Google Sheet using a Google Apps Script trigger</li>
+          <li><strong>Google Drive Storage:</strong> Generated images are saved to a Google Drive folder and made publicly viewable</li>
+          <li><strong>File ID Tracking:</strong> The Apps Script stores the Google Drive file ID in a sheet column (<code>map-image-file-id</code>) for direct URL construction</li>
+          <li><strong>Style Consistency:</strong> Uses the same Mapbox style as the interactive map (vintage/historical appearance) with red pin markers</li>
+          <li><strong>Image Specs:</strong> Generates 300x300px @2x images (600x600px for retina displays)</li>
           <li><strong>Zoom Level:</strong> Set to 13 (good for city/town views showing regional context)</li>
-          <li><strong>Fallback Strategy:</strong> If coordinates are missing or invalid, falls back to manually uploaded images in <code>public/mapimages/</code></li>
-          <li><strong>Manual Override:</strong> Existing manually uploaded images take precedence (if file exists, it's used instead of generating a new one)</li>
-          <li><strong>Performance:</strong> This on-demand generation approach eliminates the need to manually create and upload map images for each record, while browser/CDN caching ensures fast load times</li>
+          <li><strong>Fallback Chain:</strong> Website tries Google Drive first, then falls back to local static files in <code>public/mapimages/</code>, then to on-demand Mapbox API generation</li>
+          <li><strong>No Build Required:</strong> Images are generated and available immediately when coordinates are added/updated - no deployment needed</li>
+          <li><strong>Setup:</strong> See <code>GOOGLE_APPS_SCRIPT_SETUP.md</code> for configuration instructions</li>
         </ul>
       </div>
     </div>
