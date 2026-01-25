@@ -532,9 +532,9 @@ chinese-violence-portal/
     <div class="bg-amber-50 border border-amber-300 rounded-lg p-5 mb-6 not-prose">
       <h4 class="text-lg font-semibold mb-3 text-vintage-ink">Adding New Records/Articles</h4>
       <ol class="text-sm text-base-content/90 space-y-2">
-        <li>1. Update Google Sheets with new data (including <code>Latitude</code> and <code>Longitude</code> columns)</li>
+        <li>1. Update Google Sheets with new data (including <code>City</code>, <code>State</code>, <code>Latitude</code>, and <code>Longitude</code> columns)</li>
         <li>2. Upload article scans to <code>public/article-scans/</code> (if applicable)</li>
-        <li>3. <strong>Map images are automatically generated!</strong> If a record has latitude/longitude coordinates, the site will automatically generate a static map image using the Mapbox Static Images API when the record page is first loaded. No manual upload needed.</li>
+        <li>3. <strong>Generate map images:</strong> Run "Generate Coordinates & Map Images" from the Tools menu in your Google Sheet. This will geocode addresses (if needed), generate map images, save them to Google Drive, and store file IDs automatically.</li>
         <li>4. Site automatically reflects changes within 5 minutes (or on next build)</li>
       </ol>
       <div class="mt-4 pt-4 border-t border-amber-200">
