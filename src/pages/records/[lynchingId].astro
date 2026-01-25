@@ -3,6 +3,7 @@ import PageLayout from "../../layouts/PageLayout.astro";
 import ArticleViewer from "../../components/ArticleViewer.astro";
 import { fetchLynchingsData, fetchLynchingsMainData, fetchArticlesData } from "../../utils/googleSheets";
 import { getMapboxStaticImageUrl } from "../../utils/mapboxStaticImage";
+import { getMapImageUrlWithFallback } from "../../utils/googleDriveImage";
 
 // Disable prerendering to allow dynamic data from Google Sheets
 export const prerender = false;
@@ -215,16 +216,19 @@ const decodeHtmlEntities = (text: string) => {
               const hasCoordinates = !!(lynching.latitude && lynching.longitude && 
                                        lynching.latitude !== 0 && lynching.longitude !== 0);
               
-              // Prefer static file if it exists (cached in repo), otherwise use Mapbox API URL (on-demand)
-              // Static files are generated manually using download-map-images.cjs script
-              const staticFileUrl = `/mapimages/${lynching["lynching-id"]}.png`;
-              const mapboxUrl = hasCoordinates 
-                ? getMapboxStaticImageUrl(lynching.longitude, lynching.latitude)
-                : null;
+              // Get map image URL with fallback chain:
+              // 1. Google Drive (if file ID exists from Apps Script)
+              // 2. Local static file (/mapimages/{id}.png)
+              // 3. Mapbox API (on-demand generation)
+              const mapImageUrls = getMapImageUrlWithFallback(
+                lynching["lynching-id"],
+                lynching["map-image-file-id"], // From Google Sheet (Apps Script stores this)
+                lynching.longitude,
+                lynching.latitude
+              );
               
-              // Try static file first (if it exists in repo), fall back to Mapbox API URL via onerror handler
-              const imageSrc = staticFileUrl;
-              const fallbackUrl = mapboxUrl;
+              const imageSrc = mapImageUrls.primary;
+              const fallbackUrl = mapImageUrls.fallback;
               
               // Google Maps URL with coordinates - zoomed out to show state borders and nearby states
               // Using the @lat,lon,zoomz format in the URL path for better control

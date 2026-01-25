@@ -27,6 +27,7 @@ const DRIVE_FOLDER_ID = 'YOUR_DRIVE_FOLDER_ID_HERE';
 const COLUMN_IDENTIFIER = 1; // Column with lynching-id (e.g., "CA1853-02-21)
 const COLUMN_LATITUDE = 15; // Adjust to your Latitude column
 const COLUMN_LONGITUDE = 16; // Adjust to your Longitude column
+const COLUMN_MAP_IMAGE_FILE_ID = 20; // Column to store Google Drive file ID (create if doesn't exist)
 
 // Sheet name to monitor (usually "Public" or "Main")
 const SHEET_NAME = 'Public';
@@ -50,6 +51,7 @@ function generateMapboxUrl(longitude, latitude, zoom = 13, width = 300, height =
 
 /**
  * Download image from URL and save to Google Drive
+ * Returns the file ID for constructing public Drive URLs
  */
 function downloadAndSaveImage(imageUrl, fileName, folderId) {
   try {
@@ -67,7 +69,12 @@ function downloadAndSaveImage(imageUrl, fileName, folderId) {
     
     // Create new file
     const file = folder.createFile(blob);
-    return file.getUrl();
+    
+    // Make file publicly viewable (required for direct URL access)
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    
+    // Return file ID (not URL) - we'll use this to construct the public URL
+    return file.getId();
   } catch (error) {
     Logger.log(`Error downloading ${fileName}: ${error.toString()}`);
     return null;
@@ -97,10 +104,20 @@ function generateMapImageForRow(sheet, row) {
     
     // Download and save image
     const fileName = `${identifier}.png`;
-    const fileUrl = downloadAndSaveImage(mapboxUrl, fileName, DRIVE_FOLDER_ID);
+    const fileId = downloadAndSaveImage(mapboxUrl, fileName, DRIVE_FOLDER_ID);
     
-    if (fileUrl) {
-      Logger.log(`✅ Generated map image for ${identifier}: ${fileUrl}`);
+    if (fileId) {
+      // Store file ID in the sheet for easy URL construction
+      // Check if column exists, create header if needed
+      const headerRange = sheet.getRange(1, COLUMN_MAP_IMAGE_FILE_ID);
+      if (!headerRange.getValue()) {
+        headerRange.setValue('Map Image File ID');
+      }
+      
+      // Store file ID in the row
+      sheet.getRange(row, COLUMN_MAP_IMAGE_FILE_ID).setValue(fileId);
+      
+      Logger.log(`✅ Generated map image for ${identifier}: File ID ${fileId}`);
       return true;
     } else {
       Logger.log(`❌ Failed to generate map image for ${identifier}`);

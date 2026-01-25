@@ -503,13 +503,21 @@ const newlyDocumentedOptions = ['Yes', 'No'];
       card.href = cardLink;
       card.className = 'block card bg-base-100 shadow-md hover:shadow-lg transition-shadow border border-base-300 p-4 h-full';
       
-      // Generate Mapbox URL if coordinates exist, otherwise use static file
+      // Get map image URL with fallback chain: Google Drive → Local → Mapbox
       const hasCoordinates = l.latitude && l.longitude && l.latitude !== 0 && l.longitude !== 0;
-      const mapboxToken = 'pk.eyJ1Ijoia2V2aW5oZWdnIiwiYSI6ImNscmprbG80NzA0aW8ybm94bXFveG1qcmYifQ.z0za-koZbyVbgwJ5AVg9LA';
-      const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
-      const mapImageSrc = hasCoordinates 
-        ? `https://api.mapbox.com/styles/v1/${mapboxStyle}/static/${l.longitude},${l.latitude},13/96x96@2x?access_token=${mapboxToken}`
-        : `/mapimages/${l["lynching-id"]}.png`;
+      let mapImageSrc = `/mapimages/${l["lynching-id"]}.png`; // Default to local
+      let mapImageFallback = null;
+      
+      // Try Google Drive first (if file ID exists)
+      if (l["map-image-file-id"]) {
+        mapImageSrc = `https://drive.google.com/uc?export=view&id=${l["map-image-file-id"]}`;
+        mapImageFallback = `/mapimages/${l["lynching-id"]}.png`;
+      } else if (hasCoordinates) {
+        // Fallback to Mapbox API if coordinates exist
+        const mapboxToken = 'pk.eyJ1Ijoia2V2aW5oZWdnIiwiYSI6ImNscmprbG80NzA0aW8ybm94bXFveG1qcmYifQ.z0za-koZbyVbgwJ5AVg9LA';
+        const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
+        mapImageFallback = `https://api.mapbox.com/styles/v1/${mapboxStyle}/static/pin-l+ff0000(${l.longitude},${l.latitude})/${l.longitude},${l.latitude},13/96x96@2x?access_token=${mapboxToken}`;
+      }
       
       const narrativeSummary = l["narrative-summary"] || '';
       const truncatedSummary = truncateAtWordBoundary(narrativeSummary, 250);
@@ -520,7 +528,7 @@ const newlyDocumentedOptions = ['Yes', 'No'];
               src="${mapImageSrc}" 
               alt="Map showing location of ${l.city || ''}, ${l.state || ''}"
               class="w-24 h-24 object-cover rounded-lg border border-gray-200"
-              onerror="this.style.display='none'"
+              onerror="${mapImageFallback ? `this.src='${mapImageFallback}'; this.onerror=null;` : "this.style.display='none';"}"
             />
           </div>
           <div class="flex-1 min-w-0">

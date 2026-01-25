@@ -90,24 +90,38 @@ const SHEET_NAME = 'Public'; // or 'Main' if that's where coordinates are
 
 ## Integration with Your Website
 
-You have two options for using these Drive images:
+**✅ RECOMMENDED: Option 1 - Use Google Drive Directly**
 
-### Option A: Use Google Drive as Image Source
+The website is now configured to use Google Drive images directly. Here's how it works:
 
-1. Make the Drive folder public (or share with "Anyone with the link")
-2. Get the public URL format for images
-3. Update your website to use Drive URLs instead of local files
+1. **Apps Script stores file IDs**: When an image is generated, the script saves the Google Drive file ID in a new column (`map-image-file-id`) in your sheet
+2. **Website reads file IDs**: The website reads this column and constructs Google Drive URLs
+3. **Automatic fallback**: If no file ID exists, the website falls back to local images or Mapbox API
 
-### Option B: Sync Drive to Repository
+**Setup Steps:**
 
-1. Use a GitHub Action or similar to periodically sync Drive folder to `public/mapimages/`
-2. Or manually download from Drive and commit to repo
+1. **Make Drive folder public:**
+   - Open your Google Drive folder
+   - Right-click → Share
+   - Set to "Anyone with the link can view"
+   - Click Done
 
-### Option C: Keep Current System
+2. **Configure Apps Script:**
+   - Update `COLUMN_MAP_IMAGE_FILE_ID` in the script to match an empty column in your sheet
+   - The script will automatically create a header "Map Image File ID" if needed
 
-- Apps Script generates images in Drive (backup/archive)
-- Netlify build script downloads to repo during deployment
-- Website uses repo images
+3. **Test it:**
+   - Edit a latitude/longitude in your sheet
+   - Wait a few seconds for the script to run
+   - Check the "Map Image File ID" column - you should see a file ID
+   - Visit the record page on your website - it should load the image from Drive
+
+**Benefits:**
+- ✅ Images generate automatically when you add/update coordinates
+- ✅ No build-time downloads needed
+- ✅ Images are always up-to-date
+- ✅ Drive serves as the source of truth
+- ✅ Automatic fallback to local/Mapbox if Drive image unavailable
 
 ## Troubleshooting
 
