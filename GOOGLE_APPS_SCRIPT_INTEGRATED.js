@@ -42,9 +42,8 @@ function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu("Tools")
     .addItem('Open AppSheet', 'openAppSheet')
-    .addItem("Generate Coordinates & Map Images", "generateCoordinatesAndImages")
-    .addSeparator()
-    .addItem("Generate All Map Images (Existing Rows)", "generateAllMapImages")
+    .addItem("Generate Coordinates & Map Images (All Rows)", "generateCoordinatesAndImages")
+    .addItem("Generate Coordinates & Map Images (Selected Rows Only)", "generateCoordinatesAndImagesForSelection")
     .addToUi();
 }
 
@@ -410,57 +409,134 @@ function setFallbackImage(sheet, rowNumber, rowId) {
 }
 
 /**
- * Manual function to generate images for all rows with coordinates
- * Called from menu: Tools > Generate All Map Images (Existing Rows)
- * Generates images for rows that already have coordinates, or sets fallback for rows without
+ * Generate coordinates and map images for SELECTED ROWS ONLY
+ * Called from menu: Tools > Generate Coordinates & Map Images (Selected Rows Only)
+ * Works on the currently selected rows in the sheet
  */
-function generateAllMapImages() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getActiveSheet(); // Use active sheet instead of hardcoded name
+function generateCoordinatesAndImagesForSelection() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   
   if (!sheet) {
     SpreadsheetApp.getUi().alert("Error: Could not find the active sheet.");
     return;
   }
   
-  const data = sheet.getDataRange().getValues();
-  let successCount = 0;
-  let fallbackCount = 0;
-  let skipCount = 0;
+  // Get selected range
+  const selection = sheet.getActiveRange();
+  if (!selection) {
+    SpreadsheetApp.getUi().alert("Please select one or more rows first.");
+    return;
+  }
   
-  // Start from row 2 (skip header)
-  for (let i = 1; i < data.length; i++) {
+  const startRow = selection.getRow();
+  const numRows = selection.getNumRows();
+  const endRow = startRow + numRows - 1;
+  
+  // Skip if header row is selected
+  if (startRow === 1) {
+    SpreadsheetApp.getUi().alert("Please select data rows (not the header row).");
+    return;
+  }
+  
+  // Get all data for selected rows
+  const data = sheet.getRange(startRow, 1, numRows, sheet.getLastColumn()).getValues();
+  
+  // 1-based column indices for writing:
+  const latCol = 13; // Column M (Latitude)
+  const lngCol = 14; // Column N (Longitude)
+  
+  let updated = 0;
+  let imagesGenerated = 0;
+  let imagesWithFallback = 0;
+  let skipped = 0;
+  
+  // Process each selected row
+  for (let i = 0; i < data.length; i++) {
     const row = data[i];
+    const rowNumber = startRow + i; // Actual row number in sheet (1-based)
     const rowId = row[COLUMN_ROW_ID - 1]; // Convert to 0-based index
-    const latitude = row[COLUMN_LATITUDE - 1]; // Convert to 0-based index
-    const longitude = row[COLUMN_LONGITUDE - 1]; // Convert to 0-based index
     
+    // Skip if no row ID
     if (!rowId) {
-      skipCount++;
+      skipped++;
       continue;
     }
     
-    // If coordinates exist, generate map image
-    if (latitude && longitude && latitude !== 0 && longitude !== 0) {
-      if (generateMapImageForRow(sheet, i + 1, rowId, latitude, longitude)) {
-        successCount++;
+    // 0-based array indices for reading:
+    const state = row[9];  // Column J (index 9)
+    const city = row[11];  // Column L (index 11)
+    
+    // Get existing coordinates
+    const existingLat = row[COLUMN_LATITUDE - 1];
+    const existingLng = row[COLUMN_LONGITUDE - 1];
+    
+    // If coordinates exist, just generate/regenerate the image
+    if (existingLat && existingLng && existingLat !== 0 && existingLng !== 0) {
+      const imageGenerated = generateMapImageForRow(sheet, rowNumber, rowId, existingLat, existingLng);
+      if (imageGenerated) {
+        imagesGenerated++;
       }
-    } else {
-      // No coordinates - set fallback image
-      if (setFallbackImage(sheet, i + 1, rowId)) {
-        fallbackCount++;
+      continue;
+    }
+    
+    // If no coordinates, try to geocode
+    if (!city || !state) {
+      // No location info - use fallback image
+      const fallbackSet = setFallbackImage(sheet, rowNumber, rowId);
+      if (fallbackSet) {
+        imagesWithFallback++;
       }
+      continue;
+    }
+    
+    const address = `${city}, ${state}`;
+    
+    try {
+      // Geocode the address
+      const geo = Maps.newGeocoder().geocode(address);
+      
+      if (geo.status === "OK" && geo.results && geo.results.length > 0) {
+        const location = geo.results[0].geometry.location;
+        
+        // Write coordinates to sheet
+        sheet.getRange(rowNumber, latCol).setValue(location.lat);
+        sheet.getRange(rowNumber, lngCol).setValue(location.lng);
+        updated++;
+        
+        // Generate map image for this row
+        const imageGenerated = generateMapImageForRow(sheet, rowNumber, rowId, location.lat, location.lng);
+        if (imageGenerated) {
+          imagesGenerated++;
+        }
+      } else {
+        // Geocoding failed - use fallback image
+        const fallbackSet = setFallbackImage(sheet, rowNumber, rowId);
+        if (fallbackSet) {
+          imagesWithFallback++;
+        }
+      }
+    } catch (err) {
+      Logger.log(`Error geocoding row ${rowNumber}: ${err}`);
+      // On error, use fallback image
+      const fallbackSet = setFallbackImage(sheet, rowNumber, rowId);
+      if (fallbackSet) {
+        imagesWithFallback++;
+      }
+      continue;
     }
     
     // Small delay to avoid rate limiting
     Utilities.sleep(200);
   }
   
-  let message = `Image generation complete on sheet '${sheet.getName()}':\n`;
-  message += `• Map images generated: ${successCount}\n`;
-  message += `• Fallback images set: ${fallbackCount}`;
-  if (skipCount > 0) {
-    message += `\n• Skipped (no row ID): ${skipCount}`;
+  let message = `Processing complete for ${numRows} selected row(s) on sheet '${sheet.getName()}':\n`;
+  message += `• Geocoded: ${updated} row(s)\n`;
+  message += `• Map images generated: ${imagesGenerated}`;
+  if (imagesWithFallback > 0) {
+    message += `\n• Fallback images set: ${imagesWithFallback}`;
+  }
+  if (skipped > 0) {
+    message += `\n• Skipped (no row ID): ${skipped}`;
   }
   SpreadsheetApp.getUi().alert(message);
 }
