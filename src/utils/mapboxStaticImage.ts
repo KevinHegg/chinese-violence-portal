@@ -16,7 +16,6 @@ export function getMapboxStaticImageUrl(
     zoom?: number;
     token?: string;
     style?: string;
-    offsetRight?: boolean; // Offset center to the right to account for left panel
   } = {}
 ): string | null {
   // Validate coordinates
@@ -31,13 +30,6 @@ export function getMapboxStaticImageUrl(
   const token = options.token || import.meta.env.PUBLIC_MAPBOX_TOKEN || DEFAULT_MAPBOX_TOKEN;
   const style = options.style || DEFAULT_MAPBOX_STYLE;
 
-  // Calculate center offset to account for left metadata panel
-  // Offset longitude to the right (increase) so marker appears centered when left panel is visible
-  // Offset amount depends on zoom level - higher zoom needs less offset
-  const offsetAmount = options.offsetRight !== false ? (0.15 / Math.pow(2, zoom - 10)) : 0;
-  const centerLongitude = longitude + offsetAmount;
-  const centerLatitude = latitude;
-
   // Mapbox Static Images API format with marker overlay:
   // https://api.mapbox.com/styles/v1/{username}/{style_id}/static/{overlay}/{lon},{lat},{zoom}/{width}x{height}@2x?access_token={token}
   // Marker overlay format: pin-{size}-{label}+{color}({lon},{lat})
@@ -47,12 +39,11 @@ export function getMapboxStaticImageUrl(
   
   // Use large red pin marker to match interactive map's visible circle markers
   // Format: pin-l+ff0000(lon,lat) - large pin, red color (#ff0000), no label
-  // Marker stays at actual coordinates, but center is offset
   const markerOverlay = `pin-l+ff0000(${longitude},${latitude})`;
   
   // URL format: /static/{overlay}/{lon},{lat},{zoom}/{width}x{height}@2x?access_token={token}
-  // Center point is offset to the right, but marker stays at original coordinates
-  const url = `${baseUrl}/${style}/static/${markerOverlay}/${centerLongitude},${centerLatitude},${zoom}/${width}x${height}@2x?access_token=${token}`;
+  // Center point is at the marker coordinates for proper centering
+  const url = `${baseUrl}/${style}/static/${markerOverlay}/${longitude},${latitude},${zoom}/${width}x${height}@2x?access_token=${token}`;
 
   return url;
 }
