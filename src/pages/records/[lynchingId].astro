@@ -187,7 +187,7 @@ const decodeHtmlEntities = (text: string) => {
         <div class="flex gap-6 items-start md:flex-row flex-col-reverse md:gap-6 gap-2">
           <!-- Metadata Table -->
           <div class="flex-1 w-full">
-            <table class="w-full text-left align-top" style="border-spacing:0;border-collapse:collapse;" aria-label="Lynching record metadata">
+            <table class="w-full text-left align-top metadata-table" style="border-spacing:0;border-collapse:collapse;" aria-label="Lynching record metadata">
               <tbody>
                 <tr class="table-row"><th class="table-header" scope="row">Date:</th><td class="table-cell">{formatDate(lynching["date"])}</td></tr>
                 <tr class="table-row"><th class="table-header" scope="row">Location:</th><td class="table-cell">{(!lynching["city"] && lynching["county"]) ? `${lynching["county"]} County, ${lynching["state"]}` : `${lynching["city"]}, ${lynching["state"]}`}</td></tr>
@@ -387,6 +387,24 @@ const decodeHtmlEntities = (text: string) => {
     height: 40px;
     background: linear-gradient(transparent, white);
     pointer-events: none;
+  }
+
+  /* Metadata table styling - labels and values close together, both left-aligned */
+  .metadata-table th.table-header {
+    text-align: left;
+    padding-right: 0.5rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    font-weight: 600;
+    vertical-align: top;
+  }
+
+  .metadata-table td.table-cell {
+    text-align: left;
+    padding-left: 0;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    vertical-align: top;
   }
 
   @media (max-width: 800px) {
