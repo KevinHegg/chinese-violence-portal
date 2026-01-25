@@ -220,7 +220,7 @@ const decodeHtmlEntities = (text: string) => {
               // Using both q and ll parameters together with z to ensure zoom level is respected
               // The q parameter shows the marker pin, ll sets the center, and z controls zoom
               const googleMapsUrl = hasCoordinates 
-                ? `https://maps.google.com/?q=${lynching.latitude},${lynching.longitude}&ll=${lynching.latitude},${lynching.longitude}&z=5`
+                ? `https://maps.google.com/?q=${lynching.latitude},${lynching.longitude}&ll=${lynching.latitude},${lynching.longitude}&z=6`
                 : null;
               
               if (googleMapsUrl) {
