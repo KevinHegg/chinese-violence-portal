@@ -24,7 +24,9 @@ export function getGoogleDriveImageUrl(fileId?: string | null): string | null {
   
   // Google Drive public file URL
   // The file must be set to "Anyone with the link can view"
-  return `https://drive.google.com/uc?export=view&id=${fileId}`;
+  // Using uc?export=view for direct image access (better than download)
+  const cleanFileId = fileId.trim();
+  return `https://drive.google.com/uc?export=view&id=${cleanFileId}`;
 }
 
 /**
