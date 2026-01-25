@@ -542,16 +542,30 @@ chinese-violence-portal/
           <strong>Map Image Automation & Google Drive Integration:</strong>
         </p>
         <ul class="text-sm text-base-content/90 space-y-1 list-disc list-inside ml-2">
-          <li><strong>Automatic Generation:</strong> Map images are automatically generated when you add or update latitude/longitude coordinates in the Google Sheet using a Google Apps Script trigger</li>
-          <li><strong>Google Drive Storage:</strong> Generated images are saved to a Google Drive folder and made publicly viewable</li>
-          <li><strong>File ID Tracking:</strong> The Apps Script stores the Google Drive file ID in a sheet column (<code>map-image-file-id</code>) for direct URL construction</li>
+          <li><strong>Automatic Generation:</strong> Map images are automatically generated when you run the Apps Script function "Generate Coordinates & Map Images" from the Tools menu in your Google Sheet</li>
+          <li><strong>Menu-Driven Workflow:</strong> Two functions available: "Generate Coordinates & Map Images (All Rows)" processes all rows, while "Generate Coordinates & Map Images (Selected Rows Only)" works on just the rows you select</li>
+          <li><strong>Google Drive Storage:</strong> Generated images are saved to a Google Drive folder and automatically made publicly viewable</li>
+          <li><strong>Smart Column Detection:</strong> The script automatically finds the "Map Image File ID" column by searching for the header name, eliminating column number conflicts and making it robust and flexible</li>
+          <li><strong>File ID Tracking:</strong> The Apps Script stores the Google Drive file ID in the "Map Image File ID" column for direct URL construction - no manual column configuration needed</li>
           <li><strong>Style Consistency:</strong> Uses the same Mapbox style as the interactive map (vintage/historical appearance) with red pin markers</li>
           <li><strong>Image Specs:</strong> Generates 300x300px @2x images (600x600px for retina displays)</li>
           <li><strong>Zoom Level:</strong> Set to 13 (good for city/town views showing regional context)</li>
+          <li><strong>Fallback Images:</strong> For rows without location data, automatically uses a "No map thumbnail currently available" placeholder image from Drive</li>
           <li><strong>Fallback Chain:</strong> Website tries Google Drive first, then falls back to local static files in <code>public/mapimages/</code>, then to on-demand Mapbox API generation</li>
-          <li><strong>No Build Required:</strong> Images are generated and available immediately when coordinates are added/updated - no deployment needed</li>
+          <li><strong>No Build Required:</strong> Images are generated and available immediately when the script runs - no deployment or build process needed</li>
+          <li><strong>Easy Maintenance:</strong> Column detection by name means the system adapts to sheet structure changes automatically</li>
           <li><strong>Setup:</strong> See <code>GOOGLE_APPS_SCRIPT_SETUP.md</code> for configuration instructions</li>
         </ul>
+        <div class="mt-3 p-3 bg-amber-50 rounded border border-amber-200">
+          <p class="text-xs text-base-content/90 font-semibold mb-1">Why This Approach is Better:</p>
+          <ul class="text-xs text-base-content/90 space-y-1 list-disc list-inside ml-2">
+            <li><strong>Robust:</strong> Column detection by name prevents conflicts with existing columns and adapts to sheet structure changes</li>
+            <li><strong>Flexible:</strong> Works with any sheet layout - no hardcoded column numbers to maintain</li>
+            <li><strong>Easy to Maintain:</strong> Menu-driven functions give you control over when images are generated, and the system handles file management automatically</li>
+            <li><strong>Scalable:</strong> Google Drive serves images directly, reducing server load and eliminating build-time image processing</li>
+            <li><strong>User-Friendly:</strong> Simple menu options for processing all rows or just selected rows, with clear feedback on completion</li>
+          </ul>
+        </div>
       </div>
     </div>
 

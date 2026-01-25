@@ -44,6 +44,42 @@ If your sheet IDs change, update them in:
 3. **Caching**: Data is cached for 5 minutes to reduce API calls
 4. **Automatic Updates**: Changes to Google Sheets appear on the website within 5 minutes
 
+## Map Image Generation (Google Drive Integration)
+
+The website uses a sophisticated Google Drive-based system for map thumbnails that is robust, flexible, and easy to maintain:
+
+### Workflow
+
+1. **Generate Images**: Run "Generate Coordinates & Map Images" from the Tools menu in your Google Sheet
+2. **Apps Script Processing**: 
+   - Geocodes addresses to get coordinates (if needed)
+   - Generates map images using Mapbox Static Images API
+   - Saves images to a Google Drive folder
+   - Automatically finds the "Map Image File ID" column by searching for the header name
+   - Stores file IDs in that column for website access
+3. **Website Display**: 
+   - Reads file IDs from the "Map Image File ID" column
+   - Constructs Google Drive URLs automatically
+   - Displays images directly from Drive (no build process needed)
+
+### Key Features
+
+- **Smart Column Detection**: Script finds the "Map Image File ID" column by name, eliminating column number conflicts
+- **Menu-Driven**: Two options - process all rows or just selected rows
+- **Automatic Fallbacks**: Uses placeholder images for records without location data
+- **No Build Required**: Images are available immediately after generation
+- **Robust & Flexible**: Adapts to sheet structure changes automatically
+
+### Benefits
+
+- **Robust**: Column detection by name prevents conflicts and works with any sheet layout
+- **Flexible**: No hardcoded column numbers to maintain - system adapts automatically
+- **Easy to Maintain**: Simple menu-driven workflow with clear feedback
+- **Scalable**: Google Drive serves images directly, reducing server load
+- **User-Friendly**: Clear options for processing all or selected rows
+
+See `GOOGLE_APPS_SCRIPT_SETUP.md` for detailed setup instructions.
+
 ## Column Mapping
 
 The system automatically maps Google Sheets columns to JSON fields. The mapping handles:
