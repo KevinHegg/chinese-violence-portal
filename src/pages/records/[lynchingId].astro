@@ -400,6 +400,8 @@ const decodeHtmlEntities = (text: string) => {
     display: flex;
     flex-direction: column;
     gap: 0;
+    margin: 0;
+    padding: 0;
   }
   
   .metadata-item {
@@ -408,6 +410,7 @@ const decodeHtmlEntities = (text: string) => {
     gap: 0.25rem;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
+    margin: 0;
   }
   
   .metadata-label {
@@ -415,24 +418,31 @@ const decodeHtmlEntities = (text: string) => {
     font-weight: 600;
     white-space: nowrap;
     flex-shrink: 0;
-    margin: 0;
-    padding: 0;
-  }
-
-  .metadata-value {
-    text-align: left !important;
     margin: 0 !important;
     padding: 0 !important;
+  }
+  
+  /* Override ALL default dd styles - browsers add left margin by default */
+  .metadata-list dd,
+  .metadata-value {
+    text-align: left !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
     flex: 1;
     align-self: flex-start;
     width: auto;
   }
   
-  /* Override any default dd styles */
-  .metadata-list dd {
+  /* Override dt defaults too */
+  .metadata-list dt {
     margin: 0 !important;
     padding: 0 !important;
-    text-align: left !important;
   }
 
   @media (max-width: 800px) {
