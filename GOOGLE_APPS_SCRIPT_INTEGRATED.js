@@ -30,8 +30,11 @@ const COLUMN_ROW_ID = 1; // Column with identifier (e.g., "CA1853-02-21")
 const COLUMN_LATITUDE = 13;
 // Column N = 14 (Longitude)
 const COLUMN_LONGITUDE = 14;
-// Column for storing Google Drive file ID (use an empty column, e.g., Column T = 20)
-const COLUMN_MAP_IMAGE_FILE_ID = 20;
+// Column for storing Google Drive file ID (use an empty column that doesn't conflict with Source)
+// IMPORTANT: Make sure this column is empty or create a new column for "Map Image File ID"
+// Column T = 20, Column U = 21, Column V = 22, etc.
+// If Source is in column 20, use column 21 or higher
+const COLUMN_MAP_IMAGE_FILE_ID = 21; // Changed to 21 to avoid Source column conflict
 
 // Sheet name to monitor (usually "Main" or "Public")
 const SHEET_NAME = 'Main';
