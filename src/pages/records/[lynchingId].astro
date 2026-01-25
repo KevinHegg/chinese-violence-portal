@@ -224,11 +224,11 @@ const decodeHtmlEntities = (text: string) => {
               
               // Google Maps URL with coordinates - zoomed out to show state borders and nearby states
               // Using the @lat,lon,zoomz format in the URL path for better control
-              // Offset the center to the right (increase longitude) to account for left panel
-              // This makes the marker appear more centered when the map opens
-              // The q parameter shows the marker at actual coordinates, while @ sets the view center
-              const centerOffset = 2.5; // Offset longitude to the right (degrees) - increased to move marker away from left panel
-              const centerLongitude = hasCoordinates ? lynching.longitude + centerOffset : lynching.longitude;
+              // Offset the center to the WEST (decrease longitude) so marker appears more to the EAST (right) on screen
+              // This makes the marker appear more centered when the map opens, away from the left panel
+              // The q parameter shows the marker at actual coordinates, while ll sets the view center
+              const centerOffset = 2.5; // Offset longitude to the WEST (degrees) - subtract to move marker to the right on screen
+              const centerLongitude = hasCoordinates ? lynching.longitude - centerOffset : lynching.longitude;
               const googleMapsUrl = hasCoordinates 
                 ? `https://www.google.com/maps?q=${lynching.latitude},${lynching.longitude}&ll=${lynching.latitude},${centerLongitude}&z=6`
                 : null;
