@@ -522,23 +522,25 @@ const newlyDocumentedOptions = ['Yes', 'No'];
       const narrativeSummary = l["narrative-summary"] || '';
       const truncatedSummary = truncateAtWordBoundary(narrativeSummary, 250);
       card.innerHTML = `
-        <div class="flex gap-4">
-          <div class="flex-shrink-0">
-            <img 
-              src="${mapImageSrc}" 
-              alt="Map showing location of ${l.city || ''}, ${l.state || ''}"
-              class="w-24 h-24 object-cover rounded-lg border border-gray-200"
-              onerror="${mapImageFallback ? `this.src='${mapImageFallback}'; this.onerror=null;` : "this.style.display='none';"}"
-            />
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex justify-between items-center mb-2">
-              <span class="text-xs font-semibold text-gray-500">${l.date || ''}</span>
-              <span class="text-xs font-semibold text-gray-500">${l.state || ''}</span>
+        <div class="flex flex-col gap-3">
+          <div class="flex gap-4">
+            <div class="flex-shrink-0">
+              <img 
+                src="${mapImageSrc}" 
+                alt="Map showing location of ${l.city || ''}, ${l.state || ''}"
+                class="w-24 h-24 object-cover rounded-lg border border-gray-200"
+                onerror="${mapImageFallback ? `this.src='${mapImageFallback}'; this.onerror=null;` : "this.style.display='none';"}"
+              />
             </div>
-            <div class="font-bold text-base mb-1">${l["narrative-short-title"] || l["lynching-id"]}</div>
-            <div class="text-sm text-gray-700 summary-fade-container"><span class="summary-fade-text">${truncatedSummary}</span><span class="summary-fade"></span></div>
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-xs font-semibold text-gray-500">${l.date || ''}</span>
+                <span class="text-xs font-semibold text-gray-500">${l.state || ''}</span>
+              </div>
+              <div class="font-bold text-base">${l["narrative-short-title"] || l["lynching-id"]}</div>
+            </div>
           </div>
+          <div class="text-sm text-gray-700 summary-fade-container"><span class="summary-fade-text">${truncatedSummary}</span><span class="summary-fade"></span></div>
         </div>
       `;
       container.appendChild(card);
