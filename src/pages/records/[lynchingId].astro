@@ -38,7 +38,8 @@ const lynchingsData = publicData.map((record: any) => {
       "narrative-short-title": mainRecord["narrative-short-title"] || record["narrative-short-title"],
       "narrative-body": mainRecord["narrative-body"] || mainRecord["narrative-summary"] || record["narrative-body"],
       "narrative-summary": mainRecord["narrative-summary"] || mainRecord["narrative-body"] || record["narrative-summary"],
-      "source": mainRecord["source"] || record["source"] // Source from Main tab takes precedence
+      "source": mainRecord["source"] || record["source"], // Source from Main tab takes precedence
+      "map-image-file-id": record["map-image-file-id"] || mainRecord["map-image-file-id"] // Map image file ID from Public tab (where Apps Script writes it)
     };
   }
   return record;

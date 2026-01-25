@@ -173,7 +173,8 @@ export function convertToLynchingFormat(rows: Record<string, string>[]): any[] {
       "narrative-title": getField(["Narrative Title", "Narrative Title", "narrative-title"]),
       "narrative-short-title": getField(["Narrative Short Title", "Narrative Short Title", "narrative-short-title"]),
       "narrative-body": getField(["Narrative Summary", "Narrative Summary", "narrative-body", "Notes"]),
-      "narrative-summary": getField(["Notes", "notes", "narrative-summary"])
+      "narrative-summary": getField(["Notes", "notes", "narrative-summary"]),
+      "map-image-file-id": getField(["Map Image File ID", "map-image-file-id", "Map Image File ID"])
     };
   }).filter(item => item["lynching-id"] && item["lynching-id"].trim()); // Filter out empty rows
 }
