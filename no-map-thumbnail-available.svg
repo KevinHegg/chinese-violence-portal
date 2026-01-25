@@ -1,0 +1,20 @@
+<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="300" height="300" fill="#faf9f6"/>
+  
+  <!-- Border -->
+  <rect x="10" y="10" width="280" height="280" fill="none" stroke="#d4a574" stroke-width="2"/>
+  
+  <!-- Map icon -->
+  <g transform="translate(150, 120)">
+    <!-- Map outline -->
+    <path d="M -40 -30 L 40 -30 L 40 30 L -40 30 Z" fill="none" stroke="#8b7355" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Location marker -->
+    <circle cx="0" cy="0" r="8" fill="#c2410c" stroke="#fff" stroke-width="2"/>
+    <circle cx="0" cy="0" r="3" fill="#fff"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="150" y="200" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#5a4a3a" text-anchor="middle">No map thumbnail</text>
+  <text x="150" y="220" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#5a4a3a" text-anchor="middle">currently available</text>
+</svg>

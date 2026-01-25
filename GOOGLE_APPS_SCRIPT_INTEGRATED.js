@@ -361,7 +361,7 @@ function generateMapImageForRow(sheet, rowNumber, rowId, latitude, longitude) {
 
 /**
  * Set fallback "No map thumbnail currently available" image for a row
- * Creates/uses a generic fallback image in the Drive folder
+ * Assumes the fallback image (no-map-thumbnail-available.png) already exists in the Drive folder
  */
 function setFallbackImage(sheet, rowNumber, rowId) {
   try {
@@ -372,26 +372,19 @@ function setFallbackImage(sheet, rowNumber, rowId) {
     const folder = DriveApp.getFolderById(DRIVE_FOLDER_ID);
     const fallbackFileName = 'no-map-thumbnail-available.png';
     
-    // Check if fallback image exists in folder, create if not
-    let fallbackFile = null;
+    // Find the fallback image (assumes it's already uploaded to the folder)
     const existingFallback = folder.getFilesByName(fallbackFileName);
-    if (existingFallback.hasNext()) {
-      fallbackFile = existingFallback.next();
-    } else {
-      // Create a simple placeholder image (1x1 transparent PNG)
-      // In a real scenario, you'd want to upload a proper "No map available" image
-      // For now, we'll create a minimal PNG blob
-      const pngData = Utilities.base64Decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
-      const blob = Utilities.newBlob(pngData, 'image/png', fallbackFileName);
-      fallbackFile = folder.createFile(blob);
-      fallbackFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-      Logger.log('Created fallback image in Drive folder');
+    if (!existingFallback.hasNext()) {
+      Logger.log(`Warning: Fallback image "${fallbackFileName}" not found in Drive folder. Please upload it.`);
+      return false;
     }
+    
+    const fallbackFile = existingFallback.next();
     
     // Copy fallback image to row-specific filename
     const fileName = `${rowId}.png`;
     
-    // Delete existing image if it exists
+    // Delete existing image if it exists (overwrite behavior)
     const existingFiles = folder.getFilesByName(fileName);
     while (existingFiles.hasNext()) {
       existingFiles.next().setTrashed(true);
