@@ -217,9 +217,10 @@ const decodeHtmlEntities = (text: string) => {
               const imageSrc = mapboxUrl || staticFileUrl;
               
               // Google Maps URL with coordinates - zoomed out to show state borders and nearby states
-              // Using q=lat,lng format which automatically shows a marker pin, with z=5 for regional view
+              // Using both q and ll parameters together with z to ensure zoom level is respected
+              // The q parameter shows the marker pin, ll sets the center, and z controls zoom
               const googleMapsUrl = hasCoordinates 
-                ? `https://www.google.com/maps?q=${lynching.latitude},${lynching.longitude}&z=5`
+                ? `https://maps.google.com/?q=${lynching.latitude},${lynching.longitude}&ll=${lynching.latitude},${lynching.longitude}&z=5`
                 : null;
               
               if (googleMapsUrl) {
