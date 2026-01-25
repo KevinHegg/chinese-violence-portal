@@ -397,12 +397,16 @@ const decodeHtmlEntities = (text: string) => {
   }
 
   /* Metadata table styling - labels and values close together, both left-aligned */
+  .metadata-table {
+    border-spacing: 0 !important;
+  }
+  
   .metadata-table th.table-header {
     text-align: left;
-    padding-right: 0.125rem;
+    padding-right: 0.5rem !important;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
-    padding-left: 0;
+    padding-left: 0 !important;
     font-weight: 600;
     vertical-align: top;
     width: auto;
@@ -411,7 +415,7 @@ const decodeHtmlEntities = (text: string) => {
 
   .metadata-table td.table-cell {
     text-align: left;
-    padding-left: 0.125rem;
+    padding-left: 0 !important;
     padding-right: 0;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
