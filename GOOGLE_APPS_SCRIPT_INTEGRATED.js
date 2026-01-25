@@ -30,12 +30,10 @@ const COLUMN_ROW_ID = 1; // Column with identifier (e.g., "CA1853-02-21")
 const COLUMN_LATITUDE = 13;
 // Column N = 14 (Longitude)
 const COLUMN_LONGITUDE = 14;
-// Column for storing Google Drive file ID (use an empty column that doesn't conflict with Source)
-// IMPORTANT: Make sure this column is empty or create a new column for "Map Image File ID"
-// Column T = 20, Column U = 21, Column V = 22, etc.
-// If Source is in column 20, use column 21 or higher
-// VERIFY: Make sure this matches your actual "Map Image File ID" column in your sheet
-const COLUMN_MAP_IMAGE_FILE_ID = 21; // Column U - "Map Image File ID"
+// Column for storing Google Drive file ID - will be found dynamically by header name
+// The script will search for a column with header "Map Image File ID"
+// If not found, it will create one in the first available column after your data
+let COLUMN_MAP_IMAGE_FILE_ID = null; // Will be set dynamically
 
 // Sheet name to monitor (usually "Main" or "Public")
 const SHEET_NAME = 'Main';
@@ -269,6 +267,37 @@ function createForm() {
 // ==================== MAP IMAGE GENERATION FUNCTIONS ====================
 
 /**
+ * Find or create the "Map Image File ID" column by searching for the header name
+ * Returns the column number (1-based)
+ */
+function getMapImageFileIdColumn(sheet) {
+  // If we've already found it, return cached value
+  if (COLUMN_MAP_IMAGE_FILE_ID !== null) {
+    return COLUMN_MAP_IMAGE_FILE_ID;
+  }
+  
+  const headerRow = 1;
+  const lastColumn = sheet.getLastColumn();
+  
+  // Search for existing "Map Image File ID" column
+  for (let col = 1; col <= lastColumn; col++) {
+    const headerValue = sheet.getRange(headerRow, col).getValue();
+    if (headerValue && headerValue.toString().trim() === 'Map Image File ID') {
+      COLUMN_MAP_IMAGE_FILE_ID = col;
+      Logger.log(`Found "Map Image File ID" column at column ${col}`);
+      return col;
+    }
+  }
+  
+  // Not found - create it in the next available column
+  const newColumn = lastColumn + 1;
+  sheet.getRange(headerRow, newColumn).setValue('Map Image File ID');
+  COLUMN_MAP_IMAGE_FILE_ID = newColumn;
+  Logger.log(`Created "Map Image File ID" column at column ${newColumn}`);
+  return newColumn;
+}
+
+/**
  * Generate Mapbox Static Images API URL
  */
 function generateMapboxUrl(longitude, latitude, zoom = 13, width = 300, height = 300) {
@@ -338,18 +367,12 @@ function generateMapImageForRow(sheet, rowNumber, rowId, latitude, longitude) {
     const fileId = downloadAndSaveImage(mapboxUrl, fileName, DRIVE_FOLDER_ID);
     
     if (fileId) {
-      // Store file ID in the sheet for easy URL construction
-      // Check if column header exists, create if needed
-      const headerRange = sheet.getRange(1, COLUMN_MAP_IMAGE_FILE_ID);
-      const currentHeader = headerRange.getValue();
-      // Only set header if column is completely empty or doesn't have the correct header
-      if (!currentHeader || currentHeader.toString().trim() === '' || currentHeader.toString().trim() !== 'Map Image File ID') {
-        headerRange.setValue('Map Image File ID');
-      }
+      // Find or create the "Map Image File ID" column
+      const fileIdColumn = getMapImageFileIdColumn(sheet);
       
-      // Store file ID in the row - ALWAYS use COLUMN_MAP_IMAGE_FILE_ID (21)
-      sheet.getRange(rowNumber, COLUMN_MAP_IMAGE_FILE_ID).setValue(fileId);
-      Logger.log(`Storing file ID ${fileId} in column ${COLUMN_MAP_IMAGE_FILE_ID} (row ${rowNumber})`);
+      // Store file ID in the row
+      sheet.getRange(rowNumber, fileIdColumn).setValue(fileId);
+      Logger.log(`✅ Storing file ID ${fileId} in "Map Image File ID" column (column ${fileIdColumn}, row ${rowNumber})`);
       
       Logger.log(`✅ Generated map image for ${rowId}: File ID ${fileId}`);
       return true;
@@ -400,15 +423,12 @@ function setFallbackImage(sheet, rowNumber, rowId) {
     const rowImage = fallbackFile.makeCopy(fileName, folder);
     rowImage.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
     
-    // Store file ID in sheet - ALWAYS use COLUMN_MAP_IMAGE_FILE_ID (21)
-    const headerRange = sheet.getRange(1, COLUMN_MAP_IMAGE_FILE_ID);
-    const currentHeader = headerRange.getValue();
-    // Only set header if column is completely empty or doesn't have the correct header
-    if (!currentHeader || currentHeader.toString().trim() === '' || currentHeader.toString().trim() !== 'Map Image File ID') {
-      headerRange.setValue('Map Image File ID');
-    }
-    sheet.getRange(rowNumber, COLUMN_MAP_IMAGE_FILE_ID).setValue(rowImage.getId());
-    Logger.log(`Storing fallback file ID ${rowImage.getId()} in column ${COLUMN_MAP_IMAGE_FILE_ID} (row ${rowNumber})`);
+    // Find or create the "Map Image File ID" column
+    const fileIdColumn = getMapImageFileIdColumn(sheet);
+    
+    // Store file ID in sheet
+    sheet.getRange(rowNumber, fileIdColumn).setValue(rowImage.getId());
+    Logger.log(`✅ Storing fallback file ID ${rowImage.getId()} in "Map Image File ID" column (column ${fileIdColumn}, row ${rowNumber})`);
     
     Logger.log(`✅ Set fallback image for ${rowId}: File ID ${rowImage.getId()}`);
     return true;
