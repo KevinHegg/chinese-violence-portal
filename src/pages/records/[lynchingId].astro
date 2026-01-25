@@ -36,7 +36,8 @@ const lynchingsData = publicData.map((record: any) => {
       "narrative-title": mainRecord["narrative-title"] || record["narrative-title"],
       "narrative-short-title": mainRecord["narrative-short-title"] || record["narrative-short-title"],
       "narrative-body": mainRecord["narrative-body"] || mainRecord["narrative-summary"] || record["narrative-body"],
-      "narrative-summary": mainRecord["narrative-summary"] || mainRecord["narrative-body"] || record["narrative-summary"]
+      "narrative-summary": mainRecord["narrative-summary"] || mainRecord["narrative-body"] || record["narrative-summary"],
+      "source": mainRecord["source"] || record["source"] // Source from Main tab takes precedence
     };
   }
   return record;
@@ -217,9 +218,9 @@ const decodeHtmlEntities = (text: string) => {
               const staticFileUrl = `/mapimages/${lynching["lynching-id"]}.png`;
               const imageSrc = mapboxUrl || staticFileUrl;
               
-              // Google Maps URL with coordinates
+              // Google Maps URL with coordinates - zoomed out to show regional context (z=6 = state/regional view)
               const googleMapsUrl = hasCoordinates 
-                ? `https://www.google.com/maps?q=${lynching.latitude},${lynching.longitude}`
+                ? `https://www.google.com/maps?q=${lynching.latitude},${lynching.longitude}&z=6`
                 : null;
               
               if (googleMapsUrl) {
@@ -398,7 +399,7 @@ const decodeHtmlEntities = (text: string) => {
   /* Metadata table styling - labels and values close together, both left-aligned */
   .metadata-table th.table-header {
     text-align: left;
-    padding-right: 0.25rem;
+    padding-right: 0.125rem;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
     padding-left: 0;
@@ -410,7 +411,7 @@ const decodeHtmlEntities = (text: string) => {
 
   .metadata-table td.table-cell {
     text-align: left;
-    padding-left: 0.25rem;
+    padding-left: 0.125rem;
     padding-right: 0;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
