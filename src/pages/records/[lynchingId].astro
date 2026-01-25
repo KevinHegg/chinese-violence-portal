@@ -217,9 +217,9 @@ const decodeHtmlEntities = (text: string) => {
               const imageSrc = mapboxUrl || staticFileUrl;
               
               // Google Maps URL with coordinates - zoomed out to show state borders and nearby states
-              // Using zoom level 4 for multi-state regional view (lower number = more zoomed out)
+              // Using @lat,lon,zoomz format for proper zoom control (zoom 5 = regional/state view)
               const googleMapsUrl = hasCoordinates 
-                ? `https://www.google.com/maps?q=${lynching.latitude},${lynching.longitude}&z=4`
+                ? `https://www.google.com/maps/@${lynching.latitude},${lynching.longitude},5z`
                 : null;
               
               if (googleMapsUrl) {
@@ -407,7 +407,7 @@ const decodeHtmlEntities = (text: string) => {
   .metadata-item {
     display: flex;
     align-items: flex-start;
-    gap: 0.25rem;
+    gap: 0.5rem;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
     margin: 0;
@@ -427,6 +427,7 @@ const decodeHtmlEntities = (text: string) => {
     margin: 0;
     padding: 0;
     flex: 1;
+    min-width: 0;
   }
 
   @media (max-width: 800px) {
