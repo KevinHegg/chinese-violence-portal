@@ -34,7 +34,8 @@ const COLUMN_LONGITUDE = 14;
 // IMPORTANT: Make sure this column is empty or create a new column for "Map Image File ID"
 // Column T = 20, Column U = 21, Column V = 22, etc.
 // If Source is in column 20, use column 21 or higher
-const COLUMN_MAP_IMAGE_FILE_ID = 21; // Changed to 21 to avoid Source column conflict
+// VERIFY: Make sure this matches your actual "Map Image File ID" column in your sheet
+const COLUMN_MAP_IMAGE_FILE_ID = 21; // Column U - "Map Image File ID"
 
 // Sheet name to monitor (usually "Main" or "Public")
 const SHEET_NAME = 'Main';
@@ -340,12 +341,15 @@ function generateMapImageForRow(sheet, rowNumber, rowId, latitude, longitude) {
       // Store file ID in the sheet for easy URL construction
       // Check if column header exists, create if needed
       const headerRange = sheet.getRange(1, COLUMN_MAP_IMAGE_FILE_ID);
-      if (!headerRange.getValue() || headerRange.getValue().toString().trim() === '') {
+      const currentHeader = headerRange.getValue();
+      // Only set header if column is completely empty or doesn't have the correct header
+      if (!currentHeader || currentHeader.toString().trim() === '' || currentHeader.toString().trim() !== 'Map Image File ID') {
         headerRange.setValue('Map Image File ID');
       }
       
-      // Store file ID in the row
+      // Store file ID in the row - ALWAYS use COLUMN_MAP_IMAGE_FILE_ID (21)
       sheet.getRange(rowNumber, COLUMN_MAP_IMAGE_FILE_ID).setValue(fileId);
+      Logger.log(`Storing file ID ${fileId} in column ${COLUMN_MAP_IMAGE_FILE_ID} (row ${rowNumber})`);
       
       Logger.log(`✅ Generated map image for ${rowId}: File ID ${fileId}`);
       return true;
@@ -396,12 +400,15 @@ function setFallbackImage(sheet, rowNumber, rowId) {
     const rowImage = fallbackFile.makeCopy(fileName, folder);
     rowImage.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
     
-    // Store file ID in sheet
+    // Store file ID in sheet - ALWAYS use COLUMN_MAP_IMAGE_FILE_ID (21)
     const headerRange = sheet.getRange(1, COLUMN_MAP_IMAGE_FILE_ID);
-    if (!headerRange.getValue() || headerRange.getValue().toString().trim() === '') {
+    const currentHeader = headerRange.getValue();
+    // Only set header if column is completely empty or doesn't have the correct header
+    if (!currentHeader || currentHeader.toString().trim() === '' || currentHeader.toString().trim() !== 'Map Image File ID') {
       headerRange.setValue('Map Image File ID');
     }
     sheet.getRange(rowNumber, COLUMN_MAP_IMAGE_FILE_ID).setValue(rowImage.getId());
+    Logger.log(`Storing fallback file ID ${rowImage.getId()} in column ${COLUMN_MAP_IMAGE_FILE_ID} (row ${rowNumber})`);
     
     Logger.log(`✅ Set fallback image for ${rowId}: File ID ${rowImage.getId()}`);
     return true;
