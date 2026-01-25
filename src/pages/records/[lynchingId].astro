@@ -227,7 +227,7 @@ const decodeHtmlEntities = (text: string) => {
               // Offset the center to the right (increase longitude) to account for left panel
               // This makes the marker appear more centered when the map opens
               // The q parameter shows the marker at actual coordinates, while @ sets the view center
-              const centerOffset = 1.2; // Offset longitude to the right (degrees) - adjusted for better centering
+              const centerOffset = 2.5; // Offset longitude to the right (degrees) - increased to move marker away from left panel
               const centerLongitude = hasCoordinates ? lynching.longitude + centerOffset : lynching.longitude;
               const googleMapsUrl = hasCoordinates 
                 ? `https://www.google.com/maps?q=${lynching.latitude},${lynching.longitude}&ll=${lynching.latitude},${centerLongitude}&z=6`
