@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "npm run sync-data && astro dev",
     "sync-data": "node ./src/scripts/sync-data-to-public.cjs",
-    "prebuild": "npm run sync-data",
+    "download-maps": "node ./src/scripts/download-map-images.cjs",
+    "prebuild": "npm run sync-data && npm run download-maps",
     "build": "npm run prebuild && astro build",
     "preview": "astro preview",
     "astro": "astro"

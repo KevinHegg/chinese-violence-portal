@@ -215,12 +215,16 @@ const decodeHtmlEntities = (text: string) => {
               const hasCoordinates = !!(lynching.latitude && lynching.longitude && 
                                        lynching.latitude !== 0 && lynching.longitude !== 0);
               
+              // Prefer static file if it exists (cached in repo), otherwise use Mapbox API URL (on-demand)
+              // Static files are generated manually using download-map-images.cjs script
+              const staticFileUrl = `/mapimages/${lynching["lynching-id"]}.png`;
               const mapboxUrl = hasCoordinates 
                 ? getMapboxStaticImageUrl(lynching.longitude, lynching.latitude)
                 : null;
               
-              const staticFileUrl = `/mapimages/${lynching["lynching-id"]}.png`;
-              const imageSrc = mapboxUrl || staticFileUrl;
+              // Try static file first (if it exists in repo), fall back to Mapbox API URL via onerror handler
+              const imageSrc = staticFileUrl;
+              const fallbackUrl = mapboxUrl;
               
               // Google Maps URL with coordinates - zoomed out to show state borders and nearby states
               // Using the @lat,lon,zoomz format in the URL path for better control
@@ -247,7 +251,7 @@ const decodeHtmlEntities = (text: string) => {
                       alt={`Map showing location of ${lynching["city"]}, ${lynching["state"]}`}
                       class="map-image-mobile md:w-[300px] md:h-[300px] w-full h-[100px] object-cover object-center rounded-lg border border-gray-200 cursor-pointer"
                       style="width:100%;max-width:300px;"
-                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                      onerror={fallbackUrl ? `this.src='${fallbackUrl}'; this.onerror=null;` : "this.style.display='none'; this.nextElementSibling.style.display='flex';"}
                     />
                   </a>
                 );
@@ -259,7 +263,7 @@ const decodeHtmlEntities = (text: string) => {
                       alt={`Map showing location of ${lynching["city"]}, ${lynching["state"]}`}
                       class="map-image-mobile md:w-[300px] md:h-[300px] w-full h-[100px] object-cover object-center rounded-lg border border-gray-200"
                       style="width:100%;max-width:300px;"
-                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                      onerror={fallbackUrl ? `this.src='${fallbackUrl}'; this.onerror=null;` : "this.style.display='none'; this.nextElementSibling.style.display='flex';"}
                     />
                   </div>
                 );
