@@ -36,12 +36,26 @@ censusData.forEach((entry: any) => {
 
 <PageLayout title="Comparative Lynching Data" currentPage="visualize/compare">
   <div class="container-wide">
-    <a href="/visualize" class="text-accent hover:text-accent-focus flex items-center gap-2 mb-4">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-      </svg>
-      Back to Visualizations
-    </a>
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="Breadcrumb" class="mb-4">
+      <ol class="flex items-center text-sm text-gray-600 flex-wrap">
+        <li class="flex items-center">
+          <a href="/" class="hover:text-accent transition-colors">Home</a>
+          <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </li>
+        <li class="flex items-center">
+          <a href="/visualize" class="hover:text-accent transition-colors">Visualize the Data</a>
+          <svg class="w-4 h-4 mx-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </li>
+        <li class="text-gray-900 font-medium truncate max-w-xs" aria-current="page">
+          Compare
+        </li>
+      </ol>
+    </nav>
     
     <h1 class="text-4xl font-bold mb-4 text-vintage-ink">Comparative Lynching Data: Black & Chinese Victims</h1>
     
