@@ -72,7 +72,7 @@ import "../styles/western-colors.css";
               <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Category of Violence">Category of Violence</th>
               <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Accusation or Pretext">Accusation</th>
               <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Job">Job</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Source">Compiled By</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Compiled By">Compiled By</th>
             </tr>
           </thead>
           <tbody id="table-body">
@@ -193,7 +193,7 @@ import "../styles/western-colors.css";
         <td class="border border-gray-300 px-2 py-2 text-sm">${row['Category of Violence'] || ''}</td>
         <td class="border border-gray-300 px-2 py-2 text-sm">${row['Accusation or Pretext'] || ''}</td>
         <td class="border border-gray-300 px-2 py-2 text-sm">${row['Job'] || ''}</td>
-        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Source'] || ''}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Compiled By'] || ''}</td>
       `;
       
       tbody.appendChild(tr);
