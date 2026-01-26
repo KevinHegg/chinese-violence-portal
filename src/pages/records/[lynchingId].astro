@@ -38,7 +38,7 @@ const lynchingsData = publicData.map((record: any) => {
       "narrative-short-title": mainRecord["narrative-short-title"] || record["narrative-short-title"],
       "narrative-body": mainRecord["narrative-body"] || mainRecord["narrative-summary"] || record["narrative-body"],
       "narrative-summary": mainRecord["narrative-summary"] || mainRecord["narrative-body"] || record["narrative-summary"],
-      "source": mainRecord["source"] || record["source"], // Source from Main tab takes precedence
+      "compiled-by": mainRecord["compiled-by"] || record["compiled-by"], // Compiled By from Main tab takes precedence
       "map-image-file-id": record["map-image-file-id"] || mainRecord["map-image-file-id"] // Map image file ID from Public tab (where Apps Script writes it)
     };
   }
@@ -203,7 +203,7 @@ const decodeHtmlEntities = (text: string) => {
               <div class="metadata-item"><span class="metadata-label">Victim Gender:</span><span class="metadata-value">{lynching["victim-gender"]}</span></div>
               <div class="metadata-item"><span class="metadata-label whitespace-nowrap">No. of Victims:</span><span class="metadata-value">{lynching["number-of-victims"]}</span></div>
               <div class="metadata-item"><span class="metadata-label">Accusation:</span><span class="metadata-value">{lynching["accusation"] || "Unknown"}</span></div>
-              <div class="metadata-item"><span class="metadata-label">Source:</span><span class="metadata-value">{lynching["source"]}</span></div>
+              <div class="metadata-item"><span class="metadata-label">Compiled By:</span><span class="metadata-value">{lynching["compiled-by"]}</span></div>
               {lynching["job"] && (
                 <div class="metadata-item"><span class="metadata-label">Occupation:</span><span class="metadata-value">{lynching["job"]}</span></div>
               )}

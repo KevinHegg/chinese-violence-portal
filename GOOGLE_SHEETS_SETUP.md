@@ -104,7 +104,7 @@ The system automatically maps Google Sheets columns to JSON fields. The mapping 
 - `Accusation or Pretext` → `accusation`
 - `Job` → `job`
 - `Newly Documented` → `newly-documented`
-- `Source` → `source`
+- `Compiled By` → `compiled-by`
 - `Narrative Title` → `narrative-title`
 - `Narrative Short Title` → `narrative-short-title`
 - `Narrative Summary` → `narrative-body`

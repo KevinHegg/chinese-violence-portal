@@ -169,7 +169,7 @@ export function convertToLynchingFormat(rows: Record<string, string>[]): any[] {
       "accusation": getField(["Accusation or Pretext", "Accusation or Pretext", "accusation"]),
       "job": getField(["Job", "job"]),
       "newly-documented": getField(["Newly Documented", "Newly Documented", "newly-documented"]) === "TRUE" ? "Yes" : "No",
-      "source": getField(["Source", "source"]),
+      "compiled-by": getField(["Compiled By", "compiled-by", "Compiled By"]),
       "narrative-title": getField(["Narrative Title", "Narrative Title", "narrative-title"]),
       "narrative-short-title": getField(["Narrative Short Title", "Narrative Short Title", "narrative-short-title"]),
       "narrative-body": getField(["Narrative Summary", "Narrative Summary", "narrative-body", "Notes"]),
