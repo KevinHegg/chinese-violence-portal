@@ -82,7 +82,7 @@ export const prerender = true;
       <div class="bg-white border border-amber-200 rounded-lg p-5">
         <h4 class="text-lg font-semibold mb-3 text-vintage-ink">5. AI-Powered Chat Interface</h4>
         <ul class="text-sm text-base-content/90 space-y-2">
-          <li><strong>Ask the Archive</strong> - Anthropic Claude Sonnet-powered Q&A</li>
+          <li><strong>Ask the Archive</strong> - OpenAI Assistant (GPT-4) powered Q&A</li>
           <li><strong>Contextual Responses</strong> - Answers based on full dataset and articles</li>
           <li><strong>Suggested Prompts</strong> - Pre-written questions to guide exploration</li>
           <li><strong>Markdown Support</strong> - Formatted responses with citations</li>
@@ -270,7 +270,7 @@ chinese-violence-portal/
     <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Backend & APIs</h3>
     <ul class="list-disc list-inside mb-6 text-base-content/90 space-y-2 ml-4">
       <li><strong>Google Sheets API</strong> - Primary data source, fetches CSV exports programmatically</li>
-      <li><strong>Anthropic Claude API</strong> - Powers AI chat interface with Sonnet 3.5 model</li>
+      <li><strong>OpenAI API</strong> - Powers AI chat interface using GPT-4 Assistant</li>
       <li><strong>Mapbox API</strong> - Provides map tiles and geocoding services</li>
       <li><strong>Netlify Functions</strong> - Serverless API endpoints for data fetching and chat</li>
     </ul>
@@ -341,7 +341,7 @@ chinese-violence-portal/
     </p>
     <ul class="list-disc list-inside mb-6 text-base-content/90 space-y-2 ml-4">
       <li><code>PUBLIC_MAPBOX_TOKEN</code> - Mapbox API access token</li>
-      <li><code>ANTHROPIC_API_KEY</code> - Claude AI API key (server-side only)</li>
+      <li><code>OPENAI_API_KEY</code> - OpenAI API key (server-side only)</li>
       <li><code>PUBLIC_LYNCHINGS_MAIN_GID</code> - Google Sheets tab ID for main data</li>
     </ul>
 
@@ -615,7 +615,7 @@ chinese-violence-portal/
           <ul class="space-y-1">
             <li>• Netlify Functions</li>
             <li>• Google Sheets API</li>
-            <li>• Anthropic Claude API</li>
+            <li>• OpenAI API (GPT-4 Assistant)</li>
             <li>• Server-Side Rendering</li>
           </ul>
         </div>
