@@ -67,9 +67,9 @@ const { id = "article-viewer", className = "" } = Astro.props;
           <!-- Transcript Panel -->
           <div class="lg:w-1/2 p-3 lg:p-6 flex flex-col bg-gray-50 min-h-0">
             <!-- Mobile: Scrollable transcript area, Desktop: Full height -->
-            <div class="flex-1 overflow-hidden min-h-0 mb-4">
-              <h3 class="text-lg font-semibold mb-3 text-gray-900">Transcription</h3>
-              <div id="viewer-transcription" class="h-64 lg:h-full overflow-y-auto border-2 border-gray-200 rounded-lg p-4 lg:p-6 bg-white text-sm"></div>
+            <div class="flex-1 flex flex-col overflow-hidden min-h-0 mb-4">
+              <h3 class="flex-shrink-0 text-lg font-semibold mb-3 text-gray-900">Transcription</h3>
+              <div id="viewer-transcription" class="flex-1 min-h-0 min-h-64 lg:min-h-0 overflow-y-scroll border-2 border-gray-200 rounded-lg p-4 lg:p-6 pb-8 bg-white text-sm"></div>
             </div>
             
             <!-- Citation - Always at bottom -->
@@ -351,6 +351,10 @@ const { id = "article-viewer", className = "" } = Astro.props;
 </script>
 
 <style>
+  #viewer-transcription {
+    scrollbar-gutter: stable;
+  }
+
   #viewer-transcription p {
     margin-bottom: 1.25rem;
     text-indent: 0;
