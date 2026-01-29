@@ -56,8 +56,8 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
       <div class="mb-4">
         <div class="bg-white rounded-lg p-3 border border-amber-300 flex items-center gap-4">
           <label for="keyword-search" class="font-medium text-vintage-ink whitespace-nowrap">Keyword Search:</label>
-          <input id="keyword-search" type="text" class="input input-bordered border-2 border-amber-300 bg-amber-50 flex-1" placeholder="Search titles, summaries, transcripts..." aria-describedby="keyword-search-hint" />
-          <span id="keyword-search-hint" class="sr-only">Search article titles, summaries, transcripts, newspaper names, and locations</span>
+          <input id="keyword-search" type="text" class="input input-bordered border-2 border-amber-300 bg-amber-50 flex-1" placeholder="Search titles, summaries, transcripts, years (e.g. 1873)..." aria-describedby="keyword-search-hint" />
+          <span id="keyword-search-hint" class="sr-only">Search article titles, summaries, transcripts, newspaper names, locations, publication dates and years (e.g. 1873), citations, and record IDs</span>
           <button id="keyword-clear" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-vintage-ink font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 text-sm whitespace-nowrap" aria-label="Clear keyword search">Clear</button>
         </div>
       </div>
@@ -306,7 +306,7 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
         const publicationMatch = !publication || article.newspaper === publication;
         const entitiesMatch = !entityFilter || (article['named-entities'] && article['named-entities'].toLowerCase().includes(entityFilter.toLowerCase()));
         
-        // Keyword search across title, summary, transcript, newspaper name
+        // Keyword search across title, summary, transcript, newspaper, location, dates, citation, lynching-id
         let keywordMatch = true;
         if (keyword) {
           const title = (article['article-title'] || '').toLowerCase();
@@ -314,12 +314,22 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
           const transcript = (article['article-transcript'] || '').toLowerCase();
           const newspaper = (article.newspaper || '').toLowerCase();
           const location = (article['newspaper-location'] || '').toLowerCase();
+          const pubDate = (article['publication-date'] || '').toLowerCase();
+          const pubDateExpanded = (article['publication-date-expanded'] || '').toLowerCase();
+          const pubYear = String(article['publication-year'] ?? '').toLowerCase();
+          const citation = (article['turabian-citation'] || '').toLowerCase();
+          const lynchingId = (article['lynching-id'] || '').toLowerCase();
           
-          keywordMatch = title.includes(keyword) || 
-                        summary.includes(keyword) || 
+          keywordMatch = title.includes(keyword) ||
+                        summary.includes(keyword) ||
                         transcript.includes(keyword) ||
                         newspaper.includes(keyword) ||
-                        location.includes(keyword);
+                        location.includes(keyword) ||
+                        pubDate.includes(keyword) ||
+                        pubDateExpanded.includes(keyword) ||
+                        pubYear.includes(keyword) ||
+                        citation.includes(keyword) ||
+                        lynchingId.includes(keyword);
         }
         
         return decadeMatch && stateMatch && publicationMatch && entitiesMatch && keywordMatch;
@@ -351,8 +361,15 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
         const transcript = (article['article-transcript'] || '').toLowerCase();
         const newspaper = (article.newspaper || '').toLowerCase();
         const location = (article['newspaper-location'] || '').toLowerCase();
-        return title.includes(keyword) || summary.includes(keyword) || 
-               transcript.includes(keyword) || newspaper.includes(keyword) || location.includes(keyword);
+        const pubDate = (article['publication-date'] || '').toLowerCase();
+        const pubDateExpanded = (article['publication-date-expanded'] || '').toLowerCase();
+        const pubYear = String(article['publication-year'] ?? '').toLowerCase();
+        const citation = (article['turabian-citation'] || '').toLowerCase();
+        const lynchingId = (article['lynching-id'] || '').toLowerCase();
+        return title.includes(keyword) || summary.includes(keyword) ||
+               transcript.includes(keyword) || newspaper.includes(keyword) || location.includes(keyword) ||
+               pubDate.includes(keyword) || pubDateExpanded.includes(keyword) || pubYear.includes(keyword) ||
+               citation.includes(keyword) || lynchingId.includes(keyword);
       }) : articles;
       
       // RULE: Filter ALL dropdowns if keyword is present OR 2+ dropdowns are selected
