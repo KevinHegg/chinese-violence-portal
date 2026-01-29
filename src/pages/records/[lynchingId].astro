@@ -20,26 +20,51 @@ const publicData = publicResult.status === "fulfilled" ? publicResult.value : []
 const mainData = mainResult.status === "fulfilled" ? mainResult.value : [];
 const articlesDataResolved = articlesData.status === "fulfilled" ? articlesData.value : [];
 
-// Merge Main tab data (narrative-title, narrative-body/narrative-summary) with Public tab data
-const mainDataMap = new Map();
+// Helpers: normalize article ID (e.g. "44" -> "0044"); merge Main+Public article-ids (union, dedupe)
+const normalizeId = (id: string) => String(id || '').trim().padStart(4, '0');
+const mergeArticleIds = (mainIds: string[] | undefined, publicIds: string[] | undefined): string[] => {
+  const main = Array.isArray(mainIds) ? mainIds : [];
+  const pub = Array.isArray(publicIds) ? publicIds : [];
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const id of [...main, ...pub]) {
+    const n = normalizeId(id);
+    if (!n || seen.has(n)) continue;
+    seen.add(n);
+    out.push(typeof id === 'string' ? id.trim() : String(id).trim());
+  }
+  return out;
+};
+
+// Main tab may have multiple rows per lynching (e.g. one per article). Aggregate article-ids across all rows.
+type MainEntry = { record: any; articleIds: string[] };
+const mainDataMap = new Map<string, MainEntry>();
 mainData.forEach((record: any) => {
-  if (record["lynching-id"]) {
-    mainDataMap.set(record["lynching-id"], record);
+  const lid = record["lynching-id"];
+  if (!lid) return;
+  const ids = Array.isArray(record["article-ids"]) ? record["article-ids"] : [];
+  const existing = mainDataMap.get(lid);
+  if (existing) {
+    existing.articleIds = mergeArticleIds(existing.articleIds, ids);
+  } else {
+    mainDataMap.set(lid, { record, articleIds: [...ids] });
   }
 });
 
-// Merge: use Public data as base, enrich with Main data where available
+// Merge: Public base + Main narrative + merged article-ids (Main + Public)
 const lynchingsData = publicData.map((record: any) => {
-  const mainRecord = mainDataMap.get(record["lynching-id"]);
-  if (mainRecord) {
+  const entry = mainDataMap.get(record["lynching-id"]);
+  if (entry) {
+    const m = entry.record;
     return {
       ...record,
-      "narrative-title": mainRecord["narrative-title"] || record["narrative-title"],
-      "narrative-short-title": mainRecord["narrative-short-title"] || record["narrative-short-title"],
-      "narrative-body": mainRecord["narrative-body"] || mainRecord["narrative-summary"] || record["narrative-body"],
-      "narrative-summary": mainRecord["narrative-summary"] || mainRecord["narrative-body"] || record["narrative-summary"],
-      "compiled-by": mainRecord["compiled-by"] || record["compiled-by"], // Compiled By from Main tab takes precedence
-      "map-image-file-id": record["map-image-file-id"] || mainRecord["map-image-file-id"] // Map image file ID from Public tab (where Apps Script writes it)
+      "narrative-title": m["narrative-title"] || record["narrative-title"],
+      "narrative-short-title": m["narrative-short-title"] || record["narrative-short-title"],
+      "narrative-body": m["narrative-body"] || m["narrative-summary"] || record["narrative-body"],
+      "narrative-summary": m["narrative-summary"] || m["narrative-body"] || record["narrative-summary"],
+      "compiled-by": m["compiled-by"] || record["compiled-by"],
+      "map-image-file-id": record["map-image-file-id"] || m["map-image-file-id"],
+      "article-ids": mergeArticleIds(entry.articleIds, record["article-ids"])
     };
   }
   return record;
@@ -58,16 +83,42 @@ if (!lynching) {
   return Astro.redirect('/404');
 }
 
-// Get related articles
-const relatedArticles = [];
-if (lynching["article-ids"] && Array.isArray(lynching["article-ids"])) {
-  for (const articleId of lynching["article-ids"]) {
-    const article = articlesDataResolved.find((a: any) => a["article-id"] === articleId);
-    if (article) {
-      relatedArticles.push(article);
-    }
+// Related articles: lynching "Newspaper IDs" (Main+Public, semicolon-parsed) -> resolve by article-id.
+// Also include articles where lynching-id matches (union, dedupe by article-id).
+const articleById = new Map<string, any>();
+articlesDataResolved.forEach((a: any) => {
+  const id = (a["article-id"] || "").trim();
+  if (id) {
+    articleById.set(normalizeId(id), a);
+    articleById.set(id, a);
+  }
+});
+const byId = new Set<string>();
+const relatedArticles: any[] = [];
+for (const rawId of lynching["article-ids"] || []) {
+  const id = typeof rawId === "string" ? rawId.trim() : String(rawId).trim();
+  if (!id) continue;
+  const n = normalizeId(id);
+  if (byId.has(n)) continue;
+  const a = articleById.get(n) ?? articleById.get(id);
+  if (a) {
+    byId.add(n);
+    relatedArticles.push(a);
   }
 }
+for (const a of articlesDataResolved) {
+  if ((a["lynching-id"] || "").trim() !== lynchingId) continue;
+  const n = normalizeId(a["article-id"]);
+  if (byId.has(n)) continue;
+  byId.add(n);
+  relatedArticles.push(a);
+}
+relatedArticles.sort((a: any, b: any) => {
+  const da = a["publication-date"] || "";
+  const db = b["publication-date"] || "";
+  if (da !== db) return da.localeCompare(db);
+  return (a["article-id"] || "").localeCompare(b["article-id"] || "");
+});
 
 // Get navigation data
 const allLynchings = lynchingsData; // Use original order from JSON (chronological)
@@ -157,7 +208,7 @@ const decodeHtmlEntities = (text: string) => {
             <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
-            <span class="hidden sm:inline truncate max-w-[150px]">{prevLynching["narrative-short-title"]}</span>
+            <span class="hidden sm:inline truncate max-w-[150px]">{decodeHtmlEntities(prevLynching["narrative-short-title"] || "")}</span>
             <span class="sm:hidden">Previous</span>
           </a>
         ) : (
@@ -170,7 +221,7 @@ const decodeHtmlEntities = (text: string) => {
       <div class="flex-1 text-right">
         {nextLynching ? (
           <a href={`/records/${nextLynching["lynching-id"]}`} class="inline-flex items-center gap-2 text-sm text-gray-700 hover:text-accent transition-colors group">
-            <span class="hidden sm:inline truncate max-w-[150px]">{nextLynching["narrative-short-title"]}</span>
+            <span class="hidden sm:inline truncate max-w-[150px]">{decodeHtmlEntities(nextLynching["narrative-short-title"] || "")}</span>
             <span class="sm:hidden">Next</span>
             <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -295,10 +346,10 @@ const decodeHtmlEntities = (text: string) => {
       <!-- Related Articles -->
       {relatedArticles.length > 0 && (
         <div class="p-6 bg-white">
-          <h2 class="text-xl font-semibold mb-4">Related Newspaper Articles</h2>
+          <h2 class="text-xl font-semibold mb-4">Related Newspaper Article(s)</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             {relatedArticles.map(article => (
-              <div class="card bg-base-100 shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-base-300">
+              <div class="card related-article-card bg-base-100 shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-base-300" data-article-id={article["article-id"]}>
                 <div class="card-body p-4">
                   <div class="flex justify-between items-start mb-3">
                     <h3 class="card-title text-base font-semibold line-clamp-3 flex-1">{article["article-title"] || 'Untitled'}</h3>
@@ -339,15 +390,13 @@ const decodeHtmlEntities = (text: string) => {
     });
   }
 
-  // Add click handlers to article cards
+  // Add click handlers to related article cards (use data-article-id for reliable lookup)
   document.addEventListener('DOMContentLoaded', function() {
-    const articleCards = document.querySelectorAll('.card');
+    const articleCards = document.querySelectorAll('.related-article-card');
     articleCards.forEach(card => {
       card.addEventListener('click', function() {
-        // Find the article data from the related articles
-        const articleTitle = this.querySelector('.card-title').textContent;
-        const article = relatedArticles.find(a => a['article-title'] === articleTitle);
-        
+        const id = this.getAttribute('data-article-id');
+        const article = relatedArticles.find(a => (a['article-id'] || '').trim() === (id || '').trim());
         if (article) {
           openArticleViewer(article);
         }

@@ -46,7 +46,8 @@ export async function fetchGoogleSheetCSV(config: GoogleSheetsConfig): Promise<s
 }
 
 /**
- * Parse CSV string to array of objects
+ * Parse CSV/TSV string to array of objects.
+ * Detects delimiter: if first line has more tabs than commas, uses tab.
  * Handles quoted fields, commas within quotes, etc.
  */
 export function parseCSV(csvText: string): Record<string, string>[] {
@@ -56,20 +57,24 @@ export function parseCSV(csvText: string): Record<string, string>[] {
     return [];
   }
   
-  // Parse header row
-  const headers = parseCSVLine(lines[0]);
+  const first = lines[0];
+  const tabCount = (first.match(/\t/g) || []).length;
+  const commaCount = (first.match(/,/g) || []).length;
+  const delim = tabCount > commaCount ? '\t' : ',';
   
-  // Parse data rows
+  const parseLine = (line: string) => parseCSVLine(line, delim);
+  
+  const headers = parseLine(first).map((h: string) => h.trim());
+  
   const data: Record<string, string>[] = [];
   for (let i = 1; i < lines.length; i++) {
-    const values = parseCSVLine(lines[i]);
+    const values = parseLine(lines[i]);
     const row: Record<string, string> = {};
     
     headers.forEach((header, index) => {
       row[header] = values[index] || '';
     });
     
-    // Skip completely empty rows
     if (Object.values(row).some(val => val.trim())) {
       data.push(row);
     }
@@ -79,9 +84,10 @@ export function parseCSV(csvText: string): Record<string, string>[] {
 }
 
 /**
- * Parse a single CSV line, handling quoted fields
+ * Parse a single CSV/TSV line, handling quoted fields.
+ * @param delim - ',' or '\t'
  */
-function parseCSVLine(line: string): string[] {
+function parseCSVLine(line: string, delim: string = ','): string[] {
   const values: string[] = [];
   let current = '';
   let inQuotes = false;
@@ -92,15 +98,12 @@ function parseCSVLine(line: string): string[] {
     
     if (char === '"') {
       if (inQuotes && nextChar === '"') {
-        // Escaped quote
         current += '"';
-        i++; // Skip next quote
+        i++;
       } else {
-        // Toggle quote state
         inQuotes = !inQuotes;
       }
-    } else if (char === ',' && !inQuotes) {
-      // Field separator
+    } else if (char === delim && !inQuotes) {
       values.push(current.trim());
       current = '';
     } else {
@@ -108,9 +111,7 @@ function parseCSVLine(line: string): string[] {
     }
   }
   
-  // Add last field
   values.push(current.trim());
-  
   return values;
 }
 
@@ -122,25 +123,32 @@ export function convertToLynchingFormat(rows: Record<string, string>[]): any[] {
   if (rows.length === 0) return [];
   
   return rows.map(row => {
-    // Helper to get field value (case-insensitive, handles spaces/dashes)
+    const keys = Object.keys(row);
     const getField = (possibleNames: string[]): string => {
       for (const name of possibleNames) {
-        const value = row[name] || 
-                     row[name.toLowerCase()] || 
-                     row[name.toUpperCase()] ||
-                     row[name.replace(/ /g, '-')] ||
-                     row[name.replace(/ /g, '_')] ||
-                     row[name.replace(/-/g, ' ')] ||
-                     '';
-        if (value) return value;
+        const v = row[name] ?? row[name.toLowerCase()] ?? row[name.toUpperCase()] ??
+          row[name.replace(/ /g, '-')] ?? row[name.replace(/ /g, '_')] ?? row[name.replace(/-/g, ' ')];
+        if (v && String(v).trim()) return String(v).trim();
       }
       return '';
     };
-    
-    // Parse article IDs (comma-separated)
-    const articleIdsStr = getField(["Newspaper IDs", "Newspaper IDs", "article-ids"]);
-    const articleIds = articleIdsStr 
-      ? articleIdsStr.split(',').map((id: string) => id.trim()).filter(Boolean)
+
+    // Article IDs: "Newspaper IDs" (semicolon list) or "Article ID" / "Newspaper ID" (one per row).
+    // Fallback: any header containing ("article" or "newspaper") and "id".
+    let articleIdsStr = getField(["Newspaper IDs", "Newspaper ID", "Article ID", "article-ids", "Article IDs", "article_id"]);
+    if (!articleIdsStr) {
+      for (const k of keys) {
+        const lower = k.trim().toLowerCase();
+        if ((lower.includes('article') || lower.includes('newspaper')) && lower.includes('id')) {
+          const val = (row[k] || '').trim();
+          if (val) { articleIdsStr = val; break; }
+        }
+      }
+    }
+    const raw = (articleIdsStr || '').trim().replace(/\uFF1B/g, ';');
+    const sep = raw.includes(';') ? ';' : ',';
+    const articleIds = raw
+      ? raw.split(sep).map((id: string) => id.trim()).filter(Boolean)
       : [];
     
     // Parse victim names (comma-separated)
@@ -150,7 +158,7 @@ export function convertToLynchingFormat(rows: Record<string, string>[]): any[] {
       : [];
     
     return {
-      "lynching-id": getField(["Identifier", "identifier", "lynching-id"]),
+      "lynching-id": getField(["Identifier", "identifier", "lynching-id", "Lynching ID", "Record ID"]),
       "article-ids": articleIds,
       "victim-names": victimNames.length > 0 ? victimNames : [getField(["Name", "name"]) || "Unnamed"],
       "victim-gender": getField(["Gender", "gender", "victim-gender"]),
