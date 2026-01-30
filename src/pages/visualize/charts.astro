@@ -1192,6 +1192,8 @@ import "../../styles/western-colors.css";
             fontSize: 12, 
             fontWeight: 'bold',
             formatter: function(value) { 
+              // Hide 180k label to avoid overlap with CA Alien Land Law marker
+              if (value >= 180000) return '';
               return value >= 1000 ? (value/1000).toFixed(0) + 'k' : value; 
             } 
           },
