@@ -76,11 +76,13 @@ const newlyDocumentedOptions = ['Yes', 'No'];
   <div class="bg-amber-50/90 border-2 border-amber-200 rounded-lg p-4 mb-6 shadow-lg">
     <!-- Keyword Search Panel - At Top -->
     <div class="mb-4">
-      <div class="bg-white rounded-lg p-3 border border-amber-300 flex items-center gap-4">
-        <label for="keyword-search" class="font-medium text-vintage-ink whitespace-nowrap">Keyword Search:</label>
-        <input id="keyword-search" type="text" class="input input-bordered border-2 border-amber-300 bg-amber-50 flex-1" placeholder="Search titles, summaries..." aria-describedby="keyword-search-hint" />
-        <span id="keyword-search-hint" class="sr-only">Search article titles, summaries, and narrative descriptions</span>
-        <button id="keyword-clear" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-vintage-ink font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 text-sm whitespace-nowrap" aria-label="Clear keyword search">Clear</button>
+      <div class="bg-white rounded-lg p-3 border border-amber-300">
+        <label for="keyword-search" class="block font-medium text-vintage-ink mb-2">Keyword Search:</label>
+        <div class="flex flex-col sm:flex-row gap-2 sm:items-center">
+          <input id="keyword-search" type="text" class="input input-bordered border-2 border-amber-300 bg-amber-50 w-full sm:max-w-md min-w-0" placeholder="e.g. 1885 Montana (all terms must match)" aria-describedby="keyword-search-hint" />
+          <span id="keyword-search-hint" class="sr-only">Search titles, summaries, locations, dates. Multiple words: all must match (e.g. 1885 Montana).</span>
+          <button id="keyword-clear" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-vintage-ink font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 text-sm flex-shrink-0 self-start sm:self-auto" aria-label="Clear keyword search">Clear</button>
+        </div>
       </div>
     </div>
     
@@ -203,12 +205,21 @@ const newlyDocumentedOptions = ['Yes', 'No'];
       const stateMatch = !state || l.state === state;
       const eventTypeMatch = !eventType || l['event-type'] === eventType;
       const newlyDocMatch = !newlyDocumented || (newlyDocumented === 'Yes' ? l['newly-documented'] === true || l['newly-documented'] === 'Yes' : l['newly-documented'] === false || l['newly-documented'] === 'No');
-      const keywordMatch = !keyword ||
-        l['narrative-short-title']?.toLowerCase().includes(keyword) ||
-        l['narrative-summary']?.toLowerCase().includes(keyword) ||
-        l.state?.toLowerCase().includes(keyword) ||
-        l.city?.toLowerCase().includes(keyword) ||
-        l.county?.toLowerCase().includes(keyword);
+      // Keyword search: space-separated terms require ALL to match (AND logic)
+      let keywordMatch = true;
+      if (keyword) {
+        const terms = keyword.split(/\s+/).filter(Boolean);
+        const title = (l['narrative-short-title'] || '').toLowerCase();
+        const summary = (l['narrative-summary'] || '').toLowerCase();
+        const stateName = (l.state || '').toLowerCase();
+        const city = (l.city || '').toLowerCase();
+        const county = (l.county || '').toLowerCase();
+        const date = (l.date || '').toLowerCase();
+        const decade = (l.decade || '').toLowerCase();
+        const lynchingId = (l['lynching-id'] || '').toLowerCase();
+        const searchable = [title, summary, stateName, city, county, date, decade, lynchingId].join(' ');
+        keywordMatch = terms.every(term => searchable.includes(term.toLowerCase()));
+      }
       return decadeMatch && stateMatch && eventTypeMatch && newlyDocMatch && keywordMatch;
     });
     updateFilterOptions();
@@ -226,15 +237,19 @@ const newlyDocumentedOptions = ['Yes', 'No'];
     // Count how many dropdown filters are active (not including keyword)
     const activeDropdownCount = [decade, state, eventType, newlyDocumented].filter(Boolean).length;
     
-    // Helper to filter records by keyword (searches ENTIRE dataset, ignoring dropdown filters)
+    // Helper to filter records by keyword (AND logic for space-separated terms)
     const keywordFilteredRecords = keyword ? data.filter(record => {
+      const terms = keyword.split(/\s+/).filter(Boolean);
       const title = (record['narrative-short-title'] || '').toLowerCase();
       const summary = (record['narrative-summary'] || '').toLowerCase();
       const stateName = (record.state || '').toLowerCase();
       const city = (record.city || '').toLowerCase();
       const county = (record.county || '').toLowerCase();
-      return title.includes(keyword) || summary.includes(keyword) || 
-             stateName.includes(keyword) || city.includes(keyword) || county.includes(keyword);
+      const date = (record.date || '').toLowerCase();
+      const decade = (record.decade || '').toLowerCase();
+      const lynchingId = (record['lynching-id'] || '').toLowerCase();
+      const searchable = [title, summary, stateName, city, county, date, decade, lynchingId].join(' ');
+      return terms.every(term => searchable.includes(term.toLowerCase()));
     }) : data;
     
     // RULE: Filter ALL dropdowns if keyword is present OR 2+ dropdowns are selected

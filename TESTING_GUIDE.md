@@ -33,7 +33,7 @@
 - ✅ Check console for fetch errors
 - ✅ Image should load (if available)
 
-### 5. Visualize - News (`/visualize/news`)
+### 5. News Clips (`/news`)
 - ✅ Should load with article filters
 - ✅ Check console for errors
 - ✅ Filtering should work
