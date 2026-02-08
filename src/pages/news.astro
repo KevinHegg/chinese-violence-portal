@@ -616,6 +616,9 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
       });
     }
 
+    const resetFiltersBtn = document.getElementById('reset-filters');
+    if (resetFiltersBtn) resetFiltersBtn.addEventListener('click', clearAllFilters);
+
     // Initialize with sorted articles and set up filter options
     updateFilterOptions();
     renderCards(sortArticles(articles));

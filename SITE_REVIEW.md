@@ -138,7 +138,7 @@
 **Sub-pages:**
 - ✅ Visualize Charts (/visualize/charts)
 - ✅ Visualize Compare (/visualize/compare)
-- ✅ News Clips (/news)
+- ✅ Visualize News (/visualize/news)
 - ✅ Visualize Word Cloud (/visualize/newscloud)
 - ✅ Visualize Map (/visualize/map)
 - ✅ Visualize Timeline (/visualize/timeline)
