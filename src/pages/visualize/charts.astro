@@ -49,7 +49,7 @@ import "../../styles/western-colors.css";
     <!-- Chart 1: Incidents Over Time -->
          <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14 mt-8">
       <h2 class="text-xl font-semibold mb-2 text-vintage-ink">1. Incidents of Anti-Chinese Violence Over Time</h2>
-             <p class="mb-4 text-sm text-vintage-ink">Annual count of anti-Chinese violence events, 1850–1920.</p>
+             <p id="tagline-chart-1" class="mb-4 text-sm text-vintage-ink">Annual count of anti-Chinese violence events, 1850–1920.</p>
       <div id="chart-timeline" 
            class="chart-container"
            role="img"
@@ -62,7 +62,7 @@ import "../../styles/western-colors.css";
     <!-- Chart 1b: Victims Over Time -->
          <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
       <h2 class="text-xl font-semibold mb-2 text-vintage-ink">2. Number of Victims of Anti-Chinese Violence Over Time</h2>
-             <p class="mb-4 text-sm text-vintage-ink">Annual count of victims, 1850–1920.</p>
+             <p id="tagline-chart-2" class="mb-4 text-sm text-vintage-ink">Annual count of victims, 1850–1920.</p>
       <div id="chart-victims" 
            class="chart-container"
            role="img"
@@ -75,7 +75,7 @@ import "../../styles/western-colors.css";
     <!-- Chart 1c: Lethal Events by State (stacked by decade) -->
     <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
       <h2 class="text-xl font-semibold mb-2 text-vintage-ink">3.a. Number of Lethal Events by State Over Time</h2>
-      <p class="mb-4 text-sm text-vintage-ink">Stacked bar chart: incidents per decade, broken down by state.</p>
+      <p id="tagline-chart-3a" class="mb-4 text-sm text-vintage-ink">Stacked bar chart: incidents per decade, broken down by state.</p>
       <div id="chart-lethal-events-state"
            class="chart-container"
            role="img"
@@ -88,7 +88,7 @@ import "../../styles/western-colors.css";
     <!-- Chart 1d: Victims by State (stacked by decade) -->
     <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
       <h2 class="text-xl font-semibold mb-2 text-vintage-ink">3.b. Number of Victims by State Over Time</h2>
-      <p class="mb-4 text-sm text-vintage-ink">Stacked bar chart: victims per decade, broken down by state.</p>
+      <p id="tagline-chart-3b" class="mb-4 text-sm text-vintage-ink">Stacked bar chart: victims per decade, broken down by state.</p>
       <div id="chart-victims-state"
            class="chart-container"
            role="img"
@@ -101,7 +101,7 @@ import "../../styles/western-colors.css";
     <!-- Chart 1e: Incident Count by State -->
     <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
       <h2 class="text-xl font-semibold mb-2 text-vintage-ink">3.c. Incident Count by State</h2>
-      <p class="mb-4 text-sm text-vintage-ink">Total number of documented incidents per state.</p>
+      <p id="tagline-chart-3c" class="mb-4 text-sm text-vintage-ink">Total number of documented incidents per state.</p>
       <div id="chart-incident-by-state"
            class="chart-container"
            role="img"
@@ -114,7 +114,7 @@ import "../../styles/western-colors.css";
     <!-- Chart 1f: Victim Count by State -->
     <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
       <h2 class="text-xl font-semibold mb-2 text-vintage-ink">3.d. Victim Count by State</h2>
-      <p class="mb-4 text-sm text-vintage-ink">Total number of victims per state.</p>
+      <p id="tagline-chart-3d" class="mb-4 text-sm text-vintage-ink">Total number of victims per state.</p>
       <div id="chart-victim-by-state"
            class="chart-container"
            role="img"
@@ -127,7 +127,7 @@ import "../../styles/western-colors.css";
     <!-- Chart 2: Types of Violence -->
          <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
       <h2 class="text-xl font-semibold mb-2 text-vintage-ink">4. Types of Anti-Chinese Violence</h2>
-             <p class="mb-4 text-sm text-vintage-ink">Breakdown of event types in the lynching records.</p>
+             <p id="tagline-chart-4" class="mb-4 text-sm text-vintage-ink">Breakdown of event types in the lynching records.</p>
       <div id="chart-types" 
            class="chart-container"
            role="img"
@@ -142,6 +142,7 @@ import "../../styles/western-colors.css";
       <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
         <div>
           <h2 class="text-lg font-semibold mb-1 text-vintage-ink text-center">5.a. Categories of Violence</h2>
+          <p id="tagline-chart-5a" class="text-center text-xs text-vintage-ink mb-1">Distribution of violence categories.</p>
           <div id="chart-pie-category" 
                style="width: 100%; height: 280px;"
                role="img"
@@ -152,6 +153,7 @@ import "../../styles/western-colors.css";
         </div>
         <div>
           <h2 class="text-lg font-semibold mb-1 text-vintage-ink text-center">5.b. Pretexts for Violence</h2>
+          <p id="tagline-chart-5b" class="text-center text-xs text-vintage-ink mb-1">Distribution of stated pretexts.</p>
           <div id="chart-pie-pretext" 
                style="width: 100%; height: 280px;"
                role="img"
@@ -409,16 +411,34 @@ import "../../styles/western-colors.css";
     const stackOrder = [...topStates, 'Other'];
     const stateSeriesColors = ['#2563eb', '#dc2626', '#059669', '#7c3aed', '#d97706', '#0891b2', '#4f46e5'];
 
-    const seriesEvents = stackOrder.map((state, idx) => ({
-      name: state,
-      type: 'bar',
-      stack: 'events',
-      data: decades.map((dec) => {
+    const totalsByDecadeEvents = decades.map((dec) =>
+      stackOrder.reduce((sum, state) => {
+        const v = state === 'Other' ? statesSorted.slice(TOP_N).reduce((s, st) => s + ((eventsByDecadeByState[dec] || {})[st] || 0), 0) : ((eventsByDecadeByState[dec] || {})[state] || 0);
+        return sum + v;
+      }, 0)
+    );
+    const seriesEvents = stackOrder.map((state, idx) => {
+      const isLast = idx === stackOrder.length - 1;
+      const data = decades.map((dec) => {
         if (state === 'Other') return statesSorted.slice(TOP_N).reduce((s, st) => s + ((eventsByDecadeByState[dec] || {})[st] || 0), 0);
         return (eventsByDecadeByState[dec] || {})[state] || 0;
-      }),
-      itemStyle: { color: stateSeriesColors[idx % stateSeriesColors.length] },
-    }));
+      });
+      return {
+        name: state,
+        type: 'bar',
+        stack: 'events',
+        data,
+        itemStyle: { color: stateSeriesColors[idx % stateSeriesColors.length] },
+        label: {
+          show: true,
+          position: isLast ? 'top' : 'inside',
+          formatter: isLast ? (params) => totalsByDecadeEvents[params.dataIndex] || '' : (params) => params.value >= 2 ? params.value : '',
+          color: isLast ? '#000000' : '#fff',
+          fontWeight: isLast ? 'bold' : 'normal',
+          fontSize: isLast ? 12 : 10,
+        },
+      };
+    });
     const lethalTableRows = decades.flatMap((dec) =>
       stackOrder.map((state) => {
         const val = state === 'Other' ? statesSorted.slice(TOP_N).reduce((s, st) => s + ((eventsByDecadeByState[dec] || {})[st] || 0), 0) : ((eventsByDecadeByState[dec] || {})[state] || 0);
@@ -437,16 +457,34 @@ import "../../styles/western-colors.css";
       responsive: true
     });
 
-    const seriesVictims = stackOrder.map((state, idx) => ({
-      name: state,
-      type: 'bar',
-      stack: 'victims',
-      data: decades.map((dec) => {
+    const totalsByDecadeVictims = decades.map((dec) =>
+      stackOrder.reduce((sum, state) => {
+        const v = state === 'Other' ? statesSorted.slice(TOP_N).reduce((s, st) => s + ((victimsByDecadeByState[dec] || {})[st] || 0), 0) : ((victimsByDecadeByState[dec] || {})[state] || 0);
+        return sum + v;
+      }, 0)
+    );
+    const seriesVictims = stackOrder.map((state, idx) => {
+      const isLast = idx === stackOrder.length - 1;
+      const data = decades.map((dec) => {
         if (state === 'Other') return statesSorted.slice(TOP_N).reduce((s, st) => s + ((victimsByDecadeByState[dec] || {})[st] || 0), 0);
         return (victimsByDecadeByState[dec] || {})[state] || 0;
-      }),
-      itemStyle: { color: stateSeriesColors[idx % stateSeriesColors.length] },
-    }));
+      });
+      return {
+        name: state,
+        type: 'bar',
+        stack: 'victims',
+        data,
+        itemStyle: { color: stateSeriesColors[idx % stateSeriesColors.length] },
+        label: {
+          show: true,
+          position: isLast ? 'top' : 'inside',
+          formatter: isLast ? (params) => totalsByDecadeVictims[params.dataIndex] || '' : (params) => (params.value >= 5 ? params.value : ''),
+          color: isLast ? '#000000' : '#fff',
+          fontWeight: isLast ? 'bold' : 'normal',
+          fontSize: isLast ? 12 : 10,
+        },
+      };
+    });
     const victimsStateTableRows = decades.flatMap((dec) =>
       stackOrder.map((state) => {
         const val = state === 'Other' ? statesSorted.slice(TOP_N).reduce((s, st) => s + ((victimsByDecadeByState[dec] || {})[st] || 0), 0) : ((victimsByDecadeByState[dec] || {})[state] || 0);
@@ -471,10 +509,19 @@ import "../../styles/western-colors.css";
     const chartIncidentState = echarts.init(document.getElementById('chart-incident-by-state'));
     chartIncidentState.setOption({
       tooltip: { trigger: 'axis', backgroundColor: 'var(--western-wheat)', borderColor: 'var(--western-saddle-brown)', textStyle: { color: 'var(--western-saddle-brown)' } },
-      grid: { left: 100, right: 50, top: 20, bottom: 30 },
-      xAxis: { type: 'value', axisLabel: { show: false }, axisLine: { show: false }, axisTick: { show: false }, splitLine: { lineStyle: { color: 'var(--western-burlywood)', opacity: 0.3 } } },
+      grid: { left: 100, right: 55, top: 20, bottom: 30 },
+      xAxis: {
+        type: 'value',
+        min: 0,
+        max: 40,
+        interval: 10,
+        axisLabel: { show: true, color: 'var(--western-saddle-brown)' },
+        axisLine: { show: true, lineStyle: { color: 'var(--western-sienna)' } },
+        axisTick: { show: true, lineStyle: { color: 'var(--western-sienna)' } },
+        splitLine: { lineStyle: { color: 'var(--western-burlywood)', opacity: 0.3 } },
+      },
       yAxis: { type: 'category', data: statesSorted, inverse: true, axisLabel: { color: 'var(--western-saddle-brown)' }, axisLine: { lineStyle: { color: 'var(--western-sienna)' } } },
-      series: [{ type: 'bar', data: incByState, itemStyle: { color: '#2563eb' }, barWidth: '60%', label: { show: false } }],
+      series: [{ type: 'bar', data: incByState, itemStyle: { color: '#2563eb' }, barWidth: '60%', label: { show: true, position: 'right', color: 'var(--western-saddle-brown)', fontWeight: 'bold' } }],
       responsive: true
     });
 
@@ -485,9 +532,18 @@ import "../../styles/western-colors.css";
     chartVictimState.setOption({
       tooltip: { trigger: 'axis', backgroundColor: 'var(--western-wheat)', borderColor: 'var(--western-saddle-brown)', textStyle: { color: 'var(--western-saddle-brown)' } },
       grid: { left: 100, right: 50, top: 20, bottom: 30 },
-      xAxis: { type: 'value', axisLabel: { show: false }, axisLine: { show: false }, axisTick: { show: false }, splitLine: { lineStyle: { color: 'var(--western-burlywood)', opacity: 0.3 } } },
+      xAxis: {
+        type: 'value',
+        min: 0,
+        max: 100,
+        interval: 20,
+        axisLabel: { show: true, color: 'var(--western-saddle-brown)' },
+        axisLine: { show: true, lineStyle: { color: 'var(--western-sienna)' } },
+        axisTick: { show: true, lineStyle: { color: 'var(--western-sienna)' } },
+        splitLine: { lineStyle: { color: 'var(--western-burlywood)', opacity: 0.3 } },
+      },
       yAxis: { type: 'category', data: statesSorted, inverse: true, axisLabel: { color: 'var(--western-saddle-brown)' }, axisLine: { lineStyle: { color: 'var(--western-sienna)' } } },
-      series: [{ type: 'bar', data: vicByState, itemStyle: { color: '#dc2626' }, barWidth: '60%', label: { show: false } }],
+      series: [{ type: 'bar', data: vicByState, itemStyle: { color: '#dc2626' }, barWidth: '60%', label: { show: true, position: 'right', color: 'var(--western-saddle-brown)', fontWeight: 'bold' } }],
       responsive: true
     });
 
@@ -607,46 +663,27 @@ import "../../styles/western-colors.css";
       });
     }, 100);
 
-    // --- Chart 3: Dual Pie Charts (from Main tab) ---
+    // --- Chart 3: Dual Pie Charts (from Main tab gid 760826284) ---
     const categoryCounts = {};
     const pretextCounts = {};
     mainTabData.forEach(record => {
-      // Violence Category Grouped (preferred for pie chart)
       const category = record['violence-category-grouped'] || record['Violence Category Grouped'] || record['category-of-violence'] || record['Category of Violence'] || 'Unknown';
       if (category && category !== 'Unknown') {
         categoryCounts[category] = (categoryCounts[category] || 0) + 1;
       }
-
-      // Pretexts Grouped column (Main tab) - split on ";"
-      const pretextRaw = record['pretext-grouped'] || record['Pretext Grouped'] || record['Pretexts Grouped'] || '';
-      const pretexts = pretextRaw.split(';').map(value => value.trim()).filter(Boolean);
-      pretexts.forEach(pretext => {
-        if (pretext && pretext.toLowerCase() !== 'unknown') {
-          pretextCounts[pretext] = (pretextCounts[pretext] || 0) + 1;
-        }
-      });
+      // Pretext Grouped column only - single value per record
+      const pretext = (record['pretext-grouped'] || '').trim() || 'Unknown';
+      pretextCounts[pretext] = (pretextCounts[pretext] || 0) + 1;
     });
 
     const categoryData = Object.entries(categoryCounts)
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value);
     
-    // Group low-frequency pretexts (count <= 2) into "Other" so we can see more
-    const PRETEXT_OTHER_THRESHOLD = 2;
-    const pretextEntries = Object.entries(pretextCounts);
-    let otherCount = 0;
-    const filteredPretexts = [];
-    pretextEntries.forEach(([name, value]) => {
-      if (value <= PRETEXT_OTHER_THRESHOLD) {
-        otherCount += value;
-      } else {
-        filteredPretexts.push({ name, value });
-      }
-    });
-    if (otherCount > 0) {
-      filteredPretexts.push({ name: 'Other', value: otherCount });
-    }
-    const pretextData = filteredPretexts.sort((a, b) => b.value - a.value);
+    // Include all pretext values (no grouping); Pretext Grouped has Other, Unknown, etc. as distinct values
+    const pretextData = Object.entries(pretextCounts)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
 
     // Pie chart colors
     const pieColors = [
@@ -703,6 +740,21 @@ import "../../styles/western-colors.css";
 
     // Pretext Pie Chart
     const chartPiePretext = echarts.init(document.getElementById('chart-pie-pretext'));
+    const pretextChartData = pretextData.map((item) => {
+      const isSexualAssault = (item.name || '').toLowerCase().replace(/\s+/g, ' ').trim() === 'sexual assault';
+      return {
+        name: item.name,
+        value: item.value,
+        ...(isSexualAssault && {
+          label: {
+            formatter: (params) => `{left|Sexual}\n{left|assault: ${params.value}}`,
+            rich: {
+              left: { align: 'left', color: '#5D4037', fontSize: 11 }
+            }
+          }
+        })
+      };
+    });
     chartPiePretext.setOption({
       tooltip: {
         trigger: 'item',
@@ -735,7 +787,7 @@ import "../../styles/western-colors.css";
               shadowColor: 'rgba(0, 0, 0, 0.3)'
             }
           },
-          data: pretextData
+          data: pretextChartData
         }
       ]
     });
@@ -1014,6 +1066,24 @@ import "../../styles/western-colors.css";
 
     chartCombo.on('finished', renderPolicyEventGraphics);
     renderPolicyEventGraphics();
+
+    // Update taglines with grand totals (N=...)
+    const totalIncidents = counts.reduce((a, b) => a + b, 0);
+    const totalVictims = victimCounts.reduce((a, b) => a + b, 0);
+    const totalTypesVictims = typeVals.reduce((a, b) => a + b, 0);
+    const totalCategory = categoryData.reduce((s, d) => s + d.value, 0);
+    const totalPretext = pretextData.reduce((s, d) => s + d.value, 0);
+    const el = (id, base, n) => { const e = document.getElementById(id); if (e) e.textContent = base + ` (N=${n})`; };
+    el('tagline-chart-1', 'Annual count of anti-Chinese violence events, 1850–1920.', totalIncidents);
+    el('tagline-chart-2', 'Annual count of victims, 1850–1920.', totalVictims);
+    el('tagline-chart-3a', 'Stacked bar chart: incidents per decade, broken down by state.', totalIncidents);
+    el('tagline-chart-3b', 'Stacked bar chart: victims per decade, broken down by state.', totalVictims);
+    el('tagline-chart-3c', 'Total number of documented incidents per state.', totalIncidents);
+    el('tagline-chart-3d', 'Total number of victims per state.', totalVictims);
+    el('tagline-chart-4', 'Breakdown of event types in the lynching records.', totalTypesVictims);
+    el('tagline-chart-5a', 'Distribution of violence categories.', totalCategory);
+    el('tagline-chart-5b', 'Distribution of stated pretexts.', totalPretext);
+
     window.addEventListener('resize', function() {
       chartTimeline.resize();
       chartVictims.resize();
