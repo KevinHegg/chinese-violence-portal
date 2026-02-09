@@ -51,8 +51,8 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
         <div class="bg-white rounded-lg p-3 border border-amber-300">
           <label for="keyword-search" class="block font-medium text-vintage-ink mb-2">Keyword Search:</label>
           <div class="flex flex-col sm:flex-row gap-2 sm:items-center">
-            <input id="keyword-search" type="text" class="input input-bordered border-2 border-amber-300 bg-amber-50 w-full sm:max-w-md min-w-0" placeholder="e.g. 1885 Montana (all terms must match)" aria-describedby="keyword-search-hint" />
-            <span id="keyword-search-hint" class="sr-only">Search article titles, summaries, transcripts. Multiple words: all must match (e.g. 1885 Montana).</span>
+            <input id="keyword-search" type="text" class="input input-bordered border-2 border-amber-300 bg-amber-50 w-full sm:max-w-md min-w-0" placeholder="e.g. 1885 Montana, or article-id: 240 or 0240" aria-describedby="keyword-search-hint" />
+            <span id="keyword-search-hint" class="sr-only">Search article titles, summaries, transcripts. Type an article-id (e.g. 240 or 0240) to jump to that clip. Multiple words: all must match (e.g. 1885 Montana).</span>
             <button id="keyword-clear" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-vintage-ink font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 text-sm flex-shrink-0 self-start sm:self-auto" aria-label="Clear keyword search">Clear</button>
           </div>
         </div>
@@ -303,21 +303,30 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
         const entitiesMatch = !entityFilter || (article['named-entities'] && article['named-entities'].toLowerCase().includes(entityFilter.toLowerCase()));
         
         // Keyword search: space-separated terms require ALL to match (AND logic)
+        // Special case: single numeric term (e.g. "240" or "0240") matches by article-id
         let keywordMatch = true;
         if (keyword) {
           const terms = keyword.split(/\s+/).filter(Boolean);
-          const title = (article['article-title'] || '').toLowerCase();
-          const summary = (article['article-summary'] || '').toLowerCase();
-          const transcript = (article['article-transcript'] || '').toLowerCase();
-          const newspaper = (article.newspaper || '').toLowerCase();
-          const location = (article['newspaper-location'] || '').toLowerCase();
-          const pubDate = (article['publication-date'] || '').toLowerCase();
-          const pubDateExpanded = (article['publication-date-expanded'] || '').toLowerCase();
-          const pubYear = String(article['publication-year'] ?? '').toLowerCase();
-          const citation = (article['turabian-citation'] || '').toLowerCase();
-          const lynchingId = (article['lynching-id'] || '').toLowerCase();
-          const searchable = [title, summary, transcript, newspaper, location, pubDate, pubDateExpanded, pubYear, citation, lynchingId].join(' ');
-          keywordMatch = terms.every(term => searchable.includes(term.toLowerCase()));
+          if (terms.length === 1 && /^\d+$/.test(terms[0])) {
+            const norm = (id) => { const n = parseInt(String(id || ''), 10); return isNaN(n) ? '' : n.toString().padStart(4, '0'); };
+            const searchNorm = norm(terms[0]);
+            const articleNorm = norm(article['article-id']);
+            keywordMatch = searchNorm && articleNorm && searchNorm === articleNorm;
+          } else {
+            const title = (article['article-title'] || '').toLowerCase();
+            const summary = (article['article-summary'] || '').toLowerCase();
+            const transcript = (article['article-transcript'] || '').toLowerCase();
+            const newspaper = (article.newspaper || '').toLowerCase();
+            const location = (article['newspaper-location'] || '').toLowerCase();
+            const pubDate = (article['publication-date'] || '').toLowerCase();
+            const pubDateExpanded = (article['publication-date-expanded'] || '').toLowerCase();
+            const pubYear = String(article['publication-year'] ?? '').toLowerCase();
+            const citation = (article['turabian-citation'] || '').toLowerCase();
+            const lynchingId = (article['lynching-id'] || '').toLowerCase();
+            const articleId = (article['article-id'] || '').toLowerCase();
+            const searchable = [title, summary, transcript, newspaper, location, pubDate, pubDateExpanded, pubYear, citation, lynchingId, articleId].join(' ');
+            keywordMatch = terms.every(term => searchable.includes(term.toLowerCase()));
+          }
         }
         
         return decadeMatch && stateMatch && publicationMatch && entitiesMatch && keywordMatch;
@@ -343,8 +352,15 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
       const activeDropdownCount = [decade, state, publication, entityFilter].filter(Boolean).length;
       
       // Helper to filter articles by keyword (AND logic for space-separated terms)
+      // Special case: single numeric term matches by article-id (e.g. "240" or "0240")
       const keywordFilteredArticles = keyword ? articles.filter(article => {
         const terms = keyword.split(/\s+/).filter(Boolean);
+        if (terms.length === 1 && /^\d+$/.test(terms[0])) {
+          const norm = (id) => { const n = parseInt(String(id || ''), 10); return isNaN(n) ? '' : n.toString().padStart(4, '0'); };
+          const searchNorm = norm(terms[0]);
+          const articleNorm = norm(article['article-id']);
+          return searchNorm && articleNorm && searchNorm === articleNorm;
+        }
         const title = (article['article-title'] || '').toLowerCase();
         const summary = (article['article-summary'] || '').toLowerCase();
         const transcript = (article['article-transcript'] || '').toLowerCase();
@@ -355,7 +371,8 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
         const pubYear = String(article['publication-year'] ?? '').toLowerCase();
         const citation = (article['turabian-citation'] || '').toLowerCase();
         const lynchingId = (article['lynching-id'] || '').toLowerCase();
-        const searchable = [title, summary, transcript, newspaper, location, pubDate, pubDateExpanded, pubYear, citation, lynchingId].join(' ');
+        const articleId = (article['article-id'] || '').toLowerCase();
+        const searchable = [title, summary, transcript, newspaper, location, pubDate, pubDateExpanded, pubYear, citation, lynchingId, articleId].join(' ');
         return terms.every(term => searchable.includes(term.toLowerCase()));
       }) : articles;
       
