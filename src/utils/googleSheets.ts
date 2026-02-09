@@ -173,6 +173,7 @@ export function convertToLynchingFormat(rows: Record<string, string>[]): any[] {
       "longitude": parseFloat(getField(["Longitude", "longitude"])) || 0,
       "event-type": getField(["Category of Violence", "Category of Violence", "event-type"]),
       "category-of-violence": getField(["Category of Violence", "category-of-violence"]),
+      "violence-category-grouped": getField(["Violence Category Grouped", "violence-category-grouped"]),
       "pretext-grouped": getField(["Pretexts Grouped", "Pretext Grouped", "pretext-grouped", "Pretext_Grouped"]),
       "accusation": getField(["Accusation or Pretext", "Accusation or Pretext", "accusation"]),
       "job": getField(["Job", "job"]),

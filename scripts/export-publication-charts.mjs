@@ -120,7 +120,7 @@ function loadData() {
   const categoryCounts = {};
   const pretextCounts = {};
   lynchings.forEach((r) => {
-    const cat = r['category-of-violence'] || r['event-type'] || 'Unknown';
+    const cat = r['violence-category-grouped'] || r['category-of-violence'] || r['event-type'] || 'Unknown';
     if (cat && cat !== 'Unknown') categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
     const raw = (r['pretext-grouped'] || r.accusation || '').toString();
     const parts = raw.split(/[;,]|\s+and\s+/).map((s) => s.trim()).filter(Boolean);
@@ -426,7 +426,8 @@ function buildChartConfigs(data) {
     },
   });
 
-  const catColors = data.categoryData.map((_, i) => T.series[i % T.series.length]);
+  const categoryDataPub = data.categoryDataPublication || data.categoryData;
+  const catColors = categoryDataPub.map((_, i) => T.series[i % T.series.length]);
   configs.push({
     name: 'categories-of-violence',
     width: Math.floor(PRINT.width / 2) - 10,
@@ -435,7 +436,7 @@ function buildChartConfigs(data) {
     option: {
       ...base(),
       color: catColors,
-      series: [{ type: 'pie', radius: ['25%', '70%'], data: data.categoryData, label: { color: T.text, fontFamily: T.font, formatter: '{b}: {c}' }, labelLine: { lineStyle: { color: T.axis } } }],
+      series: [{ type: 'pie', radius: ['25%', '70%'], data: categoryDataPub, label: { color: T.text, fontFamily: T.font, formatter: '{b}: {c}' }, labelLine: { lineStyle: { color: T.axis } } }],
     },
   });
 
@@ -590,6 +591,32 @@ function buildChartConfigs(data) {
   return configs;
 }
 
+/** Fetch Main tab Violence Category Grouped from Google Sheets for publication chart */
+async function loadCategoryDataFromMainTab() {
+  const sheetId = '18Bo9acVyuQTsdQ1baxSntSUZur50Yla8NcZKe2nZWyQ';
+  const mainGid = '760826284';
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${mainGid}`;
+  const res = await fetch(url);
+  if (!res.ok) return null;
+  const csv = await res.text();
+  const rows = parse(csv, { columns: true, skip_empty_lines: true, relax_column_count: true });
+  const categoryCounts = {};
+  const getCol = (row, names) => {
+    for (const n of names) {
+      const v = row[n] ?? row[n.replace(/ /g, '-')] ?? row[n.replace(/ /g, '_')];
+      if (v && String(v).trim()) return String(v).trim();
+    }
+    return '';
+  };
+  rows.forEach((r) => {
+    const cat = getCol(r, ['Violence Category Grouped', 'violence-category-grouped']);
+    if (cat && cat.toLowerCase() !== 'unknown') categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+  });
+  return Object.entries(categoryCounts)
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value);
+}
+
 /** Fetch Main tab pretext data from Google Sheets for publication chart */
 async function loadPretextDataFromMainTab() {
   const sheetId = '18Bo9acVyuQTsdQ1baxSntSUZur50Yla8NcZKe2nZWyQ';
@@ -683,6 +710,10 @@ async function main() {
   if (!fs.existsSync(extrasDir)) fs.mkdirSync(extrasDir, { recursive: true });
 
   const data = loadData();
+  data.categoryDataPublication = await loadCategoryDataFromMainTab().catch((e) => {
+    console.warn('Could not fetch Main tab for Violence Category Grouped, using fallback:', e.message);
+    return data.categoryData;
+  });
   data.pretextDataPublication = await loadPretextDataFromMainTab().catch((e) => {
     console.warn('Could not fetch Main tab for pretexts, using fallback:', e.message);
     return data.pretextData;

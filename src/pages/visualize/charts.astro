@@ -611,8 +611,8 @@ import "../../styles/western-colors.css";
     const categoryCounts = {};
     const pretextCounts = {};
     mainTabData.forEach(record => {
-      // Category of Violence
-      const category = record['category-of-violence'] || record['Category of Violence'] || 'Unknown';
+      // Violence Category Grouped (preferred for pie chart)
+      const category = record['violence-category-grouped'] || record['Violence Category Grouped'] || record['category-of-violence'] || record['Category of Violence'] || 'Unknown';
       if (category && category !== 'Unknown') {
         categoryCounts[category] = (categoryCounts[category] || 0) + 1;
       }
