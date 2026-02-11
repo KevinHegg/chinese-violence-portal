@@ -19,13 +19,13 @@ import "../styles/western-colors.css";
       </div>
     </div>
     
-    <div class="mb-8">
+    <div class="mb-0">
       <p class="text-lg mb-4">
         Explore a living dataset of anti-Chinese violence (1850 – 1915) drawn from newspapers and other archival sources. The table refreshes automatically whenever our Google Sheet is updated. 
-        <strong>Click</strong> any column header to sort the table. <strong>Click</strong> the same header again to sort in reverse order. The "[view full record]" link opens a web page with more details about the selected event.
+        <strong>Click</strong> any column header to sort the table. <strong>Click</strong> the same header again to sort in reverse order. The "[Full record]" link opens a web page with more details about the selected event.
       </p>
       
-      <div class="flex flex-wrap gap-4 mb-6">
+      <div class="flex flex-wrap gap-4 mb-0">
         <button id="download-csv" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded font-medium shadow-sm hover:shadow-md transition-all duration-200">
           Download CSV
         </button>
@@ -38,9 +38,10 @@ import "../styles/western-colors.css";
       </div>
     </div>
 
-    <div style="max-height: 800px; overflow: hidden;">
-      <div class="table-scroll" style="overflow-x:auto; overflow-y:auto; max-height:760px; background: #f8fafc; border-radius: 0.5rem; border: 2px solid #d1d5db;">
-              <table id="data-table" class="table-layout-fixed text-sm">
+    <div class="dataset-table-wrapper" style="max-height: 800px; overflow: hidden;">
+      <div id="table-scroll-top" class="table-scroll-top" role="scrollbar" aria-label="Horizontal scroll (synced with table)"><div id="table-scroll-top-inner"></div></div>
+      <div id="table-scroll-main" class="table-scroll" style="overflow-x: scroll; overflow-y: scroll; max-height: 760px; background: #f8fafc; border-radius: 0.5rem; border: 2px solid #d1d5db;">
+              <table id="data-table" class="table-layout-fixed text-sm dataset-table">
         <colgroup>
           <col class="col-date">
           <col class="col-newspaper">
@@ -52,6 +53,7 @@ import "../styles/western-colors.css";
           <col class="col-event-type">
           <col class="col-victims">
           <col class="col-accusation">
+          <col class="col-killing-method">
           <col class="col-compiled-by">
           <col class="col-narrative">
           <col class="col-notes">
@@ -66,18 +68,19 @@ import "../styles/western-colors.css";
               <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Date">Date</th>
               <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Year">Year</th>
               <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Number of Victims">Victims</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="State">State</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="State">State/Terr.</th>
               <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="County">County</th>
               <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="City">City</th>
               <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Category of Violence">Category of Violence</th>
               <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Accusation or Pretext">Accusation</th>
               <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Job">Job</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Compiled By">Compiled By</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Killing Method">Killing Method</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm col-compiled-by-th" data-sort="Compiled By">Compiled By</th>
             </tr>
           </thead>
           <tbody id="table-body">
             <tr>
-              <td colspan="14" class="text-left py-8 px-4">Loading data...</td>
+              <td colspan="15" class="text-left py-8 px-4">Loading data...</td>
             </tr>
           </tbody>
         </table>
@@ -98,38 +101,80 @@ import "../styles/western-colors.css";
   let tableData: Record<string, string>[] = [];
   let currentSort = { column: 'Year', direction: 'asc' };
 
+  // Parse CSV with quoted fields (handles commas and newlines inside "...")
+  function parseCSV(csvText: string): string[][] {
+    const rows: string[][] = [];
+    let row: string[] = [];
+    let field = '';
+    let inQuotes = false;
+    const len = csvText.length;
+    for (let i = 0; i < len; i++) {
+      const c = csvText[i];
+      const next = csvText[i + 1];
+      if (inQuotes) {
+        if (c === '"') {
+          if (next === '"') {
+            field += '"';
+            i++;
+          } else {
+            inQuotes = false;
+          }
+        } else {
+          field += c;
+        }
+      } else {
+        if (c === '"') {
+          inQuotes = true;
+        } else if (c === ',') {
+          row.push(field.trim());
+          field = '';
+        } else if (c === '\n') {
+          row.push(field.trim());
+          field = '';
+          if (row.some(cell => cell.length > 0)) rows.push(row);
+          row = [];
+        } else if (c !== '\r') {
+          field += c;
+        }
+      }
+    }
+    if (field.length > 0 || row.length > 0) {
+      row.push(field.trim());
+      if (row.some(cell => cell.length > 0)) rows.push(row);
+    }
+    return rows;
+  }
+
   // Load and parse CSV data
   async function loadData() {
     try {
       const response = await fetch(CSV_URL);
       const csvText = await response.text();
       
-      // Parse CSV
-      const lines = csvText.split('\n');
-      
-      if (lines.length < 2) {
+      const rows = parseCSV(csvText);
+      if (rows.length < 2) {
         throw new Error('Invalid CSV format');
       }
       
-      const headers = lines[0].split(',').map(h => h.trim());
-      
-             const data: Record<string, string>[] = [];
-       for (let i = 1; i < lines.length; i++) {
-         if (lines[i].trim()) {
-           const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
-           const row: Record<string, string> = {};
-           headers.forEach((header, index) => {
-             row[header] = values[index] || '';
-           });
-           data.push(row);
-         }
-       }
+      const headers = rows[0].map(h => h.trim());
+      const data: Record<string, string>[] = [];
+      for (let i = 1; i < rows.length; i++) {
+        const values = rows[i];
+        const row: Record<string, string> = {};
+        headers.forEach((header, index) => {
+          row[header] = (values[index] ?? '').trim();
+        });
+        if (Object.values(row).some(v => v.length > 0)) {
+          data.push(row);
+        }
+      }
       
       tableData = data;
       
       // Initial sort and display
       sortData(currentSort.column, currentSort.direction);
       displayData();
+      syncTableScrollWidth();
       
     } catch (error) {
       // Only log errors in development
@@ -138,7 +183,7 @@ import "../styles/western-colors.css";
       }
       const tableBody = document.getElementById('table-body');
       if (tableBody) {
-        tableBody.innerHTML = '<tr><td colspan="14" class="text-center py-8 text-red-600">Error loading data. Please try again.</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="15" class="text-center py-8 text-red-600">Error loading data. Please try again.</td></tr>';
       }
     }
   }
@@ -177,10 +222,11 @@ import "../styles/western-colors.css";
         tr.className = 'hover:bg-gray-50 bg-gray-50';
       }
       
+      const compiledBy = row['Compiled By'] || '';
       tr.innerHTML = `
         <td class="border border-gray-300 px-2 py-2 text-sm">${row['Identifier'] || ''}</td>
         <td class="border border-gray-300 px-2 py-2 text-sm">
-          ${row['Link'] ? `<a href="${row['Link']}" target="_blank" class="text-blue-600 hover:underline text-sm">[View full record]</a>` : ''}
+          ${row['Link'] ? `<a href="${row['Link']}" target="_blank" class="text-blue-600 hover:underline text-sm">[Full record]</a>` : ''}
         </td>
         <td class="border border-gray-300 px-2 py-2 text-sm">${row['Name'] || ''}</td>
         <td class="border border-gray-300 px-2 py-2 text-sm">${row['Gender'] || ''}</td>
@@ -193,11 +239,32 @@ import "../styles/western-colors.css";
         <td class="border border-gray-300 px-2 py-2 text-sm">${row['Category of Violence'] || ''}</td>
         <td class="border border-gray-300 px-2 py-2 text-sm">${row['Accusation or Pretext'] || ''}</td>
         <td class="border border-gray-300 px-2 py-2 text-sm">${row['Job'] || ''}</td>
-        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Compiled By'] || ''}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Killing Method'] || row['Killing method'] || row['killing-method'] || ''}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm cell-compiled-by">${compiledBy}</td>
       `;
       
       tbody.appendChild(tr);
     });
+    syncTableScrollWidth();
+  }
+
+  // Keep top horizontal scrollbar in sync with table width and scroll position
+  function syncTableScrollWidth() {
+    const table = document.getElementById('data-table');
+    const topInner = document.getElementById('table-scroll-top-inner');
+    const topScroll = document.getElementById('table-scroll-top');
+    const mainScroll = document.getElementById('table-scroll-main');
+    if (!table || !topInner || !topScroll || !mainScroll) return;
+    const w = table.scrollWidth;
+    topInner.style.width = w + 'px';
+    topInner.style.height = '1px';
+  }
+  function setupTopScrollSync() {
+    const topScroll = document.getElementById('table-scroll-top');
+    const mainScroll = document.getElementById('table-scroll-main');
+    if (!topScroll || !mainScroll) return;
+    topScroll.addEventListener('scroll', () => { mainScroll.scrollLeft = topScroll.scrollLeft; });
+    mainScroll.addEventListener('scroll', () => { topScroll.scrollLeft = mainScroll.scrollLeft; });
   }
 
   // Handle column sorting
@@ -344,6 +411,7 @@ import "../styles/western-colors.css";
   document.addEventListener('DOMContentLoaded', () => {
     loadData();
     setupSorting();
+    setupTopScrollSync();
     
     // Setup download buttons
     document.getElementById('download-csv').addEventListener('click', downloadCSV);
@@ -353,6 +421,45 @@ import "../styles/western-colors.css";
 </script> 
 
 <style>
+/* Table uses column widths and overflows for horizontal scroll */
+.dataset-table {
+  width: max-content;
+  min-width: 100%;
+}
+.col-compiled-by-th,
+.cell-compiled-by {
+  min-width: 360px;
+  width: 360px;
+  max-width: 360px;
+}
+
+/* Top horizontal scroll (synced with main table scroll) */
+.table-scroll-top {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  height: 24px;
+  margin-bottom: 4px;
+  scrollbar-gutter: stable;
+  scrollbar-width: auto;
+  scrollbar-color: #64748b #e5e7eb;
+}
+.table-scroll-top::-webkit-scrollbar {
+  height: 14px;
+  background: #e5e7eb;
+  border-radius: 0.5rem;
+}
+.table-scroll-top::-webkit-scrollbar-thumb {
+  background: #64748b;
+  border-radius: 0.5rem;
+}
+.table-scroll-top::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+#table-scroll-top-inner {
+  height: 1px;
+  pointer-events: none;
+}
+
 .table-scroll {
   scrollbar-width: auto;
   scrollbar-color: #64748b #e5e7eb;

@@ -174,8 +174,19 @@ export function convertToLynchingFormat(rows: Record<string, string>[]): any[] {
       "event-type": getField(["Category of Violence", "Category of Violence", "event-type"]),
       "category-of-violence": getField(["Category of Violence", "category-of-violence"]),
       "violence-category-grouped": getField(["Violence Category Grouped", "violence-category-grouped"]),
-      "pretext-grouped": getField(["Pretexts Grouped", "Pretext Grouped", "pretext-grouped", "Pretext_Grouped"]),
+      "pretext-grouped": (() => {
+        // Use "Pretext Grouped" only (singular) - exclude "Pretexts Grouped"
+        for (const k of keys) {
+          if (k.trim().toLowerCase() === "pretext grouped" && !k.toLowerCase().includes("pretexts")) {
+            const v = (row[k] || "").trim();
+            return v;
+          }
+        }
+        return "";
+      })(),
       "accusation": getField(["Accusation or Pretext", "Accusation or Pretext", "accusation"]),
+      "killing-method": getField(["Killing Method", "Killing Method", "killing-method"]),
+      "killing-method-grouped": getField(["Killing Method Grouped", "Killing Method Grouped", "killing-method-grouped"]),
       "job": getField(["Job", "job"]),
       "newly-documented": getField(["Newly Documented", "Newly Documented", "newly-documented"]) === "TRUE" ? "Yes" : "No",
       "compiled-by": getField(["Compiled By", "compiled-by", "Compiled By"]),

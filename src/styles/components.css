@@ -100,8 +100,8 @@
 }
 
 /* Table Column Widths */
-.col-date { width: 110px; }
-.col-newspaper { width: 140px; }
+.col-date { width: 118px; }
+.col-newspaper { width: 120px; }
 .col-location { width: 140px; }
 .col-page { width: 40px; }
 .col-state { width: 100px; }
@@ -110,7 +110,8 @@
 .col-event-type { width: 70px; }
 .col-victims { width: 80px; }
 .col-accusation { width: 120px; }
-.col-compiled-by { width: 180px; }
+.col-killing-method { width: 120px; }
+.col-compiled-by { width: 360px; }
 .col-narrative { width: 120px; }
 .col-notes { width: 100px; }
 .col-full-text { width: 280px; }

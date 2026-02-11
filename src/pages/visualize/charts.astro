@@ -35,6 +35,7 @@ import "../../styles/western-colors.css";
       <li><strong>Incidents & Victims by State:</strong> Stacked bars by decade; horizontal bars of total counts per state.</li>
       <li><strong>Types of Violence:</strong> Breakdown of violence types by victim count.</li>
       <li><strong>Categories & Pretexts:</strong> Distribution of violence categories and stated pretexts.</li>
+      <li><strong>Killing Method:</strong> Distribution of how victims were killed.</li>
       <li><strong>Violence & Population:</strong> Victims per year alongside Chinese population growth and key policy events.</li>
     </ol>
     <style>
@@ -165,9 +166,22 @@ import "../../styles/western-colors.css";
       </div>
     </div>
 
-    <!-- Chart 4: Combo Chart -->
+    <!-- Chart 6: Killing Method (pie, like 5a/5b) -->
+    <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-4 mb-14">
+      <h2 class="text-xl font-semibold mb-1 text-vintage-ink text-center">6. Killing Method</h2>
+      <p id="tagline-chart-6" class="text-center text-xs text-vintage-ink mb-1">Distribution of killing methods.</p>
+      <div id="chart-pie-killing-method"
+           style="width: 100%; height: 280px;"
+           role="img"
+           aria-label="Pie chart showing distribution of killing method"
+           aria-describedby="chart-pie-killing-method-desc"></div>
+      <p id="chart-pie-killing-method-desc" class="sr-only">This pie chart displays the distribution of killing method. Use the data table below for detailed values.</p>
+      <div id="chart-pie-killing-method-table" class="sr-only" role="region" aria-label="Data table for killing method chart"></div>
+    </div>
+
+    <!-- Chart 7: Combo Chart -->
          <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-12">
-      <h2 class="text-xl font-semibold mb-2 text-vintage-ink">6. Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)</h2>
+      <h2 class="text-xl font-semibold mb-2 text-vintage-ink">7. Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)</h2>
              <p class="mb-4 text-sm text-vintage-ink">A combination chart showing the number of victims per year (bar), the Chinese population (line), and key policy events (vertical markers).</p>
       <div id="chart-combo" 
            class="chart-container-large"
@@ -792,7 +806,56 @@ import "../../styles/western-colors.css";
       ]
     });
 
-    // --- Chart 4: Combo Chart ---
+    // --- Chart 6: Killing Method (from Main tab) ---
+    const killingMethodCounts = {};
+    mainTabData.forEach(record => {
+      const km = (record['killing-method-grouped'] || record['Killing Method Grouped'] || '').trim() || 'Unknown';
+      killingMethodCounts[km] = (killingMethodCounts[km] || 0) + 1;
+    });
+    const killingMethodData = Object.entries(killingMethodCounts)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value);
+    const killingMethodTableRows = killingMethodData.map(item => [item.name, item.value.toString()]);
+    createDataTable('chart-pie-killing-method-table', ['Killing Method', 'Count'], killingMethodTableRows, 'Data table for killing method chart');
+    const chartPieKillingMethod = echarts.init(document.getElementById('chart-pie-killing-method'));
+    chartPieKillingMethod.setOption({
+      tooltip: {
+        trigger: 'item',
+        backgroundColor: '#FDF5E6',
+        borderColor: '#8B4513',
+        borderWidth: 2,
+        textStyle: { color: '#5D4037' },
+        formatter: function(params) {
+          return params.name + ': ' + params.value + ' (' + params.percent.toFixed(1) + '%)';
+        }
+      },
+      legend: { show: false },
+      color: pieColors,
+      series: [
+        {
+          name: 'Killing Method',
+          type: 'pie',
+          radius: ['25%', '70%'],
+          center: ['50%', '50%'],
+          label: { 
+            color: '#5D4037', 
+            fontSize: 11,
+            formatter: '{b}: {c}'
+          },
+          labelLine: { lineStyle: { color: '#A0522D' } },
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.3)'
+            }
+          },
+          data: killingMethodData
+        }
+      ]
+    });
+
+    // --- Chart 7: Combo Chart ---
     // Extract population data from timeline.json
     const censusEntries = timelineData.filter(e => e.eventType && e.eventType.toLowerCase().includes('census'));
     // Parse year and population from text
@@ -1073,6 +1136,7 @@ import "../../styles/western-colors.css";
     const totalTypesVictims = typeVals.reduce((a, b) => a + b, 0);
     const totalCategory = categoryData.reduce((s, d) => s + d.value, 0);
     const totalPretext = pretextData.reduce((s, d) => s + d.value, 0);
+    const totalKillingMethod = killingMethodData.reduce((s, d) => s + d.value, 0);
     const el = (id, base, n) => { const e = document.getElementById(id); if (e) e.textContent = base + ` (N=${n})`; };
     el('tagline-chart-1', 'Annual count of anti-Chinese violence events, 1850–1920.', totalIncidents);
     el('tagline-chart-2', 'Annual count of victims, 1850–1920.', totalVictims);
@@ -1083,6 +1147,7 @@ import "../../styles/western-colors.css";
     el('tagline-chart-4', 'Breakdown of event types in the lynching records.', totalTypesVictims);
     el('tagline-chart-5a', 'Distribution of violence categories.', totalCategory);
     el('tagline-chart-5b', 'Distribution of stated pretexts.', totalPretext);
+    el('tagline-chart-6', 'Distribution of killing methods.', totalKillingMethod);
 
     window.addEventListener('resize', function() {
       chartTimeline.resize();
@@ -1094,6 +1159,7 @@ import "../../styles/western-colors.css";
       chartTypes.resize();
       chartPieCategory.resize();
       chartPiePretext.resize();
+      chartPieKillingMethod.resize();
       chartCombo.resize();
       setTimeout(renderPolicyEventGraphics, 60);
     });

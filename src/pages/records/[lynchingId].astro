@@ -177,7 +177,7 @@ const decodeHtmlEntities = (text: string) => {
 };
 ---
 
-<PageLayout title={decodeHtmlEntities(lynching["narrative-title"] || lynching["narrative-short-title"] || lynching["lynching-id"])} currentPage="records">
+<PageLayout title={decodeHtmlEntities(lynching["narrative-short-title"] || lynching["narrative-title"] || lynching["lynching-id"])} currentPage="records">
       <div class="container-standard mt-4">
     <!-- Breadcrumb Navigation -->
     <nav aria-label="Breadcrumb" class="mb-4">
@@ -237,7 +237,7 @@ const decodeHtmlEntities = (text: string) => {
     <div class="border border-gray-200 shadow-sm overflow-hidden bg-amber-50 rounded-lg">
       <!-- Header (now part of the main content container for seamless background) -->
       <div class="border-b border-amber-200 py-2">
-        <h1 class="text-3xl font-bold text-gray-900 mb-1" style="padding-left: 21px;">{decodeHtmlEntities(lynching["narrative-title"] || lynching["narrative-short-title"])} </h1>
+        <h1 class="text-3xl font-bold text-gray-900 mb-1" style="padding-left: 21px;">{decodeHtmlEntities(lynching["narrative-short-title"] || lynching["narrative-title"])} </h1>
       </div>
 
       <!-- Metadata with Map -->
@@ -254,10 +254,11 @@ const decodeHtmlEntities = (text: string) => {
               <div class="metadata-item"><span class="metadata-label">Victim Gender:</span><span class="metadata-value">{lynching["victim-gender"]}</span></div>
               <div class="metadata-item"><span class="metadata-label whitespace-nowrap">No. of Victims:</span><span class="metadata-value">{lynching["number-of-victims"]}</span></div>
               <div class="metadata-item"><span class="metadata-label">Accusation:</span><span class="metadata-value">{lynching["accusation"] || "Unknown"}</span></div>
-              <div class="metadata-item"><span class="metadata-label">Compiled By:</span><span class="metadata-value">{lynching["compiled-by"]}</span></div>
+              <div class="metadata-item"><span class="metadata-label">Killing Method:</span><span class="metadata-value">{lynching["killing-method"] || "Unknown"}</span></div>
               {lynching["job"] && (
                 <div class="metadata-item"><span class="metadata-label">Occupation:</span><span class="metadata-value">{lynching["job"]}</span></div>
               )}
+              <div class="metadata-item"><span class="metadata-label">Compiled By:</span><span class="metadata-value">{lynching["compiled-by"]}</span></div>
             </div>
           </div>
           )}

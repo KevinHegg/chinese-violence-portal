@@ -12,6 +12,10 @@ const PRINT = {
   heightSmall: 340,     // pie charts, population trends
   pixelRatio: 2,        // crisp print output
   padding: 10,          // px padding around each chart
+  paddingTop: 10,
+  paddingLeft: 5,
+  paddingRight: 5,
+  paddingBottom: 5,
 };
 
 import fs from 'fs';
@@ -19,13 +23,13 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { parse } from 'csv-parse/sync';
 import puppeteer from 'puppeteer';
+import { buildTableBarHtml } from './table-bar-html.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
 const extrasDir = path.join(root, 'extras');
 
 const PATHS = {
-  lynchings: path.join(root, 'src/data/lynchings.json'),
   timeline: path.join(root, 'public/timeline.json'),
   census: path.join(root, 'public/us-census-population.json'),
   beckTolnay: path.join(root, 'src/data/beck-tolnay-black-lynchings.csv'),
@@ -41,8 +45,7 @@ const theme = {
   series: ['#2563eb', '#dc2626', '#059669', '#7c3aed', '#d97706', '#0891b2', '#4f46e5', '#b91c1c', '#0d9488', '#c2410c'],
 };
 
-function loadData() {
-  const lynchings = JSON.parse(fs.readFileSync(PATHS.lynchings, 'utf-8'));
+function buildChartData(lynchings) {
   const timeline = JSON.parse(fs.readFileSync(PATHS.timeline, 'utf-8'));
   const census = JSON.parse(fs.readFileSync(PATHS.census, 'utf-8'));
   const csv = fs.readFileSync(PATHS.beckTolnay, 'utf-8');
@@ -120,18 +123,24 @@ function loadData() {
 
   const categoryCounts = {};
   const pretextCounts = {};
+  const killingMethodCounts = {};
   lynchings.forEach((r) => {
     const cat = r['violence-category-grouped'] || r['category-of-violence'] || r['event-type'] || 'Unknown';
     if (cat && cat !== 'Unknown') categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
     // Pretext Grouped column only (exact): single value per record, include all
     const pretext = ((r['pretext-grouped'] || '') + '').trim() || 'Unknown';
     pretextCounts[pretext] = (pretextCounts[pretext] || 0) + 1;
+    const km = ((r['killing-method-grouped'] || r['Killing Method Grouped'] || '') + '').trim() || 'Unknown';
+    killingMethodCounts[km] = (killingMethodCounts[km] || 0) + 1;
   });
   const categoryData = Object.entries(categoryCounts)
     .map(([name, value]) => ({ name, value }))
     .sort((a, b) => b.value - a.value);
   // Include all pretext values (no grouping); Pretext Grouped has Other, Unknown as distinct values
   const pretextData = Object.entries(pretextCounts)
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value);
+  const killingMethodData = Object.entries(killingMethodCounts)
     .map(([name, value]) => ({ name, value }))
     .sort((a, b) => b.value - a.value);
 
@@ -213,6 +222,7 @@ function loadData() {
     typeCounts,
     categoryData,
     pretextData,
+    killingMethodData,
     popByYearCombo,
     victimsByYearCombo,
     comboYears,
@@ -233,28 +243,32 @@ function loadData() {
 
 function buildChartConfigs(data) {
   const T = data.theme;
-  const P = PRINT.padding;
+  const Pt = PRINT.paddingTop;
+  const Pl = PRINT.paddingLeft;
+  const Pr = PRINT.paddingRight;
+  const Pb = PRINT.paddingBottom;
+  const F = { axisLabel: 20, axisName: 18, legend: 18, barLabelBig: 20, barLabelSmall: 16, pieLabel: 20 };
   const base = () => ({
     backgroundColor: T.bg,
-    textStyle: { fontFamily: T.font, color: T.text },
+    textStyle: { fontFamily: T.font, fontSize: F.axisLabel, color: T.text },
     animation: false,
   });
   const axis = () => ({
-    axisLabel: { color: T.text, fontFamily: T.font, align: 'center' },
+    axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel, align: 'center' },
     axisTick: { alignWithLabel: true },
     axisLine: { lineStyle: { color: T.axis } },
     splitLine: { lineStyle: { color: T.grid, opacity: 0.6 } },
   });
   const axisYLeft = () => ({
-    axisLabel: { color: T.text, fontFamily: T.font, rotate: 0 },
+    axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel, rotate: 0 },
     axisLine: { lineStyle: { color: T.axis } },
     splitLine: { lineStyle: { color: T.grid, opacity: 0.6 } },
     nameLocation: 'center',
-    nameGap: 50,
+    nameGap: 105,
     nameRotate: 90,
   });
   const axisYRight = () => ({
-    axisLabel: { color: T.text, fontFamily: T.font, rotate: 0 },
+    axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel, rotate: 0 },
     axisLine: { lineStyle: { color: T.axis } },
     splitLine: { show: false },
     nameLocation: 'center',
@@ -268,7 +282,7 @@ function buildChartConfigs(data) {
   const incYears = data.years1850_1920.map(String);
   const incCounts = data.years1850_1920.map((y) => data.incidentCounts[y] || 0);
   const incFont = 'Times New Roman';
-  const incFontSize = 12;
+  const incFontSize = 20;
   configs.push({
     name: '1 incidents of anti-chinese violence over time',
     width: PRINT.width,
@@ -306,7 +320,7 @@ function buildChartConfigs(data) {
         symbol: 'circle',
         symbolSize: 6,
       }],
-      grid: { left: 75 + P, right: 40 + P, top: 20 + P, bottom: 50 + P },
+      grid: { left: 75 + Pl, right: 40 + Pr, top: 20 + Pt, bottom: 50 + Pb },
     },
   });
 
@@ -321,9 +335,9 @@ function buildChartConfigs(data) {
     option: {
       ...base(),
       xAxis: { type: 'category', data: years, ...axis() },
-      yAxis: { type: 'value', name: 'Number of Victims', nameTextStyle: { color: T.text, fontFamily: T.font }, ...axisYLeft() },
+      yAxis: { type: 'value', name: 'Number of Victims', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, ...axisYLeft() },
       series: [{ type: 'line', data: vicCounts, smooth: false, lineStyle: { color: '#1a1a1a', width: 2.5 }, areaStyle: { color: '#e8e8e8' }, itemStyle: { color: '#1a1a1a' }, symbol: 'circle', symbolSize: 5 }],
-      grid: { left: 75 + P, right: 40 + P, top: 20 + P, bottom: 55 + P },
+      grid: { left: 75 + Pl, right: 40 + Pr, top: 20 + Pt, bottom: 55 + Pb },
     },
   });
 
@@ -351,7 +365,7 @@ function buildChartConfigs(data) {
         formatter: isLast ? (params) => totalsByDecadeEvents[params.dataIndex] || '' : (params) => params.value >= 2 ? params.value : '',
         color: isLast ? '#000' : '#fff',
         fontWeight: isLast ? 'bold' : 'normal',
-        fontSize: isLast ? 11 : 9,
+        fontSize: isLast ? F.barLabelBig : F.barLabelSmall,
       },
     };
   });
@@ -362,11 +376,11 @@ function buildChartConfigs(data) {
     pixelRatio: PRINT.pixelRatio,
     option: {
       ...base(),
-      legend: { bottom: 8 + P, textStyle: { color: T.text, fontFamily: T.font } },
+      legend: { bottom: 8 + Pb, textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
       xAxis: { type: 'category', data: data.decades, ...axis() },
-      yAxis: { type: 'value', name: 'Number of lethal events', nameTextStyle: { color: T.text, fontFamily: T.font }, ...axisYLeft() },
+      yAxis: { type: 'value', name: 'Number of lethal events', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, ...axisYLeft() },
       series: seriesEvents,
-      grid: { left: 70 + P, right: 40 + P, top: 20 + P, bottom: 55 + P },
+      grid: { left: 70 + Pl, right: 40 + Pr, top: 20 + Pt, bottom: 55 + Pb },
     },
   });
 
@@ -394,7 +408,7 @@ function buildChartConfigs(data) {
         formatter: isLast ? (params) => totalsByDecadeVictims[params.dataIndex] || '' : (params) => (params.value >= 5 ? params.value : ''),
         color: isLast ? '#000000' : '#fff',
         fontWeight: isLast ? 'bold' : 'normal',
-        fontSize: isLast ? 11 : 9,
+        fontSize: isLast ? F.barLabelBig : F.barLabelSmall,
       },
     };
   });
@@ -405,60 +419,65 @@ function buildChartConfigs(data) {
     pixelRatio: PRINT.pixelRatio,
     option: {
       ...base(),
-      legend: { bottom: 8 + P, textStyle: { color: T.text, fontFamily: T.font } },
+      legend: { bottom: 8 + Pb, textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
       xAxis: { type: 'category', data: data.decades, ...axis() },
-      yAxis: { type: 'value', name: 'Number of victims', nameTextStyle: { color: T.text, fontFamily: T.font }, ...axisYLeft() },
+      yAxis: { type: 'value', name: 'Number of victims', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, ...axisYLeft() },
       series: seriesVictims,
-      grid: { left: 70 + P, right: 40 + P, top: 20 + P, bottom: 55 + P },
+      grid: { left: 70 + Pl, right: 40 + Pr, top: 20 + Pt, bottom: 55 + Pb },
     },
   });
 
   const stateNames = data.statesSorted;
   const incByState = stateNames.map((s) => data.stateTotals[s] || 0);
+  data.incidentCountByStateRows = stateNames.map((s) => ({ name: s, value: data.stateTotals[s] || 0 }));
+  data.victimCountByStateRows = stateNames.map((s) => ({ name: s, value: data.stateVictimTotals[s] || 0 }));
+  const totalIncidents = Object.values(data.stateTotals).reduce((a, b) => a + b, 0);
+  const totalVictims = Object.values(data.stateVictimTotals).reduce((a, b) => a + b, 0);
+
   configs.push({
-    name: '3c incident count by state',
+    name: `3c incident count by state (N=${totalIncidents})`,
     width: PRINT.width,
     height: PRINT.heightSmall,
     pixelRatio: PRINT.pixelRatio,
     option: {
       ...base(),
-      grid: { left: 100 + P, right: 40 + P, top: 20 + P, bottom: 30 + P },
+      grid: { left: 100 + Pl, right: 40 + Pr, top: 20 + Pt, bottom: 30 + Pb },
       xAxis: {
         type: 'value',
         min: 0,
         max: 40,
         interval: 10,
-        axisLabel: { show: true, color: T.text, fontFamily: T.font },
+        axisLabel: { show: true, color: T.text, fontFamily: T.font, fontSize: F.axisLabel },
         axisLine: { show: true, lineStyle: { color: T.axis } },
         axisTick: { show: true, lineStyle: { color: T.axis } },
         splitLine: { lineStyle: { color: T.grid, opacity: 0.6 } },
       },
-      yAxis: { type: 'category', data: stateNames, inverse: true, axisLabel: { color: T.text, fontFamily: T.font }, axisLine: { lineStyle: { color: T.axis } } },
-      series: [{ type: 'bar', data: incByState, itemStyle: { color: '#2563eb' }, barWidth: '60%', label: { show: true, position: 'right', color: T.text, fontFamily: T.font } }],
+      yAxis: { type: 'category', data: stateNames, inverse: true, axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel }, axisLine: { lineStyle: { color: T.axis } } },
+      series: [{ type: 'bar', data: incByState, itemStyle: { color: '#2563eb' }, barWidth: '60%', label: { show: true, position: 'right', color: T.text, fontFamily: T.font, fontSize: F.barLabelBig } }],
     },
   });
 
   const vicByState = stateNames.map((s) => data.stateVictimTotals[s] || 0);
   configs.push({
-    name: '3d victim count by state',
+    name: `3d victim count by state (N=${totalVictims})`,
     width: PRINT.width,
     height: PRINT.heightSmall,
     pixelRatio: PRINT.pixelRatio,
     option: {
       ...base(),
-      grid: { left: 100 + P, right: 40 + P, top: 20 + P, bottom: 30 + P },
+      grid: { left: 100 + Pl, right: 40 + Pr, top: 20 + Pt, bottom: 30 + Pb },
       xAxis: {
         type: 'value',
         min: 0,
         max: 100,
         interval: 20,
-        axisLabel: { show: true, color: T.text, fontFamily: T.font },
+        axisLabel: { show: true, color: T.text, fontFamily: T.font, fontSize: F.axisLabel },
         axisLine: { show: true, lineStyle: { color: T.axis } },
         axisTick: { show: true, lineStyle: { color: T.axis } },
         splitLine: { lineStyle: { color: T.grid, opacity: 0.6 } },
       },
-      yAxis: { type: 'category', data: stateNames, inverse: true, axisLabel: { color: T.text, fontFamily: T.font }, axisLine: { lineStyle: { color: T.axis } } },
-      series: [{ type: 'bar', data: vicByState, itemStyle: { color: '#dc2626' }, barWidth: '60%', label: { show: true, position: 'right', color: T.text, fontFamily: T.font } }],
+      yAxis: { type: 'category', data: stateNames, inverse: true, axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel }, axisLine: { lineStyle: { color: T.axis } } },
+      series: [{ type: 'bar', data: vicByState, itemStyle: { color: '#dc2626' }, barWidth: '60%', label: { show: true, position: 'right', color: T.text, fontFamily: T.font, fontSize: F.barLabelBig } }],
     },
   });
 
@@ -476,13 +495,13 @@ function buildChartConfigs(data) {
       xAxis: {
         type: 'category',
         data: typeNames,
-        axisLabel: { color: T.text, fontFamily: T.font, align: 'center', rotate: 0, interval: 0 },
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel, align: 'center', rotate: 0, interval: 0 },
         axisTick: { alignWithLabel: true },
         axisLine: { lineStyle: { color: T.axis } },
       },
-      yAxis: { type: 'value', name: 'Number of Victims', nameTextStyle: { color: T.text, fontFamily: T.font }, ...axisYLeft() },
-      series: [{ type: 'bar', data: typeBarData, barWidth: '60%', label: { show: true, position: 'top', color: T.text, fontFamily: T.font, rotate: 0 } }],
-      grid: { left: 70 + P, right: 40 + P, top: 20 + P, bottom: 80 + P },
+      yAxis: { type: 'value', name: 'Number of Victims', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, ...axisYLeft() },
+      series: [{ type: 'bar', data: typeBarData, barWidth: '60%', label: { show: true, position: 'top', color: T.text, fontFamily: T.font, fontSize: F.barLabelBig, rotate: 0 } }],
+      grid: { left: 70 + Pl, right: 40 + Pr, top: 20 + Pt, bottom: 80 + Pb },
     },
   });
 
@@ -490,13 +509,13 @@ function buildChartConfigs(data) {
   const catColors = categoryDataPub.map((_, i) => T.series[i % T.series.length]);
   configs.push({
     name: '5a categories of violence',
-    width: Math.floor(PRINT.width / 2) - P,
+    width: Math.floor(PRINT.width / 2) - 5,
     height: PRINT.heightSmall,
     pixelRatio: PRINT.pixelRatio,
     option: {
       ...base(),
       color: catColors,
-      series: [{ type: 'pie', radius: ['25%', '70%'], center: ['50%', '55%'], data: categoryDataPub, label: { color: T.text, fontFamily: T.font, formatter: '{b}: {c}' }, labelLine: { lineStyle: { color: T.axis } } }],
+      series: [{ type: 'pie', radius: ['25%', '70%'], center: ['50%', '55%'], data: categoryDataPub, label: { color: T.text, fontFamily: T.font, fontSize: F.pieLabel, formatter: '{b}: {c}' }, labelLine: { lineStyle: { color: T.axis } } }],
     },
   });
 
@@ -516,7 +535,7 @@ function buildChartConfigs(data) {
   const preColors = pretextDataPub.map((_, i) => T.series[i % T.series.length]);
   configs.push({
     name: '5b pretexts for violence',
-    width: Math.floor(PRINT.width / 2) - P,
+    width: Math.floor(PRINT.width / 2) - 5,
     height: PRINT.heightSmall,
     pixelRatio: PRINT.pixelRatio,
     option: {
@@ -532,7 +551,7 @@ function buildChartConfigs(data) {
         label: {
           color: T.text,
           fontFamily: T.font,
-          fontSize: 10,
+          fontSize: F.pieLabel,
           formatter: '{b}: {c}',
           overflow: 'break',
           width: 140,
@@ -542,28 +561,44 @@ function buildChartConfigs(data) {
     },
   });
 
+  const killingMethodDataPub = data.killingMethodDataPublication || data.killingMethodData;
+  const kmColors = killingMethodDataPub.map((_, i) => T.series[i % T.series.length]);
+  configs.push({
+    name: '6 distribution of killing method',
+    width: PRINT.width,
+    height: PRINT.heightSmall,
+    pixelRatio: PRINT.pixelRatio,
+    option: {
+      ...base(),
+      title: { show: false },
+      color: kmColors,
+      series: [{ type: 'pie', radius: ['25%', '70%'], center: ['50%', '55%'], data: killingMethodDataPub, label: { color: T.text, fontFamily: T.font, fontSize: F.pieLabel, formatter: '{b}: {c}' }, labelLine: { lineStyle: { color: T.axis } } }],
+    },
+  });
+
   const victimsSeries = data.comboYears.map((y) => data.victimsByYearCombo[y] || 0);
   const popSeries = data.comboYears.map((y) => data.popByYearCombo[y] ?? null);
   const maxV = Math.max(...victimsSeries, 1);
   const labelTop = maxV + Math.max(3, Math.round(maxV * 0.15));
   configs.push({
-    name: '6 anti-chinese violence and chinese population 1850-1915',
+    name: '7 victims and chinese population 1850-1915',
     width: PRINT.width,
     height: PRINT.heightTall,
     pixelRatio: PRINT.pixelRatio,
     option: {
       ...base(),
-      legend: { data: ['Victims', 'Chinese Population'], bottom: 8 + P, textStyle: { color: T.text, fontFamily: T.font } },
+      title: { show: false },
+      legend: { data: ['Victims', 'Chinese Population'], bottom: 8 + Pb, textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
       xAxis: { type: 'category', data: data.comboYears, ...axis() },
       yAxis: [
-        { type: 'value', name: 'Number of Victims', nameTextStyle: { color: T.text, fontFamily: T.font }, position: 'left', max: labelTop + 2, ...axisYLeft() },
-        { type: 'value', name: 'Chinese Population', nameTextStyle: { color: T.text, fontFamily: T.font }, position: 'right', axisLabel: { color: T.text, fontFamily: T.font, rotate: 0 }, ...axisYRight() },
+        { type: 'value', name: 'Number of Victims', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, position: 'left', max: labelTop + 2, ...axisYLeft() },
+        { type: 'value', name: 'Chinese Population', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, position: 'right', axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel, rotate: 0 }, ...axisYRight() },
       ],
       series: [
         { name: 'Victims', type: 'bar', data: victimsSeries, yAxisIndex: 0, itemStyle: { color: T.series[0] }, barWidth: '60%', markLine: { silent: true, symbol: ['none', 'none'], lineStyle: { color: T.axis, type: 'dashed', width: 1 }, data: data.policyEvents.map((e) => ({ xAxis: e.year })) } },
         { name: 'Chinese Population', type: 'line', data: popSeries, yAxisIndex: 1, lineStyle: { color: T.series[1], width: 2 }, symbol: 'circle', symbolSize: 4, itemStyle: { color: T.series[1] } },
       ],
-      grid: { left: 70 + P, right: 75 + P, top: 20 + P, bottom: 55 + P },
+      grid: { left: 195 + Pl, right: 75 + Pr, top: 35 + Pt, bottom: 65 + Pb },
     },
   });
 
@@ -576,17 +611,17 @@ function buildChartConfigs(data) {
     pixelRatio: PRINT.pixelRatio,
     option: {
       ...base(),
-      legend: { data: ['Black Lynching Victims', 'Chinese Violence Victims'], bottom: 10 + P, textStyle: { color: T.text, fontFamily: T.font } },
+      legend: { data: ['Black Lynching Victims', 'Chinese Violence Victims'], bottom: 10 + Pb, textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
       xAxis: { type: 'category', data: data.years1850_1920, ...axis() },
       yAxis: [
-        { type: 'value', name: 'Black Victims', position: 'left', nameTextStyle: { color: T.text, fontFamily: T.font }, ...axisYLeft() },
-        { type: 'value', name: 'Chinese Victims', position: 'right', nameTextStyle: { color: T.text, fontFamily: T.font }, ...axisYRight() },
+        { type: 'value', name: 'Black Victims', position: 'left', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, ...axisYLeft() },
+        { type: 'value', name: 'Chinese Victims', position: 'right', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, ...axisYRight() },
       ],
       series: [
         { name: 'Black Lynching Victims', type: 'line', data: blackData, yAxisIndex: 0, lineStyle: { color: T.series[0], width: 2 }, symbol: 'circle', symbolSize: 4, itemStyle: { color: T.series[0] } },
         { name: 'Chinese Violence Victims', type: 'line', data: chineseData, yAxisIndex: 1, lineStyle: { color: T.series[1], width: 2 }, symbol: 'circle', symbolSize: 4, itemStyle: { color: T.series[1] } },
       ],
-      grid: { left: 70 + P, right: 70 + P, top: 20 + P, bottom: 60 + P },
+      grid: { left: 195 + Pl, right: 70 + Pr, top: 35 + Pt, bottom: 80 + Pb },
     },
   });
 
@@ -597,17 +632,17 @@ function buildChartConfigs(data) {
     pixelRatio: PRINT.pixelRatio,
     option: {
       ...base(),
-      legend: { data: ['Black Lynching Victims', 'Chinese Violence Victims'], bottom: 10 + P, textStyle: { color: T.text, fontFamily: T.font } },
+      legend: { data: ['Black Lynching Victims', 'Chinese Violence Victims'], bottom: 10 + Pb, textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
       xAxis: { type: 'category', data: data.years1875_1915, ...axis() },
       yAxis: [
-        { type: 'value', name: 'Black per 100,000', position: 'left', nameTextStyle: { color: T.text, fontFamily: T.font }, min: 0, max: 42, ...axisYLeft() },
-        { type: 'value', name: 'Chinese per 100,000', position: 'right', nameTextStyle: { color: T.text, fontFamily: T.font }, min: 0, max: 42, ...axisYRight() },
+        { type: 'value', name: 'Black per 100,000', position: 'left', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, min: 0, max: 42, ...axisYLeft() },
+        { type: 'value', name: 'Chinese per 100,000', position: 'right', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, min: 0, max: 42, ...axisYRight() },
       ],
       series: [
         { name: 'Black Lynching Victims', type: 'line', data: data.blackPerCapita, yAxisIndex: 0, lineStyle: { color: T.series[0], width: 2 }, symbol: 'circle', symbolSize: 4, itemStyle: { color: T.series[0] } },
         { name: 'Chinese Violence Victims', type: 'line', data: data.chinesePerCapita, yAxisIndex: 1, lineStyle: { color: T.series[1], width: 2 }, symbol: 'circle', symbolSize: 4, itemStyle: { color: T.series[1] } },
       ],
-      grid: { left: 70 + P, right: 70 + P, top: 20 + P, bottom: 60 + P },
+      grid: { left: 195 + Pl, right: 70 + Pr, top: 35 + Pt, bottom: 80 + Pb },
     },
   });
 
@@ -618,17 +653,17 @@ function buildChartConfigs(data) {
     pixelRatio: PRINT.pixelRatio,
     option: {
       ...base(),
-      legend: { data: ['Black Population', 'Black Lynchings'], bottom: 10 + P, textStyle: { color: T.text, fontFamily: T.font } },
+      legend: { data: ['Black Population', 'Black Lynchings'], bottom: 10 + Pb, textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
       xAxis: { type: 'category', data: data.populationYears, ...axis() },
       yAxis: [
-        { type: 'value', name: 'Black Population', position: 'left', nameTextStyle: { color: T.text, fontFamily: T.font }, ...axisYLeft() },
-        { type: 'value', name: 'Black Lynchings', position: 'right', nameTextStyle: { color: T.text, fontFamily: T.font }, ...axisYRight() },
+        { type: 'value', name: 'Black Population', position: 'left', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, ...axisYLeft() },
+        { type: 'value', name: 'Black Lynchings', position: 'right', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, ...axisYRight() },
       ],
       series: [
         { name: 'Black Population', type: 'line', data: data.blackPop, yAxisIndex: 0, lineStyle: { color: T.series[0], width: 2 }, symbol: 'circle', symbolSize: 4, itemStyle: { color: T.series[0] } },
         { name: 'Black Lynchings', type: 'bar', data: data.blackLynchChart, yAxisIndex: 1, itemStyle: { color: T.series[1] } },
       ],
-      grid: { left: 80 + P, right: 70 + P, top: 20 + P, bottom: 70 + P },
+      grid: { left: 200 + Pl, right: 70 + Pr, top: 35 + Pt, bottom: 85 + Pb },
     },
   });
 
@@ -639,28 +674,74 @@ function buildChartConfigs(data) {
     pixelRatio: PRINT.pixelRatio,
     option: {
       ...base(),
-      legend: { data: ['Asian Population', 'Chinese Violence'], bottom: 10 + P, textStyle: { color: T.text, fontFamily: T.font } },
+      legend: { data: ['Asian Population', 'Chinese Violence'], bottom: 10 + Pb, textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
       xAxis: { type: 'category', data: data.populationYears, ...axis() },
       yAxis: [
-        { type: 'value', name: 'Asian Population', position: 'left', nameTextStyle: { color: T.text, fontFamily: T.font }, ...axisYLeft() },
-        { type: 'value', name: 'Chinese Violence', position: 'right', nameTextStyle: { color: T.text, fontFamily: T.font }, ...axisYRight() },
+        { type: 'value', name: 'Asian Population', position: 'left', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, ...axisYLeft() },
+        { type: 'value', name: 'Chinese Violence', position: 'right', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, ...axisYRight() },
       ],
       series: [
         { name: 'Asian Population', type: 'line', data: data.asianPop, yAxisIndex: 0, lineStyle: { color: T.series[0], width: 2 }, symbol: 'circle', symbolSize: 4, itemStyle: { color: T.series[0] } },
         { name: 'Chinese Violence', type: 'bar', data: data.chineseLynchChart, yAxisIndex: 1, itemStyle: { color: T.series[1] } },
       ],
-      grid: { left: 80 + P, right: 70 + P, top: 20 + P, bottom: 70 + P },
+      grid: { left: 200 + Pl, right: 70 + Pr, top: 35 + Pt, bottom: 85 + Pb },
     },
   });
 
   return configs;
 }
 
+const MAIN_TAB_GID = '760826284';
+const SHEET_ID = '18Bo9acVyuQTsdQ1baxSntSUZur50Yla8NcZKe2nZWyQ';
+
+const getCol = (row, names) => {
+  for (const n of names) {
+    const v = row[n] ?? row[n?.replace(/ /g, '-')] ?? row[n?.replace(/ /g, '_')];
+    if (v != null && String(v).trim()) return String(v).trim();
+  }
+  return '';
+};
+
+/** Fetch full lynching records from Main tab (live Google Sheet) */
+async function loadLynchingsFromMainTab() {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${MAIN_TAB_GID}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to fetch Main tab: ${res.status}`);
+  const csv = await res.text();
+  const rows = parse(csv, { columns: true, skip_empty_lines: true, relax_column_count: true });
+  return rows
+    .filter((r) => getCol(r, ['Identifier', 'identifier', 'Lynching ID', 'lynching-id', 'Record ID']))
+    .map((r) => {
+      const yearVal = getCol(r, ['Year', 'year']);
+      const y = yearVal ? parseInt(yearVal, 10) : null;
+      const date = getCol(r, ['Date', 'date']);
+      const state = getCol(r, ['State', 'state']) || 'Unknown';
+      const v = parseInt(getCol(r, ['Number of Victims', 'number-of-victims']), 10) || 1;
+      const eventType = getCol(r, ['Category of Violence', 'event-type', 'category-of-violence']);
+      const catGrouped = getCol(r, ['Violence Category Grouped', 'violence-category-grouped']);
+      let pretextGrouped = '';
+      for (const k of Object.keys(r)) {
+        if (k.trim().toLowerCase() === 'pretext grouped' && !k.toLowerCase().includes('pretexts')) {
+          pretextGrouped = (r[k] || '').trim();
+          break;
+        }
+      }
+      return {
+        year: y,
+        date: date || '',
+        state,
+        'number-of-victims': v,
+        'event-type': eventType || 'Unknown',
+        'violence-category-grouped': catGrouped || '',
+        'category-of-violence': eventType || 'Unknown',
+        'pretext-grouped': pretextGrouped || 'Unknown',
+      };
+    });
+}
+
 /** Fetch Main tab Violence Category Grouped from Google Sheets for publication chart */
 async function loadCategoryDataFromMainTab() {
-  const sheetId = '18Bo9acVyuQTsdQ1baxSntSUZur50Yla8NcZKe2nZWyQ';
-  const mainGid = '760826284';
-  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${mainGid}`;
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${MAIN_TAB_GID}`;
   const res = await fetch(url);
   if (!res.ok) return null;
   const csv = await res.text();
@@ -682,11 +763,9 @@ async function loadCategoryDataFromMainTab() {
     .sort((a, b) => b.value - a.value);
 }
 
-/** Fetch Main tab pretext data from Google Sheets for publication chart (Main tab gid 760826284) */
+/** Fetch Main tab pretext data from Google Sheets for publication chart */
 async function loadPretextDataFromMainTab() {
-  const sheetId = '18Bo9acVyuQTsdQ1baxSntSUZur50Yla8NcZKe2nZWyQ';
-  const mainGid = '760826284';
-  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${mainGid}`;
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${MAIN_TAB_GID}`;
   const res = await fetch(url);
   if (!res.ok) return null;
   const csv = await res.text();
@@ -762,7 +841,8 @@ function stripDataUrl(dataUrl) {
 async function main() {
   if (!fs.existsSync(extrasDir)) fs.mkdirSync(extrasDir, { recursive: true });
 
-  const data = loadData();
+  const lynchings = await loadLynchingsFromMainTab();
+  const data = buildChartData(lynchings);
   data.categoryDataPublication = await loadCategoryDataFromMainTab().catch((e) => {
     console.warn('Could not fetch Main tab for Violence Category Grouped, using fallback:', e.message);
     return data.categoryData;
@@ -771,6 +851,7 @@ async function main() {
     console.warn('Could not fetch Main tab for pretexts, using fallback:', e.message);
     return data.pretextData;
   });
+  data.killingMethodDataPublication = data.killingMethodData;
   const configs = buildChartConfigs(data);
   const html = buildHtml(configs);
 
@@ -798,6 +879,52 @@ async function main() {
     const pngBuf = stripDataUrl(png);
     if (pngBuf) fs.writeFileSync(path.join(extrasDir, `${name}.png`), pngBuf);
     console.log(`Wrote ${name}.png`);
+  }
+
+  const totalIncidents = (data.incidentCountByStateRows || []).reduce((s, r) => s + r.value, 0);
+  const totalVictims = (data.victimCountByStateRows || []).reduce((s, r) => s + r.value, 0);
+  const incRows = data.incidentCountByStateRows || [];
+  if (incRows.length > 0) {
+    const tableBarHtml = buildTableBarHtml(incRows, {
+      barColor: '#2563eb',
+      labelHeader: 'State',
+      valueHeader: 'Incidents',
+      width: PRINT.width,
+      font: theme.font,
+    });
+    await page.setContent(tableBarHtml, { waitUntil: 'load', timeout: 10000 });
+    await new Promise((r) => setTimeout(r, 100));
+    const el = await page.$('#table-bar');
+    if (el) {
+      const buf = await el.screenshot({ type: 'png', omitBackground: false });
+      if (buf) {
+        const name = `3c.1 incident count by state (N=${totalIncidents}).png`;
+        fs.writeFileSync(path.join(extrasDir, name), buf);
+        console.log('Wrote', name);
+      }
+    }
+  }
+
+  const vicRows = data.victimCountByStateRows || [];
+  if (vicRows.length > 0) {
+    const tableBarHtml = buildTableBarHtml(vicRows, {
+      barColor: '#dc2626',
+      labelHeader: 'State',
+      valueHeader: 'Victims',
+      width: PRINT.width,
+      font: theme.font,
+    });
+    await page.setContent(tableBarHtml, { waitUntil: 'load', timeout: 10000 });
+    await new Promise((r) => setTimeout(r, 100));
+    const el = await page.$('#table-bar');
+    if (el) {
+      const buf = await el.screenshot({ type: 'png', omitBackground: false });
+      if (buf) {
+        const name = `3d.1 victim count by state (N=${totalVictims}).png`;
+        fs.writeFileSync(path.join(extrasDir, name), buf);
+        console.log('Wrote', name);
+      }
+    }
   }
 
   await browser.close();
