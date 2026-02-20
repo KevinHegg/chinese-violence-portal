@@ -186,7 +186,16 @@ export function convertToLynchingFormat(rows: Record<string, string>[]): any[] {
       })(),
       "accusation": getField(["Accusation or Pretext", "Accusation or Pretext", "accusation"]),
       "killing-method": getField(["Killing Method", "Killing Method", "killing-method"]),
-      "killing-method-grouped": getField(["Killing Method Grouped", "Killing Method Grouped", "killing-method-grouped"]),
+      "killing-method-grouped": (() => {
+        // Use "Killing Method Grouped" only - exclude ungrouped "Killing Method" (e.g. "Shooting")
+        for (const k of keys) {
+          if (k.trim().toLowerCase() === "killing method grouped") {
+            const v = (row[k] || "").trim();
+            return v;
+          }
+        }
+        return "";
+      })(),
       "job": getField(["Job", "job"]),
       "newly-documented": getField(["Newly Documented", "Newly Documented", "newly-documented"]) === "TRUE" ? "Yes" : "No",
       "compiled-by": getField(["Compiled By", "compiled-by", "Compiled By"]),

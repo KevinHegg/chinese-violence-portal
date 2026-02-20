@@ -32,7 +32,8 @@ import "../../styles/western-colors.css";
     <ol class="mb-8 text-base max-w-3xl leading-normal list-decimal list-inside space-y-1 pl-4" style="text-indent:-1.1em;">
       <li><strong>Incidents Over Time:</strong> Annual count of violent events from 1850–1920.</li>
       <li><strong>Victims Over Time:</strong> Annual victim count from 1850–1920.</li>
-      <li><strong>Incidents & Victims by State:</strong> Stacked bars by decade; horizontal bars of total counts per state.</li>
+      <li><strong>Incidents & Victims Over Time:</strong> Stacked area chart combining incidents (N=75) and victims (N=191) from 1850–1920. Average number of victims per incident: 2.5.</li>
+      <li><strong>Incidents & Victims by State:</strong> Stacked bars by decade; incident and victim counts per state (horizontal bars, sorted by victim count).</li>
       <li><strong>Types of Violence:</strong> Breakdown of violence types by victim count.</li>
       <li><strong>Categories & Pretexts:</strong> Distribution of violence categories and stated pretexts.</li>
       <li><strong>Killing Method:</strong> Distribution of how victims were killed.</li>
@@ -73,10 +74,23 @@ import "../../styles/western-colors.css";
       <div id="chart-victims-table" class="sr-only" role="region" aria-label="Data table for victims over time chart"></div>
     </div>
 
-    <!-- Chart 1c: Lethal Events by State (stacked by decade) -->
+    <!-- Chart 3: Incidents and Victims Over Time (stacked area) -->
     <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
-      <h2 class="text-xl font-semibold mb-2 text-vintage-ink">3.a. Number of Lethal Events by State Over Time</h2>
-      <p id="tagline-chart-3a" class="mb-4 text-sm text-vintage-ink">Stacked bar chart: incidents per decade, broken down by state.</p>
+      <h2 class="text-xl font-semibold mb-2 text-vintage-ink">3. Number Incidents and Victims Over Time</h2>
+      <p id="tagline-chart-3-inc-vic" class="mb-4 text-sm text-vintage-ink">Incidents (N=75) and victims (N=191) from 1850–1920. Average number of victims per incident: 2.5.</p>
+      <div id="chart-incidents-victims"
+           class="chart-container"
+           role="img"
+           aria-label="Area chart showing incidents and victims of anti-Chinese violence from 1850 to 1920"
+           aria-describedby="chart-incidents-victims-desc"></div>
+      <p id="chart-incidents-victims-desc" class="sr-only">Stacked area chart of incidents (bottom) and victims (top) by year. Use the data table below for detailed values.</p>
+      <div id="chart-incidents-victims-table" class="sr-only" role="region" aria-label="Data table for incidents and victims over time chart"></div>
+    </div>
+
+    <!-- Chart 4a: Lethal Events by State (stacked by decade) -->
+    <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
+      <h2 class="text-xl font-semibold mb-2 text-vintage-ink">4.a. Number of Lethal Events by State Over Time</h2>
+      <p id="tagline-chart-4a" class="mb-4 text-sm text-vintage-ink">Stacked bar chart: incidents per decade, broken down by state.</p>
       <div id="chart-lethal-events-state"
            class="chart-container"
            role="img"
@@ -88,8 +102,8 @@ import "../../styles/western-colors.css";
 
     <!-- Chart 1d: Victims by State (stacked by decade) -->
     <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
-      <h2 class="text-xl font-semibold mb-2 text-vintage-ink">3.b. Number of Victims by State Over Time</h2>
-      <p id="tagline-chart-3b" class="mb-4 text-sm text-vintage-ink">Stacked bar chart: victims per decade, broken down by state.</p>
+      <h2 class="text-xl font-semibold mb-2 text-vintage-ink">4.b. Number of Victims by State Over Time</h2>
+      <p id="tagline-chart-4b" class="mb-4 text-sm text-vintage-ink">Stacked bar chart: victims per decade, broken down by state.</p>
       <div id="chart-victims-state"
            class="chart-container"
            role="img"
@@ -99,36 +113,23 @@ import "../../styles/western-colors.css";
       <div id="chart-victims-state-table" class="sr-only" role="region" aria-label="Data table for victims by state chart"></div>
     </div>
 
-    <!-- Chart 1e: Incident Count by State -->
+    <!-- Chart 4c: Incident and Victim Count by State (combined) -->
     <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
-      <h2 class="text-xl font-semibold mb-2 text-vintage-ink">3.c. Incident Count by State</h2>
-      <p id="tagline-chart-3c" class="mb-4 text-sm text-vintage-ink">Total number of documented incidents per state.</p>
-      <div id="chart-incident-by-state"
-           class="chart-container"
+      <h2 class="text-xl font-semibold mb-2 text-vintage-ink">4.c. Incident and Victim Count by State</h2>
+      <p id="tagline-chart-4c" class="mb-4 text-sm text-vintage-ink">Incidents (blue) and victims (red) per state, sorted by victim count.</p>
+      <div id="chart-incident-victim-by-state"
+           class="chart-container" style="height:450px;"
            role="img"
-           aria-label="Horizontal bar chart showing incident count by state"
-           aria-describedby="chart-incident-by-state-desc"></div>
-      <p id="chart-incident-by-state-desc" class="sr-only">Horizontal bar chart of incident count by state. Use the data table below for detailed values.</p>
-      <div id="chart-incident-by-state-table" class="sr-only" role="region" aria-label="Data table for incident count by state chart"></div>
-    </div>
-
-    <!-- Chart 1f: Victim Count by State -->
-    <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
-      <h2 class="text-xl font-semibold mb-2 text-vintage-ink">3.d. Victim Count by State</h2>
-      <p id="tagline-chart-3d" class="mb-4 text-sm text-vintage-ink">Total number of victims per state.</p>
-      <div id="chart-victim-by-state"
-           class="chart-container"
-           role="img"
-           aria-label="Horizontal bar chart showing victim count by state"
-           aria-describedby="chart-victim-by-state-desc"></div>
-      <p id="chart-victim-by-state-desc" class="sr-only">Horizontal bar chart of victim count by state. Use the data table below for detailed values.</p>
-      <div id="chart-victim-by-state-table" class="sr-only" role="region" aria-label="Data table for victim count by state chart"></div>
+           aria-label="Horizontal bar chart showing incident and victim count by state"
+           aria-describedby="chart-incident-victim-by-state-desc"></div>
+      <p id="chart-incident-victim-by-state-desc" class="sr-only">Horizontal bar chart of incident count (blue) and victim count (red) by state, sorted by victim count. Use the data table below for detailed values.</p>
+      <div id="chart-incident-victim-by-state-table" class="sr-only" role="region" aria-label="Data table for incident and victim count by state chart"></div>
     </div>
 
     <!-- Chart 2: Types of Violence -->
          <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
-      <h2 class="text-xl font-semibold mb-2 text-vintage-ink">4. Types of Anti-Chinese Violence</h2>
-             <p id="tagline-chart-4" class="mb-4 text-sm text-vintage-ink">Breakdown of event types in the lynching records.</p>
+      <h2 class="text-xl font-semibold mb-2 text-vintage-ink">5. Types of Anti-Chinese Violence</h2>
+             <p id="tagline-chart-5" class="mb-4 text-sm text-vintage-ink">Breakdown of event types in the lynching records.</p>
       <div id="chart-types" 
            class="chart-container"
            role="img"
@@ -142,8 +143,8 @@ import "../../styles/western-colors.css";
          <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-4 mb-14">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
         <div>
-          <h2 class="text-lg font-semibold mb-1 text-vintage-ink text-center">5.a. Categories of Violence</h2>
-          <p id="tagline-chart-5a" class="text-center text-xs text-vintage-ink mb-1">Distribution of violence categories.</p>
+          <h2 class="text-lg font-semibold mb-1 text-vintage-ink text-center">6.a. Categories of Violence</h2>
+          <p id="tagline-chart-6a" class="text-center text-xs text-vintage-ink mb-1">Distribution of violence categories.</p>
           <div id="chart-pie-category" 
                style="width: 100%; height: 280px;"
                role="img"
@@ -153,8 +154,8 @@ import "../../styles/western-colors.css";
           <div id="chart-pie-category-table" class="sr-only" role="region" aria-label="Data table for categories of violence chart"></div>
         </div>
         <div>
-          <h2 class="text-lg font-semibold mb-1 text-vintage-ink text-center">5.b. Pretexts for Violence</h2>
-          <p id="tagline-chart-5b" class="text-center text-xs text-vintage-ink mb-1">Distribution of stated pretexts.</p>
+          <h2 class="text-lg font-semibold mb-1 text-vintage-ink text-center">6.b. Pretexts for Violence</h2>
+          <p id="tagline-chart-6b" class="text-center text-xs text-vintage-ink mb-1">Distribution of stated pretexts.</p>
           <div id="chart-pie-pretext" 
                style="width: 100%; height: 280px;"
                role="img"
@@ -168,8 +169,8 @@ import "../../styles/western-colors.css";
 
     <!-- Chart 6: Killing Method (pie, like 5a/5b) -->
     <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-4 mb-14">
-      <h2 class="text-xl font-semibold mb-1 text-vintage-ink text-center">6. Killing Method</h2>
-      <p id="tagline-chart-6" class="text-center text-xs text-vintage-ink mb-1">Distribution of killing methods.</p>
+      <h2 class="text-xl font-semibold mb-1 text-vintage-ink text-center">7. Killing Method</h2>
+      <p id="tagline-chart-7" class="text-center text-xs text-vintage-ink mb-1">Distribution of killing methods.</p>
       <div id="chart-pie-killing-method"
            style="width: 100%; height: 280px;"
            role="img"
@@ -181,7 +182,7 @@ import "../../styles/western-colors.css";
 
     <!-- Chart 7: Combo Chart -->
          <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-12">
-      <h2 class="text-xl font-semibold mb-2 text-vintage-ink">7. Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)</h2>
+      <h2 class="text-xl font-semibold mb-2 text-vintage-ink">8. Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)</h2>
              <p class="mb-4 text-sm text-vintage-ink">A combination chart showing the number of victims per year (bar), the Chinese population (line), and key policy events (vertical markers).</p>
       <div id="chart-combo" 
            class="chart-container-large"
@@ -192,18 +193,33 @@ import "../../styles/western-colors.css";
       <div id="chart-combo-table" class="sr-only" role="region" aria-label="Data table for combination chart"></div>
     </div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
-  <script type="module">
-    // Load data
-    const timelineData = await fetch('/timeline.json').then(r => r.json());
-    const lynchingsData = await fetch('/api/lynchings').then(r => r.json());
-    // Fetch Main tab data for pie charts (GID 760826284)
-    const mainTabData = await fetch('/api/lynchings?gid=760826284').then(r => r.json()).catch(() => lynchingsData);
+  <script is:inline src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <script is:inline>
+    (function() {
+    function initAllCharts() {
+      if (typeof echarts === 'undefined') {
+        setTimeout(initAllCharts, 100);
+        return;
+      }
+      var nocache = new URLSearchParams(window.location.search).get('nocache') === '1';
+      var apiSuffix = nocache ? '&nocache=1' : '';
+      Promise.all([
+        fetch('/timeline.json').then(function(r) { return r.json(); }).catch(function() { return []; }),
+        fetch('/api/lynchings' + (nocache ? '?nocache=1' : '')).then(function(r) { return r.json(); }).catch(function() { return []; }),
+        fetch('/api/lynchings?gid=760826284' + apiSuffix).then(function(r) { return r.json(); }).catch(function() { return []; }),
+      ]).then(function(results) {
+        var timelineData = results[0];
+        var lynchingsData = Array.isArray(results[1]) ? results[1] : [];
+        var mainTabData = Array.isArray(results[2]) ? results[2] : lynchingsData;
+        renderCharts(timelineData, lynchingsData, mainTabData);
+      });
+    }
+    function renderCharts(timelineData, lynchingsData, mainTabData) {
 
     // --- Chart 1: Incidents Over Time ---
-    // Count incidents by year from lynchings data
+    // Use Main tab (Chinese lynchings master): incidents = row count per year, victims = sum per year
     const yearCounts = {};
-    lynchingsData.forEach(record => {
+    mainTabData.forEach(record => {
       // Try to get year from year field, or extract from date field
       let y = record.year;
       if (!y || y === 0) {
@@ -317,7 +333,7 @@ import "../../styles/western-colors.css";
 
     // --- Chart 1b: Victims Over Time ---
     const victimsByYearTimeline = {};
-    lynchingsData.forEach(record => {
+    mainTabData.forEach(record => {
       let y = record.year;
       if (!y || y === 0) {
         if (record.date) {
@@ -329,7 +345,7 @@ import "../../styles/western-colors.css";
       } else {
         y = parseInt(y);
       }
-      const victims = Number(record['number-of-victims']) || 0;
+      const victims = Number(record['number-of-victims']) || 1;
       if (y && !isNaN(y) && y >= 1850 && y <= 1920) {
         victimsByYearTimeline[y] = (victimsByYearTimeline[y] || 0) + victims;
       }
@@ -391,7 +407,59 @@ import "../../styles/western-colors.css";
       responsive: true
     });
 
-    // --- Charts 1c–1f: By-State (stacked and horizontal bars) ---
+    // --- Chart 3: Incidents and Victims Over Time (stacked area) ---
+    const incVicDelta = years.map((y, i) => Math.max(0, victimCounts[i] - counts[i]));
+    const incVicTableRows = years.map((y, i) => [y, counts[i].toString(), victimCounts[i].toString()]);
+    createDataTable('chart-incidents-victims-table', ['Year', 'Incidents', 'Victims'], incVicTableRows, 'Data table for incidents and victims over time chart');
+    const chartIncidentsVictims = echarts.init(document.getElementById('chart-incidents-victims'));
+    chartIncidentsVictims.setOption({
+      title: { text: '', left: 'center' },
+      tooltip: {
+        trigger: 'axis',
+        backgroundColor: 'var(--western-wheat)',
+        borderColor: 'var(--western-saddle-brown)',
+        textStyle: { color: 'var(--western-saddle-brown)' },
+        formatter: (params) => {
+          if (!params || !params[0]) return '';
+          const i = params[0].dataIndex;
+          const inc = counts[i];
+          const vic = victimCounts[i];
+          return `${params[0].axisValue}<br/>Incidents: ${inc}<br/>Victims: ${vic}`;
+        }
+      },
+      legend: {
+        data: ['Incidents', 'Victims'],
+        bottom: 8,
+        textStyle: { color: 'var(--western-saddle-brown)', fontSize: 14 }
+      },
+      xAxis: {
+        type: 'category',
+        data: years,
+        axisLabel: { align: 'center', color: 'var(--western-saddle-brown)' },
+        axisTick: { alignWithLabel: true },
+        axisLine: { lineStyle: { color: 'var(--western-sienna)' } }
+      },
+      yAxis: {
+        type: 'value',
+        name: 'Number of Incidents and Victims',
+        nameLocation: 'center',
+        nameGap: 50,
+        nameRotate: 90,
+        nameTextStyle: { fontWeight: 'bold', fontSize: 16, fontFamily: 'sans-serif', color: 'var(--western-saddle-brown)' },
+        position: 'left',
+        axisLabel: { color: 'var(--western-saddle-brown)' },
+        axisLine: { lineStyle: { color: 'var(--western-sienna)' } },
+        splitLine: { lineStyle: { color: 'var(--western-burlywood)', opacity: 0.3 } }
+      },
+      series: [
+        { name: 'Incidents', type: 'line', stack: 'total', data: counts, areaStyle: { color: '#16a34a' }, lineStyle: { width: 2, color: '#16a34a' }, symbol: 'circle', symbolSize: 6, itemStyle: { color: '#16a34a' } },
+        { name: 'Victims', type: 'line', stack: 'total', data: incVicDelta, areaStyle: { color: '#86efac' }, lineStyle: { width: 2, color: '#4ade80' }, symbol: 'circle', symbolSize: 6, itemStyle: { color: '#4ade80' } }
+      ],
+      grid: { left: 80, right: 30, top: 50, bottom: 80 },
+      responsive: true
+    });
+
+    // --- Charts 4a–4d: By-State (stacked and horizontal bars) ---
     const getYear = (r) => {
       let y = r.year;
       if (!y || y === 0) {
@@ -406,7 +474,7 @@ import "../../styles/western-colors.css";
     const victimsByDecadeByState = {};
     const stateTotals = {};
     const stateVictimTotals = {};
-    lynchingsData.forEach((r) => {
+    mainTabData.forEach((r) => {
       const y = getYear(r);
       const state = (r.state || 'Unknown').trim() || 'Unknown';
       const v = Number(r['number-of-victims']) || 1;
@@ -420,10 +488,10 @@ import "../../styles/western-colors.css";
         stateVictimTotals[state] = (stateVictimTotals[state] || 0) + v;
       }
     });
-    const statesSorted = Object.keys(stateTotals).sort((a, b) => (stateTotals[b] || 0) - (stateTotals[a] || 0));
+    const statesSorted = Object.keys(stateTotals).sort((a, b) => (stateVictimTotals[b] || 0) - (stateVictimTotals[a] || 0));
     const topStates = statesSorted.slice(0, TOP_N);
     const stackOrder = [...topStates, 'Other'];
-    const stateSeriesColors = ['#2563eb', '#dc2626', '#059669', '#7c3aed', '#d97706', '#0891b2', '#4f46e5'];
+    const stateSeriesColors = ['#2563eb', '#dc2626', '#059669', '#7c3aed', '#d97706', '#0891b2', '#9ca3af'];
 
     const totalsByDecadeEvents = decades.map((dec) =>
       stackOrder.reduce((sum, state) => {
@@ -518,52 +586,33 @@ import "../../styles/western-colors.css";
     });
 
     const incByState = statesSorted.map((s) => stateTotals[s] || 0);
-    const incByStateTableRows = statesSorted.map((s, i) => [s, incByState[i].toString()]);
-    createDataTable('chart-incident-by-state-table', ['State', 'Incidents'], incByStateTableRows, 'Data table for incident count by state chart');
-    const chartIncidentState = echarts.init(document.getElementById('chart-incident-by-state'));
-    chartIncidentState.setOption({
-      tooltip: { trigger: 'axis', backgroundColor: 'var(--western-wheat)', borderColor: 'var(--western-saddle-brown)', textStyle: { color: 'var(--western-saddle-brown)' } },
-      grid: { left: 100, right: 55, top: 20, bottom: 30 },
-      xAxis: {
-        type: 'value',
-        min: 0,
-        max: 40,
-        interval: 10,
-        axisLabel: { show: true, color: 'var(--western-saddle-brown)' },
-        axisLine: { show: true, lineStyle: { color: 'var(--western-sienna)' } },
-        axisTick: { show: true, lineStyle: { color: 'var(--western-sienna)' } },
-        splitLine: { lineStyle: { color: 'var(--western-burlywood)', opacity: 0.3 } },
-      },
-      yAxis: { type: 'category', data: statesSorted, inverse: true, axisLabel: { color: 'var(--western-saddle-brown)' }, axisLine: { lineStyle: { color: 'var(--western-sienna)' } } },
-      series: [{ type: 'bar', data: incByState, itemStyle: { color: '#2563eb' }, barWidth: '60%', label: { show: true, position: 'right', color: 'var(--western-saddle-brown)', fontWeight: 'bold' } }],
-      responsive: true
-    });
-
     const vicByState = statesSorted.map((s) => stateVictimTotals[s] || 0);
-    const vicByStateTableRows = statesSorted.map((s, i) => [s, vicByState[i].toString()]);
-    createDataTable('chart-victim-by-state-table', ['State', 'Victims'], vicByStateTableRows, 'Data table for victim count by state chart');
-    const chartVictimState = echarts.init(document.getElementById('chart-victim-by-state'));
-    chartVictimState.setOption({
+    const stateTableRows = statesSorted.map((s, i) => [s, incByState[i].toString(), vicByState[i].toString()]);
+    createDataTable('chart-incident-victim-by-state-table', ['State', 'Incidents', 'Victims'], stateTableRows, 'Data table for incident and victim count by state chart');
+    const chartIncidentVictimState = echarts.init(document.getElementById('chart-incident-victim-by-state'));
+    chartIncidentVictimState.setOption({
       tooltip: { trigger: 'axis', backgroundColor: 'var(--western-wheat)', borderColor: 'var(--western-saddle-brown)', textStyle: { color: 'var(--western-saddle-brown)' } },
-      grid: { left: 100, right: 50, top: 20, bottom: 30 },
+      legend: { bottom: 0, data: ['Victims', 'Incidents'], textStyle: { color: 'var(--western-saddle-brown)' } },
+      grid: { left: 100, right: 55, top: 20, bottom: 55 },
       xAxis: {
         type: 'value',
         min: 0,
-        max: 100,
-        interval: 20,
         axisLabel: { show: true, color: 'var(--western-saddle-brown)' },
         axisLine: { show: true, lineStyle: { color: 'var(--western-sienna)' } },
         axisTick: { show: true, lineStyle: { color: 'var(--western-sienna)' } },
         splitLine: { lineStyle: { color: 'var(--western-burlywood)', opacity: 0.3 } },
       },
-      yAxis: { type: 'category', data: statesSorted, inverse: true, axisLabel: { color: 'var(--western-saddle-brown)' }, axisLine: { lineStyle: { color: 'var(--western-sienna)' } } },
-      series: [{ type: 'bar', data: vicByState, itemStyle: { color: '#dc2626' }, barWidth: '60%', label: { show: true, position: 'right', color: 'var(--western-saddle-brown)', fontWeight: 'bold' } }],
+      yAxis: { type: 'category', data: statesSorted, inverse: true, axisLabel: { color: 'var(--western-saddle-brown)' }, axisLine: { lineStyle: { color: 'var(--western-sienna)' } }, axisTick: { show: false }, splitLine: { show: false } },
+      series: [
+        { name: 'Victims', type: 'bar', data: vicByState, itemStyle: { color: '#dc2626' }, barGap: '0%', label: { show: true, position: 'right', color: 'var(--western-saddle-brown)', fontWeight: 'bold', fontSize: 11 } },
+        { name: 'Incidents', type: 'bar', data: incByState, itemStyle: { color: '#2563eb' }, barGap: '0%', label: { show: true, position: 'right', color: 'var(--western-saddle-brown)', fontWeight: 'bold', fontSize: 11 } },
+      ],
       responsive: true
     });
 
     // --- Chart 2: Types of Violence ---
     const typeCounts = {};
-    lynchingsData.forEach(e => {
+    mainTabData.forEach(e => {
       const t = e['event-type'] || 'Unknown';
       const victims = Number(e['number-of-victims']) || 1;
       typeCounts[t] = (typeCounts[t] || 0) + victims;
@@ -880,9 +929,9 @@ import "../../styles/western-colors.css";
     // Fill last census year
     popByYear[popData[popData.length - 1].year] = popData[popData.length - 1].population;
 
-    // Victims per year from lynchings data (live spreadsheet)
+    // Victims per year from Main tab (Chinese lynchings master, live spreadsheet)
     const victimsByYear = {};
-    lynchingsData.forEach(record => {
+    mainTabData.forEach(record => {
       let y = record.year;
       if (!y || y === 0) {
         if (record.date) {
@@ -1140,28 +1189,34 @@ import "../../styles/western-colors.css";
     const el = (id, base, n) => { const e = document.getElementById(id); if (e) e.textContent = base + ` (N=${n})`; };
     el('tagline-chart-1', 'Annual count of anti-Chinese violence events, 1850–1920.', totalIncidents);
     el('tagline-chart-2', 'Annual count of victims, 1850–1920.', totalVictims);
-    el('tagline-chart-3a', 'Stacked bar chart: incidents per decade, broken down by state.', totalIncidents);
-    el('tagline-chart-3b', 'Stacked bar chart: victims per decade, broken down by state.', totalVictims);
-    el('tagline-chart-3c', 'Total number of documented incidents per state.', totalIncidents);
-    el('tagline-chart-3d', 'Total number of victims per state.', totalVictims);
-    el('tagline-chart-4', 'Breakdown of event types in the lynching records.', totalTypesVictims);
-    el('tagline-chart-5a', 'Distribution of violence categories.', totalCategory);
-    el('tagline-chart-5b', 'Distribution of stated pretexts.', totalPretext);
-    el('tagline-chart-6', 'Distribution of killing methods.', totalKillingMethod);
+    { const avg = totalIncidents ? (totalVictims / totalIncidents).toFixed(1) : '0'; const e = document.getElementById('tagline-chart-3-inc-vic'); if (e) e.textContent = `Incidents (N=${totalIncidents}) and victims (N=${totalVictims}) from 1850–1920. Average number of victims per incident: ${avg}.`; }
+    el('tagline-chart-4a', 'Stacked bar chart: incidents per decade, broken down by state.', totalIncidents);
+    el('tagline-chart-4b', 'Stacked bar chart: victims per decade, broken down by state.', totalVictims);
+    { const e = document.getElementById('tagline-chart-4c'); if (e) e.textContent = `Incidents (blue) and victims (red) per state, sorted by victim count (N=${totalIncidents} incidents, N=${totalVictims} victims).`; }
+    el('tagline-chart-5', 'Breakdown of event types in the lynching records.', totalTypesVictims);
+    el('tagline-chart-6a', 'Distribution of violence categories.', totalCategory);
+    el('tagline-chart-6b', 'Distribution of stated pretexts.', totalPretext);
+    el('tagline-chart-7', 'Distribution of killing methods.', totalKillingMethod);
 
-    window.addEventListener('resize', function() {
+    const resizeAllCharts = () => {
       chartTimeline.resize();
       chartVictims.resize();
+      chartIncidentsVictims.resize();
       chartLethal.resize();
       chartVictimsState.resize();
-      chartIncidentState.resize();
-      chartVictimState.resize();
+      chartIncidentVictimState.resize();
       chartTypes.resize();
       chartPieCategory.resize();
       chartPiePretext.resize();
       chartPieKillingMethod.resize();
       chartCombo.resize();
       setTimeout(renderPolicyEventGraphics, 60);
-    });
+    };
+
+    window.addEventListener('resize', resizeAllCharts);
+    requestAnimationFrame(function() { setTimeout(resizeAllCharts, 50); });
+    } // end renderCharts
+    initAllCharts();
+    })();
   </script>
 </PageLayout>

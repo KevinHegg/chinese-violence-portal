@@ -284,7 +284,7 @@ function buildChartConfigs(data) {
   const incFont = 'Times New Roman';
   const incFontSize = 20;
   configs.push({
-    name: '1 incidents of anti-chinese violence over time',
+    name: '1. Incidents of Anti-Chinese Violence Over Time',
     width: PRINT.width,
     height: PRINT.heightStandard,
     pixelRatio: PRINT.pixelRatio,
@@ -328,7 +328,7 @@ function buildChartConfigs(data) {
   const years = data.years1850_1920.map(String);
   const vicCounts = data.years1850_1920.map((y) => data.victimCounts[y] || 0);
   configs.push({
-    name: '2 number of victims of anti-chinese violence over time',
+    name: '2. Number of Victims of Anti-Chinese Violence Over Time',
     width: PRINT.width,
     height: PRINT.heightStandard,
     pixelRatio: PRINT.pixelRatio,
@@ -338,6 +338,38 @@ function buildChartConfigs(data) {
       yAxis: { type: 'value', name: 'Number of Victims', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, ...axisYLeft() },
       series: [{ type: 'line', data: vicCounts, smooth: false, lineStyle: { color: '#1a1a1a', width: 2.5 }, areaStyle: { color: '#e8e8e8' }, itemStyle: { color: '#1a1a1a' }, symbol: 'circle', symbolSize: 5 }],
       grid: { left: 75 + Pl, right: 40 + Pr, top: 20 + Pt, bottom: 55 + Pb },
+    },
+  });
+
+  // 2.5 Incidents and Victims over time (stacked area, medium green + lighter green)
+  const incVicDelta = incCounts.map((inc, i) => Math.max(0, vicCounts[i] - inc));
+  const totalIncidents3 = incCounts.reduce((a, b) => a + b, 0);
+  const totalVictims3 = vicCounts.reduce((a, b) => a + b, 0);
+  const avgVictimsPerIncident = totalIncidents3 ? (totalVictims3 / totalIncidents3).toFixed(1) : '0';
+  configs.push({
+    name: '3. Number Incidents and Victims Over Time',
+    width: PRINT.width,
+    height: PRINT.heightStandard,
+    pixelRatio: PRINT.pixelRatio,
+    option: {
+      ...base(),
+      title: {
+        show: true,
+        text: 'Incidents (N=' + totalIncidents3 + ') and victims (N=' + totalVictims3 + ') from 1850–1920.',
+        subtext: 'Average number of victims per incident: ' + avgVictimsPerIncident + '.',
+        left: 'center',
+        top: 8,
+        textStyle: { color: T.text, fontFamily: T.font, fontSize: 14 },
+        subtextStyle: { color: T.text, fontFamily: T.font, fontSize: 12 },
+      },
+      xAxis: { type: 'category', data: years, ...axis() },
+      yAxis: { type: 'value', name: 'Number of Incidents and Victims', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, ...axisYLeft() },
+      series: [
+        { name: 'Incidents', type: 'line', stack: 'total', data: incCounts, areaStyle: { color: '#16a34a' }, lineStyle: { width: 2, color: '#16a34a' }, symbol: 'circle', symbolSize: 5, itemStyle: { color: '#16a34a' } },
+        { name: 'Victims', type: 'line', stack: 'total', data: incVicDelta, areaStyle: { color: '#86efac' }, lineStyle: { width: 2, color: '#4ade80' }, symbol: 'circle', symbolSize: 5, itemStyle: { color: '#4ade80' } },
+      ],
+      legend: { bottom: 8 + Pb, textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
+      grid: { left: 75 + Pl, right: 40 + Pr, top: 55 + Pt, bottom: 55 + Pb },
     },
   });
 
@@ -370,7 +402,7 @@ function buildChartConfigs(data) {
     };
   });
   configs.push({
-    name: '3a number of lethal events by state over time',
+    name: '4a. Number of Lethal Events by State Over Time',
     width: PRINT.width,
     height: PRINT.heightStandard,
     pixelRatio: PRINT.pixelRatio,
@@ -413,7 +445,7 @@ function buildChartConfigs(data) {
     };
   });
   configs.push({
-    name: '3b number of victims by state over time',
+    name: '4b. Number of Victims by State Over Time',
     width: PRINT.width,
     height: PRINT.heightStandard,
     pixelRatio: PRINT.pixelRatio,
@@ -427,57 +459,38 @@ function buildChartConfigs(data) {
     },
   });
 
-  const stateNames = data.statesSorted;
-  const incByState = stateNames.map((s) => data.stateTotals[s] || 0);
-  data.incidentCountByStateRows = stateNames.map((s) => ({ name: s, value: data.stateTotals[s] || 0 }));
-  data.victimCountByStateRows = stateNames.map((s) => ({ name: s, value: data.stateVictimTotals[s] || 0 }));
   const totalIncidents = Object.values(data.stateTotals).reduce((a, b) => a + b, 0);
   const totalVictims = Object.values(data.stateVictimTotals).reduce((a, b) => a + b, 0);
+  const stateNamesByVictims = Object.keys(data.stateTotals || {}).sort(
+    (a, b) => (data.stateVictimTotals[b] || 0) - (data.stateVictimTotals[a] || 0)
+  );
+  const incByState4c = stateNamesByVictims.map((s) => data.stateTotals[s] || 0);
+  const vicByState4c = stateNamesByVictims.map((s) => data.stateVictimTotals[s] || 0);
+  data.incidentCountByStateRows = stateNamesByVictims.map((s) => ({ name: s, value: data.stateTotals[s] || 0 }));
+  data.victimCountByStateRows = stateNamesByVictims.map((s) => ({ name: s, value: data.stateVictimTotals[s] || 0 }));
 
   configs.push({
-    name: `3c incident count by state (N=${totalIncidents})`,
+    name: '4c. Incident and Victim Count by State',
     width: PRINT.width,
-    height: PRINT.heightSmall,
+    height: 550,
     pixelRatio: PRINT.pixelRatio,
     option: {
       ...base(),
-      grid: { left: 100 + Pl, right: 40 + Pr, top: 20 + Pt, bottom: 30 + Pb },
+      legend: { bottom: 3 + Pb, data: ['Victims', 'Incidents'], textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
+      grid: { left: 100 + Pl, right: 50 + Pr, top: 10 + Pt, bottom: 65 + Pb },
       xAxis: {
         type: 'value',
         min: 0,
-        max: 40,
-        interval: 10,
-        axisLabel: { show: true, color: T.text, fontFamily: T.font, fontSize: F.axisLabel },
+        axisLabel: { show: true, color: T.text, fontFamily: T.font, fontSize: 14 },
         axisLine: { show: true, lineStyle: { color: T.axis } },
         axisTick: { show: true, lineStyle: { color: T.axis } },
         splitLine: { lineStyle: { color: T.grid, opacity: 0.6 } },
       },
-      yAxis: { type: 'category', data: stateNames, inverse: true, axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel }, axisLine: { lineStyle: { color: T.axis } } },
-      series: [{ type: 'bar', data: incByState, itemStyle: { color: '#2563eb' }, barWidth: '60%', label: { show: true, position: 'right', color: T.text, fontFamily: T.font, fontSize: F.barLabelBig } }],
-    },
-  });
-
-  const vicByState = stateNames.map((s) => data.stateVictimTotals[s] || 0);
-  configs.push({
-    name: `3d victim count by state (N=${totalVictims})`,
-    width: PRINT.width,
-    height: PRINT.heightSmall,
-    pixelRatio: PRINT.pixelRatio,
-    option: {
-      ...base(),
-      grid: { left: 100 + Pl, right: 40 + Pr, top: 20 + Pt, bottom: 30 + Pb },
-      xAxis: {
-        type: 'value',
-        min: 0,
-        max: 100,
-        interval: 20,
-        axisLabel: { show: true, color: T.text, fontFamily: T.font, fontSize: F.axisLabel },
-        axisLine: { show: true, lineStyle: { color: T.axis } },
-        axisTick: { show: true, lineStyle: { color: T.axis } },
-        splitLine: { lineStyle: { color: T.grid, opacity: 0.6 } },
-      },
-      yAxis: { type: 'category', data: stateNames, inverse: true, axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel }, axisLine: { lineStyle: { color: T.axis } } },
-      series: [{ type: 'bar', data: vicByState, itemStyle: { color: '#dc2626' }, barWidth: '60%', label: { show: true, position: 'right', color: T.text, fontFamily: T.font, fontSize: F.barLabelBig } }],
+      yAxis: { type: 'category', data: stateNamesByVictims, inverse: true, axisLabel: { color: T.text, fontFamily: T.font, fontSize: 14, interval: 0 }, axisLine: { lineStyle: { color: T.axis } }, axisTick: { show: false }, splitLine: { show: false } },
+      series: [
+        { name: 'Victims', type: 'bar', data: vicByState4c, itemStyle: { color: '#dc2626' }, barGap: '0%', label: { show: true, position: 'right', color: T.text, fontFamily: T.font, fontSize: 13 } },
+        { name: 'Incidents', type: 'bar', data: incByState4c, itemStyle: { color: '#2563eb' }, barGap: '0%', label: { show: true, position: 'right', color: T.text, fontFamily: T.font, fontSize: 13 } },
+      ],
     },
   });
 
@@ -486,7 +499,7 @@ function buildChartConfigs(data) {
   const typeColors = typeNames.map((_, i) => T.series[i % T.series.length]);
   const typeBarData = typeVals.map((v, i) => ({ value: v, itemStyle: { color: typeColors[i] } }));
   configs.push({
-    name: '4 types of anti-chinese violence',
+    name: '5. Types of Anti-Chinese Violence',
     width: PRINT.width,
     height: PRINT.heightStandard,
     pixelRatio: PRINT.pixelRatio,
@@ -508,7 +521,7 @@ function buildChartConfigs(data) {
   const categoryDataPub = data.categoryDataPublication || data.categoryData;
   const catColors = categoryDataPub.map((_, i) => T.series[i % T.series.length]);
   configs.push({
-    name: '5a categories of violence',
+    name: '6a. Categories of Violence',
     width: Math.floor(PRINT.width / 2) - 5,
     height: PRINT.heightSmall,
     pixelRatio: PRINT.pixelRatio,
@@ -534,7 +547,7 @@ function buildChartConfigs(data) {
   });
   const preColors = pretextDataPub.map((_, i) => T.series[i % T.series.length]);
   configs.push({
-    name: '5b pretexts for violence',
+    name: '6b. Pretexts for Violence',
     width: Math.floor(PRINT.width / 2) - 5,
     height: PRINT.heightSmall,
     pixelRatio: PRINT.pixelRatio,
@@ -564,7 +577,7 @@ function buildChartConfigs(data) {
   const killingMethodDataPub = data.killingMethodDataPublication || data.killingMethodData;
   const kmColors = killingMethodDataPub.map((_, i) => T.series[i % T.series.length]);
   configs.push({
-    name: '6 distribution of killing method',
+    name: '7. Killing Method',
     width: PRINT.width,
     height: PRINT.heightSmall,
     pixelRatio: PRINT.pixelRatio,
@@ -581,7 +594,7 @@ function buildChartConfigs(data) {
   const maxV = Math.max(...victimsSeries, 1);
   const labelTop = maxV + Math.max(3, Math.round(maxV * 0.15));
   configs.push({
-    name: '7 victims and chinese population 1850-1915',
+    name: '8. Anti-Chinese Violence and Chinese Population in the U.S. (1850-1915)',
     width: PRINT.width,
     height: PRINT.heightTall,
     pixelRatio: PRINT.pixelRatio,
@@ -591,14 +604,14 @@ function buildChartConfigs(data) {
       legend: { data: ['Victims', 'Chinese Population'], bottom: 8 + Pb, textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
       xAxis: { type: 'category', data: data.comboYears, ...axis() },
       yAxis: [
-        { type: 'value', name: 'Number of Victims', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, position: 'left', max: labelTop + 2, ...axisYLeft() },
-        { type: 'value', name: 'Chinese Population', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, position: 'right', axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel, rotate: 0 }, ...axisYRight() },
+        { type: 'value', name: 'Number of Victims', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, position: 'left', max: labelTop + 2, ...axisYLeft(), nameGap: 40 },
+        { type: 'value', name: 'Chinese Population', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, position: 'right', axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel, rotate: 0 }, ...axisYRight(), nameGap: 90 },
       ],
       series: [
         { name: 'Victims', type: 'bar', data: victimsSeries, yAxisIndex: 0, itemStyle: { color: T.series[0] }, barWidth: '60%', markLine: { silent: true, symbol: ['none', 'none'], lineStyle: { color: T.axis, type: 'dashed', width: 1 }, data: data.policyEvents.map((e) => ({ xAxis: e.year })) } },
         { name: 'Chinese Population', type: 'line', data: popSeries, yAxisIndex: 1, lineStyle: { color: T.series[1], width: 2 }, symbol: 'circle', symbolSize: 4, itemStyle: { color: T.series[1] } },
       ],
-      grid: { left: 195 + Pl, right: 75 + Pr, top: 35 + Pt, bottom: 65 + Pb },
+      grid: { left: 65 + Pl, right: 105 + Pr, top: 35 + Pt, bottom: 65 + Pb },
     },
   });
 
@@ -726,6 +739,13 @@ async function loadLynchingsFromMainTab() {
           break;
         }
       }
+      let killingMethodGrouped = '';
+      for (const k of Object.keys(r)) {
+        if (k.trim().toLowerCase() === 'killing method grouped') {
+          killingMethodGrouped = (r[k] || '').trim();
+          break;
+        }
+      }
       return {
         year: y,
         date: date || '',
@@ -735,6 +755,7 @@ async function loadLynchingsFromMainTab() {
         'violence-category-grouped': catGrouped || '',
         'category-of-violence': eventType || 'Unknown',
         'pretext-grouped': pretextGrouped || 'Unknown',
+        'killing-method-grouped': killingMethodGrouped || '',
       };
     });
 }
@@ -785,6 +806,24 @@ async function loadPretextDataFromMainTab() {
     pretextCounts[pretext] = (pretextCounts[pretext] || 0) + 1;
   });
   return Object.entries(pretextCounts)
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value);
+}
+
+/** Fetch Main tab Killing Method Grouped from Google Sheets for Chart 7 (explicit column only) */
+async function loadKillingMethodDataFromMainTab() {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${MAIN_TAB_GID}`;
+  const res = await fetch(url);
+  if (!res.ok) return null;
+  const csv = await res.text();
+  const rows = parse(csv, { columns: true, skip_empty_lines: true, relax_column_count: true });
+  const killingMethodCounts = {};
+  const header = Object.keys(rows[0] || {}).find((k) => k.trim().toLowerCase() === "killing method grouped");
+  rows.forEach((r) => {
+    const km = (header ? (r[header] || "").trim() : "") || "Unknown";
+    killingMethodCounts[km] = (killingMethodCounts[km] || 0) + 1;
+  });
+  return Object.entries(killingMethodCounts)
     .map(([name, value]) => ({ name, value }))
     .sort((a, b) => b.value - a.value);
 }
@@ -851,7 +890,10 @@ async function main() {
     console.warn('Could not fetch Main tab for pretexts, using fallback:', e.message);
     return data.pretextData;
   });
-  data.killingMethodDataPublication = data.killingMethodData;
+  data.killingMethodDataPublication = await loadKillingMethodDataFromMainTab().catch((e) => {
+    console.warn('Could not fetch Main tab for Killing Method Grouped, using fallback:', e.message);
+    return data.killingMethodData;
+  });
   const configs = buildChartConfigs(data);
   const html = buildHtml(configs);
 
@@ -879,52 +921,6 @@ async function main() {
     const pngBuf = stripDataUrl(png);
     if (pngBuf) fs.writeFileSync(path.join(extrasDir, `${name}.png`), pngBuf);
     console.log(`Wrote ${name}.png`);
-  }
-
-  const totalIncidents = (data.incidentCountByStateRows || []).reduce((s, r) => s + r.value, 0);
-  const totalVictims = (data.victimCountByStateRows || []).reduce((s, r) => s + r.value, 0);
-  const incRows = data.incidentCountByStateRows || [];
-  if (incRows.length > 0) {
-    const tableBarHtml = buildTableBarHtml(incRows, {
-      barColor: '#2563eb',
-      labelHeader: 'State',
-      valueHeader: 'Incidents',
-      width: PRINT.width,
-      font: theme.font,
-    });
-    await page.setContent(tableBarHtml, { waitUntil: 'load', timeout: 10000 });
-    await new Promise((r) => setTimeout(r, 100));
-    const el = await page.$('#table-bar');
-    if (el) {
-      const buf = await el.screenshot({ type: 'png', omitBackground: false });
-      if (buf) {
-        const name = `3c.1 incident count by state (N=${totalIncidents}).png`;
-        fs.writeFileSync(path.join(extrasDir, name), buf);
-        console.log('Wrote', name);
-      }
-    }
-  }
-
-  const vicRows = data.victimCountByStateRows || [];
-  if (vicRows.length > 0) {
-    const tableBarHtml = buildTableBarHtml(vicRows, {
-      barColor: '#dc2626',
-      labelHeader: 'State',
-      valueHeader: 'Victims',
-      width: PRINT.width,
-      font: theme.font,
-    });
-    await page.setContent(tableBarHtml, { waitUntil: 'load', timeout: 10000 });
-    await new Promise((r) => setTimeout(r, 100));
-    const el = await page.$('#table-bar');
-    if (el) {
-      const buf = await el.screenshot({ type: 'png', omitBackground: false });
-      if (buf) {
-        const name = `3d.1 victim count by state (N=${totalVictims}).png`;
-        fs.writeFileSync(path.join(extrasDir, name), buf);
-        console.log('Wrote', name);
-      }
-    }
   }
 
   await browser.close();

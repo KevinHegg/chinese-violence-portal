@@ -1,24 +1,25 @@
 import type { APIRoute } from 'astro';
 import { fetchLynchingsData, fetchLynchingsMainData } from '../../utils/googleSheets';
 
-// Cache for 5 minutes to reduce API calls
+// Cache for 1 minute so spreadsheet edits show up quickly
 const cache: Record<string, { data: any[]; time: number }> = {};
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = 60 * 1000; // 1 minute
 
 export const GET: APIRoute = async ({ request }) => {
   try {
     const url = new URL(request.url);
     const gid = url.searchParams.get('gid');
+    const nocache = url.searchParams.get('nocache') === '1';
     const cacheKey = gid || 'default';
     
-    // Check cache
+    // Check cache (skip if nocache=1 for immediate spreadsheet updates)
     const now = Date.now();
-    if (cache[cacheKey] && (now - cache[cacheKey].time) < CACHE_DURATION) {
+    if (!nocache && cache[cacheKey] && (now - cache[cacheKey].time) < CACHE_DURATION) {
       return new Response(JSON.stringify(cache[cacheKey].data), {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=300', // 5 minutes
+          'Cache-Control': 'public, max-age=60, must-revalidate', // 5 minutes
         },
       });
     }
@@ -39,7 +40,7 @@ export const GET: APIRoute = async ({ request }) => {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=300',
+        'Cache-Control': 'public, max-age=60, must-revalidate',
       },
     });
   } catch (error) {
