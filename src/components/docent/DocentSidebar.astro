@@ -363,28 +363,21 @@
     if (mobileNotice) mobileNotice.style.display = 'none';
 
     // ---- Load manifest at runtime from /public/docents (editable without rebuild) ----
+    // In production we always fetch so updates to ahyo.yaml are used without stale sessionStorage cache.
     var manifest = null;
     try {
-      var cacheKey = 'docent_manifest_' + docentId;
-      if (!DEV) {
-        var cached = sessionStorage.getItem(cacheKey);
-        if (cached) manifest = JSON.parse(cached);
-      }
-      if (!manifest) {
-        var yamlUrl = '/docents/' + docentId + '.yaml' + (DEV ? '?v=' + Date.now() : '');
-        var res = await fetch(yamlUrl);
-        if (!res.ok) { setDocentActive(false); return; }
-        var text = await res.text();
-        manifest = YAML.parse(text);
-        if (manifest && Array.isArray(manifest.steps)) {
-          manifest.steps = manifest.steps.map(function (s) {
-            var step = Object.assign({}, s);
-            if (!step.scrollTarget && step.anchor)
-              step.scrollTarget = (step.anchor.charAt(0) === '#' ? step.anchor : '#' + step.anchor);
-            return step;
-          });
-        }
-        if (!DEV) try { sessionStorage.setItem(cacheKey, JSON.stringify(manifest)); } catch (e2) {}
+      var yamlUrl = '/docents/' + docentId + '.yaml' + (DEV ? '?v=' + Date.now() : '');
+      var res = await fetch(yamlUrl);
+      if (!res.ok) { setDocentActive(false); return; }
+      var text = await res.text();
+      manifest = YAML.parse(text);
+      if (manifest && Array.isArray(manifest.steps)) {
+        manifest.steps = manifest.steps.map(function (s) {
+          var step = Object.assign({}, s);
+          if (!step.scrollTarget && step.anchor)
+            step.scrollTarget = (step.anchor.charAt(0) === '#' ? step.anchor : '#' + step.anchor);
+          return step;
+        });
       }
     } catch (e) {
       log('manifest load error', e);

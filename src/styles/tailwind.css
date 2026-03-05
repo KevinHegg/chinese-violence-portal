@@ -61,24 +61,6 @@ textarea:focus-visible,
   box-shadow: 0 0 0 2px rgba(0, 95, 204, 0.3);
 }
 
-/* Skip link - always visible on focus */
-.skip-link {
-  position: absolute;
-  top: -40px;
-  left: 0;
-  background: #3c3c3b;
-  color: #f5f5eb;
-  padding: 8px 16px;
-  z-index: 100;
-  transition: top 0.3s;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.skip-link:focus {
-  top: 0;
-}
-
 /* Screen reader only class - visually hidden but accessible to assistive technology */
 .sr-only {
   position: absolute;
