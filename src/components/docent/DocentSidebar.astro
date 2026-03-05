@@ -26,6 +26,7 @@
     <div class="docent-sidebar__body">
       <p id="docent-step-text" class="docent-sidebar__text">This record opens where John Crow and Jim Crow visibly converge: a Chinese victim, a Southern setting, a familiar lynching script, and impunity. It is a point of entry into a national story of racial terror.</p>
       <p id="docent-step-counter" class="docent-sidebar__counter">Step 1 of 8</p>
+      <div id="docent-progress-dots" class="docent-sidebar__dots" aria-hidden="true"></div>
     </div>
 
     <footer class="docent-sidebar__footer">
@@ -44,7 +45,12 @@
   role="status"
   style="display:none;"
 >
-  Digital Docent mode is currently desktop-only.
+  <div class="docent-mobile-notice__inner">
+    <p class="docent-mobile-notice__text">
+      Digital Docent mode is currently desktop-only on narrow viewports. If you're on a desktop, widen your browser window and try again.
+    </p>
+    <a href="/tour" class="docent-mobile-notice__exit">Exit to Tour</a>
+  </div>
 </div>
 
 <style is:global>
@@ -57,7 +63,7 @@
     z-index: 5000;
     background: #ffffff;
     color: #1f2937;
-    border-left: 1px solid #e5e7eb;
+    border-left: 2px solid rgba(22, 101, 52, 0.45);
     box-shadow: -4px 0 12px rgba(0, 0, 0, 0.06);
     display: flex;
     flex-direction: column;
@@ -130,6 +136,33 @@
     color: #6b7280;
   }
 
+  .docent-sidebar__dots {
+    display: flex;
+    gap: 6px;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .docent-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    border: 2px solid rgba(22, 101, 52, 0.5);
+    background: transparent;
+    flex-shrink: 0;
+  }
+
+  .docent-dot--done {
+    background: rgba(22, 101, 52, 0.7);
+    border-color: rgba(22, 101, 52, 0.7);
+  }
+
+  .docent-dot--active {
+    background: rgb(22, 101, 52);
+    border-color: rgb(22, 101, 52);
+    box-shadow: 0 0 0 2px rgba(22, 101, 52, 0.25);
+  }
+
   .docent-sidebar__footer {
     flex-shrink: 0;
     display: flex;
@@ -162,9 +195,18 @@
   }
 
   .docent-sidebar__btn--primary {
-    background: #fcd34d;
-    border-color: #f59e0b;
-    color: #3f2d03;
+    background: rgba(22, 101, 52, 0.95);
+    border-color: rgba(22, 101, 52, 1);
+    color: #ffffff;
+  }
+
+  .docent-sidebar__btn--primary:hover:not(:disabled) {
+    background: rgba(16, 80, 42, 1);
+  }
+
+  .docent-sidebar__btn--primary:focus-visible {
+    outline: 2px solid rgba(22, 101, 52, 0.7);
+    outline-offset: 2px;
   }
 
   .docent-sidebar__btn--text {
@@ -184,9 +226,10 @@
 
   .docent-mobile-notice {
     position: fixed;
-    right: 1rem;
-    left: 1rem;
-    bottom: 1rem;
+    top: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
     z-index: 9999;
     border: 1px solid #fcd34d;
     border-radius: 0.75rem;
@@ -194,7 +237,28 @@
     color: #374151;
     padding: 0.75rem 1rem;
     font-size: 0.88rem;
+    max-width: 48rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  .docent-mobile-notice__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .docent-mobile-notice__text {
+    margin: 0;
+    flex: 1 1 auto;
+  }
+
+  .docent-mobile-notice__exit {
+    flex: 0 0 auto;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #92400e;
+    text-decoration: underline;
   }
 
   @media (max-width: 1023px) {
@@ -289,6 +353,7 @@
     var resumeBtn = sidebar.querySelector('#docent-resume');
     var exitBtn = sidebar.querySelector('#docent-exit');
     var versionEl = sidebar.querySelector('#docent-manifest-version');
+    var dotsEl = sidebar.querySelector('#docent-progress-dots');
 
     if (window.innerWidth < DESKTOP_MIN_WIDTH) {
       setDocentActive(false);
@@ -366,16 +431,19 @@
   }
 
   // Absolute-position scroll — no hashes, no drift
+  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var scrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
+
   function scrollToSelector(selector) {
     if (!selector) return;
     if (selector === '#record-top') {
-      window.scrollTo({ top: 0, behavior: 'auto' });
+      window.scrollTo({ top: 0, behavior: scrollBehavior });
       return;
     }
     waitForEl(selector, function(el) {
       var hdr = getHeaderHeight();
       var y = el.getBoundingClientRect().top + window.scrollY - hdr - 8;
-      window.scrollTo({ top: Math.max(0, y), behavior: 'auto' });
+      window.scrollTo({ top: Math.max(0, y), behavior: scrollBehavior });
     });
   }
 
@@ -442,6 +510,16 @@
     if (titleEl) titleEl.textContent = step.title;
     if (textEl) textEl.innerHTML = step.text || '';
     if (counterEl) counterEl.textContent = 'Step ' + (stepIndex + 1) + ' of ' + manifest.steps.length;
+    if (dotsEl) {
+      var html = '';
+      for (var d = 0; d < manifest.steps.length; d++) {
+        var cls = d < stepIndex ? 'docent-dot docent-dot--done'
+                : d === stepIndex ? 'docent-dot docent-dot--active'
+                : 'docent-dot';
+        html += '<span class="' + cls + '"></span>';
+      }
+      dotsEl.innerHTML = html;
+    }
     if (backBtn) backBtn.disabled = stepIndex <= 0;
     if (nextBtn) nextBtn.textContent = stepIndex >= manifest.steps.length - 1 ? 'Finish' : 'Next';
     sidebar.style.display = 'flex';

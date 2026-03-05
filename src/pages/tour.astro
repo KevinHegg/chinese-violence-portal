@@ -34,27 +34,43 @@ import PageLayout from "../layouts/PageLayout.astro";
             decoding="async"
           />
           <div class="flex flex-col items-start">
-            <h2 id="docent-tour-heading" class="text-2xl font-display font-semibold mb-2 text-base-content">Digital Docent Tours</h2>
+            <h2 id="docent-tour-heading" class="text-2xl font-display font-semibold mb-2 text-base-content">Digital Docent Tours*</h2>
             <p class="mb-0">Curated, interpretive walkthroughs that show how evidence becomes argument.</p>
           </div>
         </div>
         <button
           id="start-docent-ahyo"
           type="button"
-          class="inline-flex items-center px-4 py-2 bg-amber-200 hover:bg-amber-300 text-vintage-ink font-semibold rounded-lg border border-amber-300 transition-colors"
+          class="tour-docent-btn inline-flex items-center px-4 py-2 font-semibold rounded-lg border transition-colors"
         >
-          Start Ah Yo case study
+          Start Ah Yo Case Study
         </button>
-        <p class="mt-3 text-sm text-gray-600">
-          Docent tours are self-paced and are interpretive. Use the Quick Tour if you want an overview of how the site is organized.
+        <hr class="mt-[41px] mb-0.5 w-[75px] border-t border-gray-300 text-left" />
+        <p class="text-sm text-gray-600">
+          *Docent tours are self-paced and interpretive. Use the <strong>Quick Tour</strong> if you want an overview of how the site is organized.
         </p>
         <p id="docent-desktop-only-note" class="mt-2 text-sm text-amber-700 hidden" role="status">
-          Digital Docent mode is currently desktop-only.
+          Digital Docent mode currently requires a wider screen (desktop layout). If you're on a desktop, widen your browser window and try again (requires viewport width of at least 1024px).
         </p>
       </section>
     </div>
   </section>
 </PageLayout>
+
+<style>
+  .tour-docent-btn {
+    background: rgba(22, 101, 52, 0.95);
+    border-color: rgba(22, 101, 52, 1);
+    color: #ffffff;
+  }
+  .tour-docent-btn:hover:not(:disabled) {
+    background: rgba(16, 80, 42, 1);
+  }
+  .tour-docent-btn:focus-visible {
+    outline: 2px solid rgba(22, 101, 52, 0.7);
+    outline-offset: 2px;
+  }
+</style>
 
 <script type="module">
   const START_KEY = "johncrow_start_tour";
@@ -74,20 +90,36 @@ import PageLayout from "../layouts/PageLayout.astro";
   const mobileNotice = document.getElementById("tour-mobile-notice");
   const tourRoot = document.getElementById("tour-page-root");
 
-  const syncMobileState = () => {
+  const syncLayoutState = () => {
     const isMobile = window.innerWidth < 768;
+    const tooNarrowForDocent = window.innerWidth < 1024;
+
     if (mobileNotice) mobileNotice.hidden = !isMobile;
     if (tourRoot) tourRoot.setAttribute("data-mobile", isMobile ? "true" : "false");
+
+    if (docentButton) {
+      docentButton.disabled = tooNarrowForDocent;
+      if (tooNarrowForDocent) {
+        docentButton.classList.add("opacity-60", "cursor-not-allowed");
+      } else {
+        docentButton.classList.remove("opacity-60", "cursor-not-allowed");
+      }
+    }
+
+    if (docentDesktopOnlyNote) {
+      docentDesktopOnlyNote.classList.toggle("hidden", !tooNarrowForDocent);
+    }
   };
 
-  syncMobileState();
-  window.addEventListener("resize", syncMobileState);
+  syncLayoutState();
+  window.addEventListener("resize", syncLayoutState);
 
   startButton?.addEventListener("click", () => beginTour());
   docentButton?.addEventListener("click", () => {
-    const isDesktop = window.innerWidth >= 768;
-    if (!isDesktop) {
-      docentDesktopOnlyNote?.classList.remove("hidden");
+    const isWideEnough = window.innerWidth >= 1024;
+    if (!isWideEnough) {
+      // Button is already disabled + notice visible from syncLayoutState; optionally ensure it is in view.
+      docentDesktopOnlyNote?.scrollIntoView({ behavior: "smooth", block: "nearest" });
       return;
     }
 

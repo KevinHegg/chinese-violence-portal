@@ -24,6 +24,15 @@ steps:
 
   - id: 2
     route: "/records/MS1885-05-05"
+    anchor: "record-metadata"
+    highlight: "#record-metadata"
+    title: "Metadata as a connector"
+    text: >
+      Metadata is how the archive stays testable: place, date, pretext, and linked sources make
+      the argument verifiable and comparable across cases.
+
+  - id: 3
+    route: "/records/MS1885-05-05"
     anchor: "record-narrative"
     highlight: "#record-narrative-title"
     title: "Narrative is reconstruction"
@@ -31,7 +40,7 @@ steps:
       The narrative is not decoration. It is a reconstruction built from linked newspaper artifacts
       and structured metadata—designed to move you from story to evidence without losing the thread.
 
-  - id: 3
+  - id: 4
     route: "/records/MS1885-05-05"
     anchor: "record-evidence"
     highlight: "#record-evidence-title"
@@ -39,7 +48,7 @@ steps:
     text: >
       These article cards are the primary-source spine. Open one to see the scan, transcript, and citation together.
 
-  - id: 4
+  - id: 5
     route: "/records/MS1885-05-05"
     anchor: "record-evidence"
     highlight: false
@@ -50,7 +59,7 @@ steps:
     text: >
       Notice how the report frames <strong>accusation</strong>, <strong>legitimacy</strong>, <strong>custodial vulnerability</strong>, and <strong>legal impunity</strong>—and how that language travels beyond the local scene.
 
-  - id: 5
+  - id: 6
     route: "/visualize/charts#chart-03"
     anchor: "chart-03"
     highlight: "#chart-03-title"
@@ -60,7 +69,7 @@ steps:
       Now step back: this chart translates individual cases into structure—showing how violence clusters,
       spikes, and becomes legible as a system rather than a series of isolated acts.
 
-  - id: 6
+  - id: 7
     route: "/visualize/map?all=1&focus=MS1885-05-05"
     anchor: "map-docent-wrapper"
     highlight: false
@@ -68,16 +77,10 @@ steps:
     title: "Place the case on the map"
     text: >
       With all incidents visible, the Mississippi Delta stops looking like an exception.
-      Focus reveals the record's location; the full layer shows how violence spreads across regions.</br></br>Use the minus ('-') button on the top-left corner of the map to zoom out and see the wider dispersion of lynching incidents across the American West.
-
-  - id: 7
-    route: "/records/MS1885-05-05"
-    anchor: "record-metadata"
-    highlight: "#record-metadata"
-    title: "Metadata as connective tissue"
-    text: >
-      Metadata is how the archive stays testable: place, date, pretext, and linked sources make
-      the argument verifiable—and comparable across cases.
+      Focus reveals the record's location; the full layer shows how violence spreads across regions.
+      <br><br>
+      Use the minus ('-') button on the top-left corner of the map to zoom out and see the wider dispersion
+      of lynching incidents across the American West.
 
   - id: 8
     route: "/records/MS1885-05-05"
