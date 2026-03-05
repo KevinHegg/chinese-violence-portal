@@ -1,0 +1,69 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro";
+import { fetchLynchingsData } from "../../utils/googleSheets";
+
+export const prerender = false;
+
+const lynchingsData = await fetchLynchingsData();
+const incidentCount = lynchingsData.length;
+const victimCount = lynchingsData.reduce((sum, record) => {
+  const victims = parseInt(record["number-of-victims"]) || 0;
+  return sum + victims;
+}, 0);
+---
+
+<PageLayout title="Project & Thesis" currentPage="about">
+  <section aria-labelledby="project-thesis-title" class="mb-8">
+    <h1 id="project-thesis-title" class="text-4xl font-bold mb-6">Project &amp; Thesis</h1>
+
+    <div class="space-y-8 text-gray-700 leading-relaxed">
+      <section aria-labelledby="about-the-project-title">
+        <h2 id="about-the-project-title" class="text-2xl font-display font-semibold mb-4 text-base-content">About the Project</h2>
+        <p class="font-body leading-relaxed">
+          Welcome to the John Crow Project. This site revives a neglected chapter of American history: the white supremacist violence and legal exclusion aimed at Chinese immigrants after the Gold Rush. The first attacks appeared in California's goldfields in 1849, then rolled east along wagon roads, rail lines, and river towns. By the early 1900s the violence had crossed the Mississippi River and collided with the entrenched racism of Jim Crow. Drawing on newly compiled lynching databases, digitized newspapers, and recent scholarship, this website documents how vigilante terror and discriminatory laws worked hand-in-hand to drive Chinese communities from mines, rail camps, and towns.
+        </p>
+      </section>
+
+      <section aria-labelledby="the-archive-title">
+        <h2 id="the-archive-title" class="text-2xl font-display font-semibold mb-4 text-base-content">The Archive</h2>
+        <p class="font-body leading-relaxed">
+          In the pages of this website, you will find interactive charts and maps of <strong>{incidentCount}</strong> documented incidents resulting in <strong>{victimCount}</strong> extralegal homicides, timelines that pair major exclusion laws with surges in mob violence, and primary-source newspaper articles that preserve the voices of victims, witnesses, and resisters. Our goal is to make this "red record" of the West impossible to ignore, to honor those who were lost, and to provide educators, descendants, and researchers the tools they need to confront the legacy of what we call <em>John Crow</em>—a western counterpart to Jim Crow that sought expulsion rather than segregation.
+        </p>
+      </section>
+
+      <section aria-labelledby="what-is-john-crow-title">
+        <h2 id="what-is-john-crow-title" class="text-2xl font-display font-semibold mb-4 text-base-content">What is "John Crow"?</h2>
+        <div class="card-vintage p-6">
+          <p class="font-body leading-relaxed mb-3">
+            The term <i>John Crow</i> is a deliberate conceptual framework, modeled in part on <i>Jane Crow</i>,
+            which was coined to name the compounded racial and gendered oppression faced by Black women.
+            Like <i>Jane Crow</i>, <i>John Crow</i> seeks to expose a distinct but parallel regime of racial terror—in this case,
+            one that targeted Chinese immigrants in the American West.
+          </p>
+          <p class="font-body leading-relaxed mb-0">
+            "Crow" evokes Jim Crow, the system of white supremacist control
+            that subjugated African Americans in the post-Reconstruction South. "John" derives from John Chinaman, the 19th-century racial caricature
+            that dehumanized Chinese immigrants as alien and unassimilable. By merging these terms, <i>John Crow</i> names a system not of enforced separation,
+            but of violent exclusion: lynchings, purges, exclusion laws, and the destruction of Chinatowns worked to erase Chinese presence from the national body.
+            This project uses John Crow to surface that hidden history and to extend <strong>Ida B. Wells's "Red Record"</strong> into the western landscape of American racial terror.
+          </p>
+        </div>
+      </section>
+
+      <section aria-labelledby="join-the-effort-title">
+        <h2 id="join-the-effort-title" class="text-2xl font-display font-semibold mb-4 text-base-content">Join the Effort</h2>
+        <p class="font-body leading-relaxed">
+          Explore the evidence, contribute your family's stories, and help us extend this record—what you see here is a starting point, not an endpoint. Together we can uncover, verify, and map new cases and perspectives, transforming collective memory and advancing justice through truth.
+        </p>
+        <div class="mt-6">
+          <div class="card-vintage p-4 flex flex-col md:flex-row md:items-center gap-3">
+            <div class="flex-1 text-base-content text-base">
+              <strong>Submit details about acts of lethal violence targeting Chinese immigrants in the U.S. between 1850 and World War I.</strong>
+            </div>
+            <a href="/submit" class="inline-block mt-2 md:mt-0 px-4 py-2 bg-amber-200 hover:bg-amber-300 text-vintage-ink font-semibold rounded shadow transition-colors duration-150 text-sm text-center">Submit an Incident</a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+</PageLayout>

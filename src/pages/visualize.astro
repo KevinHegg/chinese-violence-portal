@@ -1,5 +1,6 @@
 ---
 import PageLayout from "../layouts/PageLayout.astro";
+import NavCard from "../components/NavCard.astro";
 ---
 
 <PageLayout title="Visualize the Data" currentPage="visualize">
@@ -15,61 +16,61 @@ import PageLayout from "../layouts/PageLayout.astro";
 
     <!-- Visualization Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-      <a href="/visualize/newscloud" class="card-vintage-link group">
-        <div class="flex items-center gap-2 mb-2">
-          <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
-          </svg>
-          <span class="font-display font-semibold text-sm">News Cloud</span>
-        </div>
-        <p class="text-xs text-gray-600">Interactive word cloud of named entities from articles</p>
-      </a>
+      <NavCard href="/visualize/newscloud" title="News Cloud" description="Interactive word cloud of named entities from articles">
+        <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+        </svg>
+      </NavCard>
 
-      <a href="/visualize/timeline" class="card-vintage-link group">
-        <div class="flex items-center gap-2 mb-2">
-          <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          <span class="font-display font-semibold text-sm">Timeline</span>
-        </div>
-        <p class="text-xs text-gray-600">Chronological view of events and data points</p>
-      </a>
+      <NavCard href="/visualize/timeline" title="Timeline" description="Chronological view of events and data points">
+        <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      </NavCard>
 
-      <a id="map-card-link" href="/visualize/map" class="card-vintage-link group">
-        <div class="flex items-center gap-2 mb-2">
-          <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"></path>
-          </svg>
-          <span class="font-display font-semibold text-sm">Map</span>
-        </div>
-        <p class="text-xs text-gray-600">Geographic visualization of data locations</p>
-      </a>
+      <NavCard id="map-card-link" href="/visualize/map" title="Map" description="Geographic visualization of data locations">
+        <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"></path>
+        </svg>
+      </NavCard>
 
-      <a href="/visualize/charts" class="card-vintage-link group">
-        <div class="flex items-center gap-2 mb-2">
-          <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-          </svg>
-          <span class="font-display font-semibold text-sm">Charts</span>
-        </div>
-        <p class="text-xs text-gray-600">Statistical charts and data analysis</p>
-      </a>
+      <NavCard href="/visualize/charts" title="Charts" description="Statistical charts and data analysis">
+        <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg>
+      </NavCard>
 
-      <a href="/visualize/compare" class="card-vintage-link group">
-        <div class="flex items-center gap-2 mb-2">
-          <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-          </svg>
-          <span class="font-display font-semibold text-sm">Compare</span>
-        </div>
-        <p class="text-xs text-gray-600">Black & Chinese lynchings compared over time</p>
-      </a>
+      <NavCard href="/visualize/compare" title="Compare" description="Black & Chinese lynchings compared over time">
+        <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+        </svg>
+      </NavCard>
     </div>
   </div>
 </PageLayout> 
 
 <script is:inline>
   document.addEventListener('DOMContentLoaded', function() {
+    var params = new URLSearchParams(window.location.search);
+    var tab = params.get('tab');
+    var targetByTab = {
+      map: '/visualize/map',
+      timeline: '/visualize/timeline',
+      charts: '/visualize/charts',
+    };
+
+    if (tab && targetByTab[tab]) {
+      var target = new URL(targetByTab[tab], window.location.origin);
+      var focus = params.get('focus');
+      var year = params.get('year');
+      var all = params.get('all');
+      if (focus) target.searchParams.set('focus', focus);
+      if (year) target.searchParams.set('year', year);
+      if (all) target.searchParams.set('all', all);
+      window.location.replace(target.pathname + target.search);
+      return;
+    }
+
     var mapCardLink = document.getElementById('map-card-link');
     if (mapCardLink) {
       var fromlink = encodeURIComponent('/visualize');

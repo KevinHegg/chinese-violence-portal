@@ -1,0 +1,102 @@
+---
+import PageLayout from "../layouts/PageLayout.astro";
+---
+
+<PageLayout title="Tour the John Crow Project" currentPage="tour">
+  <section id="tour-page-root" aria-labelledby="tour-title" class="mb-10">
+    <h1 id="tour-title" class="text-4xl font-bold mb-6">Tour the John Crow Project</h1>
+    <div id="tour-mobile-notice" class="mb-6 border border-amber-200 bg-amber-50 text-gray-800 rounded-lg px-4 py-3 shadow-sm" role="status" hidden>
+      <p class="text-sm leading-relaxed">
+        Tour works best on a larger screen. On mobile, use Quick Start on the Home page to explore.
+      </p>
+    </div>
+
+    <div class="space-y-8 text-gray-700">
+      <section aria-labelledby="quick-start-tour-heading" class="card-vintage p-6">
+        <h2 id="quick-start-tour-heading" class="text-2xl font-display font-semibold mb-2 text-base-content">Quick Start Tour</h2>
+        <p class="mb-4">A short how-to tour of the site’s main features.</p>
+        <button id="start-quick-tour" type="button" class="inline-flex items-center px-4 py-2 bg-amber-200 hover:bg-amber-300 text-vintage-ink font-semibold rounded-lg border border-amber-300 transition-colors">
+          Start Quick Tour
+        </button>
+      </section>
+
+      <section aria-labelledby="docent-tour-heading" class="card-vintage p-6">
+        <div class="flex items-start gap-4 mb-4">
+          <img
+            src="/images/digital_docent_512.png"
+            srcset="/images/digital_docent_512.png 512w, /images/digital_docent_1024.png 1024w, /images/digital_docent_2048.png 2048w"
+            sizes="64px"
+            width="64"
+            height="64"
+            alt="Digital Docent"
+            class="w-[72px] h-[72px] md:w-[96px] md:h-[96px] object-contain drop-shadow-[0_1px_2px_rgba(0,0,0,0.12)]"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="flex flex-col items-start">
+            <h2 id="docent-tour-heading" class="text-2xl font-display font-semibold mb-2 text-base-content">Digital Docent Tours</h2>
+            <p class="mb-0">Curated, interpretive walkthroughs that show how evidence becomes argument.</p>
+          </div>
+        </div>
+        <button
+          id="start-docent-ahyo"
+          type="button"
+          class="inline-flex items-center px-4 py-2 bg-amber-200 hover:bg-amber-300 text-vintage-ink font-semibold rounded-lg border border-amber-300 transition-colors"
+        >
+          Start Ah Yo case study
+        </button>
+        <p class="mt-3 text-sm text-gray-600">
+          Docent tours are self-paced and are interpretive. Use the Quick Tour if you want an overview of how the site is organized.
+        </p>
+        <p id="docent-desktop-only-note" class="mt-2 text-sm text-amber-700 hidden" role="status">
+          Digital Docent mode is currently desktop-only.
+        </p>
+      </section>
+    </div>
+  </section>
+</PageLayout>
+
+<script type="module">
+  const START_KEY = "johncrow_start_tour";
+
+  const beginTour = () => {
+    try {
+      localStorage.setItem(START_KEY, "true");
+    } catch {
+      // Ignore storage errors and fallback to query param.
+    }
+    window.location.href = "/?tour=1";
+  };
+
+  const startButton = document.getElementById("start-quick-tour");
+  const docentButton = document.getElementById("start-docent-ahyo");
+  const docentDesktopOnlyNote = document.getElementById("docent-desktop-only-note");
+  const mobileNotice = document.getElementById("tour-mobile-notice");
+  const tourRoot = document.getElementById("tour-page-root");
+
+  const syncMobileState = () => {
+    const isMobile = window.innerWidth < 768;
+    if (mobileNotice) mobileNotice.hidden = !isMobile;
+    if (tourRoot) tourRoot.setAttribute("data-mobile", isMobile ? "true" : "false");
+  };
+
+  syncMobileState();
+  window.addEventListener("resize", syncMobileState);
+
+  startButton?.addEventListener("click", () => beginTour());
+  docentButton?.addEventListener("click", () => {
+    const isDesktop = window.innerWidth >= 768;
+    if (!isDesktop) {
+      docentDesktopOnlyNote?.classList.remove("hidden");
+      return;
+    }
+
+    try {
+      sessionStorage.setItem("docent_id", "ahyo");
+      sessionStorage.setItem("docent_step", "0");
+    } catch {
+      // Ignore storage errors; route still includes docent=1.
+    }
+    window.location.href = "/records/MS1885-05-05?docent=1&docentId=ahyo";
+  });
+</script>

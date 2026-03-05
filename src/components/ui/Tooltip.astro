@@ -1,0 +1,10 @@
+---
+export interface Props {
+  id: string;
+  text: string;
+}
+
+const { id, text } = Astro.props;
+---
+
+<span id={id} role="tooltip" class="jc-tooltip__content" data-tooltip hidden>{text}</span>

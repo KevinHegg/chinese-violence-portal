@@ -22,6 +22,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { parse } from 'csv-parse/sync';
+import XLSX from 'xlsx';
 import puppeteer from 'puppeteer';
 import { buildTableBarHtml } from './table-bar-html.mjs';
 
@@ -32,6 +33,7 @@ const extrasDir = path.join(root, 'extras');
 const PATHS = {
   timeline: path.join(root, 'public/timeline.json'),
   census: path.join(root, 'public/us-census-population.json'),
+  census1880_1910: path.join(root, 'src/data/census-population-1880-1910.xlsx'),
   beckTolnay: path.join(root, 'src/data/beck-tolnay-black-lynchings.csv'),
 };
 
@@ -79,6 +81,10 @@ function buildChartData(lynchings) {
   const incidentCounts = {};
   const victimCounts = {};
   const chineseByYear = {};
+  const multiVictimVictimsByYear = {};
+  const purgeVictimsByYear = {};
+  const caIncidentsByYear = {};
+  const otherIncidentsByYear = {};
   lynchings.forEach((r) => {
     const y = year(r);
     const v = Number(r['number-of-victims']) || 1;
@@ -86,6 +92,11 @@ function buildChartData(lynchings) {
       incidentCounts[y] = (incidentCounts[y] || 0) + 1;
       victimCounts[y] = (victimCounts[y] || 0) + v;
       chineseByYear[y] = (chineseByYear[y] || 0) + v;
+      if (v >= 2) multiVictimVictimsByYear[y] = (multiVictimVictimsByYear[y] || 0) + v;
+      if (v >= 5) purgeVictimsByYear[y] = (purgeVictimsByYear[y] || 0) + v;
+      const st = (r.state || '').trim().toLowerCase();
+      if (st === 'california') caIncidentsByYear[y] = (caIncidentsByYear[y] || 0) + 1;
+      else otherIncidentsByYear[y] = (otherIncidentsByYear[y] || 0) + 1;
     }
   });
 
@@ -179,18 +190,86 @@ function buildChartData(lynchings) {
     { year: 1913, label: 'CA Alien Land Law' },
   ];
 
-  const years1875_1915 = [];
-  for (let y = 1875; y <= 1915; y++) years1875_1915.push(y);
-  const blackPerCapita = years1875_1915.map((y) => {
+  const years1870_1920 = [];
+  for (let y = 1870; y <= 1920; y++) years1870_1920.push(y);
+  const blackPerCapita = years1870_1920.map((y) => {
     const v = blackByYear[y] || 0;
     const p = popByYear[y]?.black;
     return p && p > 0 ? (v / p) * 100000 : 0;
   });
-  const chinesePerCapita = years1875_1915.map((y) => {
+  const chinesePerCapita = years1870_1920.map((y) => {
     const v = chineseByYear[y] || 0;
     const p = popByYear[y]?.asian;
     return p && p > 0 ? (v / p) * 100000 : 0;
   });
+
+  const years1880_1920 = [];
+  for (let y = 1880; y <= 1920; y++) years1880_1920.push(y);
+  const blackPerCapita1880_1920 = years1880_1920.map((y) => {
+    const v = blackByYear[y] || 0;
+    const p = popByYear[y]?.black;
+    return p && p > 0 ? (v / p) * 100000 : 0;
+  });
+  const chinesePerCapita1880_1920 = years1880_1920.map((y) => {
+    const v = chineseByYear[y] || 0;
+    const p = popByYear[y]?.asian;
+    return p && p > 0 ? (v / p) * 100000 : 0;
+  });
+
+  const years1880_1910 = [];
+  for (let y = 1880; y <= 1910; y++) years1880_1910.push(y);
+  const blackPerCapita1880_1910 = years1880_1910.map((y) => {
+    const v = blackByYear[y] || 0;
+    const p = popByYear[y]?.black;
+    return p && p > 0 ? (v / p) * 100000 : 0;
+  });
+  const chinesePerCapita1880_1910 = years1880_1910.map((y) => {
+    const v = chineseByYear[y] || 0;
+    const p = popByYear[y]?.asian;
+    return p && p > 0 ? (v / p) * 100000 : 0;
+  });
+
+  // V2: per capita using census population 1880-1910.xlsx (interpolate between census years)
+  let popByYear1880_1910 = {};
+  if (fs.existsSync(PATHS.census1880_1910)) {
+    const wb = XLSX.readFileSync(PATHS.census1880_1910);
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+    const censusPoints = rows.map((r) => ({
+      year: parseInt(r['Census Year'] || r.year, 10),
+      black: parseInt(r['Black population'] || r.black || 0, 10),
+      asian: parseInt(r['Chinese Population'] || r.chinese || r.asian || 0, 10),
+    })).filter((p) => p.year && (p.black > 0 || p.asian > 0));
+    for (let i = 0; i < censusPoints.length - 1; i++) {
+      const a = censusPoints[i];
+      const b = censusPoints[i + 1];
+      const span = b.year - a.year;
+      for (let y = a.year; y < b.year; y++) {
+        const t = (y - a.year) / span;
+        popByYear1880_1910[y] = {
+          black: Math.round(a.black + t * (b.black - a.black)),
+          asian: Math.round(a.asian + t * (b.asian - a.asian)),
+        };
+      }
+    }
+    if (censusPoints.length) {
+      const last = censusPoints[censusPoints.length - 1];
+      popByYear1880_1910[last.year] = { black: last.black, asian: last.asian };
+    }
+  }
+  let blackPerCapita1880_1910_v2 = blackPerCapita1880_1910;
+  let chinesePerCapita1880_1910_v2 = chinesePerCapita1880_1910;
+  if (Object.keys(popByYear1880_1910).length > 0) {
+    blackPerCapita1880_1910_v2 = years1880_1910.map((y) => {
+      const v = blackByYear[y] || 0;
+      const p = popByYear1880_1910[y]?.black;
+      return p && p > 0 ? (v / p) * 100000 : 0;
+    });
+    chinesePerCapita1880_1910_v2 = years1880_1910.map((y) => {
+      const v = chineseByYear[y] || 0;
+      const p = popByYear1880_1910[y]?.asian;
+      return p && p > 0 ? (v / p) * 100000 : 0;
+    });
+  }
 
   const populationYears = [];
   for (let y = 1850; y <= 1950; y++) populationYears.push(y);
@@ -206,12 +285,52 @@ function buildChartData(lynchings) {
   const blackLynchChart = populationYears.map((y) => blackByYear[y] || 0);
   const chineseLynchChart = populationYears.map((y) => chineseByYear[y] || 0);
 
+  // Share of victims from multi-victim incidents, by year (1853–1915)
+  const multiVictimSharePct1853_1915 = years1853_1915.map((y) => {
+    const total = victimCounts[y] || 0;
+    const multi = multiVictimVictimsByYear[y] || 0;
+    return total > 0 ? (multi / total) * 100 : 0;
+  });
+
+  // Purge-scale (5+ victims) share per year, 1853–1915
+  const purgeSharePct1853_1915 = years1853_1915.map((y) => {
+    const total = victimCounts[y] || 0;
+    const purge = purgeVictimsByYear[y] || 0;
+    return total > 0 ? (purge / total) * 100 : 0;
+  });
+  const totalVictimsAll = Object.values(victimCounts).reduce((a, b) => a + b, 0);
+  const totalVictims5plus = Object.values(purgeVictimsByYear).reduce((a, b) => a + b, 0);
+
+  // Cumulative victims (running total) from 1853–1915
+  const annualVictims1853_1915 = years1853_1915.map((y) => victimCounts[y] || 0);
+  const cumulativeVictims1853_1915 = [];
+  let runningVictims = 0;
+  for (let i = 0; i < years1853_1915.length; i++) {
+    runningVictims += annualVictims1853_1915[i] || 0;
+    cumulativeVictims1853_1915.push(runningVictims);
+  }
+  let steepestIdx = 0;
+  let steepestDelta = -Infinity;
+  for (let i = 0; i < annualVictims1853_1915.length; i++) {
+    const d = annualVictims1853_1915[i] || 0;
+    if (d > steepestDelta) { steepestDelta = d; steepestIdx = i; }
+  }
+
   return {
     theme,
     years1850_1920,
     years1853_1915,
     incidentCounts,
     victimCounts,
+    multiVictimSharePct1853_1915,
+    purgeSharePct1853_1915,
+    totalVictimsAll,
+    totalVictims5plus,
+    caIncidentsByYear,
+    otherIncidentsByYear,
+    annualVictims1853_1915,
+    cumulativeVictims1853_1915,
+    cumulativeSteepestIdx1853_1915: steepestIdx,
     decades,
     stackOrder,
     statesSorted,
@@ -229,9 +348,17 @@ function buildChartData(lynchings) {
     policyEvents,
     blackByYear,
     chineseByYear,
-    years1875_1915,
+    years1870_1920,
     blackPerCapita,
     chinesePerCapita,
+    years1880_1920,
+    blackPerCapita1880_1920,
+    chinesePerCapita1880_1920,
+    years1880_1910,
+    blackPerCapita1880_1910,
+    chinesePerCapita1880_1910,
+    blackPerCapita1880_1910_v2,
+    chinesePerCapita1880_1910_v2,
     popByYear,
     populationYears,
     blackPop,
@@ -494,6 +621,225 @@ function buildChartConfigs(data) {
     },
   });
 
+  // Black victim count by region
+  const blackVictimByRegion = [
+    { region: 'South', value: 3267, pct: '94.8' },
+    { region: 'Midwest', value: 152, pct: '4.4' },
+    { region: 'West', value: 19, pct: '0.6' },
+    { region: 'Northeast', value: 8, pct: '0.2' },
+  ];
+  const blackRegionData = blackVictimByRegion.map((d) => ({
+    value: d.value,
+    label: { formatter: `${d.value.toLocaleString()} (${d.pct}%)`, show: true },
+  }));
+  configs.push({
+    name: 'black victim count by region',
+    width: PRINT.width,
+    height: 195,
+    pixelRatio: PRINT.pixelRatio,
+    option: {
+      ...base(),
+      title: { show: false },
+      legend: { show: false },
+      grid: { left: 100 + Pl, right: 60 + Pr, top: 10 + Pt, bottom: 50 + Pb },
+      xAxis: {
+        type: 'value',
+        min: 0,
+        max: 3500,
+        interval: 500,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: 14 },
+        axisLine: { lineStyle: { color: T.axis } },
+        axisTick: { lineStyle: { color: T.axis } },
+        splitLine: { lineStyle: { color: T.grid, opacity: 0.6 } },
+      },
+      yAxis: {
+        type: 'category',
+        data: blackVictimByRegion.map((d) => d.region),
+        inverse: true,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: 14, interval: 0 },
+        axisLine: { lineStyle: { color: T.axis } },
+        axisTick: { show: false },
+        splitLine: { show: false },
+      },
+      series: [
+        {
+          type: 'bar',
+          data: blackRegionData,
+          itemStyle: { color: '#4b5563' },
+          barGap: '0%',
+          label: {
+            show: true,
+            position: 'right',
+            color: T.text,
+            fontFamily: T.font,
+            fontSize: 13,
+          },
+        },
+      ],
+    },
+  });
+
+  // Victims by State (simple horizontal bar)
+  const vicTotalAll = stateNamesByVictims.reduce((sum, s) => sum + (data.stateVictimTotals[s] || 0), 0);
+  const vicPct = (v) => (vicTotalAll > 0 ? ((v / vicTotalAll) * 100).toFixed(1) : '0');
+  const vicByStateData = stateNamesByVictims.map((s) => {
+    const v = data.stateVictimTotals[s] || 0;
+    const labelStr = v > 0 ? `${v} (${vicPct(v)}%)` : '';
+    return { value: v, label: { formatter: labelStr, show: labelStr !== '' } };
+  });
+  // Combined: 4c-alt (top) + black victim by region (bottom)
+  const combinedGapY = 70;
+  const topChartH = 550;
+  const topBarCount = stateNamesByVictims.length;
+  const bottomBarCount = blackVictimByRegion.length;
+  const topGridTop = 10 + Pt;
+  const topGridBottomPad = 50 + Pb;
+  const topGridHeight = topChartH - topGridTop - topGridBottomPad;
+  const barHeightPx = topGridHeight / topBarCount;
+  const bottomGridHeight = Math.round(barHeightPx * bottomBarCount);
+  const bottomChartH = bottomGridHeight + topGridBottomPad;
+  const combinedHeight = 10 + topChartH + combinedGapY + bottomChartH;
+  const topGridBottom = combinedHeight - 10 - topChartH;
+  const bottomGridTop = 10 + topChartH + combinedGapY;
+  const dividerY = 10 + topChartH + Math.floor(combinedGapY / 2);
+  configs.push({
+    name: '4c-alt and black victim count by region combined',
+    width: PRINT.width,
+    height: combinedHeight,
+    pixelRatio: PRINT.pixelRatio,
+    option: {
+      ...base(),
+      title: { show: false },
+      legend: { show: false },
+      graphic: [
+        {
+          type: 'line',
+          left: 0,
+          top: dividerY,
+          shape: { x1: 0, y1: 0, x2: PRINT.width, y2: 0 },
+          style: { stroke: '#374151', lineWidth: 2, lineDash: [8, 6] },
+        },
+      ],
+      grid: [
+        { left: 100 + Pl, right: 50 + Pr, top: 10 + Pt, bottom: topGridBottom },
+        { left: 100 + Pl, right: 60 + Pr, top: bottomGridTop, bottom: 50 + Pb },
+      ],
+      xAxis: [
+        {
+          type: 'value',
+          gridIndex: 0,
+          min: 0,
+          max: 85,
+          interval: 10,
+          axisLabel: { color: T.text, fontFamily: T.font, fontSize: 14 },
+          axisLine: { lineStyle: { color: T.axis } },
+          axisTick: { lineStyle: { color: T.axis } },
+          splitLine: { lineStyle: { color: T.grid, opacity: 0.6 } },
+        },
+        {
+          type: 'value',
+          gridIndex: 1,
+          min: 0,
+          max: 3500,
+          interval: 500,
+          axisLabel: { color: T.text, fontFamily: T.font, fontSize: 14 },
+          axisLine: { lineStyle: { color: T.axis } },
+          axisTick: { lineStyle: { color: T.axis } },
+          splitLine: { lineStyle: { color: T.grid, opacity: 0.6 } },
+        },
+      ],
+      yAxis: [
+        {
+          type: 'category',
+          gridIndex: 0,
+          data: stateNamesByVictims,
+          inverse: true,
+          axisLabel: { color: T.text, fontFamily: T.font, fontSize: 14, interval: 0 },
+          axisLine: { lineStyle: { color: T.axis } },
+          axisTick: { show: false },
+          splitLine: { show: false },
+        },
+        {
+          type: 'category',
+          gridIndex: 1,
+          data: blackVictimByRegion.map((d) => d.region),
+          inverse: true,
+          axisLabel: { color: T.text, fontFamily: T.font, fontSize: 14, interval: 0 },
+          axisLine: { lineStyle: { color: T.axis } },
+          axisTick: { show: false },
+          splitLine: { show: false },
+        },
+      ],
+      series: [
+        {
+          type: 'bar',
+          xAxisIndex: 0,
+          yAxisIndex: 0,
+          data: vicByStateData,
+          itemStyle: { color: '#4b5563' },
+          barGap: '0%',
+          label: { show: true, position: 'right', color: T.text, fontFamily: T.font, fontSize: 13 },
+        },
+        {
+          type: 'bar',
+          xAxisIndex: 1,
+          yAxisIndex: 1,
+          data: blackRegionData,
+          itemStyle: { color: '#4b5563' },
+          barGap: '0%',
+          label: { show: true, position: 'right', color: T.text, fontFamily: T.font, fontSize: 13 },
+        },
+      ],
+    },
+  });
+
+  configs.push({
+    name: '4c-alt. Victims by state',
+    width: PRINT.width,
+    height: 550,
+    pixelRatio: PRINT.pixelRatio,
+    option: {
+      ...base(),
+      title: { show: false },
+      legend: { show: false },
+      grid: { left: 90 + Pl, right: 50 + Pr, top: 10 + Pt, bottom: 50 + Pb },
+      xAxis: {
+        type: 'value',
+        min: 0,
+        max: 85,
+        interval: 10,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: 14 },
+        axisLine: { lineStyle: { color: T.axis } },
+        axisTick: { lineStyle: { color: T.axis } },
+        splitLine: { lineStyle: { color: T.grid, opacity: 0.6 } },
+      },
+      yAxis: {
+        type: 'category',
+        data: stateNamesByVictims,
+        inverse: true,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: 14, interval: 0 },
+        axisLine: { lineStyle: { color: T.axis } },
+        axisTick: { show: false },
+        splitLine: { show: false },
+      },
+      series: [
+        {
+          type: 'bar',
+          data: vicByStateData,
+          itemStyle: { color: '#4b5563' },
+          barGap: '0%',
+          label: {
+            show: true,
+            position: 'right',
+            color: T.text,
+            fontFamily: T.font,
+            fontSize: 13,
+          },
+        },
+      ],
+    },
+  });
+
   const typeNames = Object.keys(data.typeCounts).map((t) => (t === 'Possible Lynching' ? 'Possible Lynching' : t));
   const typeVals = typeNames.map((t) => data.typeCounts[t]);
   const typeColors = typeNames.map((_, i) => T.series[i % T.series.length]);
@@ -589,6 +935,367 @@ function buildChartConfigs(data) {
     },
   });
 
+  // Combined 6b + 7 side-by-side
+  const comboPreColors = pretextDataPub.map((_, i) => T.series[i % T.series.length]);
+  const comboKmColors = killingMethodDataPub.map((_, i) => T.series[i % T.series.length]);
+  configs.push({
+    name: '6b-7. Pretexts for Violence and Killing Method',
+    width: PRINT.width,
+    height: PRINT.heightTall,
+    pixelRatio: PRINT.pixelRatio,
+    option: {
+      ...base(),
+      title: { show: false },
+      series: [
+        {
+          type: 'pie',
+          radius: ['15%', '48%'],
+          center: ['30%', '50%'],
+          startAngle: 180,
+          data: pretextChartData.map((d, i) => ({ ...d, itemStyle: { color: comboPreColors[i] } })),
+          label: {
+            color: T.text,
+            fontFamily: T.font,
+            fontSize: 15,
+            formatter: '{b}: {c}',
+            overflow: 'break',
+            width: 120,
+          },
+          labelLine: { lineStyle: { color: T.axis } },
+        },
+        {
+          type: 'pie',
+          radius: ['15%', '48%'],
+          center: ['70%', '50%'],
+          data: killingMethodDataPub.map((d, i) => ({ ...d, itemStyle: { color: comboKmColors[i] } })),
+          label: {
+            color: T.text,
+            fontFamily: T.font,
+            fontSize: 15,
+            formatter: '{b}: {c}',
+          },
+          labelLine: { lineStyle: { color: T.axis } },
+        },
+      ],
+    },
+  });
+
+  // Share of Victims from Multi-Victim Lynchings, 1853–1915
+  const shareYears = data.years1853_1915.map(String);
+  const sharePct = data.multiVictimSharePct1853_1915 || shareYears.map(() => 0);
+  const spikePct = sharePct.map((v) => (v > 50 ? v : null));
+  configs.push({
+    name: 'Share of Victims from Multi-Victim Lynchings, 1853-1915',
+    width: PRINT.width,
+    height: PRINT.heightStandard,
+    pixelRatio: PRINT.pixelRatio, // 975px * 2 = 1950px → 6.5" @ 300 dpi
+    option: {
+      ...base(),
+      title: {
+        show: true,
+        text: 'Share of Victims from Multi-Victim Lynchings, 1853–1915',
+        subtext: 'Purge concentration of lethality during Exclusion era.',
+        left: 'center',
+        top: 6 + Pt,
+        textStyle: { color: T.text, fontFamily: T.font, fontSize: 18, fontWeight: 'bold' },
+        subtextStyle: { color: T.text, fontFamily: T.font, fontSize: 14, fontWeight: 'normal' },
+      },
+      xAxis: {
+        type: 'category',
+        data: shareYears,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: 12, interval: 4 },
+        axisTick: { alignWithLabel: true },
+        axisLine: { lineStyle: { color: T.axis } },
+      },
+      yAxis: {
+        type: 'value',
+        min: 0,
+        max: 100,
+        interval: 10,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: 12, formatter: '{value}%' },
+        axisLine: { lineStyle: { color: T.axis } },
+        splitLine: { lineStyle: { color: T.grid, opacity: 0.6 } },
+        name: 'Percent of victims',
+        nameLocation: 'center',
+        nameGap: 55,
+        nameRotate: 90,
+        nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: 16 },
+      },
+      series: [
+        {
+          name: 'Share',
+          type: 'line',
+          data: sharePct,
+          smooth: false,
+          showSymbol: false,
+          lineStyle: { color: '#6b7280', width: 2 }, // muted gray baseline
+        },
+        {
+          name: 'Spike years',
+          type: 'line',
+          data: spikePct,
+          smooth: false,
+          showSymbol: true,
+          connectNulls: false,
+          symbol: 'circle',
+          symbolSize: 6,
+          lineStyle: { color: '#7f1d1d', width: 3 }, // dark red spikes
+          itemStyle: { color: '#7f1d1d' },
+        },
+      ],
+      grid: { left: 85 + Pl, right: 30 + Pr, top: 70 + Pt, bottom: 55 + Pb },
+    },
+  });
+
+  // Cumulative Victims of Anti-Chinese Lynching, 1853–1915
+  const cumYears = data.years1853_1915.map(String);
+  const cumVictims = data.cumulativeVictims1853_1915 || cumYears.map(() => 0);
+  const steepIdx = Number.isFinite(data.cumulativeSteepestIdx1853_1915) ? data.cumulativeSteepestIdx1853_1915 : 0;
+  const steepSeg = cumVictims.map((_, i) => {
+    if (steepIdx <= 0) return i === 0 ? cumVictims[0] : null;
+    if (i === steepIdx - 1) return cumVictims[steepIdx - 1];
+    if (i === steepIdx) return cumVictims[steepIdx];
+    return null;
+  });
+  configs.push({
+    name: 'Cumulative Victims of Anti-Chinese Lynching, 1853-1915',
+    width: PRINT.width,
+    height: PRINT.heightStandard,
+    pixelRatio: PRINT.pixelRatio,
+    option: {
+      ...base(),
+      title: {
+        show: true,
+        text: 'Cumulative Victims of Anti-Chinese Lynching, 1853–1915',
+        left: 'center',
+        top: 6 + Pt,
+        textStyle: { color: T.text, fontFamily: T.font, fontSize: 18, fontWeight: 'bold' },
+      },
+      xAxis: {
+        type: 'category',
+        data: cumYears,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: 12, interval: 4 },
+        axisTick: { alignWithLabel: true },
+        axisLine: { lineStyle: { color: T.axis } },
+      },
+      yAxis: {
+        type: 'value',
+        min: 0,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: 12 },
+        axisLine: { lineStyle: { color: T.axis } },
+        splitLine: { lineStyle: { color: T.grid, opacity: 0.6 } },
+        name: 'Cumulative victims',
+        nameLocation: 'center',
+        nameGap: 55,
+        nameRotate: 90,
+        nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: 16 },
+      },
+      series: [
+        {
+          name: 'Cumulative',
+          type: 'line',
+          data: cumVictims,
+          smooth: false,
+          showSymbol: false,
+          lineStyle: { color: '#6b7280', width: 2 }, // muted gray baseline
+          markArea: {
+            silent: true,
+            itemStyle: { color: 'rgba(127, 29, 29, 0.08)' }, // subtle vertical shading
+            data: [[{ xAxis: '1878' }, { xAxis: '1889' }]],
+          },
+        },
+        {
+          name: 'Steepest slope',
+          type: 'line',
+          data: steepSeg,
+          smooth: false,
+          showSymbol: true,
+          connectNulls: false,
+          symbol: 'circle',
+          symbolSize: 6,
+          lineStyle: { color: '#7f1d1d', width: 3 }, // dark red highlight
+          itemStyle: { color: '#7f1d1d' },
+        },
+      ],
+      grid: { left: 85 + Pl, right: 30 + Pr, top: 55 + Pt, bottom: 55 + Pb },
+    },
+  });
+
+  // Purge-Scale Share (5+ victims) chart
+  const purgeYears = data.years1853_1915.map(String);
+  const purgePct = data.purgeSharePct1853_1915 || purgeYears.map(() => 0);
+  const purgeBarData = purgePct.map((v) => ({
+    value: v,
+    itemStyle: { color: v > 0 ? '#7f1d1d' : '#d1d5db' },
+  }));
+  console.log(`Purge summary: ${data.totalVictims5plus} of ${data.totalVictimsAll} victims from 5+ incidents (${data.totalVictimsAll > 0 ? ((data.totalVictims5plus / data.totalVictimsAll) * 100).toFixed(1) : 0}%)`);
+  const blackTotal1880_1920 = data.years1880_1920.reduce((s, y) => s + (data.blackByYear[y] || 0), 0);
+  const chineseTotal1880_1920 = data.years1880_1920.reduce((s, y) => s + (data.chineseByYear[y] || 0), 0);
+  const blackAvg1880_1920 = data.blackPerCapita1880_1920.reduce((a, b) => a + b, 0) / data.blackPerCapita1880_1920.length;
+  const chineseAvg1880_1920 = data.chinesePerCapita1880_1920.reduce((a, b) => a + b, 0) / data.chinesePerCapita1880_1920.length;
+  console.log(`1880-1920: Black total ${blackTotal1880_1920}, Chinese total ${chineseTotal1880_1920} | Black avg ${blackAvg1880_1920.toFixed(2)} per 100k, Chinese avg ${chineseAvg1880_1920.toFixed(2)} per 100k`);
+  const blackTotal1880_1910 = data.years1880_1910.reduce((s, y) => s + (data.blackByYear[y] || 0), 0);
+  const chineseTotal1880_1910 = data.years1880_1910.reduce((s, y) => s + (data.chineseByYear[y] || 0), 0);
+  const blackAvg1880_1910 = data.blackPerCapita1880_1910.reduce((a, b) => a + b, 0) / data.blackPerCapita1880_1910.length;
+  const chineseAvg1880_1910 = data.chinesePerCapita1880_1910.reduce((a, b) => a + b, 0) / data.chinesePerCapita1880_1910.length;
+  console.log(`1880-1910: Black total ${blackTotal1880_1910}, Chinese total ${chineseTotal1880_1910} | Black avg ${blackAvg1880_1910.toFixed(2)} per 100k, Chinese avg ${chineseAvg1880_1910.toFixed(2)} per 100k`);
+  const blackAvg1880_1910_v2 = data.blackPerCapita1880_1910_v2.reduce((a, b) => a + b, 0) / data.blackPerCapita1880_1910_v2.length;
+  const chineseAvg1880_1910_v2 = data.chinesePerCapita1880_1910_v2.reduce((a, b) => a + b, 0) / data.chinesePerCapita1880_1910_v2.length;
+  console.log(`1880-1910 v2 (census xlsx): Black total ${blackTotal1880_1910}, Chinese total ${chineseTotal1880_1910} | Black avg ${blackAvg1880_1910_v2.toFixed(2)} per 100k, Chinese avg ${chineseAvg1880_1910_v2.toFixed(2)} per 100k`);
+  configs.push({
+    name: 'Victims from Purge-Scale Lynchings (5+ Victims), 1853-1915',
+    width: PRINT.width,
+    height: PRINT.heightStandard,
+    pixelRatio: PRINT.pixelRatio,
+    option: {
+      ...base(),
+      title: {
+        show: true,
+        text: 'Victims from Purge-Scale Lynchings (5+ Victims), 1853–1915',
+        subtext: 'Purge concentration of lethality during Exclusion decade',
+        left: 'center',
+        top: 6 + Pt,
+        textStyle: { color: T.text, fontFamily: T.font, fontSize: 18, fontWeight: 'bold' },
+        subtextStyle: { color: '#4b5563', fontFamily: T.font, fontSize: 14, fontWeight: 'normal' },
+      },
+      xAxis: {
+        type: 'category',
+        data: purgeYears,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: 12, interval: 4 },
+        axisTick: { alignWithLabel: true },
+        axisLine: { lineStyle: { color: T.axis } },
+      },
+      yAxis: {
+        type: 'value',
+        min: 0,
+        max: 100,
+        interval: 10,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: 12, formatter: '{value}%' },
+        axisLine: { lineStyle: { color: T.axis } },
+        splitLine: { lineStyle: { color: T.grid, opacity: 0.6 } },
+        name: 'Percent of victims',
+        nameLocation: 'center',
+        nameGap: 55,
+        nameRotate: 90,
+        nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: 16 },
+      },
+      series: [
+        {
+          name: 'Share',
+          type: 'bar',
+          data: purgeBarData,
+          barWidth: '70%',
+        },
+      ],
+      grid: { left: 85 + Pl, right: 30 + Pr, top: 70 + Pt, bottom: 55 + Pb },
+    },
+  });
+
+  // California Incidents vs All Other States, 1853–1915 (stacked bar + trend line)
+  const caVsOtherYears = data.years1853_1915.map(String);
+  const caData = data.years1853_1915.map((y) => {
+    const v = data.caIncidentsByYear[y] || 0;
+    return v > 0 ? v : '-';
+  });
+  const otherData = data.years1853_1915.map((y) => {
+    const v = data.otherIncidentsByYear[y] || 0;
+    return v > 0 ? v : '-';
+  });
+  const caVsOtherTotals = data.years1853_1915.map((y) => (data.caIncidentsByYear[y] || 0) + (data.otherIncidentsByYear[y] || 0));
+  const caPctRaw = data.years1853_1915.map((y) => {
+    const ca = data.caIncidentsByYear[y] || 0;
+    const total = (data.caIncidentsByYear[y] || 0) + (data.otherIncidentsByYear[y] || 0);
+    if (total === 0) return null;
+    return Math.round((ca / total) * 100);
+  });
+  configs.push({
+    name: 'California Incidents versus All Other States in Aggregate, 1853-1915',
+    width: PRINT.width,
+    height: PRINT.heightStandard,
+    pixelRatio: PRINT.pixelRatio,
+    option: {
+      ...base(),
+      title: { show: false },
+      legend: { bottom: 8 + Pb, data: ['California', 'All other states', 'CA share as %'], textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
+      xAxis: {
+        type: 'category',
+        data: caVsOtherYears,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: 12, interval: 4 },
+        axisTick: { alignWithLabel: true },
+        axisLine: { lineStyle: { color: T.axis } },
+      },
+      yAxis: [
+        {
+          type: 'value',
+          min: 0,
+          axisLabel: { color: T.text, fontFamily: T.font, fontSize: 12 },
+          axisLine: { lineStyle: { color: T.axis } },
+          splitLine: { lineStyle: { color: T.grid, opacity: 0.6 } },
+          name: 'Number of incidents',
+          nameLocation: 'center',
+          nameGap: 40,
+          nameRotate: 90,
+          nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: 16 },
+        },
+        {
+          type: 'value',
+          min: 0,
+          max: 100,
+          interval: 20,
+          axisLabel: { color: T.text, fontFamily: T.font, fontSize: 12, formatter: '{value}%' },
+          axisLine: { lineStyle: { color: T.axis } },
+          splitLine: { show: false },
+          name: 'California share as a percent',
+          nameLocation: 'center',
+          nameGap: 50,
+          nameRotate: -90,
+          nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: 16 },
+        },
+      ],
+      series: [
+        {
+          name: 'California',
+          type: 'bar',
+          stack: 'incidents',
+          data: caData,
+          itemStyle: { color: '#16a34a' },
+          label: { show: true, position: 'inside', color: '#fff', fontFamily: T.font, fontSize: 10, formatter: (p) => (p.value > 0 ? p.value : '') },
+        },
+        {
+          name: 'All other states',
+          type: 'bar',
+          stack: 'incidents',
+          data: otherData,
+          itemStyle: { color: '#86efac' },
+          label: {
+            show: true,
+            position: 'top',
+            color: T.text,
+            fontFamily: T.font,
+            fontSize: 10,
+            formatter: (params) => {
+              const total = caVsOtherTotals[params.dataIndex];
+              return total > 0 ? total : '';
+            },
+          },
+        },
+        {
+          name: 'CA share as %',
+          type: 'line',
+          yAxisIndex: 1,
+          data: caPctRaw,
+          smooth: 0.4,
+          symbol: 'none',
+          lineStyle: { width: 2, color: '#b91c1c', type: 'solid' },
+          itemStyle: { color: '#b91c1c' },
+          connectNulls: true,
+          label: { show: false },
+        },
+      ],
+      grid: { left: 70 + Pl, right: 75 + Pr, top: 20 + Pt, bottom: 55 + Pb },
+    },
+  });
+
   const victimsSeries = data.comboYears.map((y) => data.victimsByYearCombo[y] || 0);
   const popSeries = data.comboYears.map((y) => data.popByYearCombo[y] ?? null);
   const maxV = Math.max(...victimsSeries, 1);
@@ -625,37 +1332,274 @@ function buildChartConfigs(data) {
     option: {
       ...base(),
       legend: { data: ['Black Lynching Victims', 'Chinese Violence Victims'], bottom: 10 + Pb, textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
-      xAxis: { type: 'category', data: data.years1850_1920, ...axis() },
+      xAxis: {
+        type: 'category',
+        data: data.years1850_1920,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel, align: 'center', interval: 4 },
+        axisTick: { alignWithLabel: true },
+        axisLine: { lineStyle: { color: T.axis } },
+      },
       yAxis: [
         { type: 'value', name: 'Black Victims', position: 'left', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, ...axisYLeft() },
         { type: 'value', name: 'Chinese Victims', position: 'right', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, ...axisYRight() },
       ],
       series: [
-        { name: 'Black Lynching Victims', type: 'line', data: blackData, yAxisIndex: 0, lineStyle: { color: T.series[0], width: 2 }, symbol: 'circle', symbolSize: 4, itemStyle: { color: T.series[0] } },
-        { name: 'Chinese Violence Victims', type: 'line', data: chineseData, yAxisIndex: 1, lineStyle: { color: T.series[1], width: 2 }, symbol: 'circle', symbolSize: 4, itemStyle: { color: T.series[1] } },
+        {
+          name: 'Black Lynching Victims',
+          type: 'line',
+          data: blackData,
+          yAxisIndex: 0,
+          areaStyle: { color: '#86efac' },
+          lineStyle: { width: 2, color: '#4ade80' },
+          symbol: 'circle',
+          symbolSize: 4,
+          itemStyle: { color: '#4ade80' },
+        },
+        {
+          name: 'Chinese Violence Victims',
+          type: 'line',
+          data: chineseData,
+          yAxisIndex: 1,
+          areaStyle: { color: '#16a34a' },
+          lineStyle: { width: 2, color: '#16a34a' },
+          symbol: 'circle',
+          symbolSize: 4,
+          itemStyle: { color: '#16a34a' },
+        },
       ],
       grid: { left: 195 + Pl, right: 70 + Pr, top: 35 + Pt, bottom: 80 + Pb },
     },
   });
 
   configs.push({
-    name: 'per capita lynchings black vs chinese 1875-1915',
+    name: 'per capita lynchings black vs chinese 1870-1920',
     width: PRINT.width,
     height: PRINT.heightTall,
     pixelRatio: PRINT.pixelRatio,
     option: {
       ...base(),
-      legend: { data: ['Black Lynching Victims', 'Chinese Violence Victims'], bottom: 10 + Pb, textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
-      xAxis: { type: 'category', data: data.years1875_1915, ...axis() },
-      yAxis: [
-        { type: 'value', name: 'Black per 100,000', position: 'left', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, min: 0, max: 42, ...axisYLeft() },
-        { type: 'value', name: 'Chinese per 100,000', position: 'right', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, min: 0, max: 42, ...axisYRight() },
-      ],
+      legend: { data: ['Black Lynching Victims', 'Chinese Lynching Victims'], bottom: 10 + Pb, textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
+      xAxis: {
+        type: 'category',
+        data: data.years1870_1920,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel, align: 'center', interval: 4 },
+        axisTick: { alignWithLabel: true },
+        axisLine: { lineStyle: { color: T.axis } },
+      },
+      yAxis: {
+        type: 'value',
+        name: 'Number of victims per 100,000',
+        position: 'left',
+        nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName },
+        nameGap: 120,
+        nameLocation: 'center',
+        nameRotate: 90,
+        min: 0,
+        max: 45,
+        interval: 10,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel, rotate: 0 },
+        axisLine: { lineStyle: { color: T.axis } },
+        splitLine: { lineStyle: { color: T.grid, opacity: 0.6 } },
+      },
       series: [
-        { name: 'Black Lynching Victims', type: 'line', data: data.blackPerCapita, yAxisIndex: 0, lineStyle: { color: T.series[0], width: 2 }, symbol: 'circle', symbolSize: 4, itemStyle: { color: T.series[0] } },
-        { name: 'Chinese Violence Victims', type: 'line', data: data.chinesePerCapita, yAxisIndex: 1, lineStyle: { color: T.series[1], width: 2 }, symbol: 'circle', symbolSize: 4, itemStyle: { color: T.series[1] } },
+        {
+          name: 'Chinese Lynching Victims',
+          type: 'line',
+          data: data.chinesePerCapita,
+          areaStyle: { color: '#86efac' },
+          lineStyle: { width: 2, color: '#4ade80' },
+          symbol: 'circle',
+          symbolSize: 4,
+          itemStyle: { color: '#4ade80' },
+          z: 1,
+        },
+        {
+          name: 'Black Lynching Victims',
+          type: 'line',
+          data: data.blackPerCapita,
+          areaStyle: { color: '#16a34a' },
+          lineStyle: { width: 2, color: '#16a34a' },
+          symbol: 'circle',
+          symbolSize: 4,
+          itemStyle: { color: '#16a34a' },
+          z: 2,
+        },
       ],
-      grid: { left: 195 + Pl, right: 70 + Pr, top: 35 + Pt, bottom: 80 + Pb },
+      grid: { left: 280 + Pl, right: 40 + Pr, top: 35 + Pt, bottom: 80 + Pb },
+    },
+  });
+
+  configs.push({
+    name: 'per capita lynchings black vs chinese 1880-1920',
+    width: PRINT.width,
+    height: PRINT.heightTall,
+    pixelRatio: PRINT.pixelRatio,
+    option: {
+      ...base(),
+      legend: { data: ['Black Lynching Victims', 'Chinese Lynching Victims'], bottom: 10 + Pb, textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
+      xAxis: {
+        type: 'category',
+        data: data.years1880_1920,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel, align: 'center', interval: 4 },
+        axisTick: { alignWithLabel: true },
+        axisLine: { lineStyle: { color: T.axis } },
+      },
+      yAxis: {
+        type: 'value',
+        name: 'Number of victims per 100,000',
+        position: 'left',
+        nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName },
+        nameGap: 120,
+        nameLocation: 'center',
+        nameRotate: 90,
+        min: 0,
+        max: 45,
+        interval: 10,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel, rotate: 0 },
+        axisLine: { lineStyle: { color: T.axis } },
+        splitLine: { lineStyle: { color: T.grid, opacity: 0.6 } },
+      },
+      series: [
+        {
+          name: 'Chinese Lynching Victims',
+          type: 'line',
+          data: data.chinesePerCapita1880_1920,
+          areaStyle: { color: '#86efac' },
+          lineStyle: { width: 2, color: '#4ade80' },
+          symbol: 'circle',
+          symbolSize: 4,
+          itemStyle: { color: '#4ade80' },
+          z: 1,
+        },
+        {
+          name: 'Black Lynching Victims',
+          type: 'line',
+          data: data.blackPerCapita1880_1920,
+          areaStyle: { color: '#16a34a' },
+          lineStyle: { width: 2, color: '#16a34a' },
+          symbol: 'circle',
+          symbolSize: 4,
+          itemStyle: { color: '#16a34a' },
+          z: 2,
+        },
+      ],
+      grid: { left: 280 + Pl, right: 40 + Pr, top: 35 + Pt, bottom: 80 + Pb },
+    },
+  });
+
+  configs.push({
+    name: 'per capita lynchings black vs chinese 1880-1910',
+    width: PRINT.width,
+    height: PRINT.heightTall,
+    pixelRatio: PRINT.pixelRatio,
+    option: {
+      ...base(),
+      legend: { data: ['Black Lynching Victims', 'Chinese Lynching Victims'], bottom: 10 + Pb, textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
+      xAxis: {
+        type: 'category',
+        data: data.years1880_1910,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel, align: 'center', interval: 4 },
+        axisTick: { alignWithLabel: true },
+        axisLine: { lineStyle: { color: T.axis } },
+      },
+      yAxis: {
+        type: 'value',
+        name: 'Number of victims per 100,000',
+        position: 'left',
+        nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName },
+        nameGap: 120,
+        nameLocation: 'center',
+        nameRotate: 90,
+        min: 0,
+        max: 45,
+        interval: 10,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel, rotate: 0 },
+        axisLine: { lineStyle: { color: T.axis } },
+        splitLine: { lineStyle: { color: T.grid, opacity: 0.6 } },
+      },
+      series: [
+        {
+          name: 'Chinese Lynching Victims',
+          type: 'line',
+          data: data.chinesePerCapita1880_1910,
+          areaStyle: { color: '#86efac' },
+          lineStyle: { width: 2, color: '#4ade80' },
+          symbol: 'circle',
+          symbolSize: 4,
+          itemStyle: { color: '#4ade80' },
+          z: 1,
+        },
+        {
+          name: 'Black Lynching Victims',
+          type: 'line',
+          data: data.blackPerCapita1880_1910,
+          areaStyle: { color: '#16a34a' },
+          lineStyle: { width: 2, color: '#16a34a' },
+          symbol: 'circle',
+          symbolSize: 4,
+          itemStyle: { color: '#16a34a' },
+          z: 2,
+        },
+      ],
+      grid: { left: 280 + Pl, right: 40 + Pr, top: 35 + Pt, bottom: 80 + Pb },
+    },
+  });
+
+  configs.push({
+    name: 'per capita lynchings black vs chinese 1880-1910 v2',
+    width: PRINT.width,
+    height: PRINT.heightTall,
+    pixelRatio: PRINT.pixelRatio,
+    option: {
+      ...base(),
+      legend: { data: ['Black Lynching Victims', 'Chinese Lynching Victims'], bottom: 10 + Pb, textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
+      xAxis: {
+        type: 'category',
+        data: data.years1880_1910,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel, align: 'center', interval: 4 },
+        axisTick: { alignWithLabel: true },
+        axisLine: { lineStyle: { color: T.axis } },
+      },
+      yAxis: {
+        type: 'value',
+        name: 'Number of victims per 100,000',
+        position: 'left',
+        nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName },
+        nameGap: 120,
+        nameLocation: 'center',
+        nameRotate: 90,
+        min: 0,
+        max: 45,
+        interval: 10,
+        axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel, rotate: 0 },
+        axisLine: { lineStyle: { color: T.axis } },
+        splitLine: { lineStyle: { color: T.grid, opacity: 0.6 } },
+      },
+      series: [
+        {
+          name: 'Chinese Lynching Victims',
+          type: 'line',
+          data: data.chinesePerCapita1880_1910_v2,
+          areaStyle: { color: '#86efac' },
+          lineStyle: { width: 2, color: '#4ade80' },
+          symbol: 'circle',
+          symbolSize: 4,
+          itemStyle: { color: '#4ade80' },
+          z: 1,
+        },
+        {
+          name: 'Black Lynching Victims',
+          type: 'line',
+          data: data.blackPerCapita1880_1910_v2,
+          areaStyle: { color: '#16a34a' },
+          lineStyle: { width: 2, color: '#16a34a' },
+          symbol: 'circle',
+          symbolSize: 4,
+          itemStyle: { color: '#16a34a' },
+          z: 2,
+        },
+      ],
+      grid: { left: 280 + Pl, right: 40 + Pr, top: 35 + Pt, bottom: 80 + Pb },
     },
   });
 

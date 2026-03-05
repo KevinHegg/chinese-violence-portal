@@ -8,10 +8,11 @@ export interface Props {
 const { id = "article-viewer", className = "" } = Astro.props;
 ---
 
-<!-- Article Viewer Modal -->
-<div id={id} class={`hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-2 lg:p-4 ${className}`}
-  role="dialog" aria-modal="true" aria-labelledby="viewer-title">
-  <div class="bg-white rounded-xl shadow-2xl max-w-7xl w-full max-h-[95vh] lg:max-h-[95vh] overflow-hidden border border-gray-200">
+<!-- Article Viewer Modal: fixed overlay above navbar, top padding so title/close are not clipped -->
+<div id={id} class={`article-viewer-overlay hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 lg:p-4 pt-[var(--header-height,80px)] lg:pt-[var(--header-height,80px)] ${className}`}
+  role="dialog" aria-modal="true" aria-labelledby="viewer-title"
+  style="z-index: 10000;">
+  <div class="bg-white rounded-xl shadow-2xl max-w-7xl w-full max-h-[calc(95vh-var(--header-height,80px))] lg:max-h-[calc(95vh-var(--header-height,80px))] overflow-hidden border border-gray-200">
     <div class="p-4 lg:p-6 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-amber-100">
       <div class="flex justify-between items-start">
         <h2 class="text-lg lg:text-2xl font-bold text-gray-900 pr-4" id="viewer-title" tabindex="-1"></h2>
@@ -141,6 +142,8 @@ const { id = "article-viewer", className = "" } = Astro.props;
     init() {
       // Close modal
       this.closeBtn?.addEventListener('click', () => this.close());
+      // Close on docent step change (Back/Next/Resume)
+      window.addEventListener('johncrow:close-article-modal', () => this.close());
       // Close on backdrop click
       this.container?.addEventListener('click', (e) => {
         if (e.target === this.container) this.close();
@@ -336,6 +339,14 @@ const { id = "article-viewer", className = "" } = Astro.props;
       
       this.container.classList.add('hidden');
       document.body.style.overflow = '';
+      // Remove openArticle from URL so Back button does not re-open modal
+      try {
+        const url = new URL(window.location.href);
+        if (url.searchParams.has('openArticle')) {
+          url.searchParams.delete('openArticle');
+          window.history.replaceState({}, '', url.pathname + url.search + (url.hash || ''));
+        }
+      } catch (_) {}
       // Restore focus to last active element
       if (this.lastActiveElement && typeof this.lastActiveElement.focus === 'function') {
         setTimeout(() => this.lastActiveElement.focus(), 0);

@@ -5,7 +5,6 @@
 
 // Mapbox configuration - matches src/pages/visualize/map.astro exactly
 const DEFAULT_MAPBOX_STYLE = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
-const DEFAULT_MAPBOX_TOKEN = 'pk.eyJ1Ijoia2V2aW5oZWdnIiwiYSI6ImNscmprbG80NzA0aW8ybm94bXFveG1qcmYifQ.z0za-koZbyVbgwJ5AVg9LA';
 
 export function getMapboxStaticImageUrl(
   longitude: number,
@@ -27,7 +26,11 @@ export function getMapboxStaticImageUrl(
   const width = options.width || 300;
   const height = options.height || 300;
   const zoom = options.zoom || 13; // Good zoom level for city/town view
-  const token = options.token || import.meta.env.PUBLIC_MAPBOX_TOKEN || DEFAULT_MAPBOX_TOKEN;
+  const token =
+    options.token ||
+    import.meta.env.PUBLIC_MAPBOX_ACCESS_TOKEN ||
+    import.meta.env.PUBLIC_MAPBOX_TOKEN ||
+    '';
   const style = options.style || DEFAULT_MAPBOX_STYLE;
 
   // Mapbox Static Images API format with marker overlay:

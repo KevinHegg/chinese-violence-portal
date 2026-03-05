@@ -1,352 +1,578 @@
 ---
-// Global navbar component with johncrow theme
+import {
+  Home,
+  Sparkles,
+  Compass,
+  MessagesSquare,
+  ChartLine,
+  Newspaper,
+  Info,
+} from 'lucide-react';
+
 export interface Props {
   currentPage?: string;
 }
 
-const { currentPage } = Astro.props;
+const { currentPage = '' } = Astro.props;
 ---
 
+<nav
+  class="jc-nav fixed top-0 left-0 right-0 z-[9999] border-b border-amber-200 shadow-sm"
+  aria-label="Primary"
+  data-current-page={currentPage}
+>
+  <div class="jc-nav__inner">
+    <button
+      id="jc-nav-toggle"
+      class="jc-nav__hamburger"
+      type="button"
+      aria-expanded="false"
+      aria-controls="jc-nav-mobile-menu"
+      aria-label="Toggle navigation menu"
+    >
+      <span class="sr-only">Open main menu</span>
+      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+
+    <ul class="jc-nav__list" role="menubar">
+      <li role="none" class="jc-nav__tooltip-root" data-tooltip-root>
+        <a id="nav-home" role="menuitem" class="jc-nav__link" href="/" data-nav-key="home" aria-describedby="jc-global-tooltip" data-tooltip-trigger data-tooltip-text="Start here: project overview and key entry points.">
+          <Home className="jc-nav__icon" size={17} aria-hidden="true" />
+          <span>Home</span>
+        </a>
+      </li>
+
+      <li role="none" class="jc-nav__tooltip-root" data-tooltip-root>
+        <a id="nav-tour" role="menuitem" class="jc-nav__link" href="/tour" data-nav-key="tour" aria-describedby="jc-global-tooltip" data-tooltip-trigger data-tooltip-text="Guided walkthrough: learn how to read a record, open sources, and use maps.">
+          <Sparkles className="jc-nav__icon" size={17} aria-hidden="true" />
+          <span>Tour</span>
+        </a>
+      </li>
+
+      <li class="jc-nav__item jc-nav__item--has-dropdown jc-nav__tooltip-root" role="none" data-tooltip-root>
+        <button
+          id="nav-explore"
+          class="jc-nav__link jc-nav__dropdown-trigger"
+          type="button"
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="jc-explore-menu"
+          data-dropdown-target="jc-explore-menu"
+          data-nav-key="explore"
+          aria-describedby="jc-global-tooltip"
+          data-tooltip-trigger
+          data-tooltip-text="Browse the archive by collection: records, news clips, datasets."
+        >
+          <Compass className="jc-nav__icon" size={17} aria-hidden="true" />
+          <span>Explore</span>
+          <span aria-hidden="true" class="jc-nav__caret">▾</span>
+        </button>
+        <ul id="jc-explore-menu" class="jc-nav__dropdown" role="menu" aria-labelledby="nav-explore" hidden>
+          <li role="none" class="jc-nav__tooltip-root" data-tooltip-root>
+            <a role="menuitem" class="jc-nav__dropdown-link" href="/explore" aria-describedby="jc-global-tooltip" data-tooltip-trigger data-tooltip-text="Case records with narrative + metadata + linked evidence.">Lynching Records</a>
+          </li>
+          <li role="none" class="jc-nav__tooltip-root" data-tooltip-root>
+            <a role="menuitem" class="jc-nav__dropdown-link" href="/news" aria-describedby="jc-global-tooltip" data-tooltip-trigger data-tooltip-text="Newspaper article images with transcripts and citations.">News Clips</a>
+          </li>
+          <li role="none" class="jc-nav__tooltip-root" data-tooltip-root>
+            <a role="menuitem" class="jc-nav__dropdown-link" href="/dataset" aria-describedby="jc-global-tooltip" data-tooltip-trigger data-tooltip-text="Downloadable structured data used in the analysis.">Dataset</a>
+          </li>
+        </ul>
+      </li>
+
+      <li role="none" class="jc-nav__tooltip-root" data-tooltip-root>
+        <a id="nav-ask" role="menuitem" class="jc-nav__link" href="/chat" data-nav-key="chat" aria-describedby="jc-global-tooltip" data-tooltip-trigger data-tooltip-text="Ask questions across the archive: summaries, patterns, and citations.">
+          <MessagesSquare className="jc-nav__icon" size={17} aria-hidden="true" />
+          <span>Ask the Archive</span>
+        </a>
+      </li>
+
+      <li role="none" class="jc-nav__tooltip-root" data-tooltip-root>
+        <a id="nav-visualize" role="menuitem" class="jc-nav__link" href="/visualize" data-nav-key="visualize" aria-describedby="jc-global-tooltip" data-tooltip-trigger data-tooltip-text="Maps, timelines, and charts of anti-Chinese lethal violence (1853–1915).">
+          <ChartLine className="jc-nav__icon" size={17} aria-hidden="true" />
+          <span>Visualize</span>
+        </a>
+      </li>
+
+      <li role="none" class="jc-nav__tooltip-root" data-tooltip-root>
+        <a id="nav-sources" role="menuitem" class="jc-nav__link" href="/sources" data-nav-key="sources" aria-describedby="jc-global-tooltip" data-tooltip-trigger data-tooltip-text="Primary sources behind the narratives: newspaper scans, transcripts, citations.">
+          <Newspaper className="jc-nav__icon" size={17} aria-hidden="true" />
+          <span>Sources</span>
+        </a>
+      </li>
+
+      <li class="jc-nav__item jc-nav__item--has-dropdown jc-nav__tooltip-root" role="none" data-tooltip-root>
+        <button
+          id="nav-about"
+          class="jc-nav__link jc-nav__dropdown-trigger"
+          type="button"
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="jc-about-menu"
+          data-dropdown-target="jc-about-menu"
+          data-nav-key="about"
+          aria-describedby="jc-global-tooltip"
+          data-tooltip-trigger
+          data-tooltip-text="What this project argues and why it matters (John Crow, Jim Crow, and print networks)."
+        >
+          <Info className="jc-nav__icon" size={17} aria-hidden="true" />
+          <span>About</span>
+          <span aria-hidden="true" class="jc-nav__caret">▾</span>
+        </button>
+        <ul id="jc-about-menu" class="jc-nav__dropdown" role="menu" aria-labelledby="nav-about" hidden>
+          <li role="none" class="jc-nav__tooltip-root" data-tooltip-root>
+            <a role="menuitem" class="jc-nav__dropdown-link" href="/about/project-and-thesis" aria-describedby="jc-global-tooltip" data-tooltip-trigger data-tooltip-text="Thesis framing, methodology, and how to cite this site.">Project &amp; Thesis</a>
+          </li>
+          <li role="none" class="jc-nav__tooltip-root" data-tooltip-root>
+            <a role="menuitem" class="jc-nav__dropdown-link" href="/about/contact" aria-describedby="jc-global-tooltip" data-tooltip-trigger data-tooltip-text="How to reach the project.">Contact</a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <div id="jc-nav-mobile-menu" class="jc-nav__mobile" hidden>
+    <ul class="jc-nav__mobile-list" role="menu" aria-label="Mobile primary menu">
+      <li role="none"><a role="menuitem" class="jc-nav__mobile-link" href="/">Home</a></li>
+      <li role="none"><a role="menuitem" class="jc-nav__mobile-link" href="/tour">Tour</a></li>
+
+      <li role="none" class="jc-nav__mobile-group">
+        <button
+          id="jc-mobile-explore-button"
+          class="jc-nav__mobile-link jc-nav__mobile-trigger"
+          type="button"
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="jc-mobile-explore-menu"
+          data-mobile-dropdown-target="jc-mobile-explore-menu"
+        >
+          Explore <span aria-hidden="true" class="jc-nav__caret">▾</span>
+        </button>
+        <ul id="jc-mobile-explore-menu" class="jc-nav__mobile-submenu" role="menu" aria-labelledby="jc-mobile-explore-button" hidden>
+          <li role="none"><a role="menuitem" class="jc-nav__mobile-sublink" href="/explore">Lynching Records</a></li>
+          <li role="none"><a role="menuitem" class="jc-nav__mobile-sublink" href="/news">News Clips</a></li>
+          <li role="none"><a role="menuitem" class="jc-nav__mobile-sublink" href="/dataset">Dataset</a></li>
+        </ul>
+      </li>
+
+      <li role="none"><a role="menuitem" class="jc-nav__mobile-link" href="/chat">Ask the Archive</a></li>
+      <li role="none"><a role="menuitem" class="jc-nav__mobile-link" href="/visualize">Visualize</a></li>
+      <li role="none"><a role="menuitem" class="jc-nav__mobile-link" href="/sources">Sources</a></li>
+
+      <li role="none" class="jc-nav__mobile-group">
+        <button
+          id="jc-mobile-about-button"
+          class="jc-nav__mobile-link jc-nav__mobile-trigger"
+          type="button"
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="jc-mobile-about-menu"
+          data-mobile-dropdown-target="jc-mobile-about-menu"
+        >
+          About <span aria-hidden="true" class="jc-nav__caret">▾</span>
+        </button>
+        <ul id="jc-mobile-about-menu" class="jc-nav__mobile-submenu" role="menu" aria-labelledby="jc-mobile-about-button" hidden>
+          <li role="none"><a role="menuitem" class="jc-nav__mobile-sublink" href="/about/project-and-thesis">Project &amp; Thesis</a></li>
+          <li role="none"><a role="menuitem" class="jc-nav__mobile-sublink" href="/about/contact">Contact</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Spacer to prevent fixed nav overlap -->
+<div class="h-[52px]"></div>
+<div id="jc-global-tooltip" role="tooltip" class="jc-global-tooltip" hidden></div>
+
 <script>
-  // Set active nav item based on current page
   document.addEventListener('DOMContentLoaded', () => {
-    const currentPage = document.body.getAttribute('data-current-page');
-    const navItems = document.querySelectorAll('.nav-item');
-    
-    navItems.forEach(item => {
-      const link = item.querySelector('a');
-      if (link) {
-        const href = link.getAttribute('href');
-        if ((href === '/' && currentPage === 'home') || href === `/${currentPage}`) {
-          item.classList.add('active');
-        }
+    const nav = document.querySelector('.jc-nav');
+    if (!nav) return;
+
+    const dropdownTriggers = Array.from(nav.querySelectorAll('[data-dropdown-target]'));
+    const mobileDropdownTriggers = Array.from(nav.querySelectorAll('[data-mobile-dropdown-target]'));
+    const mobileToggle = document.getElementById('jc-nav-toggle');
+    const mobileMenu = document.getElementById('jc-nav-mobile-menu');
+    const tooltipTriggers = Array.from(nav.querySelectorAll('[data-tooltip-trigger]')) as HTMLElement[];
+    const globalTooltip = document.getElementById('jc-global-tooltip') as HTMLElement | null;
+    const suppressTouchTooltips = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+    const closeDesktopDropdowns = () => {
+      dropdownTriggers.forEach((trigger) => {
+        const targetId = trigger.getAttribute('data-dropdown-target');
+        const menu = targetId ? document.getElementById(targetId) : null;
+        if (menu) menu.hidden = true;
+        trigger.setAttribute('aria-expanded', 'false');
+      });
+    };
+
+    let desktopDropdownCloseTimer: number | null = null;
+    const clearDesktopDropdownCloseTimer = () => {
+      if (desktopDropdownCloseTimer !== null) {
+        window.clearTimeout(desktopDropdownCloseTimer);
+        desktopDropdownCloseTimer = null;
+      }
+    };
+    const scheduleDesktopDropdownClose = () => {
+      clearDesktopDropdownCloseTimer();
+      desktopDropdownCloseTimer = window.setTimeout(() => {
+        closeDesktopDropdowns();
+      }, 1000);
+    };
+
+    const closeMobileDropdowns = () => {
+      mobileDropdownTriggers.forEach((trigger) => {
+        const targetId = trigger.getAttribute('data-mobile-dropdown-target');
+        const menu = targetId ? document.getElementById(targetId) : null;
+        if (menu) menu.hidden = true;
+        trigger.setAttribute('aria-expanded', 'false');
+      });
+    };
+
+    const hideTooltip = () => {
+      if (globalTooltip) globalTooltip.hidden = true;
+    };
+
+    const showTooltip = (trigger: HTMLElement) => {
+      if (!globalTooltip) return;
+      const text = trigger.getAttribute('data-tooltip-text');
+      if (!text) return;
+      globalTooltip.textContent = text;
+      globalTooltip.hidden = false;
+
+      const navRect = nav.getBoundingClientRect();
+      const rect = trigger.getBoundingClientRect();
+      const isDropdownItem = trigger.classList.contains('jc-nav__dropdown-link');
+      const isAboutMenuItem = !!trigger.closest('#jc-about-menu');
+
+      // Top-level: below navbar edge, left-aligned with trigger.
+      // Second-level: to the right of dropdown row, vertically aligned.
+      let top = isDropdownItem ? rect.top : navRect.bottom + 6;
+      let left = isDropdownItem ? rect.right + 8 : rect.left;
+      if (isAboutMenuItem) left = rect.left - 220;
+
+      globalTooltip.style.top = `${top}px`;
+      globalTooltip.style.left = `${left}px`;
+
+      // Clamp to viewport so tooltips remain visible.
+      requestAnimationFrame(() => {
+        if (!globalTooltip) return;
+        const pad = 8;
+        const tipW = globalTooltip.offsetWidth;
+        const tipH = globalTooltip.offsetHeight;
+        const maxLeft = window.innerWidth - tipW - pad;
+        const maxTop = window.innerHeight - tipH - pad;
+        const clampedLeft = Math.min(Math.max(left, pad), Math.max(maxLeft, pad));
+        const clampedTop = Math.min(Math.max(top, pad), Math.max(maxTop, pad));
+        globalTooltip.style.left = `${clampedLeft}px`;
+        globalTooltip.style.top = `${clampedTop}px`;
+      });
+    };
+
+    // Add more nav tooltips/icons by following existing data-tooltip-root + Tooltip pair.
+    tooltipTriggers.forEach((trigger) => {
+      trigger.addEventListener('mouseenter', () => {
+        if (suppressTouchTooltips) return;
+        showTooltip(trigger);
+      });
+      trigger.addEventListener('focus', () => showTooltip(trigger));
+      trigger.addEventListener('mouseleave', () => hideTooltip());
+      trigger.addEventListener('blur', () => hideTooltip());
+      trigger.addEventListener('keydown', (event) => {
+        const keyEvent = event as KeyboardEvent;
+        if (keyEvent.key === 'Escape') hideTooltip();
+      });
+    });
+
+    dropdownTriggers.forEach((trigger) => {
+      trigger.addEventListener('click', (event) => {
+        event.stopPropagation();
+        hideTooltip();
+        clearDesktopDropdownCloseTimer();
+        const targetId = trigger.getAttribute('data-dropdown-target');
+        const menu = targetId ? document.getElementById(targetId) : null;
+        if (!menu) return;
+
+        const opening = menu.hidden;
+        closeDesktopDropdowns();
+        menu.hidden = !opening;
+        trigger.setAttribute('aria-expanded', opening ? 'true' : 'false');
+      });
+
+      const targetId = trigger.getAttribute('data-dropdown-target');
+      const menu = targetId ? document.getElementById(targetId) : null;
+      if (menu) {
+        // Auto-close desktop dropdown about 1s after pointer leaves
+        // both the top-level trigger and its submenu panel.
+        trigger.addEventListener('mouseenter', () => clearDesktopDropdownCloseTimer());
+        menu.addEventListener('mouseenter', () => clearDesktopDropdownCloseTimer());
+        trigger.addEventListener('mouseleave', () => scheduleDesktopDropdownClose());
+        menu.addEventListener('mouseleave', () => scheduleDesktopDropdownClose());
       }
     });
 
-    // Mobile menu toggle
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-    
-    if (mobileMenuButton && mobileMenu) {
-      mobileMenuButton.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-        // Toggle aria-expanded for accessibility
-        const isExpanded = mobileMenu.classList.contains('hidden') ? 'false' : 'true';
-        mobileMenuButton.setAttribute('aria-expanded', isExpanded);
+    mobileDropdownTriggers.forEach((trigger) => {
+      trigger.addEventListener('click', () => {
+        const targetId = trigger.getAttribute('data-mobile-dropdown-target');
+        const menu = targetId ? document.getElementById(targetId) : null;
+        if (!menu) return;
+        const opening = menu.hidden;
+        menu.hidden = !opening;
+        trigger.setAttribute('aria-expanded', opening ? 'true' : 'false');
+      });
+    });
+
+    if (mobileToggle && mobileMenu) {
+      mobileToggle.addEventListener('click', () => {
+        const opening = mobileMenu.hidden;
+        mobileMenu.hidden = !opening;
+        mobileToggle.setAttribute('aria-expanded', opening ? 'true' : 'false');
+        if (!opening) closeMobileDropdowns();
+      });
+    }
+
+    document.addEventListener('click', (event) => {
+      if (!(event.target instanceof Node)) return;
+      if (!nav.contains(event.target)) closeDesktopDropdowns();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      const keyEvent = event as KeyboardEvent;
+      if (keyEvent.key === 'Escape') {
+        closeDesktopDropdowns();
+        hideTooltip();
+        if (mobileMenu && mobileToggle) {
+          mobileMenu.hidden = true;
+          mobileToggle.setAttribute('aria-expanded', 'false');
+        }
+        closeMobileDropdowns();
+      }
+    });
+
+    const pageKey = nav.getAttribute('data-current-page') || document.body.getAttribute('data-current-page') || '';
+    const activeMap = {
+      home: 'home',
+      tour: 'tour',
+      explore: 'explore',
+      dataset: 'explore',
+      news: 'explore',
+      chat: 'chat',
+      visualize: 'visualize',
+      sources: 'sources',
+      about: 'about',
+    };
+    const activeKey = activeMap[pageKey as keyof typeof activeMap] || '';
+    if (activeKey) {
+      nav.querySelectorAll(`[data-nav-key="${activeKey}"]`).forEach((el) => {
+        el.classList.add('is-active');
       });
     }
   });
 </script>
 
-<!-- Global navbar with gradient fade -->
-<nav class="navbar navbar-gradient border-b border-amber-200 shadow-sm fixed top-0 left-0 right-0 z-50 py-2">
-  <div class="navbar-start">
-    <!-- Mobile menu button - visible on screens smaller than 900px -->
-    <button id="mobile-menu-button" class="btn btn-ghost btn-sm p-2 mobile-menu-btn" aria-label="Toggle mobile menu" aria-expanded="false">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-      </svg>
-    </button>
-  </div>
-  
-  <div class="navbar-center flex-1 flex justify-center">
-    <!-- Desktop menu - hidden on small screens -->
-    <ul class="menu menu-horizontal px-1 gap-1 desktop-menu">
-      <li class="nav-item relative">
-        <a href="/" class="nav-link flex items-center justify-center gap-1 font-body text-sm text-base-content hover:text-accent hover:underline decoration-accent decoration-1 transition-all duration-200 pb-1 border-b-2 border-transparent whitespace-nowrap pt-1">
-          <svg class="nav-icon w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-          </svg>
-          Welcome
-        </a>
-      </li>
-      <li class="flex items-center justify-center">
-        <div class="h-6 w-0.5 bg-amber-300 flex-shrink-0"></div>
-      </li>
-      <li class="nav-item relative">
-        <a href="/dataset" class="nav-link flex items-center justify-center gap-1 font-body text-sm text-base-content hover:text-accent hover:underline decoration-accent decoration-1 transition-all duration-200 pb-1 border-b-2 border-transparent whitespace-nowrap pt-1" aria-label="View and contribute to the anti-Chinese violence dataset">
-          <svg class="nav-icon w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <!-- Table/Grid/Dataset icon -->
-            <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2" fill="none" />
-            <path stroke="currentColor" stroke-width="2" d="M3 9h18M3 13h18M7 5v14M17 5v14" />
-          </svg>
-          Dataset
-        </a>
-      </li>
-      <li class="flex items-center justify-center">
-        <div class="h-6 w-0.5 bg-amber-300 flex-shrink-0"></div>
-      </li>
-      <li class="nav-item relative">
-        <a href="/chat" class="nav-link flex items-center justify-center gap-1 font-body text-sm text-base-content hover:text-accent hover:underline decoration-accent decoration-1 transition-all duration-200 pb-1 border-b-2 border-transparent whitespace-nowrap pt-1">
-          <svg class="nav-icon w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-          </svg>
-          Ask the Archive
-        </a>
-      </li>
-      <li class="flex items-center justify-center">
-        <div class="h-6 w-0.5 bg-amber-300 flex-shrink-0"></div>
-      </li>
-      <li class="nav-item relative">
-        <a href="/explore" class="nav-link flex items-center justify-center gap-1 font-body text-sm text-base-content hover:text-accent hover:underline decoration-accent decoration-1 transition-all duration-200 pb-1 border-b-2 border-transparent whitespace-nowrap pt-1">
-          <svg class="nav-icon w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5h10M11 9h7M11 13h4M7 5v14m0 0H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2v12z" />
-            <circle cx="17" cy="17" r="3" stroke="currentColor" stroke-width="2" fill="none" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-2-2" />
-          </svg>
-          Explore the Records
-        </a>
-      </li>
-      <li class="flex items-center justify-center">
-        <div class="h-6 w-0.5 bg-amber-300 flex-shrink-0"></div>
-      </li>
-      <li class="nav-item relative">
-        <a href="/news" class="nav-link flex items-center justify-center gap-1 font-body text-sm text-base-content hover:text-accent hover:underline decoration-accent decoration-1 transition-all duration-200 pb-1 border-b-2 border-transparent whitespace-nowrap pt-1">
-          <svg class="nav-icon w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
-          </svg>
-          News Clips
-        </a>
-      </li>
-      <li class="flex items-center justify-center">
-        <div class="h-6 w-0.5 bg-amber-300 flex-shrink-0"></div>
-      </li>
-      <li class="nav-item relative">
-        <a href="/visualize" class="nav-link flex items-center justify-center gap-1 font-body text-sm text-base-content hover:text-accent hover:underline decoration-accent decoration-1 transition-all duration-200 pb-1 border-b-2 border-transparent whitespace-nowrap pt-1">
-          <svg class="nav-icon w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-          </svg>
-          Visualize the Data
-        </a>
-      </li>
-      <li class="flex items-center justify-center">
-        <div class="h-6 w-0.5 bg-amber-300 flex-shrink-0"></div>
-      </li>
-      <li class="nav-item relative">
-        <a href="/sources" class="nav-link flex items-center justify-center gap-1 font-body text-sm text-base-content hover:text-accent hover:underline decoration-accent decoration-1 transition-all duration-200 pb-1 border-b-2 border-transparent whitespace-nowrap pt-1">
-          <svg class="nav-icon w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-          </svg>
-          Sources
-        </a>
-      </li>
-    </ul>
-  </div>
-  
-  <div class="navbar-end">
-    <!-- Empty for now -->
-  </div>
-</nav>
-
-<!-- Mobile menu overlay -->
-<div id="mobile-menu" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden mobile-menu-overlay">
-  <div class="absolute top-16 left-0 right-0 bg-amber-50 border-b border-amber-200 shadow-lg">
-    <ul class="menu bg-amber-50 w-full">
-      <li class="nav-item">
-        <a href="/" class="nav-link flex items-center gap-2 font-body text-sm text-base-content hover:text-accent hover:bg-amber-100 p-4">
-          <svg class="nav-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-          </svg>
-          Welcome
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="/dataset" class="nav-link flex items-center gap-2 font-body text-sm text-base-content hover:text-accent hover:bg-amber-100 p-4" aria-label="View and contribute to the anti-Chinese violence dataset">
-          <svg class="nav-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2" fill="none" />
-            <path stroke="currentColor" stroke-width="2" d="M3 9h18M3 13h18M7 5v14M17 5v14" />
-          </svg>
-          Dataset
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="/chat" class="nav-link flex items-center gap-2 font-body text-sm text-base-content hover:text-accent hover:bg-amber-100 p-4">
-          <svg class="nav-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-          </svg>
-          Ask the Archive
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="/explore" class="nav-link flex items-center gap-2 font-body text-sm text-base-content hover:text-accent hover:bg-amber-100 p-4">
-          <svg class="nav-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5h10M11 9h7M11 13h4M7 5v14m0 0H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2v12z" />
-            <circle cx="17" cy="17" r="3" stroke="currentColor" stroke-width="2" fill="none" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-2-2" />
-          </svg>
-          Explore the Records
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="/news" class="nav-link flex items-center gap-2 font-body text-sm text-base-content hover:text-accent hover:bg-amber-100 p-4">
-          <svg class="nav-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
-          </svg>
-          News Clips
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="/visualize" class="nav-link flex items-center gap-2 font-body text-sm text-base-content hover:text-accent hover:bg-amber-100 p-4">
-          <svg class="nav-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-          </svg>
-          Visualize the Data
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="/sources" class="nav-link flex items-center gap-2 font-body text-sm text-base-content hover:text-accent hover:bg-amber-100 p-4">
-          <svg class="nav-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-          </svg>
-          Sources
-        </a>
-      </li>
-    </ul>
-  </div>
-</div>
-
-<!-- Spacer to prevent content from being hidden behind fixed navbar -->
-<div class="h-[56px]"></div>
-
 <style>
-  /* Ensure navbar layout works correctly */
-  .navbar {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    width: 100% !important;
-    margin-top: 0 !important;
-  }
-  
-  .navbar-start {
-    flex-shrink: 0 !important;
-  }
-  
-  .navbar-center {
-    flex: 1 !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-  }
-  
-  .navbar-end {
-    flex-shrink: 0 !important;
-  }
-  
-  /* Ensure menu items are properly displayed */
-  .menu-horizontal {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 0.25rem !important;
-    flex-wrap: nowrap !important;
-  }
-  
-  .menu-horizontal li {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    flex-shrink: 0 !important;
-  }
-  
-  /* Ensure nav links are properly aligned */
-  .nav-link {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    white-space: nowrap !important;
-  }
-  
-  /* Ensure separator bars are perfectly centered */
-  .menu-horizontal li:has(div) {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    height: 100% !important;
-  }
-  
-  /* Ensure the navbar container itself is perfectly centered */
-  .navbar {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    width: 100% !important;
-    margin-top: 0 !important;
-    min-height: 2.5rem !important; /* 40px to match the h-6 separators */
-  }
-  
-  /* Active nav item styles */
-  .nav-item.active .nav-link {
-    color: #1f1f1f !important; /* dark text on brown background */
-    font-weight: 600 !important;
-    background-color: #d4c4a8 !important; /* lighter brown background */
-    border-radius: 0.375rem !important;
-    padding: 0.25rem 0.5rem !important;
-    border-bottom-color: transparent !important;
-  }
-  
-  .nav-item.active .nav-icon {
-    color: #1f1f1f !important; /* dark text on brown background */
-  }
-
-  /* Mobile menu styles */
-  #mobile-menu {
-    transition: opacity 0.2s ease-in-out;
-  }
-
-  /* Mobile active state */
-  #mobile-menu .nav-item.active .nav-link {
-    background-color: #d4c4a8 !important;
-    color: #1f1f1f !important;
-    font-weight: 600 !important;
-  }
-
-  /* Custom breakpoint for mobile menu at 900px to prevent text wrapping */
-  .mobile-menu-btn {
-    display: none !important;
-  }
-  
-  .desktop-menu {
-    display: flex !important;
-  }
-  
-  .mobile-menu-overlay {
-    display: none !important;
-  }
-
-  /* Show mobile menu button and hide desktop menu below 900px */
-  @media (max-width: 900px) {
-    .mobile-menu-btn {
-      display: block !important;
-    }
-    
-    .desktop-menu {
-      display: none !important;
-    }
-    
-    /* Mobile menu overlay should be hidden by default, only shown when toggled */
-    .mobile-menu-overlay {
-      display: none !important;
-    }
-    
-    /* When mobile menu is active (not hidden), show it */
-    .mobile-menu-overlay:not(.hidden) {
-      display: block !important;
-    }
-  }
-
-  /* Navbar gradient background - fades from solid to transparent */
-  .navbar-gradient {
-    background: linear-gradient(to bottom, 
-      rgba(254, 243, 199, 1) 0%,     /* Darker amber - #fef3c7 */
+  /* johncrow Design System: nav shell */
+  .jc-nav {
+    padding: 10px 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(254, 243, 199, 1) 0%,
       rgba(254, 243, 199, 0.98) 20%,
       rgba(254, 243, 199, 0.95) 40%,
       rgba(254, 243, 199, 0.9) 60%,
       rgba(254, 243, 199, 0.8) 80%,
       rgba(254, 243, 199, 0.5) 100%
-    ) !important;
+    );
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
   }
-</style> 
+
+  /* johncrow Design System: desktop layout */
+  .jc-nav__inner {
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 0 1rem;
+  }
+
+  .jc-nav__list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    width: 100%;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .jc-nav__tooltip-root {
+    position: relative;
+  }
+
+  /* johncrow Design System: nav links and triggers */
+  .jc-nav__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.95rem;
+    line-height: 1;
+    color: #1f2937;
+    background: transparent;
+    border: 0;
+    border-radius: 0.375rem;
+    padding: 0.5rem 0.65rem;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .jc-nav__icon {
+    opacity: 0.85;
+    flex-shrink: 0;
+  }
+
+  .jc-nav__link:hover,
+  .jc-nav__link:focus-visible,
+  .jc-nav__dropdown-link:hover,
+  .jc-nav__dropdown-link:focus-visible,
+  .jc-nav__mobile-link:hover,
+  .jc-nav__mobile-link:focus-visible,
+  .jc-nav__mobile-sublink:hover,
+  .jc-nav__mobile-sublink:focus-visible {
+    color: #1f1f1f;
+    background-color: #fef3c7;
+    outline: none;
+  }
+
+  .jc-nav__link.is-active {
+    color: #1f1f1f;
+    font-weight: 600;
+    background-color: #d4c4a8;
+  }
+
+  /* johncrow Design System: tooltip surface */
+  .jc-tooltip__content {
+    display: none !important;
+  }
+
+  .jc-global-tooltip {
+    position: fixed;
+    transform: none;
+    background: rgba(55, 65, 81, 0.88);
+    color: #f9fafb;
+    font-size: 0.72rem;
+    line-height: 1.25;
+    padding: 0.35rem 0.45rem;
+    border-radius: 0.35rem;
+    width: fit-content;
+    max-width: 220px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* johncrow Design System: desktop dropdown */
+  .jc-nav__item {
+    position: relative;
+  }
+
+  .jc-nav__dropdown {
+    position: absolute;
+    top: calc(100% + 0.35rem);
+    left: 0;
+    min-width: 220px;
+    background: #fefce8;
+    border: 1px solid #fcd34d;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    list-style: none;
+    margin: 0;
+    padding: 0.3rem;
+    z-index: 9999;
+  }
+
+  .jc-nav__dropdown-link {
+    display: block;
+    padding: 0.55rem 0.65rem;
+    border-radius: 0.35rem;
+    color: #1f2937;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+
+  .jc-nav__caret {
+    font-size: 0.8rem;
+    opacity: 0.8;
+  }
+
+  /* johncrow Design System: mobile trigger and menu */
+  .jc-nav__hamburger {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
+    color: #1f2937;
+    padding: 0.4rem;
+    border-radius: 0.35rem;
+    cursor: pointer;
+  }
+
+  .jc-nav__mobile {
+    border-top: 1px solid #fcd34d;
+    background: #fefce8;
+    padding: 0.25rem 0.6rem 0.6rem;
+  }
+
+  .jc-nav__mobile-list,
+  .jc-nav__mobile-submenu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .jc-nav__mobile-link,
+  .jc-nav__mobile-sublink {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    color: #1f2937;
+    background: transparent;
+    border: 0;
+    padding: 0.75rem 0.5rem;
+    text-decoration: none;
+    text-align: left;
+    border-radius: 0.35rem;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+
+  .jc-nav__mobile-sublink {
+    font-size: 0.9rem;
+    padding-left: 1.1rem;
+  }
+
+  .jc-nav__mobile-submenu {
+    padding-bottom: 0.25rem;
+  }
+
+  @media (max-width: 900px) {
+    .jc-nav__hamburger {
+      display: inline-flex;
+    }
+
+    .jc-nav__list {
+      display: none;
+    }
+  }
+
+  @media (hover: none) and (pointer: coarse) {
+    .jc-global-tooltip {
+      display: none !important;
+    }
+  }
+</style>

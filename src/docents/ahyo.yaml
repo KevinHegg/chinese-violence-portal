@@ -1,0 +1,88 @@
+# Docent manifest schema (per step):
+#   highlight: false | "<css selector>"   (use lowercase; false = no overlay)
+#   highlightStyle: "text" | "chart"      (optional; chart = strong frame, minimal fill)
+id: ahyo
+title: "Ah Yo (1885) - Clarksdale, Mississippi"
+subtitle: "A curated walkthrough: how evidence becomes argument."
+desktopOnly: true
+
+start:
+  route: "/records/MS1885-05-05"
+  anchor: "record-top"
+
+steps:
+  - id: 1
+    route: "/records/MS1885-05-05"
+    anchor: "record-top"
+    highlight: "#record-title"
+    title: "The case that anchors the project"
+    text: >
+      This record opens where John Crow and Jim Crow visibly converge: a Chinese victim,
+      a Southern setting, a familiar lynching script, and impunity. It is a point of entry
+      into a national story of racial terror.
+
+  - id: 2
+    route: "/records/MS1885-05-05"
+    anchor: "record-narrative"
+    highlight: "#record-narrative-title"
+    title: "Narrative is reconstruction"
+    text: >
+      The narrative is not decoration. It is a reconstruction built from linked newspaper artifacts
+      and structured metadata—designed to move you from story to evidence without losing the thread.
+
+  - id: 3
+    route: "/records/MS1885-05-05"
+    anchor: "record-evidence"
+    highlight: "#record-evidence-title"
+    title: "Evidence cards"
+    text: >
+      These article cards are the primary-source spine. Open one to see the scan, transcript, and citation together.
+
+  - id: 4
+    route: "/records/MS1885-05-05"
+    anchor: "record-evidence"
+    highlight: false
+    title: "Read an artifact closely"
+    action:
+      type: openArticle
+      articleId: "0205"
+    text: >
+      Notice how the report frames <strong>accusation</strong>, <strong>legitimacy</strong>, <strong>custodial vulnerability</strong>, and <strong>legal impunity</strong>—and how that language travels beyond the local scene.
+
+  - id: 5
+    route: "/visualize/charts#chart-03"
+    anchor: "chart-03"
+    highlight: "#chart-03-title"
+    highlightStyle: "chart"
+    title: "From artifact to pattern"
+    text: >
+      Now step back: this chart translates individual cases into structure—showing how violence clusters,
+      spikes, and becomes legible as a system rather than a series of isolated acts.
+
+  - id: 6
+    route: "/visualize/map?all=1&focus=MS1885-05-05"
+    anchor: "map-docent-wrapper"
+    highlight: false
+    mapFocusRing: true
+    title: "Place the case on the map"
+    text: >
+      With all incidents visible, the Mississippi Delta stops looking like an exception.
+      Focus reveals the record's location; the full layer shows how violence spreads across regions.</br></br>Use the minus ('-') button on the top-left corner of the map to zoom out and see the wider dispersion of lynching incidents across the American West. 
+
+  - id: 7
+    route: "/records/MS1885-05-05"
+    anchor: "record-metadata"
+    highlight: "#record-metadata"
+    title: "Metadata as connective tissue"
+    text: >
+      Metadata is how the archive stays testable: place, date, pretext, and linked sources make
+      the argument verifiable—and comparable across cases.
+
+  - id: 8
+    route: "/records/MS1885-05-05"
+    anchor: "record-top"
+    highlight: "#record-title"
+    title: "Where to go next"
+    text: >
+      Continue by moving chronologically to nearby incidents, or open additional evidence cards and compare
+      how newspapers narrate violence.

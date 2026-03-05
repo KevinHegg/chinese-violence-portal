@@ -1,0 +1,18 @@
+---
+export interface Props {
+  href: string;
+  title: string;
+  description: string;
+  id?: string;
+}
+
+const { href, title, description, id } = Astro.props;
+---
+
+<a id={id} href={href} class="card-vintage-link group">
+  <div class="flex items-center gap-2 mb-2">
+    <slot />
+    <span class="font-display font-semibold text-sm">{title}</span>
+  </div>
+  <p class="text-xs text-gray-600">{description}</p>
+</a>

@@ -1,3 +1,6 @@
+/** @jsxRuntime classic */
+/** @jsx React.createElement */
+/** @jsxFrag React.Fragment */
 import React, { useState, useEffect } from 'react';
 
 interface TimelineItem {
@@ -8,6 +11,7 @@ interface TimelineItem {
   description: string;
   eventType: string;
   link?: string;
+  lynchingId?: string;
 }
 
 interface ChartData {
@@ -16,85 +20,87 @@ interface ChartData {
   legal: number;
 }
 
+const normalizeLynchingId = (value: string | null | undefined): string => {
+  return String(value || '').trim().toUpperCase();
+};
+
 const Timeline: React.FC = () => {
   const [items, setItems] = useState<TimelineItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedEventType, setSelectedEventType] = useState<string>('all');
   const [selectedDecade, setSelectedDecade] = useState<string>('all');
+  const [selectedLynchingId, setSelectedLynchingId] = useState<string | null>(null);
+
+  const prefersReducedMotion = (): boolean => {
+    return typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  };
+
+  const centerTimelineItem = (elementId: string) => {
+    if (typeof document === 'undefined') return;
+    const target = document.getElementById(elementId);
+    if (!target) return;
+    target.scrollIntoView({
+      block: 'center',
+      inline: 'nearest',
+      behavior: prefersReducedMotion() ? 'auto' : 'smooth'
+    });
+  };
 
   useEffect(() => {
     const fetchTimelineData = async () => {
       try {
-        // Fetch both data sources in parallel
+        // Fetch timeline data from locally synced JSON to avoid
+        // external CSV redirect/cors edge cases at runtime.
         const [timelineResponse, lynchingsResponse] = await Promise.all([
-          fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vRs7Ox41PpOBoT4UM_pR7NbG9l5XabAFZdYxpIYLaoNkwlcs2LEVYb9xJAxzsyeG7UQQWhQ8MjzHt4L/pub?output=csv'),
+          fetch('/timeline.json'),
           fetch('/api/lynchings')
         ]);
-        
-        const csvText = await timelineResponse.text();
+
+        if (!timelineResponse.ok) {
+          throw new Error(`Timeline data request failed: ${timelineResponse.status}`);
+        }
+
+        const timelineJson = await timelineResponse.json();
         const lynchingsData = await lynchingsResponse.json();
         
         const timelineItems: TimelineItem[] = [];
-        
-        // Parse CSV data for Legal & Policy and Census events
-        const lines = csvText.split('\n');
-        
-        // Process each line (skip header)
-        for (let i = 1; i < lines.length; i++) {
-          const line = lines[i].trim();
-          if (!line) continue;
-          
-          // Parse CSV line (handle commas in quoted fields)
-          const values = [];
-          let current = '';
-          let inQuotes = false;
-          
-          for (let j = 0; j < line.length; j++) {
-            const char = line[j];
-            if (char === '"') {
-              inQuotes = !inQuotes;
-            } else if (char === ',' && !inQuotes) {
-              values.push(current.trim());
-              current = '';
-            } else {
-              current += char;
-            }
-          }
-          values.push(current.trim()); // Add last value
-          
-          // Extract data from CSV
-          const year = values[0];
-          const month = values[1].padStart(2, '0');
-          const day = values[2].padStart(2, '0');
-          const displayDate = values[3];
-          const headline = values[4];
-          const text = values[5];
-          const eventType = values[6] || 'Legal & Policy'; // Event Type column
-          const link = values[7]; // Link column
-          
-          // Skip Anti-Chinese Violence events from CSV (we'll get them from lynchings API)
+
+        // Parse Legal/Policy + Census events from synced JSON.
+        (Array.isArray(timelineJson) ? timelineJson : []).forEach((row: any, index: number) => {
+          const year = String(row.year ?? '').trim();
+          const month = String(row.month ?? '00').trim().padStart(2, '0');
+          const day = String(row.day ?? '00').trim().padStart(2, '0');
+          const displayDate = String(row.displayDate ?? '').trim() || `${year}-${month}-${day}`;
+          const headline = String(row.headline ?? '').trim();
+          const text = String(row.text ?? '').trim();
+          const eventType = String(row.eventType ?? 'Legal & Policy').trim() || 'Legal & Policy';
+          const link = String(row.link ?? '').trim();
+
+          // Skip Anti-Chinese Violence entries here; lynching items come from API.
           if (eventType.toLowerCase() === 'anti-chinese violence') {
-            continue;
+            return;
           }
-          
-          // Create date string for sorting
+
+          if (!year || !headline) {
+            return;
+          }
+
           const dateStr = `${year}-${month}-${day}`;
-          
-          // Create timeline item
           const timelineItem: TimelineItem = {
-            id: `timeline-${i}`,
+            id: `timeline-${index + 1}`,
             date: displayDate,
             dateForSorting: dateStr,
             title: headline,
             description: text,
-            eventType: eventType,
+            eventType,
             link: link || undefined
           };
-          
           timelineItems.push(timelineItem);
-        }
-        
+        });
+
         // Convert lynchings data to timeline items
         lynchingsData.forEach((lynching: any, index: number) => {
           // Format date for display
@@ -138,7 +144,8 @@ const Timeline: React.FC = () => {
             title: title,
             description: description,
             eventType: 'Anti-Chinese Violence',
-            link: link
+            link: link,
+            lynchingId: normalizeLynchingId(lynching["lynching-id"])
           };
           
           timelineItems.push(timelineItem);
@@ -167,6 +174,19 @@ const Timeline: React.FC = () => {
     fetchTimelineData();
   }, []);
 
+  useEffect(() => {
+    if (!items.length || typeof window === 'undefined') return;
+    const focusId = normalizeLynchingId(new URLSearchParams(window.location.search).get('focus'));
+    if (!focusId) return;
+
+    const focusedItem = items.find((item) => normalizeLynchingId(item.lynchingId) === focusId);
+    if (!focusedItem) return;
+
+    setSelectedLynchingId(focusId);
+    const domId = `timeline-item-${focusId}`;
+    setTimeout(() => centerTimelineItem(domId), 0);
+  }, [items]);
+
   const filteredItems = items.filter(item => {
     // Filter by event type
     if (selectedEventType !== 'all' && item.eventType !== selectedEventType) {
@@ -189,6 +209,13 @@ const Timeline: React.FC = () => {
     return true;
   });
 
+  useEffect(() => {
+    if (!selectedLynchingId) return;
+    const stillVisible = filteredItems.some((item) => normalizeLynchingId(item.lynchingId) === normalizeLynchingId(selectedLynchingId));
+    if (!stillVisible) return;
+    setTimeout(() => centerTimelineItem(`timeline-item-${selectedLynchingId}`), 0);
+  }, [filteredItems, selectedLynchingId]);
+
   // Function to determine if an event should be on the left side
   const isLeftSideEvent = (eventType: string) => {
     return eventType.toLowerCase() === 'anti-chinese violence';
@@ -210,38 +237,12 @@ const Timeline: React.FC = () => {
     return 'bg-blue-500'; // Legal & Policy (default)
   };
 
-  // Function to render description with <br> as line breaks and <strong> as bold
-  const renderDescription = (desc: string) => {
-    // Decode HTML entities
-    let html = decodeHtmlEntities(desc);
-    // Replace <br> tags with newlines
-    html = html.replace(/<br\s*\/?>(\n)?/gi, '\n');
-    // Split by newlines
-    const lines = html.split('\n');
-    // For each line, replace <strong>...</strong> with <strong> React elements
-    return lines.map((line, idx) => {
-      const parts = [];
-      let lastIndex = 0;
-      const strongRegex = /<strong>(.*?)<\/strong>/gi;
-      let match;
-      let key = 0;
-      while ((match = strongRegex.exec(line)) !== null) {
-        if (match.index > lastIndex) {
-          parts.push(line.slice(lastIndex, match.index));
-        }
-        parts.push(<strong key={key++}>{match[1]}</strong>);
-        lastIndex = match.index + match[0].length;
-      }
-      if (lastIndex < line.length) {
-        parts.push(line.slice(lastIndex));
-      }
-      return (
-        <React.Fragment key={idx}>
-          {parts}
-          {idx !== lines.length - 1 && <br />}
-        </React.Fragment>
-      );
-    });
+  // Function to render description allowing line breaks and simple emphasis.
+  const renderDescriptionHtml = (desc: string): string => {
+    const decoded = decodeHtmlEntities(desc || '');
+    return decoded
+      .replace(/\r\n/g, '\n')
+      .replace(/\n/g, '<br />');
   };
 
   // Function to decode HTML entities
@@ -328,9 +329,16 @@ const Timeline: React.FC = () => {
         <div className="space-y-2">
           {filteredItems.map((item, index) => {
             const isLeftSide = isLeftSideEvent(item.eventType);
+            const itemDomId = item.lynchingId ? `timeline-item-${item.lynchingId}` : `timeline-item-${item.id}`;
+            const isSelected = !!item.lynchingId && item.lynchingId === selectedLynchingId;
             
             return (
-              <div key={item.id} className="relative flex items-start">
+              <div
+                key={item.id}
+                id={itemDomId}
+                data-lynching-id={item.lynchingId || undefined}
+                className="relative flex items-start"
+              >
                 {/* Timeline Dot */}
                 <div className={`absolute left-1/2 w-3 h-3 rounded-full border-2 border-white shadow-md transform -translate-x-1/2 ${
                   getDotColor(item.eventType)
@@ -342,7 +350,14 @@ const Timeline: React.FC = () => {
                     ? 'mr-auto pr-3' // Left side for Anti-Chinese Violence events
                     : 'ml-auto pl-3'  // Right side for Legal & Policy and Census events
                 }`}>
-                  <div className={`bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow text-left`}>
+                  <div
+                    className={`bg-white border rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow text-left ${isSelected ? 'border-accent ring-1 ring-accent/40' : 'border-gray-200'}`}
+                    onClick={() => {
+                      if (!item.lynchingId) return;
+                      setSelectedLynchingId(item.lynchingId);
+                      centerTimelineItem(itemDomId);
+                    }}
+                  >
                     <div className={`flex items-start justify-between mb-1 ${
                       isLeftSide
                         ? 'flex-row' // Date on left (closer to timeline), pill on right
@@ -357,19 +372,20 @@ const Timeline: React.FC = () => {
                     </div>
                     
                     <h3 className="text-sm font-semibold text-gray-900 mb-0.5">{decodeHtmlEntities(item.title)}</h3>
-                    <p className="text-xs text-gray-700 leading-relaxed">
-                      {renderDescription(item.description)}
-                      {item.link && (
-                        <span className="ml-1">
-                          <a 
-                            href={item.link} 
-                            className="text-accent hover:text-accent-focus underline"
-                          >
-                            (Read More)
-                          </a>
-                        </span>
-                      )}
-                    </p>
+                    <p
+                      className="text-xs text-gray-700 leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: renderDescriptionHtml(item.description) }}
+                    />
+                    {item.link && (
+                      <p className="text-xs mt-1">
+                        <a 
+                          href={item.link} 
+                          className="text-accent hover:text-accent-focus underline"
+                        >
+                          (Read More)
+                        </a>
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

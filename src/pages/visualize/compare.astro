@@ -35,7 +35,7 @@ censusData.forEach((entry: any) => {
 ---
 
 <PageLayout title="Comparative Lynching Data" currentPage="visualize/compare">
-  <div class="container-wide">
+  <div id="compare-top" class="container-wide scroll-mt-24">
     <!-- Breadcrumb Navigation -->
     <nav aria-label="Breadcrumb" class="mb-4">
       <ol class="flex items-center text-sm flex-wrap">
@@ -59,9 +59,9 @@ censusData.forEach((entry: any) => {
     
     <h1 class="text-4xl font-bold mb-4 text-vintage-ink">Comparative Lynching Data: Black & Chinese Victims</h1>
     
-    <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg max-w-4xl">
+    <div id="compare-controls" class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg max-w-4xl scroll-mt-24">
       <p class="text-gray-700 mb-3">
-        This visualization compares the annual count of lynchings of Black Americans with incidents of anti-Chinese violence in the United States. While both represent forms of racialized mob violence, they occurred in different geographic and social contexts: anti-Black lynchings were concentrated in the South during the Jim Crow era, while anti-Chinese violence was concentrated in the West during the exclusion era. The second chart shows per capita rates during the overlap era (1875–1915), the period when both datasets have data. During this overlap era, a Chinese man in the American West was over three times more likely to be lynched than a Black man living in the American South (2.59 per 100,000 vs. 0.78 per 100,000, a ratio of 3.32). The third chart shows population trends alongside annual violence incidents, allowing for comparison of demographic changes with patterns of racial violence.
+        This visualization compares the annual count of lynchings of Black Americans with incidents of anti-Chinese violence in the United States. While both represent forms of racialized mob violence, they occurred in different geographic and social contexts: anti-Black lynchings were concentrated in the South during the Jim Crow era, while anti-Chinese violence was concentrated in the West during the exclusion era. The second chart shows per capita rates during the overlap era (1870–1920), the period when both datasets have data. During this overlap era, a Chinese man in the American West was over three times more likely to be lynched than a Black man living in the American South (2.59 per 100,000 vs. 0.78 per 100,000, a ratio of 3.32). The third chart shows population trends alongside annual violence incidents, allowing for comparison of demographic changes with patterns of racial violence.
       </p>
       <p class="text-sm text-gray-600">
         <strong>Sources:</strong><br>
@@ -71,8 +71,9 @@ censusData.forEach((entry: any) => {
       </p>
     </div>
 
-    <!-- Comparison Chart -->
-    <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-8">
+    <!-- Compare Chart 01 -->
+    <div id="compare-chart-01" data-compare-chart-index="1" class="scroll-mt-24">
+      <div id="compare-results" class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-8">
       <h2 class="text-xl font-semibold mb-2 text-vintage-ink">Lynchings Over Time: Black vs. Chinese Victims (1850–1920)</h2>
       <p class="mb-4 text-sm text-vintage-ink">Annual count of lynchings by race of victim.</p>
       <div id="chart-compare" 
@@ -82,6 +83,7 @@ censusData.forEach((entry: any) => {
            aria-describedby="chart-compare-desc"></div>
       <p id="chart-compare-desc" class="sr-only">This chart displays annual counts of lynchings by race of victim. Use the data table below for detailed values.</p>
       <div id="chart-compare-table" class="sr-only" role="region" aria-label="Data table for comparison chart"></div>
+      </div>
     </div>
     
     <!-- Summary Stats -->
@@ -102,17 +104,19 @@ censusData.forEach((entry: any) => {
       </div>
     </div>
 
-    <!-- Per Capita Comparison Chart -->
-    <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-8">
-      <h2 class="text-xl font-semibold mb-1 text-vintage-ink">Per Capita Lynchings: Black vs. Chinese Victims (1875–1915)</h2>
+    <!-- Compare Chart 02 -->
+    <div id="compare-chart-02" data-compare-chart-index="2" class="scroll-mt-24">
+      <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-8">
+      <h2 class="text-xl font-semibold mb-1 text-vintage-ink">Per Capita Lynchings: Black vs. Chinese Victims (1870–1920)</h2>
       <p class="mb-2 text-sm text-vintage-ink">Annual lynchings per 100,000 population by race during the overlap era.</p>
       <div id="chart-percapita" 
            style="height: 600px;"
            role="img"
-           aria-label="Line chart showing per capita lynchings of Black and Chinese victims from 1875 to 1915"
+           aria-label="Line chart showing per capita lynchings of Black and Chinese victims from 1870 to 1920"
            aria-describedby="chart-percapita-desc"></div>
       <p id="chart-percapita-desc" class="sr-only">This chart displays annual lynchings per 100,000 population by race during the overlap era. Use the data table below for detailed values.</p>
       <div id="chart-percapita-table" class="sr-only" role="region" aria-label="Data table for per capita chart"></div>
+      </div>
     </div>
     
     <!-- Per Capita Summary Stats -->
@@ -120,23 +124,25 @@ censusData.forEach((entry: any) => {
       <div class="bg-gradient-to-br from-amber-100 to-yellow-100 border-2 border-amber-400 rounded-xl p-4">
         <h3 class="text-base font-semibold text-vintage-ink mb-2">Black Lynching Rate (South)</h3>
         <p class="text-2xl font-bold text-amber-900 mb-1" id="black-percapita-avg">—</p>
-        <p class="text-xs text-vintage-ink mb-1">Average per 100,000 (1875–1915)</p>
+        <p class="text-xs text-vintage-ink mb-1">Average per 100,000 (1870–1920)</p>
         <p class="text-xs text-amber-600" id="black-percapita-peak">Peak year: —</p>
       </div>
       <div class="bg-gradient-to-br from-amber-100 to-yellow-100 border-2 border-amber-400 rounded-xl p-4">
         <h3 class="text-base font-semibold text-vintage-ink mb-2">Chinese Violence Rate (West)</h3>
         <p class="text-2xl font-bold text-amber-900 mb-1" id="chinese-percapita-avg">—</p>
-        <p class="text-xs text-vintage-ink mb-1">Average per 100,000 (1875–1915)</p>
+        <p class="text-xs text-vintage-ink mb-1">Average per 100,000 (1870–1920)</p>
         <p class="text-xs text-amber-600" id="chinese-percapita-peak">Peak year: —</p>
       </div>
     </div>
 
-    <!-- Population Trends and Violence Chart -->
-    <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-8">
+    <!-- Compare Chart 03 -->
+    <div id="compare-chart-03" data-compare-chart-index="3" class="scroll-mt-24">
+      <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-8">
       <h2 class="text-xl font-semibold mb-1 text-vintage-ink">Population Trends & Violence: Black & Asian Americans (1850–1950)</h2>
       <p class="mb-2 text-sm text-vintage-ink">Population trends (lines) and annual lynching/violence incidents (bars) by race over 100 years.</p>
       <div id="chart-population-black" style="height: 300px; margin-bottom: 20px;"></div>
       <div id="chart-population-asian" style="height: 300px;"></div>
+      </div>
     </div>
   </div>
   
@@ -369,9 +375,9 @@ censusData.forEach((entry: any) => {
           }
         });
 
-        // Build year range 1875-1915 (overlap era)
+        // Build year range 1870-1920 (overlap era)
         const years = [];
-        for (let y = 1875; y <= 1915; y++) years.push(y);
+        for (let y = 1870; y <= 1920; y++) years.push(y);
         
         // Calculate per capita rates (per 100,000) for the overlap period
         const blackPerCapita = years.map(y => {
@@ -422,7 +428,7 @@ censusData.forEach((entry: any) => {
         });
         
         
-        // Calculate averages for 1875-1915
+        // Calculate averages for 1870-1920
         let blackSum = 0;
         let chineseSum = 0;
         let count = 0;

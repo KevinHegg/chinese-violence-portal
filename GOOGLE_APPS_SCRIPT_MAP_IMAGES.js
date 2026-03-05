@@ -16,7 +16,7 @@
 
 // ==================== CONFIGURATION ====================
 const MAPBOX_STYLE = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
-const MAPBOX_TOKEN = 'pk.eyJ1Ijoia2V2aW5oZWdnIiwiYSI6ImNscmprbG80NzA0aW8ybm94bXFveG1qcmYifQ.z0za-koZbyVbgwJ5AVg9LA';
+const MAPBOX_TOKEN = PropertiesService.getScriptProperties().getProperty('MAPBOX_TOKEN');
 
 // Google Drive folder ID where images will be saved
 // To get this: Open the folder in Drive, copy the ID from the URL

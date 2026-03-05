@@ -4,7 +4,7 @@ import "../../styles/western-colors.css";
 ---
 
 <PageLayout title="Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)" currentPage="visualize/charts">
-  <div class="container-wide">
+  <div id="charts-top" class="container-wide scroll-mt-24">
     <!-- Breadcrumb Navigation -->
     <nav aria-label="Breadcrumb" class="mb-4">
       <ol class="flex items-center text-sm flex-wrap">
@@ -26,10 +26,11 @@ import "../../styles/western-colors.css";
       </ol>
     </nav>
     <h1 class="text-4xl font-bold mb-6 text-vintage-ink">Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)</h1>
-    <p class="mb-2 text-lg max-w-3xl leading-snug">
-      This dashboard visualizes the history and impact of anti-Chinese violence in the U.S. through interactive charts:
-    </p>
-    <ol class="mb-8 text-base max-w-3xl leading-normal list-decimal list-inside space-y-1 pl-4" style="text-indent:-1.1em;">
+    <div id="charts-overview" class="scroll-mt-24">
+      <p class="mb-2 text-lg max-w-3xl leading-snug">
+        This dashboard visualizes the history and impact of anti-Chinese violence in the U.S. through interactive charts:
+      </p>
+      <ol class="mb-8 text-base max-w-3xl leading-normal list-decimal list-inside space-y-1 pl-4" style="text-indent:-1.1em;">
       <li><strong>Incidents Over Time:</strong> Annual count of violent events from 1850–1920.</li>
       <li><strong>Victims Over Time:</strong> Annual victim count from 1850–1920.</li>
       <li><strong>Incidents & Victims Over Time:</strong> Stacked area chart combining incidents (N=75) and victims (N=191) from 1850–1920. Average number of victims per incident: 2.5.</li>
@@ -38,7 +39,8 @@ import "../../styles/western-colors.css";
       <li><strong>Categories & Pretexts:</strong> Distribution of violence categories and stated pretexts.</li>
       <li><strong>Killing Method:</strong> Distribution of how victims were killed.</li>
       <li><strong>Violence & Population:</strong> Victims per year alongside Chinese population growth and key policy events.</li>
-    </ol>
+      </ol>
+    </div>
     <style>
       ol.list-decimal > li {
         text-indent: -1.1em;
@@ -48,8 +50,9 @@ import "../../styles/western-colors.css";
       
     </style>
 
-    <!-- Chart 1: Incidents Over Time -->
-         <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14 mt-8">
+    <!-- Chart 01 -->
+    <div id="chart-01" data-chart-index="1" class="scroll-mt-24">
+      <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14 mt-8">
       <h2 class="text-xl font-semibold mb-2 text-vintage-ink">1. Incidents of Anti-Chinese Violence Over Time</h2>
              <p id="tagline-chart-1" class="mb-4 text-sm text-vintage-ink">Annual count of anti-Chinese violence events, 1850–1920.</p>
       <div id="chart-timeline" 
@@ -59,10 +62,12 @@ import "../../styles/western-colors.css";
            aria-describedby="chart-timeline-desc"></div>
       <p id="chart-timeline-desc" class="sr-only">This chart displays annual counts of anti-Chinese violence incidents. Peak years include 1885 with 15 incidents and 1886 with 12 incidents. Use the data table below for detailed values.</p>
       <div id="chart-timeline-table" class="sr-only" role="region" aria-label="Data table for incidents over time chart"></div>
+      </div>
     </div>
 
-    <!-- Chart 1b: Victims Over Time -->
-         <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
+    <!-- Chart 02 -->
+    <div id="chart-02" data-chart-index="2" class="scroll-mt-24">
+      <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
       <h2 class="text-xl font-semibold mb-2 text-vintage-ink">2. Number of Victims of Anti-Chinese Violence Over Time</h2>
              <p id="tagline-chart-2" class="mb-4 text-sm text-vintage-ink">Annual count of victims, 1850–1920.</p>
       <div id="chart-victims" 
@@ -72,11 +77,13 @@ import "../../styles/western-colors.css";
            aria-describedby="chart-victims-desc"></div>
       <p id="chart-victims-desc" class="sr-only">This chart displays annual counts of victims of anti-Chinese violence. Use the data table below for detailed values.</p>
       <div id="chart-victims-table" class="sr-only" role="region" aria-label="Data table for victims over time chart"></div>
+      </div>
     </div>
 
-    <!-- Chart 3: Incidents and Victims Over Time (stacked area) -->
-    <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
-      <h2 class="text-xl font-semibold mb-2 text-vintage-ink">3. Number Incidents and Victims Over Time</h2>
+    <!-- Chart 03 -->
+    <div id="chart-03" data-chart-index="3" class="scroll-mt-24">
+      <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
+      <h2 id="chart-03-title" class="text-xl font-semibold mb-2 text-vintage-ink">3. Number Incidents and Victims Over Time</h2>
       <p id="tagline-chart-3-inc-vic" class="mb-4 text-sm text-vintage-ink">Incidents (N=75) and victims (N=191) from 1850–1920. Average number of victims per incident: 2.5.</p>
       <div id="chart-incidents-victims"
            class="chart-container"
@@ -85,10 +92,12 @@ import "../../styles/western-colors.css";
            aria-describedby="chart-incidents-victims-desc"></div>
       <p id="chart-incidents-victims-desc" class="sr-only">Stacked area chart of incidents (bottom) and victims (top) by year. Use the data table below for detailed values.</p>
       <div id="chart-incidents-victims-table" class="sr-only" role="region" aria-label="Data table for incidents and victims over time chart"></div>
+      </div>
     </div>
 
-    <!-- Chart 4a: Lethal Events by State (stacked by decade) -->
-    <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
+    <!-- Chart 04 -->
+    <div id="chart-04" data-chart-index="4" class="scroll-mt-24">
+      <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
       <h2 class="text-xl font-semibold mb-2 text-vintage-ink">4.a. Number of Lethal Events by State Over Time</h2>
       <p id="tagline-chart-4a" class="mb-4 text-sm text-vintage-ink">Stacked bar chart: incidents per decade, broken down by state.</p>
       <div id="chart-lethal-events-state"
@@ -98,10 +107,12 @@ import "../../styles/western-colors.css";
            aria-describedby="chart-lethal-events-state-desc"></div>
       <p id="chart-lethal-events-state-desc" class="sr-only">Stacked bar chart of lethal events by decade, with segments for each state. Use the data table below for detailed values.</p>
       <div id="chart-lethal-events-state-table" class="sr-only" role="region" aria-label="Data table for lethal events by state chart"></div>
+      </div>
     </div>
 
-    <!-- Chart 1d: Victims by State (stacked by decade) -->
-    <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
+    <!-- Chart 05 -->
+    <div id="chart-05" data-chart-index="5" class="scroll-mt-24">
+      <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
       <h2 class="text-xl font-semibold mb-2 text-vintage-ink">4.b. Number of Victims by State Over Time</h2>
       <p id="tagline-chart-4b" class="mb-4 text-sm text-vintage-ink">Stacked bar chart: victims per decade, broken down by state.</p>
       <div id="chart-victims-state"
@@ -111,10 +122,12 @@ import "../../styles/western-colors.css";
            aria-describedby="chart-victims-state-desc"></div>
       <p id="chart-victims-state-desc" class="sr-only">Stacked bar chart of victims by decade, with segments for each state. Use the data table below for detailed values.</p>
       <div id="chart-victims-state-table" class="sr-only" role="region" aria-label="Data table for victims by state chart"></div>
+      </div>
     </div>
 
-    <!-- Chart 4c: Incident and Victim Count by State (combined) -->
-    <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
+    <!-- Chart 06 -->
+    <div id="chart-06" data-chart-index="6" class="scroll-mt-24">
+      <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
       <h2 class="text-xl font-semibold mb-2 text-vintage-ink">4.c. Incident and Victim Count by State</h2>
       <p id="tagline-chart-4c" class="mb-4 text-sm text-vintage-ink">Incidents (blue) and victims (red) per state, sorted by victim count.</p>
       <div id="chart-incident-victim-by-state"
@@ -124,10 +137,12 @@ import "../../styles/western-colors.css";
            aria-describedby="chart-incident-victim-by-state-desc"></div>
       <p id="chart-incident-victim-by-state-desc" class="sr-only">Horizontal bar chart of incident count (blue) and victim count (red) by state, sorted by victim count. Use the data table below for detailed values.</p>
       <div id="chart-incident-victim-by-state-table" class="sr-only" role="region" aria-label="Data table for incident and victim count by state chart"></div>
+      </div>
     </div>
 
-    <!-- Chart 2: Types of Violence -->
-         <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
+    <!-- Chart 07 -->
+    <div id="chart-07" data-chart-index="7" class="scroll-mt-24">
+      <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
       <h2 class="text-xl font-semibold mb-2 text-vintage-ink">5. Types of Anti-Chinese Violence</h2>
              <p id="tagline-chart-5" class="mb-4 text-sm text-vintage-ink">Breakdown of event types in the lynching records.</p>
       <div id="chart-types" 
@@ -137,12 +152,14 @@ import "../../styles/western-colors.css";
            aria-describedby="chart-types-desc"></div>
       <p id="chart-types-desc" class="sr-only">This chart displays a breakdown of event types in the lynching records, showing the number of victims for each type. Use the data table below for detailed values.</p>
       <div id="chart-types-table" class="sr-only" role="region" aria-label="Data table for types of violence chart"></div>
+      </div>
     </div>
 
-    <!-- Chart 3: Dual Pie Charts -->
-         <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-4 mb-14">
+    <!-- Chart 08/09 container -->
+    <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-4 mb-14">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-        <div>
+        <!-- Chart 08 -->
+        <div id="chart-08" data-chart-index="8" class="scroll-mt-24">
           <h2 class="text-lg font-semibold mb-1 text-vintage-ink text-center">6.a. Categories of Violence</h2>
           <p id="tagline-chart-6a" class="text-center text-xs text-vintage-ink mb-1">Distribution of violence categories.</p>
           <div id="chart-pie-category" 
@@ -153,7 +170,8 @@ import "../../styles/western-colors.css";
           <p id="chart-pie-category-desc" class="sr-only">This pie chart displays the distribution of categories of violence. Use the data table below for detailed values.</p>
           <div id="chart-pie-category-table" class="sr-only" role="region" aria-label="Data table for categories of violence chart"></div>
         </div>
-        <div>
+        <!-- Chart 09 -->
+        <div id="chart-09" data-chart-index="9" class="scroll-mt-24">
           <h2 class="text-lg font-semibold mb-1 text-vintage-ink text-center">6.b. Pretexts for Violence</h2>
           <p id="tagline-chart-6b" class="text-center text-xs text-vintage-ink mb-1">Distribution of stated pretexts.</p>
           <div id="chart-pie-pretext" 
@@ -167,8 +185,8 @@ import "../../styles/western-colors.css";
       </div>
     </div>
 
-    <!-- Chart 6: Killing Method (pie, like 5a/5b) -->
-    <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-4 mb-14">
+    <!-- Chart 10 -->
+    <div id="chart-10" data-chart-index="10" class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-4 mb-14 scroll-mt-24">
       <h2 class="text-xl font-semibold mb-1 text-vintage-ink text-center">7. Killing Method</h2>
       <p id="tagline-chart-7" class="text-center text-xs text-vintage-ink mb-1">Distribution of killing methods.</p>
       <div id="chart-pie-killing-method"
@@ -180,8 +198,9 @@ import "../../styles/western-colors.css";
       <div id="chart-pie-killing-method-table" class="sr-only" role="region" aria-label="Data table for killing method chart"></div>
     </div>
 
-    <!-- Chart 7: Combo Chart -->
-         <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-12">
+    <!-- Chart 11 -->
+    <div id="chart-11" data-chart-index="11" class="scroll-mt-24">
+      <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-12">
       <h2 class="text-xl font-semibold mb-2 text-vintage-ink">8. Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)</h2>
              <p class="mb-4 text-sm text-vintage-ink">A combination chart showing the number of victims per year (bar), the Chinese population (line), and key policy events (vertical markers).</p>
       <div id="chart-combo" 
@@ -191,6 +210,7 @@ import "../../styles/western-colors.css";
            aria-describedby="chart-combo-desc"></div>
       <p id="chart-combo-desc" class="sr-only">This combination chart displays the number of victims per year as bars, the Chinese population as a line, and key policy events as vertical markers. Use the data table below for detailed values.</p>
       <div id="chart-combo-table" class="sr-only" role="region" aria-label="Data table for combination chart"></div>
+      </div>
     </div>
   </div>
   <script is:inline src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>

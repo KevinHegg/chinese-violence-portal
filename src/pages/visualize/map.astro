@@ -1,8 +1,15 @@
 ---
 // Map page with Mapbox integration
+import DocentSidebar from "../../components/docent/DocentSidebar.astro";
+
 export const prerender = false;
 
-const mapboxToken = import.meta.env.PUBLIC_MAPBOX_TOKEN || 'pk.eyJ1Ijoia2V2aW5oZWdnIiwiYSI6ImNscmprbG80NzA0aW8ybm94bXFveG1qcmYifQ.z0za-koZbyVbgwJ5AVg9LA';
+const mapboxToken =
+  import.meta.env.PUBLIC_MAPBOX_ACCESS_TOKEN ||
+  import.meta.env.PUBLIC_MAPBOX_TOKEN ||
+  import.meta.env.MAPBOX_ACCESS_TOKEN ||
+  '';
+
 const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
 ---
 
@@ -22,9 +29,14 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
       padding: 0;
       overflow: hidden;
     }
-    #map {
+    #map-docent-wrapper {
       width: 100%;
       height: 100vh;
+      position: relative;
+    }
+    #map {
+      width: 100%;
+      height: 100%;
     }
     /* Overlay for timeline controls: half the map's width, centered at bottom */
     #overlay {
@@ -42,6 +54,10 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
       gap: 10px;
       justify-content: center;
     }
+    /* Docent mode: hide player controls so they are not cut off by sidebar */
+    body.docent-active #overlay {
+      display: none !important;
+    }
     #yearSlider { flex: 1; }
     #yearLabel { font-size: 14px; font-weight: bold; }
     /* Default marker style: thin stroke */
@@ -53,6 +69,12 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
       100% { fill: red; stroke: red; }
     }
     .pulse { animation: pulseColor 750ms ease-out forwards; }
+    /* Reset button: global so it applies to Leaflet-injected DOM; match + / − size */
+    /* Reset icon only: larger symbol, normal weight, container unchanged */
+    :global(.leaflet-control-zoom a.leaflet-control-zoom-reset) {
+      font-size: 22px !important;
+      font-weight: normal !important;
+    }
     .info-panel {
       position: absolute;
       top: 20px;
@@ -201,11 +223,14 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
     <p>A complete list of all violence incidents is provided below the map for accessible browsing.</p>
   </div>
   
-  <div id="map" 
-       role="application" 
-       tabindex="0"
-       aria-label="Interactive map showing locations of anti-Chinese violence incidents from 1850 to 1915. Use keyboard controls to navigate: arrow keys to pan, plus and minus to zoom, space bar to play timeline. See keyboard instructions and data list below for accessible alternatives."
-       aria-describedby="map-keyboard-instructions"></div>
+  <div id="map-top" style="position:absolute;top:0;"></div>
+  <div id="map-docent-wrapper">
+    <div id="map" 
+         role="application" 
+         tabindex="0"
+         aria-label="Interactive map showing locations of anti-Chinese violence incidents from 1850 to 1915. Use keyboard controls to navigate: arrow keys to pan, plus and minus to zoom, space bar to play timeline. See keyboard instructions and data list below for accessible alternatives."
+         aria-describedby="map-keyboard-instructions"></div>
+  </div>
   <div id="overlay">
     <button id="playButton" class="btn btn-primary" aria-label="Play timeline animation">Play</button>
     <input type="range" id="yearSlider" step="1" aria-label="Timeline year slider">
@@ -233,6 +258,7 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
       <a id="back-link-expanded" href="/visualize/" class="back-link">&lt; Back to Visualizations</a>
     </div>
   </div>
+  <DocentSidebar />
   <script is:inline define:vars={{ mapboxToken, mapboxStyle }}>
     // Wait for Leaflet to load
     function initMap() {
@@ -248,6 +274,17 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
 
     // API endpoint for lynchings data (fetches from Google Sheets)
     const jsonURL = "/api/lynchings";
+
+    // URL parameters for docent/deep-link behavior
+    const urlParams = new URLSearchParams(window.location.search);
+    const focusIdParam = (urlParams.get('focus') || '').trim();
+    const showAllParam = urlParams.get('all') === '1';
+    const focusZoomLevel = 8;
+    const docentActive = urlParams.get('docent') === '1' || (typeof sessionStorage !== 'undefined' && !!sessionStorage.getItem('docent_id'));
+    const docentId = urlParams.get('docentId') || (typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('docent_id') : null) || 'ahyo';
+    const focusHighlightMs = 2000;
+    const isDocentMode = urlParams.get('docent') === '1';
+    const requestedEndYear = 1915;
     
     // Mapbox configuration from server
     const MAPBOX_TOKEN = mapboxToken;
@@ -261,6 +298,7 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
 
     // Set up the Leaflet map
     const map = L.map('map').setView([39.8283, -98.5795], 5);
+    window.__johncrowMap = map;
     L.tileLayer(`https://api.mapbox.com/styles/v1/${MAPBOX_STYLE}/tiles/{z}/{x}/{y}?access_token=${MAPBOX_TOKEN}`, {
     tileSize: 512,
     zoomOffset: -1,
@@ -269,6 +307,39 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
     }).addTo(map);
 
     const markersLayer = L.layerGroup().addTo(map);
+    const focusRingLayer = L.layerGroup().addTo(map);
+
+    const defaultMapView = { center: [39.8283, -98.5795], zoom: 5 };
+
+    function doResetView() {
+      if (focusIdParam) {
+        centerMapOnRecord(focusIdParam);
+        map.setZoom(focusZoomLevel);
+      } else {
+        map.setView(defaultMapView.center, defaultMapView.zoom, { animate: false });
+      }
+    }
+
+    (function injectResetIntoZoomControl() {
+      const zoomEl = document.querySelector('.leaflet-control-zoom');
+      if (!zoomEl) {
+        setTimeout(injectResetIntoZoomControl, 50);
+        return;
+      }
+      const zoomOut = zoomEl.querySelector('.leaflet-control-zoom-out');
+      if (!zoomOut) return;
+      const resetLink = document.createElement('a');
+      resetLink.href = '#';
+      resetLink.title = 'Reset view';
+      resetLink.setAttribute('aria-label', 'Reset view');
+      resetLink.className = 'leaflet-control-zoom-reset';
+      resetLink.textContent = '\u21BA';
+      resetLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        doResetView();
+      });
+      zoomEl.insertBefore(resetLink, zoomOut);
+    })();
 
     // Simple responsive zoom based on browser width at load time only
     function adjustZoomForScreenSize() {
@@ -279,6 +350,31 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
 
     // Adjust zoom on load only (no resize listener)
     adjustZoomForScreenSize();
+
+    // Force Leaflet to read container size after reflow (docent or layout)
+    function invalidateMapSize() {
+      if (!map) return;
+      requestAnimationFrame(function() { map.invalidateSize(); });
+      setTimeout(function() { map.invalidateSize(); }, 50);
+    }
+    requestAnimationFrame(invalidateMapSize);
+    setTimeout(invalidateMapSize, 50);
+
+    window.addEventListener('johncrow:docent-toggle', function(e) {
+      invalidateMapSize();
+      if (e.detail && e.detail.active === false) {
+        focusRingLayer.clearLayers();
+      } else if (e.detail && e.detail.active === true && focusIdParam && docentActive) {
+        addFocusRing(focusIdParam);
+      }
+    });
+    (function throttleResize(interval) {
+      var t = null;
+      window.addEventListener('resize', function() {
+        if (t) return;
+        t = setTimeout(function() { t = null; invalidateMapSize(); }, interval);
+      });
+    })(100);
 
     // Timeline controls
     const slider = document.getElementById('yearSlider');
@@ -322,8 +418,16 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
         <tr><td style='font-weight:bold; padding-right:2px; vertical-align:top;'>Event Type:</td><td style='text-align:left;'>${getField(d, "event-type")}</td></tr>
       </table>`;
       content += `<hr style="margin: 8px 0 4px 0; border: none; border-top:1px solid #ccc;">`;
-      content += `${getField(d, "narrative-summary")} <a href="/records/${getField(d, "lynching-id")}" target="_blank">(more details)</a>`;
+      const lynchingId = getField(d, "lynching-id");
+      const recordHref = docentActive ? `/records/${lynchingId}?docent=1&docentId=${encodeURIComponent(docentId)}` : `/records/${lynchingId}`;
+      const recordTarget = docentActive ? '' : ' target="_blank"';
+      content += `${getField(d, "narrative-summary")} <a href="${recordHref}"${recordTarget}>(more details)</a>`;
       return content;
+    }
+
+    function getRecordById(lynchingId) {
+      if (!lynchingId) return null;
+      return dataRows.find(d => String(getField(d, "lynching-id")).trim() === lynchingId) || null;
     }
 
     // Apply pulse animation to a marker's SVG path
@@ -332,6 +436,79 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
       setTimeout(() => {
         el.classList.remove("pulse");
       }, pulseDuration);
+    }
+
+    function highlightMarkerById(lynchingId) {
+      if (!lynchingId) return;
+      let targetMarker = null;
+      markersLayer.eachLayer(layer => {
+        if (layer && layer.lynchingId === lynchingId) {
+          targetMarker = layer;
+        }
+      });
+      if (!targetMarker || typeof targetMarker.setStyle !== 'function') return;
+
+      targetMarker.setStyle({
+        color: '#f59e0b',
+        fillColor: '#facc15',
+        fillOpacity: 0.95,
+        weight: 4
+      });
+
+      setTimeout(() => {
+        if (!markersLayer.hasLayer(targetMarker)) return;
+        targetMarker.setStyle({
+          color: endColor,
+          fillColor: endColor,
+          fillOpacity: 0.6,
+          weight: 2
+        });
+      }, focusHighlightMs);
+    }
+
+    function centerMapOnRecord(lynchingId) {
+      const focusRecord = getRecordById(lynchingId);
+      if (!focusRecord) return false;
+      const lat = +getField(focusRecord, "latitude");
+      const lon = +getField(focusRecord, "longitude");
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) return false;
+      map.setView([lat, lon], focusZoomLevel, { animate: false });
+      highlightMarkerById(lynchingId);
+      return true;
+    }
+
+    function addFocusRing(lynchingId) {
+      focusRingLayer.clearLayers();
+      const rec = getRecordById(lynchingId);
+      if (!rec) return;
+      const lat = +getField(rec, "latitude");
+      const lon = +getField(rec, "longitude");
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+
+      var R = 14;
+      var goldRing = L.circleMarker([lat, lon], {
+        radius: R,
+        stroke: true,
+        color: '#eab308',
+        weight: 4,
+        opacity: 0.9,
+        fill: false,
+        fillOpacity: 0,
+        interactive: false
+      });
+      focusRingLayer.addLayer(goldRing);
+
+      var whiteKeyline = L.circleMarker([lat, lon], {
+        radius: R,
+        stroke: true,
+        color: '#ffffff',
+        weight: 2,
+        opacity: 0.95,
+        fill: false,
+        fillOpacity: 0,
+        interactive: false
+      });
+      focusRingLayer.addLayer(whiteKeyline);
     }
 
     // Update markers cumulatively based on currentYear - FIXED POPUP BEHAVIOR
@@ -364,6 +541,7 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
             weight: 2
           });
           marker.bindPopup(buildPopup(d));
+          marker.lynchingId = getField(d, "lynching-id");
           marker.on('popupopen', function() { openPopups.push(marker); });
           marker.on('popupclose', function() { const index = openPopups.indexOf(marker); if (index > -1) { openPopups.splice(index, 1); } });
           if(year > lastYear) {
@@ -444,18 +622,40 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
         }
         slider.min = minYear;
         slider.max = maxYear;
-        slider.value = minYear;
-        yearLabel.textContent = minYear;
-        lastYear = minYear;
-        updateMarkers(minYear);
-        
+        let initialYear = minYear;
+        if (showAllParam) {
+          initialYear = Math.min(requestedEndYear, maxYear);
+        } else if (focusIdParam) {
+          const focusRecord = getRecordById(focusIdParam);
+          if (focusRecord) {
+            const focusYear = +getField(focusRecord, "year");
+            if (Number.isFinite(focusYear)) {
+              initialYear = Math.max(minYear, Math.min(maxYear, focusYear));
+            }
+          }
+        }
+
+        slider.value = initialYear;
+        yearLabel.textContent = initialYear;
+        lastYear = initialYear;
+        updateMarkers(initialYear);
+
+        if (focusIdParam) {
+          centerMapOnRecord(focusIdParam);
+        }
+        if (docentActive && focusIdParam) {
+          addFocusRing(focusIdParam);
+        }
+
         // Populate accessible list
         populateAccessibleList();
 
         // AUTO-START PLAYBACK
-        setTimeout(() => {
-          playButton.click(); // Start playing automatically
-        }, 1000); // Wait 1 second after load
+        if (!showAllParam && !focusIdParam) {
+          setTimeout(() => {
+            playButton.click(); // Start playing automatically
+          }, 1000); // Wait 1 second after load
+        }
 
       }).catch(error => {
         console.error("Error loading JSON:", error);
@@ -607,7 +807,8 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
         }
         
         const li = document.createElement('li');
-        li.innerHTML = `<strong>${year}: ${title}</strong> - ${location} (${date}). Event type: ${eventType}. Victims: ${victims}. <a href="/records/${lynchingId}">View full record</a>`;
+        const recordLink = docentActive ? `/records/${lynchingId}?docent=1&docentId=${encodeURIComponent(docentId)}` : `/records/${lynchingId}`;
+        li.innerHTML = `<strong>${year}: ${title}</strong> - ${location} (${date}). Event type: ${eventType}. Victims: ${victims}. <a href="${recordLink}">View full record</a>`;
         ul.appendChild(li);
       });
       

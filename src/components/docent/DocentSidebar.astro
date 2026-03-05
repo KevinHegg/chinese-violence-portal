@@ -1,0 +1,559 @@
+<!--
+  Digital Docent — fixed right sidebar column (desktop >= 1024px).
+  Header + scrollable body + fixed footer. Main content gets padding when active.
+-->
+
+<aside id="docent-sidebar" class="docent-sidebar" style="display:none;">
+  <div class="docent-sidebar__inner">
+    <header class="docent-sidebar__header">
+      <img
+        src="/images/digital_docent_512.png"
+        srcset="/images/digital_docent_512.png 512w, /images/digital_docent_1024.png 1024w, /images/digital_docent_2048.png 2048w"
+        sizes="64px"
+        width="64"
+        height="64"
+        alt=""
+        class="docent-sidebar__badge"
+        loading="lazy"
+        decoding="async"
+      />
+      <div class="docent-sidebar__header-text">
+        <p class="docent-sidebar__kicker">DIGITAL DOCENT</p>
+        <h2 id="docent-step-title" class="docent-sidebar__title">The case that anchors the project</h2>
+      </div>
+    </header>
+
+    <div class="docent-sidebar__body">
+      <p id="docent-step-text" class="docent-sidebar__text">This record opens where John Crow and Jim Crow visibly converge: a Chinese victim, a Southern setting, a familiar lynching script, and impunity. It is a point of entry into a national story of racial terror.</p>
+      <p id="docent-step-counter" class="docent-sidebar__counter">Step 1 of 8</p>
+    </div>
+
+    <footer class="docent-sidebar__footer">
+      <button id="docent-back" type="button" class="docent-sidebar__btn docent-sidebar__btn--secondary">Back</button>
+      <button id="docent-resume" type="button" class="docent-sidebar__btn docent-sidebar__btn--secondary">Resume</button>
+      <button id="docent-next" type="button" class="docent-sidebar__btn docent-sidebar__btn--primary">Next</button>
+      <button id="docent-exit" type="button" class="docent-sidebar__btn docent-sidebar__btn--text">Exit</button>
+      <p id="docent-manifest-version" class="docent-sidebar__version" aria-hidden="true">Manifest: ahyo.yaml</p>
+    </footer>
+  </div>
+</aside>
+
+<div
+  id="docent-mobile-notice"
+  class="docent-mobile-notice"
+  role="status"
+  style="display:none;"
+>
+  Digital Docent mode is currently desktop-only.
+</div>
+
+<style is:global>
+  .docent-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 360px;
+    z-index: 5000;
+    background: #ffffff;
+    color: #1f2937;
+    border-left: 1px solid #e5e7eb;
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    left: auto;
+  }
+
+  .docent-sidebar__inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    background: #ffffff;
+  }
+
+  .docent-sidebar__header {
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem 1rem 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .docent-sidebar__badge {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+  }
+
+  .docent-sidebar__header-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .docent-sidebar__kicker {
+    margin: 0;
+    font-size: 0.65rem;
+    color: #6b7280;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .docent-sidebar__title {
+    margin: 0.2rem 0 0;
+    font-size: 1rem;
+    line-height: 1.3;
+    color: #1f2937;
+    font-weight: 600;
+  }
+
+  .docent-sidebar__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 1rem;
+    -webkit-overflow-scrolling: touch;
+    background: #ffffff;
+  }
+
+  .docent-sidebar__text {
+    margin: 0 0 0.5rem;
+    font-size: 1.0625rem; /* ~17px, +1pt from base */
+    line-height: 1.55;
+    color: #374151;
+  }
+
+  .docent-sidebar__counter {
+    margin: 0;
+    font-size: 0.78rem;
+    color: #6b7280;
+  }
+
+  .docent-sidebar__footer {
+    flex-shrink: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem 1rem;
+    border-top: 1px solid #e5e7eb;
+    background: #fafaf9;
+  }
+
+  .docent-sidebar__btn {
+    border-radius: 0.5rem;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+
+  .docent-sidebar__btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .docent-sidebar__btn--secondary {
+    background: #fff;
+    border-color: #d1d5db;
+    color: #374151;
+  }
+
+  .docent-sidebar__btn--primary {
+    background: #fcd34d;
+    border-color: #f59e0b;
+    color: #3f2d03;
+  }
+
+  .docent-sidebar__btn--text {
+    margin-left: auto;
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    text-decoration: underline;
+  }
+
+  .docent-sidebar__version {
+    width: 100%;
+    margin: 0.35rem 0 0;
+    font-size: 0.7rem;
+    color: #9ca3af;
+  }
+
+  .docent-mobile-notice {
+    position: fixed;
+    right: 1rem;
+    left: 1rem;
+    bottom: 1rem;
+    z-index: 9999;
+    border: 1px solid #fcd34d;
+    border-radius: 0.75rem;
+    background: #fffbeb;
+    color: #374151;
+    padding: 0.75rem 1rem;
+    font-size: 0.88rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  @media (max-width: 1023px) {
+    .docent-sidebar {
+      display: none !important;
+    }
+  }
+
+  /* When docent is active (desktop), reserve space so sidebar does not overlay content or modal */
+  @media (min-width: 1024px) {
+    body.docent-active {
+      padding-right: 360px;
+    }
+    body.docent-active #article-viewer > div {
+      margin-right: 360px;
+      max-width: calc(100vw - 360px - 2rem);
+    }
+    body.docent-active .jc-nav {
+      right: 360px;
+    }
+    /* Map page: body padding-right constrains content; #map-docent-wrapper stays width: 100% */
+  }
+</style>
+
+<script>
+  // @ts-nocheck — runtime YAML fetch + legacy script shape
+  import YAML from 'yaml';
+
+  async function runDocentBoot() {
+    var SIDEBAR_WIDTH = 360;
+    var DESKTOP_MIN_WIDTH = 1024;
+    var HEADER_OFFSET = 96;
+    var DEV = (window.location.hostname === 'localhost');
+    var highlightTargetEl = null;
+
+    var params = new URLSearchParams(window.location.search);
+    var docentFromQuery = params.get('docentId') || '';
+    var docentFromSession = '';
+    try { docentFromSession = sessionStorage.getItem('docent_id') || ''; } catch (e) {}
+    var isDocent = params.get('docent') === '1' || !!docentFromSession;
+    var docentId = docentFromQuery || docentFromSession || 'ahyo';
+
+    function log() {
+      if (!DEV) return;
+      var args = Array.prototype.slice.call(arguments);
+      args.unshift('[docent]');
+      console.log.apply(console, args);
+    }
+
+    function applyMapConstraint() {
+      var wrapper = document.getElementById('map-docent-wrapper');
+      if (!wrapper) return;
+      document.body.style.paddingRight = SIDEBAR_WIDTH + 'px';
+      try { window.dispatchEvent(new CustomEvent('johncrow:docent-toggle', { detail: { active: true } })); } catch (e) {}
+    }
+
+    function clearMapConstraint() {
+      var wrapper = document.getElementById('map-docent-wrapper');
+      if (!wrapper) return;
+      document.body.style.paddingRight = '';
+      try { window.dispatchEvent(new CustomEvent('johncrow:docent-toggle', { detail: { active: false } })); } catch (e) {}
+    }
+
+    function setDocentActive(on) {
+      try {
+        if (on) {
+          document.body.classList.add('docent-active');
+          applyMapConstraint();
+        } else {
+          document.body.classList.remove('docent-active');
+          clearMapConstraint();
+        }
+      } catch (e) {}
+    }
+
+    if (!isDocent) { setDocentActive(false); return; }
+
+    try {
+      sessionStorage.setItem('docent_id', docentId);
+      if (!sessionStorage.getItem('docent_step')) sessionStorage.setItem('docent_step', '0');
+    } catch (e) {}
+
+    var sidebar = document.getElementById('docent-sidebar');
+    if (!sidebar) return;
+
+    var mobileNotice = document.getElementById('docent-mobile-notice');
+    var titleEl = sidebar.querySelector('#docent-step-title');
+    var textEl = sidebar.querySelector('#docent-step-text');
+    var counterEl = sidebar.querySelector('#docent-step-counter');
+    var backBtn = sidebar.querySelector('#docent-back');
+    var nextBtn = sidebar.querySelector('#docent-next');
+    var resumeBtn = sidebar.querySelector('#docent-resume');
+    var exitBtn = sidebar.querySelector('#docent-exit');
+    var versionEl = sidebar.querySelector('#docent-manifest-version');
+
+    if (window.innerWidth < DESKTOP_MIN_WIDTH) {
+      setDocentActive(false);
+      if (mobileNotice) mobileNotice.style.display = 'block';
+      return;
+    }
+    if (mobileNotice) mobileNotice.style.display = 'none';
+
+    // ---- Load manifest at runtime from /public/docents (editable without rebuild) ----
+    var manifest = null;
+    try {
+      var cacheKey = 'docent_manifest_' + docentId;
+      if (!DEV) {
+        var cached = sessionStorage.getItem(cacheKey);
+        if (cached) manifest = JSON.parse(cached);
+      }
+      if (!manifest) {
+        var yamlUrl = '/docents/' + docentId + '.yaml' + (DEV ? '?v=' + Date.now() : '');
+        var res = await fetch(yamlUrl);
+        if (!res.ok) { setDocentActive(false); return; }
+        var text = await res.text();
+        manifest = YAML.parse(text);
+        if (manifest && Array.isArray(manifest.steps)) {
+          manifest.steps = manifest.steps.map(function (s) {
+            var step = Object.assign({}, s);
+            if (!step.scrollTarget && step.anchor)
+              step.scrollTarget = (step.anchor.charAt(0) === '#' ? step.anchor : '#' + step.anchor);
+            return step;
+          });
+        }
+        if (!DEV) try { sessionStorage.setItem(cacheKey, JSON.stringify(manifest)); } catch (e2) {}
+      }
+    } catch (e) {
+      log('manifest load error', e);
+      setDocentActive(false);
+      return;
+    }
+    if (!manifest || !Array.isArray(manifest.steps) || manifest.steps.length === 0) {
+      setDocentActive(false);
+      return;
+    }
+
+    if (versionEl)
+      versionEl.textContent = manifest.version ? 'Manifest: ' + manifest.version : 'Manifest: ' + docentId + '.yaml';
+
+  var stepIndex = 0;
+  try { stepIndex = parseInt(sessionStorage.getItem('docent_step') || '0', 10) || 0; } catch(e) {}
+  if (stepIndex < 0) stepIndex = 0;
+  if (stepIndex >= manifest.steps.length) stepIndex = manifest.steps.length - 1;
+
+  // ---- Helpers ----
+  function toSelector(raw) {
+    if (!raw) return null;
+    if (raw.charAt(0) === '#' || raw.charAt(0) === '.') return raw;
+    return '#' + raw;
+  }
+
+  function findEl(selector) {
+    if (!selector) return null;
+    try { return document.querySelector(selector); } catch(e) { return null; }
+  }
+
+  function getHeaderHeight() {
+    var nav = document.querySelector('.jc-nav');
+    return (nav && nav.getBoundingClientRect) ? nav.getBoundingClientRect().height : HEADER_OFFSET;
+  }
+
+  // Retry-aware element finder (max ~1s)
+  function waitForEl(selector, cb, attempt) {
+    attempt = attempt || 0;
+    var el = findEl(selector);
+    if (el) { cb(el); return; }
+    if (attempt >= 10) { log('element not found after retries:', selector); return; }
+    setTimeout(function() { waitForEl(selector, cb, attempt + 1); }, 100);
+  }
+
+  // Absolute-position scroll — no hashes, no drift
+  function scrollToSelector(selector) {
+    if (!selector) return;
+    if (selector === '#record-top') {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      return;
+    }
+    waitForEl(selector, function(el) {
+      var hdr = getHeaderHeight();
+      var y = el.getBoundingClientRect().top + window.scrollY - hdr - 8;
+      window.scrollTo({ top: Math.max(0, y), behavior: 'auto' });
+    });
+  }
+
+  // ---- Element-based highlight (no overlay/jitter): add class to target ----
+  var HIGHLIGHT_CLASSES = ['docent-highlight-text', 'docent-highlight-chart'];
+
+  function setHighlightTarget(el, style) {
+    if (highlightTargetEl) {
+      HIGHLIGHT_CLASSES.forEach(function(c) { highlightTargetEl.classList.remove(c); });
+    }
+    highlightTargetEl = el;
+    if (!el) return;
+    var cls = style === 'chart' ? 'docent-highlight-chart' : 'docent-highlight-text';
+    el.classList.add(cls);
+  }
+
+  function clearHighlight() {
+    if (highlightTargetEl) {
+      HIGHLIGHT_CLASSES.forEach(function(c) { highlightTargetEl.classList.remove(c); });
+      highlightTargetEl = null;
+    }
+  }
+
+  function applyHighlight(step) {
+    clearHighlight();
+    var hl = step.highlight !== undefined ? step.highlight : (step.Highlight !== undefined ? (DEV && log('docent: use lowercase "highlight" in manifest'), step.Highlight) : null);
+    if (hl === false) return;
+    var selector = (typeof hl === 'string' && hl) ? hl : (step.highlightTarget || step.scrollTarget || null);
+    if (!selector) return;
+    waitForEl(toSelector(selector), function(el) {
+      var style = step.highlightStyle === 'chart' ? 'chart' : 'text';
+      setHighlightTarget(el, style);
+      log('highlight applied:', selector, style, el);
+    });
+  }
+
+  // ---- Resume button state ----
+  function updateResumeBtn(step) {
+    if (!resumeBtn) return;
+    var targetUrl = buildStepUrl(step);
+    var cur = new URL(window.location.href);
+    var offRoute = cur.pathname !== targetUrl.pathname;
+    var hl = step.highlight !== undefined ? step.highlight : step.Highlight;
+    var selector = (hl === false) ? null : toSelector(typeof hl === 'string' ? hl : (step.highlightTarget || step.scrollTarget));
+    var elMissing = selector && !findEl(selector);
+    var offScreen = false;
+    if (!offRoute && !elMissing && selector) {
+      var el = findEl(selector);
+      if (el) {
+        var r = el.getBoundingClientRect();
+        var vh = window.innerHeight || document.documentElement.clientHeight;
+        offScreen = r.bottom < 0 || r.top > vh;
+      }
+    }
+    var enabled = offRoute || elMissing || offScreen;
+    resumeBtn.disabled = !enabled;
+    resumeBtn.title = enabled ? 'Jump back to the current docent step' : 'Resume becomes available if you navigate away from this step.';
+  }
+
+  // ---- Render sidebar content ----
+  // step.text: innerHTML so YAML can use <strong>, <em>, <br>; content is from trusted docents/* manifests only, not user input.
+  function render() {
+    var step = manifest.steps[stepIndex];
+    if (titleEl) titleEl.textContent = step.title;
+    if (textEl) textEl.innerHTML = step.text || '';
+    if (counterEl) counterEl.textContent = 'Step ' + (stepIndex + 1) + ' of ' + manifest.steps.length;
+    if (backBtn) backBtn.disabled = stepIndex <= 0;
+    if (nextBtn) nextBtn.textContent = stepIndex >= manifest.steps.length - 1 ? 'Finish' : 'Next';
+    sidebar.style.display = 'flex';
+    sidebar.style.visibility = 'visible';
+    sidebar.style.opacity = '1';
+    setDocentActive(true);
+    updateResumeBtn(step);
+  }
+
+  function saveStep() {
+    try { sessionStorage.setItem('docent_step', String(stepIndex)); } catch(e) {}
+  }
+
+  function runStepAction(step) {
+    if (step.action && step.action.type === 'openArticle' && step.action.articleId) {
+      try {
+        window.dispatchEvent(new CustomEvent('johncrow:docent-open-article', { detail: { articleId: step.action.articleId } }));
+      } catch (e) {}
+    }
+  }
+
+  function buildStepUrl(step) {
+    var target = new URL(step.route || '/', window.location.origin);
+    target.searchParams.set('docent', '1');
+    target.searchParams.set('docentId', docentId);
+    if (step.action && step.action.type === 'openArticle' && step.action.articleId) {
+      target.searchParams.set('openArticle', step.action.articleId);
+    }
+    return target;
+  }
+
+  // ---- Apply step (scroll + highlight + action) ----
+  function applyCurrentStep(opts) {
+    opts = opts || {};
+    var step = manifest.steps[stepIndex];
+    var target = buildStepUrl(step);
+    var cur = new URL(window.location.href);
+    var sameRoute = cur.pathname === target.pathname;
+
+    log('applyStep', step.id, 'route=' + step.route, 'sameRoute=' + sameRoute,
+        'scroll=' + (step.scrollTarget || '-'), 'hl=' + (step.highlight === false ? 'false' : (step.highlight || step.highlightTarget || '-')));
+
+    if (!sameRoute) {
+      if (opts.allowNavigate === false) {
+        render();
+        return;
+      }
+      window.location.href = target.pathname + target.search;
+      return;
+    }
+
+    render();
+    scrollToSelector(toSelector(step.scrollTarget));
+    applyHighlight(step);
+    if (opts.runAction !== false) runStepAction(step);
+  }
+
+  function closeArticleModal() {
+    try { window.dispatchEvent(new CustomEvent('johncrow:close-article-modal')); } catch (e) {}
+  }
+
+  function navigateToStep(idx) {
+    if (idx < 0) idx = 0;
+    if (idx >= manifest.steps.length) idx = manifest.steps.length - 1;
+    stepIndex = idx;
+    saveStep();
+    applyCurrentStep({ runAction: true, allowNavigate: true });
+  }
+
+  // ---- Button wiring ----
+  if (backBtn) backBtn.addEventListener('click', function() {
+    closeArticleModal();
+    navigateToStep(stepIndex - 1);
+  });
+  if (nextBtn) nextBtn.addEventListener('click', function() {
+    closeArticleModal();
+    if (stepIndex >= manifest.steps.length - 1) {
+      try { sessionStorage.removeItem('docent_id'); sessionStorage.removeItem('docent_step'); } catch(e) {}
+      setDocentActive(false);
+      clearHighlight();
+      window.location.href = '/tour';
+      return;
+    }
+    navigateToStep(stepIndex + 1);
+  });
+  if (resumeBtn) resumeBtn.addEventListener('click', function() {
+    closeArticleModal();
+    applyCurrentStep({ runAction: true, allowNavigate: true });
+  });
+  if (exitBtn) exitBtn.addEventListener('click', function() {
+    try { sessionStorage.removeItem('docent_id'); sessionStorage.removeItem('docent_step'); } catch(e) {}
+    setDocentActive(false);
+    clearHighlight();
+    window.location.href = '/tour';
+  });
+
+  // Periodically re-evaluate Resume button (user may scroll)
+  setInterval(function() {
+    if (stepIndex < manifest.steps.length) updateResumeBtn(manifest.steps[stepIndex]);
+  }, 2000);
+
+  // ---- Initial boot ----
+  render();
+  setTimeout(function () {
+    applyCurrentStep({ runAction: true, allowNavigate: false });
+    applyMapConstraint();
+  }, 300);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { runDocentBoot().catch(function (e) { console.error('[docent] boot error', e); }); });
+  } else {
+    runDocentBoot().catch(function (e) { console.error('[docent] boot error', e); });
+  }
+</script>

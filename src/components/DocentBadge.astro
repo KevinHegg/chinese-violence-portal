@@ -1,0 +1,15 @@
+---
+import { GraduationCap } from "lucide-react";
+
+export interface Props {
+  label?: string;
+  class?: string;
+}
+
+const { label = "Digital Docent", class: className = "" } = Astro.props;
+---
+
+<span class={`inline-flex items-center gap-2 text-sm font-semibold text-vintage-ink ${className}`.trim()}>
+  <GraduationCap size={16} aria-hidden="true" />
+  <span>{label}</span>
+</span>

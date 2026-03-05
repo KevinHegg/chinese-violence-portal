@@ -1,0 +1,44 @@
+---
+export interface Props {
+  src?: string;
+  srcSet?: string;
+  sizesAttr?: string;
+  size?: number;
+  alt?: string;
+  label?: string;
+  class?: string;
+}
+
+const {
+  src,
+  srcSet,
+  sizesAttr,
+  size = 20,
+  alt = "Digital Docent",
+  label = "Digital Docent",
+  class: className = "",
+} = Astro.props;
+---
+
+<span class={`inline-flex items-center gap-2 ${className}`.trim()}>
+  {src ? (
+    <img
+      src={src}
+      srcset={srcSet}
+      sizes={sizesAttr}
+      alt={alt}
+      width={size}
+      height={size}
+      class="inline-block object-contain rounded-sm border border-amber-200 shadow-sm"
+      loading="lazy"
+      decoding="async"
+    />
+  ) : (
+    <span
+      aria-hidden="true"
+      class="inline-block rounded-full border border-amber-300 bg-amber-50"
+      style={`width:${size}px;height:${size}px;`}
+    ></span>
+  )}
+  {label && <span class="text-sm font-semibold text-vintage-ink">{label}</span>}
+</span>

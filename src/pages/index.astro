@@ -2,6 +2,7 @@
 // Landing page with navbar and cards
 import "../styles/tailwind.css";
 import Navbar from "../components/Navbar.astro";
+import NavCard from "../components/NavCard.astro";
 import { fetchLynchingsData, fetchLynchingsMainData } from "../utils/googleSheets";
 import { getMapboxStaticImageUrl } from "../utils/mapboxStaticImage";
 
@@ -114,65 +115,79 @@ const featuredRecord = featuredSource.length > 0
           </p>
         </div>
 
-        <div class="prose prose-lg mb-8 max-w-none">
-          <h2 class="text-2xl font-display font-semibold mb-4 text-base-content">About the Project</h2>
-          <p class="font-body text-base-content/90 leading-relaxed mb-6">
-            Welcome to the John Crow Project. This site revives a neglected chapter of American history: the white supremacist violence and legal exclusion aimed at Chinese immigrants after the Gold Rush. The first attacks appeared in California's goldfields in 1849, then rolled east along wagon roads, rail lines, and river towns. By the early 1900s the violence had crossed the Mississippi River and collided with the entrenched racism of Jim Crow. Drawing on newly compiled lynching databases, digitized newspapers, and recent scholarship, this website documents how vigilante terror and discriminatory laws worked hand-in-hand to drive Chinese communities from mines, rail camps, and towns.
+        <div id="tour-root"></div>
+
+        <section id="home-framing" aria-labelledby="what-is-site-title" class="card-vintage p-6 mb-8">
+          <h2 id="what-is-site-title" class="text-2xl font-display font-semibold mb-3 text-base-content">What Is the John Crow Project?</h2>
+          <p class="font-body text-base-content/90 leading-relaxed mb-3">
+            Between the California Gold Rush and the First World War, Chinese immigrants were subjected to a coordinated regime of racial terror—lynchings, riots, expulsions, and legal exclusion. This project calls that Western system “John Crow”: a structure aimed at expulsion rather than subordination.
           </p>
-          
-          <h2 class="text-2xl font-display font-semibold mb-4 text-base-content mt-8">The Archive</h2>
-          <p class="font-body text-base-content/90 leading-relaxed mb-6">
-            In the pages of this website, you will find interactive charts and maps of <strong>{incidentCount}</strong> documented incidents resulting in <strong>{victimCount}</strong> extralegal homicides, timelines that pair major exclusion laws with surges in mob violence, and primary-source newspaper articles that preserve the voices of victims, witnesses, and resisters. Our goal is to make this "red record" of the West impossible to ignore, to honor those who were lost, and to provide educators, descendants, and researchers the tools they need to confront the legacy of what we call <em>John Crow</em>—a western counterpart to Jim Crow that sought expulsion rather than segregation.
+          <p class="font-body text-base-content/90 leading-relaxed mb-3">
+            Drawing on a newly compiled dataset of documented lynchings, digitized newspaper archives, and spatial analysis, this site reconstructs how violence spread—across towns, along rivers and railroads, and through national print networks.
           </p>
-          
-          <!-- John Crow Explanation Callout -->
-          <div class="bg-amber-50 border-l-4 border-amber-500 rounded-lg p-6 mb-6 shadow-sm not-prose">
-            <h3 class="text-xl font-display font-semibold mb-3 text-vintage-ink">What is "John Crow"?</h3>
-            <p class="font-body text-base-content/90 leading-relaxed mb-3">
-              The term <i>John Crow</i> is a deliberate conceptual framework, modeled in part on <i>Jane Crow</i>, 
-              which was coined to name the compounded racial and gendered oppression faced by Black women. 
-              Like <i>Jane Crow</i>, <i>John Crow</i> seeks to expose a distinct but parallel regime of racial terror—in this case, 
-              one that targeted Chinese immigrants in the American West.
-            </p>
-            <p class="font-body text-base-content/90 leading-relaxed mb-0">
-              "Crow" evokes Jim Crow, the system of white supremacist control 
-              that subjugated African Americans in the post-Reconstruction South. "John" derives from John Chinaman, the 19th-century racial caricature 
-              that dehumanized Chinese immigrants as alien and unassimilable. By merging these terms, <i>John Crow</i> names a system not of enforced separation, 
-              but of violent exclusion: lynchings, purges, exclusion laws, and the destruction of Chinatowns worked to erase Chinese presence from the national body. 
-              This project uses John Crow to surface that hidden history and to extend <strong>Ida B. Wells's "Red Record"</strong> into the western landscape of American racial terror.
-            </p>
-          </div>
-          
-          <h2 class="text-2xl font-display font-semibold mb-4 text-base-content mt-8">Join the Effort</h2>
+          <p class="font-body text-base-content/90 leading-relaxed mb-3">
+            The interactive maps, timelines, and charts presented here translate the quantitative and spatial arguments of the dissertation into web-based form. Where possible, visualizations correspond directly to analytical figures developed in A Murder of Crows.
+          </p>
           <p class="font-body text-base-content/90 leading-relaxed">
-            Explore the evidence, contribute your family's stories, and help us extend this record—what you see here is a starting point, not an endpoint. Together we can uncover, verify, and map new cases and perspectives, transforming collective memory and advancing justice through truth.
+            <a href="/about/project-and-thesis" class="text-accent hover:text-accent-focus underline">
+              Read the full thesis framing in About → Project &amp; Thesis.
+            </a>
           </p>
-          <!-- Callout for Submit Form -->
-          <div class="mt-8 mb-8 not-prose">
-            <div class="bg-amber-100 border-l-4 border-amber-400 rounded-lg p-4 flex flex-col md:flex-row md:items-center gap-3 shadow-sm">
-              <div class="flex-1 text-amber-900 text-base">
-                <strong>Submit details about acts of lethal violence targeting Chinese immigrants in the U.S. between 1850 and World War I.</strong>
-              </div>
-              <a href="/submit" class="inline-block mt-2 md:mt-0 px-4 py-2 bg-amber-400 hover:bg-amber-500 text-amber-900 font-semibold rounded shadow transition-colors duration-150 text-sm text-center">Submit an Incident</a>
-            </div>
+        </section>
+
+        <section aria-labelledby="quick-start-title" class="mb-8">
+          <h2 id="quick-start-title" class="text-2xl font-display font-semibold mb-4 text-base-content">Quick Start</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+            <NavCard id="qs-records" href="/explore" title="Explore Records" description="Browse lynching records by date, place, and event details.">
+              <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5h10M11 9h7M11 13h4M7 5v14m0 0H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2v12z" />
+                <circle cx="17" cy="17" r="3" stroke="currentColor" stroke-width="2" fill="none" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-2-2" />
+              </svg>
+            </NavCard>
+            <NavCard id="qs-news" href="/news" title="News Clips" description="Read article images, transcriptions, and source citations.">
+              <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+              </svg>
+            </NavCard>
+            <NavCard id="qs-visualize" href="/visualize" title="Visualize" description="Open charts, maps, timelines, and comparative views.">
+              <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+            </NavCard>
+            <NavCard id="qs-dataset" href="/dataset" title="Dataset" description="Access structured data used across the archive.">
+              <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2" fill="none" />
+                <path stroke="currentColor" stroke-width="2" d="M3 9h18M3 13h18M7 5v14M17 5v14" />
+              </svg>
+            </NavCard>
+            <NavCard id="qs-ask" href="/chat" title="Ask the Archive" description="Ask questions and trace evidence across records.">
+              <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+              </svg>
+            </NavCard>
           </div>
-        
-          <!-- Featured Record Section -->
-          {featuredRecord && (
-            <div class="mb-8 not-prose">
-              <h2 class="text-2xl font-display font-semibold mb-4 text-base-content">Featured Record</h2>
+          <p class="text-sm font-body text-base-content/70">
+            New to the site? <a href="/tour" class="text-accent hover:text-accent-focus underline">Take the guided tour.</a>
+          </p>
+        </section>
+
+        <!-- Featured Record Section -->
+        {featuredRecord && (
+          <section aria-labelledby="featured-record-title" class="mb-8">
+            <h2 id="featured-record-title" class="text-2xl font-display font-semibold mb-4 text-base-content">Featured Record</h2>
             <a href={`/records/${featuredRecord["lynching-id"]}`} class="block bg-white border border-amber-200 rounded-lg p-5 shadow-md hover:shadow-lg transition-shadow">
               <div class="flex flex-col md:flex-row gap-4">
                 <div class="flex-shrink-0">
                   {(() => {
-                    const hasCoordinates = !!(featuredRecord.latitude && featuredRecord.longitude && 
+                    const hasCoordinates = !!(featuredRecord.latitude && featuredRecord.longitude &&
                                            featuredRecord.latitude !== 0 && featuredRecord.longitude !== 0);
-                    const mapboxUrl = hasCoordinates 
+                    const mapboxUrl = hasCoordinates
                       ? getMapboxStaticImageUrl(featuredRecord.longitude, featuredRecord.latitude, { width: 192, height: 128 })
                       : null;
                     const imageSrc = mapboxUrl || `/mapimages/${featuredRecord["lynching-id"]}.png`;
                     return (
-                      <img 
+                      <img
                         src={imageSrc}
                         alt={`Map showing location of ${featuredRecord["city"] || featuredRecord["county"]}, ${featuredRecord["state"]}`}
                         class="w-full md:w-48 h-32 object-cover rounded-lg border border-gray-200"
@@ -196,9 +211,8 @@ const featuredRecord = featuredSource.length > 0
                 </div>
               </div>
             </a>
-            </div>
-          )}
-        </div>
+          </section>
+        )}
 
         <footer class="text-center mt-12 pt-8 border-t border-base-300">
           <div class="mb-3">
@@ -215,6 +229,47 @@ const featuredRecord = featuredSource.length > 0
         </footer>
       </div>
     </main>
+    <script>
+      import { shouldAutoStartQuickTour, startQuickTour, clearQuickTourStartFlag } from "../lib/tour/quickTour";
+
+      const bootQuickTour = () => {
+        const tourRequested = shouldAutoStartQuickTour();
+        if (!tourRequested) return;
+
+        const isSmallScreen = window.innerWidth < 768;
+        if (isSmallScreen) {
+          clearQuickTourStartFlag();
+          const mount = document.getElementById("tour-root");
+          if (mount && !document.getElementById("tour-mobile-notice")) {
+            const notice = document.createElement("div");
+            notice.id = "tour-mobile-notice";
+            notice.className = "mb-4 border border-amber-200 bg-amber-50 text-gray-800 rounded-lg px-4 py-3 shadow-sm flex items-start gap-3";
+            notice.setAttribute("role", "status");
+            notice.innerHTML = `
+              <p class="text-sm leading-relaxed flex-1">Tour works best on a larger screen. You can still explore using the Quick Start buttons below.</p>
+              <button type="button" class="text-sm font-semibold text-accent hover:text-accent-focus underline" aria-label="Dismiss tour notice">Dismiss</button>
+            `;
+            const dismiss = notice.querySelector("button");
+            dismiss?.addEventListener("click", () => notice.remove());
+            mount.appendChild(notice);
+          }
+          const url = new URL(window.location.href);
+          if (url.searchParams.get("tour") === "1") {
+            url.searchParams.delete("tour");
+            window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+          }
+          return;
+        }
+
+        startQuickTour();
+      };
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", bootQuickTour, { once: true });
+      } else {
+        bootQuickTour();
+      }
+    </script>
   </body>
 </html>
 

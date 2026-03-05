@@ -43,6 +43,31 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
+## Project Route Notes
+
+- `/visualize` supports query parameters:
+  - `tab=map|timeline|charts` redirects to the corresponding visualization route.
+  - `focus=<lynching-id>` is forwarded to the target route.
+  - `year=<YYYY>` is forwarded to the target route.
+  - `all=1` is forwarded to the target route.
+- `/visualize/map` supports query parameters:
+  - `focus=<lynching-id>` centers the map on that record when coordinates are available.
+  - `all=1` jumps the timeline range end to 1915 immediately (show all markers without waiting).
+- `/visualize/charts` stable anchors:
+  - `#charts-top`
+  - `#chart-01` … `#chart-11` (top-to-bottom chart order)
+- `/visualize/compare` stable anchors:
+  - `#compare-top`
+  - `#compare-chart-01`
+  - `#compare-chart-02`
+  - `#compare-chart-03`
+- Record template stable anchors (all `/records/:lynchingId` pages):
+  - `#record-top`
+  - `#record-metadata`
+  - `#record-map`
+  - `#record-narrative`
+  - `#record-evidence` (when related articles are present)
+
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).

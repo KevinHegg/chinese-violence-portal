@@ -77,6 +77,7 @@ const lynching = lynchingsData.find((l: any) => l["lynching-id"] === lynchingId)
 // Check for querystring parameter to hide metadata panel
 const url = Astro.url;
 const hideMetadata = url.searchParams.has('hideMetadata') || url.searchParams.has('hide-panel');
+const isCaseStudyRecord = lynchingId === "MS1885-05-05";
 
 // Check if lynching data exists
 if (!lynching) {
@@ -178,7 +179,9 @@ const decodeHtmlEntities = (text: string) => {
 ---
 
 <PageLayout title={decodeHtmlEntities(lynching["narrative-short-title"] || lynching["narrative-title"] || lynching["lynching-id"])} currentPage="records">
-      <div class="container-standard mt-4">
+      <div id="record-top" class="container-standard mt-4 scroll-mt-24">
+    {isCaseStudyRecord && <div id="case-study-teaser-root" class="mb-4"></div>}
+
     <!-- Breadcrumb Navigation -->
     <nav aria-label="Breadcrumb" class="mb-4">
       <ol class="flex items-center text-sm flex-wrap">
@@ -237,11 +240,11 @@ const decodeHtmlEntities = (text: string) => {
     <div class="border border-gray-200 shadow-sm overflow-hidden bg-amber-50 rounded-lg">
       <!-- Header (now part of the main content container for seamless background) -->
       <div class="border-b border-amber-200 py-2">
-        <h1 class="text-3xl font-bold text-gray-900 mb-1" style="padding-left: 21px;">{decodeHtmlEntities(lynching["narrative-short-title"] || lynching["narrative-title"])} </h1>
+        <h1 id="record-title" class="text-3xl font-bold text-gray-900 mb-1" style="padding-left: 21px;">{decodeHtmlEntities(lynching["narrative-short-title"] || lynching["narrative-title"])} </h1>
       </div>
 
       <!-- Metadata with Map -->
-      <div class="px-10 p-6 border-b border-gray-200 bg-white" style="padding-left: 20px; padding-right: 20px;">
+      <div id="record-metadata" class="px-10 p-6 border-b border-gray-200 bg-white scroll-mt-24" style="padding-left: 20px; padding-right: 20px;">
         <div class="flex gap-6 items-start md:flex-row flex-col-reverse md:gap-6 gap-2">
           <!-- Metadata Table -->
           {!hideMetadata && (
@@ -263,7 +266,7 @@ const decodeHtmlEntities = (text: string) => {
           </div>
           )}
           <!-- Map Image -->
-          <div class="flex-shrink-0 w-full md:w-auto">
+          <div id="record-map" class="flex-shrink-0 w-full md:w-auto scroll-mt-24">
             {(() => {
               // If coordinates exist, link to Google Maps; otherwise no link
               const hasCoordinates = !!(lynching.latitude && lynching.longitude && 
@@ -294,6 +297,10 @@ const decodeHtmlEntities = (text: string) => {
                 ? `https://www.google.com/maps?q=${lynching.latitude},${lynching.longitude}&ll=${lynching.latitude},${centerLongitude}&z=6`
                 : null;
               
+              const imageErrorHandler = fallbackUrl
+                ? `if (!this.dataset.fallbackTried) { this.dataset.fallbackTried='1'; this.src='${fallbackUrl}'; return; } this.classList.add('hidden'); var f=this.parentElement.querySelector('[data-map-fallback]'); if (f) f.classList.remove('hidden');`
+                : "this.classList.add('hidden'); var f=this.parentElement.querySelector('[data-map-fallback]'); if (f) f.classList.remove('hidden');";
+
               if (googleMapsUrl) {
                 return (
                   <a
@@ -308,8 +315,17 @@ const decodeHtmlEntities = (text: string) => {
                       alt={`Map showing location of ${lynching["city"]}, ${lynching["state"]}`}
                       class="map-image-mobile md:w-[300px] md:h-[300px] w-full h-[100px] object-cover object-center rounded-lg border border-gray-200 cursor-pointer"
                       style="width:100%;max-width:300px;"
-                      onerror={fallbackUrl ? `this.src='${fallbackUrl}'; this.onerror=null;` : "this.style.display='none'; this.nextElementSibling.style.display='flex';"}
+                      onerror={imageErrorHandler}
                     />
+                    <div data-map-fallback class="hidden md:w-[300px] md:h-[300px] w-full h-[100px] bg-gray-100 rounded-lg border border-gray-200 items-center justify-center text-gray-500">
+                      <div class="text-center">
+                        <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"></path>
+                        </svg>
+                        <p class="text-sm">Map preview unavailable</p>
+                        <p class="text-xs">Open map in Google Maps</p>
+                      </div>
+                    </div>
                   </a>
                 );
               } else {
@@ -320,34 +336,34 @@ const decodeHtmlEntities = (text: string) => {
                       alt={`Map showing location of ${lynching["city"]}, ${lynching["state"]}`}
                       class="map-image-mobile md:w-[300px] md:h-[300px] w-full h-[100px] object-cover object-center rounded-lg border border-gray-200"
                       style="width:100%;max-width:300px;"
-                      onerror={fallbackUrl ? `this.src='${fallbackUrl}'; this.onerror=null;` : "this.style.display='none'; this.nextElementSibling.style.display='flex';"}
+                      onerror={imageErrorHandler}
                     />
+                    <div data-map-fallback class="hidden md:w-[300px] md:h-[300px] w-full h-[100px] bg-gray-100 rounded-lg border border-gray-200 items-center justify-center text-gray-500">
+                      <div class="text-center">
+                        <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"></path>
+                        </svg>
+                        <p class="text-sm">Map preview unavailable</p>
+                      </div>
+                    </div>
                   </div>
                 );
               }
             })()}
-            <div class="hidden md:w-[300px] md:h-[300px] w-full h-[100px] bg-gray-100 rounded-lg border border-gray-200 items-center justify-center text-gray-500">
-              <div class="text-center">
-                <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"></path>
-                </svg>
-                <p class="text-sm">Map not available</p>
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
       <!-- Narrative -->
-      <div class="p-6 border-b border-gray-200" style="background-color: #faf9f6;">
-        <h2 class="text-xl font-semibold mb-4">Narrative</h2>
+      <div id="record-narrative" class="p-6 border-b border-gray-200 scroll-mt-24" style="background-color: #faf9f6;">
+        <h2 id="record-narrative-title" class="text-xl font-semibold mb-4">Narrative</h2>
         <div class="prose max-w-none w-full" style="width:100%; max-width:none;" set:html={decodeHtmlEntities(lynching["narrative-body"] || lynching["narrative-summary"] || "")}></div>
       </div>
 
       <!-- Related Articles -->
       {relatedArticles.length > 0 && (
-        <div class="p-6 bg-white">
-          <h2 class="text-xl font-semibold mb-4">Related Newspaper Article(s)</h2>
+        <div id="record-evidence" class="p-6 bg-white scroll-mt-24">
+          <h2 id="record-evidence-title" class="text-xl font-semibold mb-4">Related Newspaper Article(s)</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             {relatedArticles.map(article => (
               <div class="card related-article-card bg-base-100 shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-base-300" data-article-id={article["article-id"]}>
@@ -393,15 +409,43 @@ const decodeHtmlEntities = (text: string) => {
 
   // Add click handlers to related article cards (use data-article-id for reliable lookup)
   document.addEventListener('DOMContentLoaded', function() {
+    const normalizeClientArticleId = (value) => String(value || '').trim().padStart(4, '0');
+    const openArticleById = (articleId) => {
+      const raw = String(articleId || '').trim().toLowerCase();
+      if (raw === 'first' && relatedArticles.length > 0) {
+        openArticleViewer(relatedArticles[0]);
+        return;
+      }
+      const targetId = normalizeClientArticleId(articleId);
+      if (!targetId) return;
+      const article = relatedArticles.find(a => normalizeClientArticleId(a['article-id']) === targetId);
+      if (article) {
+        openArticleViewer(article);
+      }
+    };
+
     const articleCards = document.querySelectorAll('.related-article-card');
     articleCards.forEach(card => {
       card.addEventListener('click', function() {
         const id = this.getAttribute('data-article-id');
-        const article = relatedArticles.find(a => (a['article-id'] || '').trim() === (id || '').trim());
+        const article = relatedArticles.find(a => normalizeClientArticleId(a['article-id']) === normalizeClientArticleId(id));
         if (article) {
           openArticleViewer(article);
         }
       });
+    });
+
+    const url = new URL(window.location.href);
+    const openArticleParam = url.searchParams.get('openArticle');
+    if (openArticleParam) {
+      openArticleById(openArticleParam);
+    }
+
+    window.addEventListener('johncrow:docent-open-article', function(event) {
+      const articleId = event && event.detail ? event.detail.articleId : null;
+      if (articleId) {
+        openArticleById(articleId);
+      }
     });
   });
 
@@ -437,6 +481,70 @@ const decodeHtmlEntities = (text: string) => {
   
 
 </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const alignRecordAnchor = () => {
+      const hash = window.location.hash;
+      if (!hash) return;
+      const id = hash.replace("#", "");
+      const allowed = new Set([
+        "record-top",
+        "record-metadata",
+        "record-map",
+        "record-narrative",
+        "record-evidence",
+      ]);
+      if (!allowed.has(id)) return;
+
+      const target = document.getElementById(id);
+      if (!target) return;
+
+      const nav = document.querySelector(".jc-nav");
+      const navHeight = nav instanceof HTMLElement ? nav.getBoundingClientRect().height : 0;
+      const top = window.scrollY + target.getBoundingClientRect().top - navHeight - 12;
+      window.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+    };
+
+    // Run after initial render/layout and when hash changes on this page.
+    setTimeout(alignRecordAnchor, 0);
+    window.addEventListener("hashchange", alignRecordAnchor);
+  });
+</script>
+
+{isCaseStudyRecord && (
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const root = document.getElementById("case-study-teaser-root");
+      if (!root) return;
+
+      let showBanner = false;
+      try {
+        showBanner = localStorage.getItem("johncrow_case_teaser") === "true";
+        if (showBanner) localStorage.removeItem("johncrow_case_teaser");
+      } catch {
+        showBanner = false;
+      }
+      if (!showBanner) return;
+
+      const banner = document.createElement("div");
+      banner.className = "border border-amber-200 bg-amber-50 text-gray-800 rounded-lg px-4 py-3 shadow-sm flex items-start gap-3";
+      banner.setAttribute("role", "status");
+      banner.innerHTML = `
+        <p class="text-sm leading-relaxed flex-1">
+          Case study walkthrough coming soon. For now, explore the narrative, then open the News Clips for primary-source evidence.
+        </p>
+        <button type="button" class="text-sm font-semibold text-accent hover:text-accent-focus underline" aria-label="Dismiss case study notice">
+          Dismiss
+        </button>
+      `;
+
+      const dismiss = banner.querySelector("button");
+      dismiss?.addEventListener("click", () => banner.remove());
+      root.appendChild(banner);
+    });
+  </script>
+)}
 
 <style>
   .line-clamp-3 {

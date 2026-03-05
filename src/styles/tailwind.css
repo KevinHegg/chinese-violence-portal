@@ -8,6 +8,8 @@
 /* Global background image for all pages */
 body {
   position: relative;
+  font-size: 1.0625rem;
+  line-height: 1.65;
 }
 
 body::before {
@@ -97,4 +99,57 @@ textarea:focus-visible,
   width: 1px;
   height: 1px;
   overflow: hidden;
+}
+
+/* Quick Start tour popup sizing tweaks (Shepherd.js) */
+.shepherd-element.johncrow-quick-tour .shepherd-content .shepherd-header {
+  padding: 0.25rem 0.75rem !important;
+  min-height: 0 !important;
+}
+
+.shepherd-element.johncrow-quick-tour .shepherd-content .shepherd-title {
+  line-height: 1.1 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Digital Docent: fixed right sidebar (desktop only). Main content and modal stay clear. */
+@media (min-width: 1024px) {
+  body.docent-active {
+    padding-right: 360px;
+  }
+
+  /* Article viewer overlay: do not cover docent sidebar (overlay stops left of sidebar) */
+  body.docent-active #article-viewer {
+    right: 360px;
+  }
+
+  /* Evidence/article modal panel: keep left of docent sidebar */
+  body.docent-active #article-viewer > div {
+    margin-right: 0;
+    max-width: calc(100vw - 360px - 2rem);
+  }
+
+  body.docent-active .jc-nav {
+    right: 360px;
+  }
+}
+
+/* Z-index tiers: nav dropdowns + tooltips 9999, docent sidebar 5000, highlight overlay 4000 */
+
+/* Digital Docent text highlight: deep green accent (inset-only so parent overflow:hidden never clips) */
+.docent-highlight-text {
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: rgba(22, 101, 52, 0.06);
+  box-shadow: inset 0 0 0 3px rgba(22, 101, 52, 0.9), inset 0 0 0 5px rgba(255, 255, 255, 0.9), inset 0 0 0 7px rgba(0, 0, 0, 0.18);
+}
+
+/* Chart highlight: deep green accent (coherent with docent accent), white keyline + dark outer shadow */
+.docent-highlight-chart {
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: rgba(22, 101, 52, 0.03);
+  border: 3px solid rgba(22, 101, 52, 0.9);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9), 0 0 0 4px rgba(0, 0, 0, 0.22), 0 0 22px rgba(0, 0, 0, 0.22);
 }

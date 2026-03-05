@@ -15,9 +15,9 @@
 // ==================== CONFIGURATION ====================
 const APP_URL = 'https://www.appsheet.com/start/48f0e037-ce97-4c48-97d9-1531c7e14dd6?platform=desktop#appName=chinese-lynchings-master-370664303&vss=H4sIAAAAAAAAA6WPSwvCMBCE_8ueW6iIIrmJChbRg4qXpoe02WKwJqVJfVDy301aH2f1uLvzzc60cBF43RmWn4Ak7Wda4R0InBa29wopEAozJU2tSgoBhQ0798s508dMsZpTsGDT4GVgUANpv-TJn_8DEBylEYXA2pt51Jk8QXf2mFu8IbABnBvDshK7zB7SWGJukG_VNeZdiTUT0ttMB5PROIyGYRR5sMc6tVByKbRRtcuc9PrUWqcpVN5o5AfX6pc2OpaLW8UkXyvuwhWs1GgfV5KLnbMBAAA=&view=Dashboard';
 
-// Mapbox configuration
+// Mapbox configuration (set MAPBOX_TOKEN in Script Properties)
 const MAPBOX_STYLE = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
-const MAPBOX_TOKEN = 'pk.eyJ1Ijoia2V2aW5oZWdnIiwiYSI6ImNscmprbG80NzA0aW8ybm94bXFveG1qcmYifQ.z0za-koZbyVbgwJ5AVg9LA';
+const MAPBOX_TOKEN = PropertiesService.getScriptProperties().getProperty('MAPBOX_TOKEN');
 
 // Google Drive folder ID where images will be saved
 // To get this: Open the folder in Drive, copy the ID from the URL
