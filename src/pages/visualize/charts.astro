@@ -1,6 +1,27 @@
 ---
 import PageLayout from "../../layouts/PageLayout.astro";
 import "../../styles/western-colors.css";
+
+const mapboxToken =
+  import.meta.env.PUBLIC_MAPBOX_ACCESS_TOKEN ||
+  import.meta.env.PUBLIC_MAPBOX_TOKEN ||
+  import.meta.env.MAPBOX_ACCESS_TOKEN ||
+  "";
+const mapboxStyle = "kevinhegg/cmd4pgf7p01ud01s4awo3b3yd";
+
+// Hong Di lynching reports by state (N=1,406) - from Hong Di articles by State.xlsx
+const HONG_DI_BY_STATE: Record<string, number> = {
+  "California": 754, "Kansas": 122, "Nevada": 84, "Missouri": 40, "Arizona": 36,
+  "Oregon": 35, "Pennsylvania": 35, "New York": 27, "Illinois": 26, "Ohio": 21,
+  "Michigan": 20, "Indiana": 19, "Nebraska": 15, "Utah": 15, "Wisconsin": 13,
+  "Massachusetts": 11, "Tennessee": 11, "Georgia": 10, "Washington": 10,
+  "Minnesota": 9, "Kentucky": 7, "New Jersey": 7, "Texas": 7, "Alabama": 6,
+  "Idaho": 6, "Vermont": 6, "District of Columbia": 5, "Montana": 5, "Virginia": 5,
+  "Delaware": 4, "Louisiana": 4, "Maine": 4, "North Dakota": 4, "Connecticut": 3,
+  "Florida": 3, "Hawaii": 3, "Iowa": 3, "Maryland": 3, "Mississippi": 2,
+  "Arkansas": 1, "Colorado": 1, "New Mexico": 1, "South Carolina": 1,
+  "West Virginia": 1, "Wyoming": 1
+};
 ---
 
 <PageLayout title="Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)" currentPage="visualize/charts">
@@ -39,6 +60,7 @@ import "../../styles/western-colors.css";
       <li><strong>Categories & Pretexts:</strong> Distribution of violence categories and stated pretexts.</li>
       <li><strong>Killing Method:</strong> Distribution of how victims were killed.</li>
       <li><strong>Violence & Population:</strong> Victims per year alongside Chinese population growth and key policy events.</li>
+      <li><strong>Hong Di Lynching Reports by State:</strong> Geographic distribution of newspaper articles reporting the Hong Di lynching (Colusa, California, July 1887), by state of publication (N=1,406).</li>
       </ol>
     </div>
     <style>
@@ -212,9 +234,30 @@ import "../../styles/western-colors.css";
       <div id="chart-combo-table" class="sr-only" role="region" aria-label="Data table for combination chart"></div>
       </div>
     </div>
+
+    <!-- Chart 9: Hong Di articles by state (Mapbox choropleth) -->
+    <div id="chart-12" data-chart-index="12" class="scroll-mt-24">
+      <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
+      <h2 id="chart-09-title" class="text-xl font-semibold mb-2 text-vintage-ink">9. Distribution of Hong Di Lynching Reports by State (N=1,406)</h2>
+      <p id="tagline-chart-9" class="mb-4 text-sm text-vintage-ink">Newspaper articles reporting the Hong Di lynching (Colusa, California, July 1887), by state of publication.</p>
+      <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" />
+      <div class="relative">
+      <button id="hong-di-map-reset" type="button" class="absolute top-3 left-3 z-10 px-3 py-1.5 text-sm font-medium bg-white/90 hover:bg-white border border-gray-300 rounded shadow-md text-vintage-ink" aria-label="Reset map view">Reset</button>
+      <div id="chart-hong-di-by-state"
+           class="chart-container rounded-lg overflow-hidden" style="height:500px;min-height:400px;"
+           role="img"
+           aria-label="Choropleth map showing number of Hong Di lynching articles per state"
+           aria-describedby="chart-hong-di-by-state-desc"></div>
+      </div>
+      <p id="chart-hong-di-by-state-desc" class="sr-only">Choropleth map of newspaper article counts by state of publication for the Hong Di lynching. Use the data table below for detailed values.</p>
+      <div id="chart-hong-di-by-state-table" class="sr-only" role="region" aria-label="Data table for Hong Di articles by state chart"></div>
+      </div>
+    </div>
   </div>
+  <script is:inline src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
+  <script is:inline src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
   <script is:inline src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
-  <script is:inline>
+  <script is:inline define:vars={{ mapboxToken, mapboxStyle, hongDiByState: HONG_DI_BY_STATE }}>
     (function() {
     function initAllCharts() {
       if (typeof echarts === 'undefined') {
@@ -231,10 +274,11 @@ import "../../styles/western-colors.css";
         var timelineData = results[0];
         var lynchingsData = Array.isArray(results[1]) ? results[1] : [];
         var mainTabData = Array.isArray(results[2]) ? results[2] : lynchingsData;
-        renderCharts(timelineData, lynchingsData, mainTabData);
+        renderCharts(timelineData, lynchingsData, mainTabData, hongDiByState);
       });
     }
-    function renderCharts(timelineData, lynchingsData, mainTabData) {
+    function renderCharts(timelineData, lynchingsData, mainTabData, hongDiByState) {
+      hongDiByState = hongDiByState || {};
 
     // --- Chart 1: Incidents Over Time ---
     // Use Main tab (Chinese lynchings master): incidents = row count per year, victims = sum per year
@@ -1151,6 +1195,120 @@ import "../../styles/western-colors.css";
       responsive: true
     });
 
+    // --- Chart 9: Hong Di articles by state (Mapbox choropleth) ---
+    const hongDiEntries = Object.entries(hongDiByState)
+      .filter(function(entry) { return entry[1] > 0; })
+      .sort(function(a, b) { return b[1] - a[1]; });
+    const hongDiTableRows = hongDiEntries.map(function(e) { return [e[0], e[1].toString()]; });
+    createDataTable('chart-hong-di-by-state-table', ['State', 'Articles'], hongDiTableRows, 'Data table for Hong Di articles by state chart');
+
+    var hongDiMap = null;
+    function initHongDiMap() {
+      var container = document.getElementById('chart-hong-di-by-state');
+      if (!container || !mapboxToken || typeof mapboxgl === 'undefined') {
+        if (container && !mapboxToken) {
+          container.innerHTML = '<div class="flex items-center justify-center h-full text-vintage-ink bg-amber-50 rounded-lg"><p class="text-center px-4">Map requires PUBLIC_MAPBOX_ACCESS_TOKEN. Configure it in your environment (e.g. Netlify) to view the choropleth.</p></div>';
+        }
+        return;
+      }
+      mapboxgl.accessToken = mapboxToken;
+      fetch('https://docs.mapbox.com/mapbox-gl-js/assets/us_states.geojson')
+        .then(function(r) { return r.json(); })
+        .then(function(geojson) {
+          geojson.features.forEach(function(f) {
+            var name = f.properties && f.properties.STATE_NAME;
+            f.properties.articles = (name && hongDiByState[name] != null) ? hongDiByState[name] : 0;
+          });
+          var maxVal = Math.max(1, Math.max.apply(null, geojson.features.map(function(f) { return f.properties.articles || 0; })));
+          var CALLOUT_OFFSETS = { 'Massachusetts': [0.25, 0], 'Vermont': [0, 0.2], 'Delaware': [0.5, -0.05], 'District of Columbia': [0, -0.25], 'Connecticut': [0.35, 0], 'Maryland': [0.55, 0.05] };
+          var labelPoints = geojson.features.map(function(f) {
+            var c = turf.centroid(f);
+            var name = f.properties.STATE_NAME;
+            var n = f.properties.articles || 0;
+            var offset = CALLOUT_OFFSETS[name];
+            if (offset) {
+              c.geometry.coordinates[0] += offset[0];
+              c.geometry.coordinates[1] += offset[1];
+            }
+            c.properties = { STATE_NAME: name, articles: n, label: String(n) };
+            return c;
+          });
+          var labelsGeoJSON = { type: 'FeatureCollection', features: labelPoints };
+          hongDiMap = new mapboxgl.Map({
+            container: 'chart-hong-di-by-state',
+            style: 'mapbox://styles/' + mapboxStyle,
+            center: [-96, 38],
+            zoom: 3.5,
+            attributionControl: true
+          });
+          hongDiMap.on('load', function() {
+            var layers = hongDiMap.getStyle().layers || [];
+            layers.forEach(function(layer) {
+              var id = (layer.id || '').toLowerCase();
+              if (id.indexOf('place') !== -1 || id.indexOf('city') !== -1 || id.indexOf('settlement') !== -1 || id.indexOf('country-label') !== -1 || id.indexOf('place-country') !== -1) {
+                try { hongDiMap.setLayoutProperty(layer.id, 'visibility', 'none'); } catch (e) {}
+              }
+            });
+            hongDiMap.addSource('states', { type: 'geojson', data: geojson });
+            hongDiMap.addLayer({
+              id: 'state-fills',
+              type: 'fill',
+              source: 'states',
+              paint: {
+                'fill-color': ['interpolate', ['linear'], ['get', 'articles'], 0, '#ffffff', 1, '#eff3ff', 10, '#c6dbef', 50, '#6baed6', 100, '#3182bd', 200, '#08519c', maxVal, '#08306b'],
+                'fill-opacity': 0.9,
+                'fill-outline-color': '#6b7280'
+              }
+            });
+            hongDiMap.addSource('state-labels', { type: 'geojson', data: labelsGeoJSON });
+            hongDiMap.addLayer({
+              id: 'state-labels',
+              type: 'symbol',
+              source: 'state-labels',
+              layout: {
+                'text-field': ['get', 'label'],
+                'text-size': 13,
+                'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+                'text-anchor': 'center',
+                'text-justify': 'center',
+                'text-max-width': 10,
+                'text-allow-overlap': true,
+                'text-ignore-placement': true
+              },
+              paint: {
+                'text-color': '#0f172a',
+                'text-halo-color': '#ffffff',
+                'text-halo-width': 1
+              }
+            });
+            var popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
+            hongDiMap.on('mousemove', 'state-fills', function(e) {
+              if (e.features.length) {
+                hongDiMap.getCanvas().style.cursor = 'pointer';
+                var f = e.features[0];
+                var name = f.properties.STATE_NAME;
+                var n = f.properties.articles || 0;
+                popup.setLngLat(e.lngLat).setHTML('<strong>' + name + '</strong>: ' + n + ' article' + (n !== 1 ? 's' : '')).addTo(hongDiMap);
+              }
+            });
+            hongDiMap.on('mouseleave', 'state-fills', function() {
+              hongDiMap.getCanvas().style.cursor = '';
+              popup.remove();
+            });
+            var resetBtn = document.getElementById('hong-di-map-reset');
+            if (resetBtn) {
+              resetBtn.onclick = function() {
+                hongDiMap.flyTo({ center: [-96, 38], zoom: 3.5, duration: 500 });
+              };
+            }
+          });
+        })
+        .catch(function() {
+          if (container) container.innerHTML = '<div class="flex items-center justify-center h-full text-vintage-ink bg-amber-50 rounded-lg"><p class="text-center px-4">Could not load map data.</p></div>';
+        });
+    }
+    initHongDiMap();
+
     function renderPolicyEventGraphics() {
       var graphics = policyEvents.map(function(event) {
         var useAltRow = event.year === 1882 || event.year === 1892;
@@ -1230,6 +1388,7 @@ import "../../styles/western-colors.css";
       chartPiePretext.resize();
       chartPieKillingMethod.resize();
       chartCombo.resize();
+      if (hongDiMap) hongDiMap.resize();
       setTimeout(renderPolicyEventGraphics, 60);
     };
 

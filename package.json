@@ -13,6 +13,7 @@
     "export-charts": "node ./scripts/export-publication-charts.mjs",
     "export-map": "node ./scripts/export-map-publication.mjs",
     "export-hong-di-map": "node ./scripts/export-hong-di-map.mjs",
+    "export-hong-di-json": "node ./scripts/export-hong-di-articles-json.mjs",
     "export-lynchings-by-state-map": "node ./scripts/export-lynchings-by-state-map.mjs"
   },
   "dependencies": {
