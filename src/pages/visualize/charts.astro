@@ -1215,6 +1215,11 @@ const HONG_DI_BY_STATE: Record<string, number> = {
       fetch('https://docs.mapbox.com/mapbox-gl-js/assets/us_states.geojson')
         .then(function(r) { return r.json(); })
         .then(function(geojson) {
+          var EXCLUDE = { 'Puerto Rico': 1, 'United States Virgin Islands': 1 };
+          geojson.features = geojson.features.filter(function(f) {
+            var name = f.properties && f.properties.STATE_NAME;
+            return !EXCLUDE[name];
+          });
           geojson.features.forEach(function(f) {
             var name = f.properties && f.properties.STATE_NAME;
             f.properties.articles = (name && hongDiByState[name] != null) ? hongDiByState[name] : 0;
