@@ -36,7 +36,7 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
         </li>
       </ol>
     </nav>
-    <div class="mb-6">
+    <div id="news-top" class="mb-6">
       <h1 class="text-4xl font-bold mb-2">News Clips</h1>
       <p class="text-lg text-gray-600 mb-6">
         Explore historical newspaper articles documenting events and patterns in our dataset. 
@@ -45,13 +45,13 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
     </div>
 
     <!-- Filter and Sort Controls -->
-    <div class="bg-amber-50/90 border-2 border-amber-200 rounded-lg p-4 mb-6 shadow-lg">
+    <div id="news-filters" class="bg-amber-50/90 border-2 border-amber-200 rounded-lg p-4 mb-6 shadow-lg">
       <!-- Keyword Search Panel - At Top -->
       <div class="mb-4">
         <div class="bg-white rounded-lg p-3 border border-amber-300">
           <label for="keyword-search" class="block font-medium text-vintage-ink mb-2">Keyword Search:</label>
           <div class="flex flex-col sm:flex-row gap-2 sm:items-center">
-            <input id="keyword-search" type="text" class="input input-bordered border-2 border-amber-300 bg-amber-50 w-full sm:max-w-md min-w-0" placeholder="e.g. 1885 Montana, or article-id: 240 or 0240" aria-describedby="keyword-search-hint" />
+            <input id="keyword-search" type="text" class="input input-bordered border-2 border-amber-300 bg-amber-50 w-full sm:max-w-md min-w-0" placeholder="e.g. 1885 Montana OR arson" aria-describedby="keyword-search-hint" />
             <span id="keyword-search-hint" class="sr-only">Search article titles, summaries, transcripts. Type an article-id (e.g. 240 or 0240) to jump to that clip. Multiple words: all must match (e.g. 1885 Montana).</span>
             <button id="keyword-clear" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-vintage-ink font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 text-sm flex-shrink-0 self-start sm:self-auto" aria-label="Clear keyword search">Clear</button>
           </div>
@@ -148,7 +148,7 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
     <div id="results-announcement" aria-live="polite" aria-atomic="true" class="sr-only"></div>
 
     <!-- Article Cards Grid -->
-    <div id="cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8" aria-label="Newspaper articles"></div>
+    <div id="news-results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8" aria-label="Newspaper articles"></div>
 
     <!-- Article Viewer Component -->
     <ArticleViewer />
@@ -173,7 +173,7 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
   </div>
 
   <script define:vars={{ articles, entities }}>
-    const container = document.getElementById('cards-container');
+    const container = document.getElementById('news-results');
     const decadeInput = document.getElementById('filter-decade');
     const stateInput = document.getElementById('filter-state');
     const publicationInput = document.getElementById('filter-publication');
@@ -227,9 +227,16 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
         setTimeout(() => announcementEl.textContent = '', 1000);
       }
 
+      const searchParams = new URLSearchParams(window.location.search);
+      const hashParams = new URLSearchParams(window.location.hash.slice(1));
+      const showArticleIds = searchParams.get('showArticleIds') === '1' || hashParams.get('showArticleIds') === '1';
+
       filtered.forEach((article, index) => {
         const card = document.createElement('div');
         card.className = 'card bg-base-100 shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-base-300';
+        const articleId = article['article-id'] != null ? String(article['article-id']) : '';
+        if (articleId) card.setAttribute('data-article-id', articleId);
+        const idLabel = showArticleIds && articleId ? `<p class="text-xs text-gray-400 font-mono mt-2" aria-hidden="true">article-id: ${articleId}</p>` : '';
         card.innerHTML = `
           <div class="card-body p-4">
             <div class="flex justify-between items-start mb-3">
@@ -246,6 +253,7 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
               <p class="text-sm text-gray-700 summary-text">${article['article-summary'] || 'No summary available.'}</p>
               <div class="summary-fade"></div>
             </div>
+            ${idLabel}
           </div>
         `;
         
@@ -636,9 +644,89 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
     const resetFiltersBtn = document.getElementById('reset-filters');
     if (resetFiltersBtn) resetFiltersBtn.addEventListener('click', clearAllFilters);
 
-    // Initialize with sorted articles and set up filter options
-    updateFilterOptions();
-    renderCards(sortArticles(articles));
+    // Centralized URL state application: q (keyword), openArticle (modal). Ensures correct order and works when docent Back changes params.
+    function getNewsParams() {
+      const searchParams = new URLSearchParams(window.location.search);
+      const hashParams = new URLSearchParams(window.location.hash.slice(1));
+      const get = (name) => searchParams.get(name) ?? hashParams.get(name);
+      return { q: get('q'), openArticle: get('openArticle') };
+    }
+
+    function applyNewsRouteState() {
+      const { q, openArticle } = getNewsParams();
+      const devLog = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? (...args) => console.log('[news route]', ...args)
+        : () => {};
+
+      devLog('q=', q ?? '(none)', 'openArticle=', openArticle ?? '(none)');
+
+      // 1) Close any open article modal so prior step's modal doesn't persist
+      try { window.dispatchEvent(new CustomEvent('johncrow:close-article-modal')); } catch (e) {}
+      devLog('dispatched close-article-modal');
+
+      // 2) Wait a tick so modal close can run before we change filters / open another
+      setTimeout(() => {
+        // 3) Apply q filter and render results
+        if (q != null && q !== '' && keywordInput) {
+          keywordInput.value = q;
+          applyFilters();
+        } else {
+          updateFilterOptions();
+          renderCards(sortArticles(articles));
+        }
+
+        // 4) After results are rendered, open article by openArticle if present
+        if (openArticle != null && openArticle !== '') {
+          const want = openArticle.trim();
+          const normId = (id) => {
+            const n = parseInt(String(id || ''), 10);
+            return isNaN(n) ? '' : n.toString().padStart(4, '0');
+          };
+          const tryOpen = () => {
+            const wantNorm = normId(want);
+            const cards = container ? container.querySelectorAll('[data-article-id]') : [];
+            const card = Array.from(cards).find((c) => {
+              const raw = c.getAttribute('data-article-id') || '';
+              return raw === want || normId(raw) === wantNorm;
+            });
+            if (card) {
+              card.click();
+              return true;
+            }
+            const article = articles.find((a) => {
+              const raw = a['article-id'] != null ? String(a['article-id']) : '';
+              return raw === want || normId(raw) === wantNorm;
+            });
+            if (article && window.articleViewer && typeof renderViewer === 'function') {
+              renderViewer(article);
+              return true;
+            }
+            return false;
+          };
+          const attempt = (retries = 0) => {
+            if (tryOpen()) {
+              devLog('modal opened for openArticle=', openArticle);
+              return;
+            }
+            if (retries < 20) setTimeout(() => attempt(retries + 1), 50);
+          };
+          setTimeout(() => attempt(0), 50);
+        } else {
+          devLog('no openArticle, modal not opened');
+        }
+      }, 0);
+    }
+
+    // Run on initial load
+    applyNewsRouteState();
+
+    // When user navigates Back (e.g. docent) the page may reload or be restored from bfcache; re-apply URL state
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) applyNewsRouteState();
+    });
+    window.addEventListener('popstate', () => {
+      if (window.location.pathname === '/news') applyNewsRouteState();
+    });
   </script>
 
   <style>

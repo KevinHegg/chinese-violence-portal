@@ -12,8 +12,8 @@ const { id = "article-viewer", className = "" } = Astro.props;
 <div id={id} class={`article-viewer-overlay hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 lg:p-4 pt-[var(--header-height,80px)] lg:pt-[var(--header-height,80px)] ${className}`}
   role="dialog" aria-modal="true" aria-labelledby="viewer-title"
   style="z-index: 10000;">
-  <div class="bg-white rounded-xl shadow-2xl max-w-7xl w-full max-h-[calc(95vh-var(--header-height,80px))] lg:max-h-[calc(95vh-var(--header-height,80px))] overflow-hidden border border-gray-200">
-    <div class="p-4 lg:p-6 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-amber-100">
+  <div class="bg-white rounded-xl shadow-2xl max-w-7xl w-full max-h-[calc(100vh-var(--header-height,80px)-1rem)] flex flex-col overflow-hidden border border-gray-200">
+    <div class="flex-shrink-0 p-4 lg:p-6 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-amber-100">
       <div class="flex justify-between items-start">
         <h2 class="text-lg lg:text-2xl font-bold text-gray-900 pr-4" id="viewer-title" tabindex="-1"></h2>
         <button id="close-viewer" class="btn btn-ghost btn-sm text-gray-700 hover:text-gray-900 hover:bg-white/50 rounded-full" aria-label="Close article viewer">
@@ -24,12 +24,12 @@ const { id = "article-viewer", className = "" } = Astro.props;
       </div>
     </div>
     
-            <div class="flex flex-col lg:flex-row h-[calc(95vh-120px)]">
+    <div class="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden">
           <!-- Image Panel with Zoom/Pan -->
-          <div class="lg:w-1/2 p-3 lg:p-6 lg:border-r border-gray-200 bg-gray-50">
-            <div class="relative h-full">
-              <!-- Mobile: Fixed height, Desktop: Full height -->
-              <div id="image-container" class="relative w-full h-64 lg:h-full overflow-hidden bg-white border-2 border-gray-200 rounded-lg shadow-inner">
+          <div class="lg:w-1/2 p-3 lg:p-6 lg:border-r border-gray-200 bg-gray-50 flex flex-col min-h-0">
+            <div class="relative flex-1 min-h-0">
+              <!-- Mobile: Fixed height, Desktop: fills remaining space; overflow-auto so image can scroll when tall -->
+              <div id="image-container" class="relative w-full h-64 lg:h-full min-h-0 overflow-auto bg-white border-2 border-gray-200 rounded-lg shadow-inner">
                 <img id="viewer-image" class="w-full h-full object-contain transition-transform duration-200" alt="" loading="eager" decoding="async" />
                 <div id="image-loading" class="absolute inset-0 bg-gray-100 rounded-lg flex items-center justify-center">
                   <div class="loading loading-spinner loading-lg text-amber-600"></div>
@@ -51,7 +51,7 @@ const { id = "article-viewer", className = "" } = Astro.props;
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
                   </svg>
                 </button>
-                <button id="zoom-out" class="btn btn-circle btn-sm bg-amber-500 hover:bg-amber-600 text-white border-0" title="Zoom Out (Shift+Click or Right Click)" aria-label="Zoom out of article image">
+                <button id="zoom-out" class="btn btn-circle btn-sm bg-amber-500 hover:bg-amber-600 text-white border-0" title="Zoom Out (Shift+Click)" aria-label="Zoom out of article image">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10h-6"></path>
                   </svg>
@@ -66,7 +66,7 @@ const { id = "article-viewer", className = "" } = Astro.props;
           </div>
           
           <!-- Transcript Panel -->
-          <div class="lg:w-1/2 p-3 lg:p-6 flex flex-col bg-gray-50 min-h-0">
+          <div class="lg:w-1/2 p-3 lg:p-6 flex flex-col bg-gray-50 min-h-0 flex-1">
             <!-- Mobile: Scrollable transcript area, Desktop: Full height -->
             <div class="flex-1 flex flex-col overflow-hidden min-h-0 mb-4">
               <h3 class="flex-shrink-0 text-lg font-semibold mb-3 text-gray-900">Transcription</h3>
@@ -115,6 +115,7 @@ const { id = "article-viewer", className = "" } = Astro.props;
     private lastActiveElement: Element | null;
     private currentScale: number;
     private isDragging: boolean;
+    private didDragThisSession: boolean;
     private dragStart: { x: number; y: number };
     private currentTranslate: { x: number; y: number };
 
@@ -134,6 +135,7 @@ const { id = "article-viewer", className = "" } = Astro.props;
       this.lastActiveElement = null;
       this.currentScale = 1;
       this.isDragging = false;
+      this.didDragThisSession = false;
       this.dragStart = { x: 0, y: 0 };
       this.currentTranslate = { x: 0, y: 0 };
       this.init();
@@ -197,8 +199,9 @@ const { id = "article-viewer", className = "" } = Astro.props;
       document.addEventListener('touchmove', (e) => this.drag(e));
       document.addEventListener('touchend', () => this.endDrag());
       
-      // Zoom on click
+      // Zoom on click (single click; drag does not trigger)
       this.image.addEventListener('click', (e) => {
+        if (this.didDragThisSession) return;
         if (e.shiftKey) {
           this.zoomOut();
         } else {
@@ -206,17 +209,15 @@ const { id = "article-viewer", className = "" } = Astro.props;
         }
       });
       
-      // Right click to zoom out
-      this.image.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-        this.zoomOut();
-      });
+      // Right click: browser default (context menu), do not prevent or zoom out
     }
     
     startDrag(e: MouseEvent | TouchEvent) {
-      if (this.currentScale <= 1) return;
+      if (e instanceof MouseEvent && e.button !== 0) return;
+      if (e instanceof MouseEvent) e.preventDefault();
       
       this.isDragging = true;
+      this.didDragThisSession = false;
       const point = e instanceof TouchEvent ? e.touches[0] : e;
       this.dragStart = { x: point.clientX, y: point.clientY };
     }
@@ -224,6 +225,7 @@ const { id = "article-viewer", className = "" } = Astro.props;
     drag(e: MouseEvent | TouchEvent) {
       if (!this.isDragging) return;
       
+      this.didDragThisSession = true;
       e.preventDefault();
       const point = e instanceof TouchEvent ? e.touches[0] : e;
       const deltaX = point.clientX - this.dragStart.x;

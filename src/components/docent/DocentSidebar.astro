@@ -1,5 +1,5 @@
 <!--
-  Digital Docent — fixed right sidebar column (desktop >= 1024px).
+  Digital Docent — fixed right sidebar column (desktop >= 1048px).
   Header + scrollable body + fixed footer. Main content gets padding when active.
 -->
 
@@ -24,9 +24,9 @@
     </header>
 
     <div class="docent-sidebar__body">
-      <p id="docent-step-text" class="docent-sidebar__text">This record opens where John Crow and Jim Crow visibly converge: a Chinese victim, a Southern setting, a familiar lynching script, and impunity. It is a point of entry into a national story of racial terror.</p>
       <p id="docent-step-counter" class="docent-sidebar__counter">Step 1 of 8</p>
       <div id="docent-progress-dots" class="docent-sidebar__dots" aria-hidden="true"></div>
+      <p id="docent-step-text" class="docent-sidebar__text">This record opens where John Crow and Jim Crow visibly converge: a Chinese victim, a Southern setting, a familiar lynching script, and impunity. It is a point of entry into a national story of racial terror.</p>
     </div>
 
     <footer class="docent-sidebar__footer">
@@ -34,7 +34,7 @@
       <button id="docent-resume" type="button" class="docent-sidebar__btn docent-sidebar__btn--secondary">Resume</button>
       <button id="docent-next" type="button" class="docent-sidebar__btn docent-sidebar__btn--primary">Next</button>
       <button id="docent-exit" type="button" class="docent-sidebar__btn docent-sidebar__btn--text">Exit</button>
-      <p id="docent-manifest-version" class="docent-sidebar__version" aria-hidden="true">Manifest: ahyo.yaml</p>
+      <p id="docent-tour-id" class="docent-sidebar__version" aria-hidden="true">Tour ID: ahyo</p>
     </footer>
   </div>
 </aside>
@@ -124,7 +124,7 @@
   }
 
   .docent-sidebar__text {
-    margin: 0 0 0.5rem;
+    margin: 0.75rem 0 0.5rem;
     font-size: 1.0625rem; /* ~17px, +1pt from base */
     line-height: 1.55;
     color: #374151;
@@ -261,14 +261,14 @@
     text-decoration: underline;
   }
 
-  @media (max-width: 1023px) {
+  @media (max-width: 1047px) {
     .docent-sidebar {
       display: none !important;
     }
   }
 
   /* When docent is active (desktop), reserve space so sidebar does not overlay content or modal */
-  @media (min-width: 1024px) {
+  @media (min-width: 1048px) {
     body.docent-active {
       padding-right: 360px;
     }
@@ -289,7 +289,7 @@
 
   async function runDocentBoot() {
     var SIDEBAR_WIDTH = 360;
-    var DESKTOP_MIN_WIDTH = 1024;
+    var DESKTOP_MIN_WIDTH = 1048;
     var HEADER_OFFSET = 96;
     var DEV = (window.location.hostname === 'localhost');
     var highlightTargetEl = null;
@@ -352,7 +352,7 @@
     var nextBtn = sidebar.querySelector('#docent-next');
     var resumeBtn = sidebar.querySelector('#docent-resume');
     var exitBtn = sidebar.querySelector('#docent-exit');
-    var versionEl = sidebar.querySelector('#docent-manifest-version');
+    var versionEl = sidebar.querySelector('#docent-tour-id');
     var dotsEl = sidebar.querySelector('#docent-progress-dots');
 
     if (window.innerWidth < DESKTOP_MIN_WIDTH) {
@@ -362,15 +362,23 @@
     }
     if (mobileNotice) mobileNotice.style.display = 'none';
 
-    // ---- Load manifest at runtime from /public/docents (editable without rebuild) ----
-    // In production we always fetch so updates to ahyo.yaml are used without stale sessionStorage cache.
+    // ---- Load manifest: primary = Google Sheets CSV (API), fallback = local YAML ----
     var manifest = null;
     try {
-      var yamlUrl = '/docents/' + docentId + '.yaml' + (DEV ? '?v=' + Date.now() : '');
-      var res = await fetch(yamlUrl);
-      if (!res.ok) { setDocentActive(false); return; }
-      var text = await res.text();
-      manifest = YAML.parse(text);
+      var apiUrl = '/api/docent-manifest?tourId=' + encodeURIComponent(docentId) + (DEV ? '&nocache=1' : '');
+      var res = await fetch(apiUrl);
+      if (res.ok) {
+        manifest = await res.json();
+        log('manifest from CSV API');
+      }
+      if (!manifest || !Array.isArray(manifest.steps) || manifest.steps.length === 0) {
+        var yamlUrl = '/docents/' + docentId + '.yaml' + (DEV ? '?v=' + Date.now() : '');
+        var yamlRes = await fetch(yamlUrl);
+        if (!yamlRes.ok) { setDocentActive(false); return; }
+        var text = await yamlRes.text();
+        manifest = YAML.parse(text);
+        log('manifest from YAML fallback');
+      }
       if (manifest && Array.isArray(manifest.steps)) {
         manifest.steps = manifest.steps.map(function (s) {
           var step = Object.assign({}, s);
@@ -390,7 +398,7 @@
     }
 
     if (versionEl)
-      versionEl.textContent = manifest.version ? 'Manifest: ' + manifest.version : 'Manifest: ' + docentId + '.yaml';
+      versionEl.textContent = 'Tour ID: ' + docentId;
 
   var stepIndex = 0;
   try { stepIndex = parseInt(sessionStorage.getItem('docent_step') || '0', 10) || 0; } catch(e) {}
@@ -423,20 +431,40 @@
     setTimeout(function() { waitForEl(selector, cb, attempt + 1); }, 100);
   }
 
-  // Absolute-position scroll — no hashes, no drift
+  // Absolute-position scroll — no hashes, no drift. Optional done() runs after scroll completes so highlight is applied on stable layout.
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var scrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
+  var SMOOTH_SCROLL_MS = 400;
 
-  function scrollToSelector(selector) {
-    if (!selector) return;
-    if (selector === '#record-top') {
-      window.scrollTo({ top: 0, behavior: scrollBehavior });
-      return;
-    }
+  var SCROLL_TOP_OFFSET = 16; /* clearance below navbar so highlight isn't clipped */
+  var RECORD_TOP_TITLE_OFFSET = 8; /* tight spacing (6–10px) for record-top / record-title so highlight sits just below navbar */
+
+  function scrollToSelector(selector, done) {
+    if (!selector) { if (done) done(); return; }
+    var topOffset = (selector === '#record-top' || selector === '#record-title') ? RECORD_TOP_TITLE_OFFSET : SCROLL_TOP_OFFSET;
     waitForEl(selector, function(el) {
+      /* For #record-top, position the title (#record-title) just below nav so the highlight isn't left low; use record-title for scroll calc when present. */
+      var positionEl = (selector === '#record-top') ? (findEl('#record-title') || el) : el;
       var hdr = getHeaderHeight();
-      var y = el.getBoundingClientRect().top + window.scrollY - hdr - 8;
+      var y = positionEl.getBoundingClientRect().top + window.scrollY - hdr - topOffset;
       window.scrollTo({ top: Math.max(0, y), behavior: scrollBehavior });
+      function onScrollDone() {
+        if (done) done();
+      }
+      if (scrollBehavior === 'smooth') {
+        setTimeout(function() {
+          /* After smooth scroll, re-measure and correct if target is still under navbar (e.g. layout settled late) */
+          var h = getHeaderHeight();
+          var top = positionEl.getBoundingClientRect().top;
+          if (top < h + topOffset) {
+            var fixY = window.scrollY + (top - h - topOffset);
+            window.scrollTo({ top: Math.max(0, fixY), behavior: 'auto' });
+          }
+          onScrollDone();
+        }, SMOOTH_SCROLL_MS);
+      } else {
+        requestAnimationFrame(onScrollDone);
+      }
     });
   }
 
@@ -478,7 +506,7 @@
     if (!resumeBtn) return;
     var targetUrl = buildStepUrl(step);
     var cur = new URL(window.location.href);
-    var offRoute = cur.pathname !== targetUrl.pathname;
+    var offRoute = routeKey(cur) !== routeKey(targetUrl);
     var hl = step.highlight !== undefined ? step.highlight : step.Highlight;
     var selector = (hl === false) ? null : toSelector(typeof hl === 'string' ? hl : (step.highlightTarget || step.scrollTarget));
     var elMissing = selector && !findEl(selector);
@@ -544,30 +572,64 @@
     return target;
   }
 
+  function routeKey(url) {
+    return url.pathname + url.search + url.hash;
+  }
+
+  /** Normalize search string so param order doesn't affect comparison (sameRoute). */
+  function normalizedRouteKey(url) {
+    var path = url.pathname + (url.hash || '');
+    var params = new URLSearchParams(url.search);
+    var keys = [];
+    params.forEach(function(_, k) { keys.push(k); });
+    keys.sort();
+    var search = keys.length ? '?' + keys.map(function(k) { return k + '=' + encodeURIComponent(params.get(k) || ''); }).join('&') : '';
+    return path + search;
+  }
+
   // ---- Apply step (scroll + highlight + action) ----
   function applyCurrentStep(opts) {
     opts = opts || {};
     var step = manifest.steps[stepIndex];
     var target = buildStepUrl(step);
     var cur = new URL(window.location.href);
-    var sameRoute = cur.pathname === target.pathname;
+    var currentRoute = routeKey(cur);
+    var targetRoute = routeKey(target);
+    var sameRoute = currentRoute === targetRoute || normalizedRouteKey(cur) === normalizedRouteKey(target);
 
-    log('applyStep', step.id, 'route=' + step.route, 'sameRoute=' + sameRoute,
-        'scroll=' + (step.scrollTarget || '-'), 'hl=' + (step.highlight === false ? 'false' : (step.highlight || step.highlightTarget || '-')));
+    log(
+      'applyStep',
+      step.id,
+      'current=' + currentRoute,
+      'target=' + targetRoute,
+      'sameRoute=' + sameRoute,
+      'scroll=' + (step.scrollTarget || '-'),
+      'hl=' + (step.highlight === false ? 'false' : (step.highlight || step.highlightTarget || '-'))
+    );
 
     if (!sameRoute) {
       if (opts.allowNavigate === false) {
+        log('navigation skipped', 'current=' + currentRoute, 'target=' + targetRoute, 'navigated=false');
         render();
         return;
       }
-      window.location.href = target.pathname + target.search;
+      log('navigation', 'current=' + currentRoute, 'target=' + targetRoute, 'navigated=true');
+      window.location.href = target.pathname + target.search + target.hash;
       return;
     }
 
+    log('navigation', 'current=' + currentRoute, 'target=' + targetRoute, 'navigated=false');
+
     render();
-    scrollToSelector(toSelector(step.scrollTarget));
-    applyHighlight(step);
-    if (opts.runAction !== false) runStepAction(step);
+    /* Defer scroll until after layout from render() has been applied (fixes Next→metadata highlight under navbar) */
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        scrollToSelector(toSelector(step.scrollTarget), function() {
+          applyHighlight(step);
+          if (opts.runAction !== false) runStepAction(step);
+        });
+      });
+    });
   }
 
   function closeArticleModal() {
@@ -584,8 +646,12 @@
 
   // ---- Button wiring ----
   if (backBtn) backBtn.addEventListener('click', function() {
+    var newIndex = Math.max(0, stepIndex - 1);
+    stepIndex = newIndex;
+    saveStep();
+    render();
     closeArticleModal();
-    navigateToStep(stepIndex - 1);
+    applyCurrentStep({ runAction: true, allowNavigate: true });
   });
   if (nextBtn) nextBtn.addEventListener('click', function() {
     closeArticleModal();

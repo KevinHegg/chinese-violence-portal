@@ -1,5 +1,51 @@
 ---
 import PageLayout from "../layouts/PageLayout.astro";
+import { fetchDocentToursData } from "../utils/googleSheets";
+
+export const prerender = false;
+
+let docentTours: Array<{
+  tour_id: string;
+  title: string;
+  subtitle: string;
+  start_label: string;
+  start_route: string;
+  start_anchor: string;
+  desktop_only: boolean;
+  sort_order: number;
+}> = [];
+try {
+  const raw = await fetchDocentToursData();
+  docentTours = raw.map((t) => ({
+    tour_id: t.tour_id,
+    title: t.title,
+    subtitle: t.subtitle,
+    start_label: t.start_label,
+    start_route: t.start_route,
+    start_anchor: t.start_anchor ?? '',
+    desktop_only: t.desktop_only,
+    sort_order: t.sort_order ?? 0,
+  }));
+  if (import.meta.env?.DEV) {
+    console.log('[tour] docent_tours: count=%d, tour_ids=%s', docentTours.length, docentTours.map((t) => t.tour_id).join(', '));
+  }
+} catch (err) {
+  if (import.meta.env?.DEV) {
+    console.warn('[tour] docent_tours fetch failed, using fallback:', err);
+  }
+  docentTours = [
+    {
+      tour_id: "ahyo",
+      title: "Ah Yo (1885) - Clarksdale, Mississippi",
+      subtitle: "A curated walkthrough: how evidence becomes argument.",
+      start_label: "Ah Yo case study",
+      start_route: "/records/MS1885-05-05",
+      start_anchor: "record-top",
+      desktop_only: true,
+      sort_order: 0,
+    },
+  ];
+}
 ---
 
 <PageLayout title="Tour the John Crow Project" currentPage="tour">
@@ -20,7 +66,7 @@ import PageLayout from "../layouts/PageLayout.astro";
         </button>
       </section>
 
-      <section aria-labelledby="docent-tour-heading" class="card-vintage p-6">
+      <section aria-labelledby="docent-tour-heading" class="card-vintage p-6" data-docent-count={docentTours.length} data-docent-ids={docentTours.map((t) => t.tour_id).join(',')}>
         <div class="flex items-start gap-4 mb-4">
           <img
             src="/images/digital_docent_512.png"
@@ -35,22 +81,35 @@ import PageLayout from "../layouts/PageLayout.astro";
           />
           <div class="flex flex-col items-start">
             <h2 id="docent-tour-heading" class="text-2xl font-display font-semibold mb-2 text-base-content">Digital Docent Tours*</h2>
-            <p class="mb-0">Curated, interpretive walkthroughs that show how evidence becomes argument.</p>
+            <p class="mb-0 text-sm text-gray-700">Curated, interpretive walkthroughs that show how evidence becomes argument.</p>
           </div>
         </div>
-        <button
-          id="start-docent-ahyo"
-          type="button"
-          class="tour-docent-btn inline-flex items-center px-4 py-2 font-semibold rounded-lg border transition-colors"
-        >
-          Start Ah Yo Case Study
-        </button>
+
+        {docentTours.length > 0 && docentTours.map((tour) => (
+          <div class="docent-tour-card mt-4">
+            <div class="docent-tour-actions rounded-xl border border-gray-200 bg-gray-50/80 px-4 py-3 flex flex-wrap items-center gap-4">
+              <button
+                type="button"
+                class="tour-docent-btn inline-flex items-center px-4 py-2 font-semibold rounded-lg border transition-colors flex-shrink-0"
+                data-tour-id={tour.tour_id}
+                data-start-route={tour.start_route}
+              >
+                Start Tour
+              </button>
+              <div class="flex flex-col items-start min-w-0 flex-1">
+                {tour.title && <span class="docent-tour-title font-semibold text-base text-gray-900 leading-tight">{tour.title}</span>}
+                {tour.subtitle && <span class="docent-tour-tagline text-sm text-gray-600 leading-snug mt-0.5">{tour.subtitle}</span>}
+              </div>
+            </div>
+          </div>
+        ))}
+
         <hr class="mt-[41px] mb-0.5 w-[75px] border-t border-gray-300 text-left" />
         <p class="text-sm text-gray-600">
           *Docent tours are self-paced and interpretive. Use the <strong>Quick Tour</strong> if you want an overview of how the site is organized.
         </p>
         <p id="docent-desktop-only-note" class="mt-2 text-sm text-amber-700 hidden" role="status">
-          Digital Docent mode currently requires a wider screen (desktop layout). If you're on a desktop, widen your browser window and try again (requires viewport width of at least 1024px).
+          Digital Docent mode currently requires a wider screen (desktop layout). If you're on a desktop, widen your browser window and try again.
         </p>
       </section>
     </div>
@@ -75,6 +134,13 @@ import PageLayout from "../layouts/PageLayout.astro";
 <script type="module">
   const START_KEY = "johncrow_start_tour";
 
+  const docentSection = document.querySelector("[data-docent-count]");
+  if (import.meta.env?.DEV && docentSection instanceof Element) {
+    const count = docentSection.getAttribute("data-docent-count");
+    const ids = docentSection.getAttribute("data-docent-ids");
+    console.log("[tour] docent_tours (client): count=%s, tour_ids=%s", count ?? "", ids ?? "");
+  }
+
   const beginTour = () => {
     try {
       localStorage.setItem(START_KEY, "true");
@@ -85,26 +151,25 @@ import PageLayout from "../layouts/PageLayout.astro";
   };
 
   const startButton = document.getElementById("start-quick-tour");
-  const docentButton = document.getElementById("start-docent-ahyo");
   const docentDesktopOnlyNote = document.getElementById("docent-desktop-only-note");
   const mobileNotice = document.getElementById("tour-mobile-notice");
   const tourRoot = document.getElementById("tour-page-root");
 
   const syncLayoutState = () => {
     const isMobile = window.innerWidth < 768;
-    const tooNarrowForDocent = window.innerWidth < 1024;
+    const tooNarrowForDocent = window.innerWidth < 1048;
 
     if (mobileNotice) mobileNotice.hidden = !isMobile;
     if (tourRoot) tourRoot.setAttribute("data-mobile", isMobile ? "true" : "false");
 
-    if (docentButton) {
-      docentButton.disabled = tooNarrowForDocent;
+    document.querySelectorAll(".tour-docent-btn").forEach((btn) => {
+      btn.disabled = tooNarrowForDocent;
       if (tooNarrowForDocent) {
-        docentButton.classList.add("opacity-60", "cursor-not-allowed");
+        btn.classList.add("opacity-60", "cursor-not-allowed");
       } else {
-        docentButton.classList.remove("opacity-60", "cursor-not-allowed");
+        btn.classList.remove("opacity-60", "cursor-not-allowed");
       }
-    }
+    });
 
     if (docentDesktopOnlyNote) {
       docentDesktopOnlyNote.classList.toggle("hidden", !tooNarrowForDocent);
@@ -115,20 +180,29 @@ import PageLayout from "../layouts/PageLayout.astro";
   window.addEventListener("resize", syncLayoutState);
 
   startButton?.addEventListener("click", () => beginTour());
-  docentButton?.addEventListener("click", () => {
-    const isWideEnough = window.innerWidth >= 1024;
-    if (!isWideEnough) {
-      // Button is already disabled + notice visible from syncLayoutState; optionally ensure it is in view.
-      docentDesktopOnlyNote?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      return;
-    }
 
-    try {
-      sessionStorage.setItem("docent_id", "ahyo");
-      sessionStorage.setItem("docent_step", "0");
-    } catch {
-      // Ignore storage errors; route still includes docent=1.
-    }
-    window.location.href = "/records/MS1885-05-05?docent=1&docentId=ahyo";
-  });
+  if (docentSection) {
+    docentSection.addEventListener("click", (e) => {
+      const btn = (e.target instanceof Element && e.target.closest(".tour-docent-btn")) || null;
+      if (!btn) return;
+      const isWideEnough = window.innerWidth >= 1048;
+      if (!isWideEnough) {
+        docentDesktopOnlyNote?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        return;
+      }
+      const tourId = btn.getAttribute("data-tour-id");
+      let startRoute = btn.getAttribute("data-start-route") || "/";
+      if (!tourId) return;
+      try {
+        sessionStorage.setItem("docent_id", tourId);
+        sessionStorage.setItem("docent_step", "0");
+      } catch {
+        // Ignore storage errors.
+      }
+      const [pathAndQuery, hash] = startRoute.split("#");
+      const hashPart = hash ? "#" + hash : "";
+      const sep = pathAndQuery.includes("?") ? "&" : "?";
+      window.location.href = `${pathAndQuery}${sep}docent=1&docentId=${encodeURIComponent(tourId)}${hashPart}`;
+    });
+  }
 </script>

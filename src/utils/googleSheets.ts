@@ -324,3 +324,214 @@ export async function fetchArticlesData(): Promise<any[]> {
   const rows = parseCSV(csv);
   return convertToArticleFormat(rows);
 }
+
+// ---------------------------------------------------------------------------
+// Digital Docent tours from Google Sheets CSV (pub URLs)
+// ---------------------------------------------------------------------------
+
+// Use export URL (returns CSV). Pub URL can return HTML cookie wall when fetched server-side.
+const DOCENT_SHEET_ID = '18Bo9acVyuQTsdQ1baxSntSUZur50Yla8NcZKe2nZWyQ';
+const DOCENT_TOURS_GID = '363105803';
+const DOCENT_STEPS_GID = '1633268045';
+const DOCENT_TOURS_CSV_URL = `https://docs.google.com/spreadsheets/d/${DOCENT_SHEET_ID}/export?format=csv&gid=${DOCENT_TOURS_GID}`;
+const DOCENT_STEPS_CSV_URL = `https://docs.google.com/spreadsheets/d/${DOCENT_SHEET_ID}/export?format=csv&gid=${DOCENT_STEPS_GID}`;
+
+function getField(row: Record<string, string>, keys: string[]): string {
+  const normalized: Record<string, string> = {};
+  for (const k of Object.keys(row)) {
+    const n = k.toLowerCase().trim().replace(/\s+/g, '_');
+    normalized[n] = row[k];
+  }
+  for (const key of keys) {
+    const n = key.toLowerCase().replace(/\s+/g, '_').trim();
+    const v = normalized[n];
+    if (v !== undefined && v !== '') return v;
+  }
+  return '';
+}
+
+function normalizeBool(val: string): boolean {
+  if (val === undefined || val === null) return false;
+  const t = String(val).trim().toUpperCase();
+  return t === 'TRUE' || t === '1' || t === 'YES' || t === 'Y';
+}
+
+/** For optional flags like enabled: empty/missing = true (include row). */
+function normalizeBoolOptional(val: string): boolean {
+  if (val === undefined || val === null) return true;
+  const t = String(val).trim();
+  if (t === '') return true;
+  return normalizeBool(t);
+}
+
+function normalizeHighlight(val: string): boolean | string | null {
+  if (val === undefined || val === null) return null;
+  const t = String(val).trim();
+  if (t === '') return null;
+  if (t.toLowerCase() === 'false') return false;
+  return t;
+}
+
+export interface DocentTourRow {
+  tour_id: string;
+  title: string;
+  subtitle: string;
+  start_label: string;
+  desktop_only: boolean;
+  start_route: string;
+  start_anchor: string;
+  version: string | null;
+  enabled: boolean;
+  sort_order: number;
+}
+
+export interface DocentStepRow {
+  tour_id: string;
+  step_number: number;
+  route: string;
+  anchor: string;
+  highlight: string | boolean | null;
+  highlight_style: string | null;
+  action_type: string | null;
+  action_value: string | null;
+  map_focus_ring: boolean;
+  title: string;
+  text: string;
+  enabled: boolean;
+}
+
+function normalizeTourRow(row: Record<string, string>): DocentTourRow {
+  const so = getField(row, ['sort_order', 'sort order']);
+  const sortOrderNum = so.trim() === '' ? 0 : parseFloat(so);
+  return {
+    tour_id: getField(row, ['tour_id', 'tour id', 'tourid', 'id']).trim(),
+    title: getField(row, ['title']),
+    subtitle: getField(row, ['subtitle']),
+    start_label: getField(row, ['start_label', 'start label']),
+    desktop_only: normalizeBool(getField(row, ['desktop_only', 'desktop only'])),
+    start_route: getField(row, ['start_route', 'start route']),
+    start_anchor: getField(row, ['start_anchor', 'start anchor']),
+    version: (v => (v ? v : null))(getField(row, ['version'])),
+    enabled: normalizeBoolOptional(getField(row, ['enabled'])),
+    sort_order: Number.isFinite(sortOrderNum) ? Math.floor(sortOrderNum) : 0,
+  };
+}
+
+function normalizeStepRow(row: Record<string, string>): DocentStepRow {
+  const sn = getField(row, ['step_number', 'step number']);
+  const mfr = getField(row, ['map_focus_ring', 'map focus ring']);
+  return {
+    tour_id: getField(row, ['tour_id', 'tour id']),
+    step_number: /^\d+$/.test(sn) ? parseInt(sn, 10) : 0,
+    route: getField(row, ['route']),
+    anchor: getField(row, ['anchor']),
+    highlight: normalizeHighlight(getField(row, ['highlight'])),
+    highlight_style: (v => (v ? v : null))(getField(row, ['highlight_style', 'highlight style'])),
+    action_type: (v => (v ? v : null))(getField(row, ['action_type', 'action type'])),
+    action_value: (v => (v ? v : null))(getField(row, ['action_value', 'action value'])),
+    map_focus_ring: normalizeBool(mfr),
+    title: getField(row, ['title']),
+    text: getField(row, ['text']),
+    enabled: normalizeBool(getField(row, ['enabled'])),
+  };
+}
+
+/**
+ * Fetch and parse docent_tours CSV from Google Sheets (export URL; same workbook as lynchings).
+ * Returns rows with enabled not FALSE and non-empty tour_id, sorted by sort_order ascending.
+ */
+export async function fetchDocentToursData(): Promise<DocentTourRow[]> {
+  const res = await fetch(DOCENT_TOURS_CSV_URL);
+  if (!res.ok) throw new Error(`Docent tours CSV failed: ${res.status}`);
+  const csv = await res.text();
+  const rows = parseCSV(csv);
+  const normalized = rows.map(normalizeTourRow);
+  const enabled = normalized.filter(r => r.enabled !== false && r.tour_id.trim() !== '');
+  const out = enabled.sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+  if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development') {
+    console.log('[fetchDocentToursData] url=%s, csvRows=%d, afterFilter=%d, tour_ids=%s', DOCENT_TOURS_CSV_URL.slice(0, 80) + '...', rows.length, out.length, out.map(r => r.tour_id).join(', '));
+  }
+  return out;
+}
+
+/**
+ * Fetch and parse docent_steps CSV from Google Sheets (export URL).
+ */
+export async function fetchDocentStepsData(): Promise<DocentStepRow[]> {
+  const res = await fetch(DOCENT_STEPS_CSV_URL);
+  if (!res.ok) throw new Error(`Docent steps CSV failed: ${res.status}`);
+  const csv = await res.text();
+  const rows = parseCSV(csv);
+  return rows.map(normalizeStepRow).filter(r => r.enabled && r.tour_id);
+}
+
+/** Manifest step shape consumed by DocentSidebar (matches YAML step shape). */
+export interface DocentManifestStep {
+  id?: number;
+  route: string;
+  anchor?: string;
+  scrollTarget?: string;
+  highlight?: string | false;
+  highlightStyle?: string;
+  highlightTarget?: string;
+  title: string;
+  text: string;
+  action?: { type: string; articleId?: string };
+  mapFocusRing?: boolean;
+}
+
+/** Full manifest for one tour (matches YAML + steps array). */
+export interface DocentManifest {
+  id?: string;
+  title?: string;
+  subtitle?: string;
+  version?: string | null;
+  steps: DocentManifestStep[];
+}
+
+/**
+ * Build a single docent manifest by tour_id from tours + steps data.
+ * Caller can pass pre-fetched arrays or leave undefined to fetch.
+ */
+export async function buildDocentManifest(
+  tourId: string,
+  toursOverride?: DocentTourRow[],
+  stepsOverride?: DocentStepRow[]
+): Promise<DocentManifest | null> {
+  const tours = toursOverride ?? (await fetchDocentToursData());
+  const steps = stepsOverride ?? (await fetchDocentStepsData());
+  const tour = tours.find(t => t.tour_id === tourId);
+  if (!tour) return null;
+  const stepRows = steps.filter(s => s.tour_id === tourId).sort((a, b) => a.step_number - b.step_number);
+  const stepsOut: DocentManifestStep[] = stepRows.map((s, i) => {
+    const anchor = s.anchor || '';
+    const scrollTarget = anchor ? (anchor.startsWith('#') ? anchor : '#' + anchor) : undefined;
+    const step: DocentManifestStep = {
+      id: s.step_number,
+      route: s.route,
+      anchor,
+      scrollTarget,
+      title: s.title,
+      text: s.text,
+    };
+    if (s.highlight !== null && s.highlight !== undefined) {
+      step.highlight = s.highlight as string | false;
+    }
+    if (s.highlight_style) step.highlightStyle = s.highlight_style;
+    if (s.action_type && s.action_value) {
+      const at = s.action_type.toLowerCase().replace(/\s+/g, '');
+      if (at === 'openarticle' || at === 'open_article') {
+        step.action = { type: 'openArticle', articleId: s.action_value };
+      }
+    }
+    if (s.map_focus_ring) step.mapFocusRing = true;
+    return step;
+  });
+  return {
+    id: tour.tour_id,
+    title: tour.title,
+    subtitle: tour.subtitle,
+    version: tour.version,
+    steps: stepsOut,
+  };
+}
