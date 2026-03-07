@@ -1,0 +1,146 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro";
+---
+
+<PageLayout title="Key Insights in Brief" currentPage="about">
+  <section aria-labelledby="key-arguments-title" class="mb-8">
+    <h1 id="key-arguments-title" class="text-4xl font-bold mb-6">Key Insights in Brief</h1>
+
+    <div class="prose prose-lg max-w-3xl text-gray-700 leading-relaxed mb-8">
+      <p>
+        Between the California Gold Rush and the First World War, Chinese immigrants were subjected to a coordinated regime of racial terror—lynchings, riots, expulsions, and legal exclusion. This project argues that those acts were not isolated episodes of frontier disorder, but part of a broader Western system of racial enforcement aimed at removal and exclusion.
+      </p>
+      <p>
+        Drawing on a newly compiled dataset of anti-Chinese lynchings, linked newspaper evidence, and spatial analysis, the project traces how violence spread across the American West and into the Mississippi Delta, and how print culture helped normalize, circulate, and justify that violence.
+      </p>
+    </div>
+
+    <div id="slideshow-placeholder" class="mt-10 max-w-4xl mx-auto">
+      <div id="slideshow-wrapper" class="w-full rounded-lg border border-base-300 overflow-hidden shadow-sm flex flex-col gap-0" role="region" aria-label="Slide deck viewer">
+      <div id="slideshow-container" class="relative w-full min-h-[400px] bg-base-300 flex items-center justify-center p-0 m-0">
+        <canvas id="slideshow-canvas" class="max-w-full max-h-full object-contain" hidden aria-hidden="true"></canvas>
+        <div id="slideshow-loading" class="absolute inset-0 flex items-center justify-center text-base-content/70">
+          Loading slides…
+        </div>
+      </div>
+      <div class="flex items-center justify-between gap-4 px-4 py-3 bg-white shrink-0">
+        <button id="slideshow-prev" type="button" class="btn btn-sm btn-ghost" aria-label="Previous slide">← Back</button>
+        <span class="text-sm text-base-content font-medium shrink-0 min-w-[8rem] text-center">
+          <span id="slideshow-counter">— of — slides</span>
+          <button id="slideshow-expand" type="button" class="ml-1 underline hover:no-underline cursor-pointer bg-transparent border-0 p-0 font-inherit text-inherit" aria-label="Make larger">(make larger)</button>
+        </span>
+        <button id="slideshow-next" type="button" class="btn btn-sm btn-ghost" aria-label="Next slide">Next →</button>
+      </div>
+    </div>
+    <div id="slideshow-popup" class="fixed top-[52px] left-0 right-0 bottom-0 z-[4000] bg-black/90 hidden flex flex-col items-center justify-center p-4 pt-0" aria-hidden="true">
+      <div id="slideshow-popup-inner" class="flex flex-col items-center justify-center w-full max-w-6xl"></div>
+    </div>
+    </div>
+
+    <script is:inline>
+      (function () {
+        const PDF_URL = '/docs/The_John_Crow_Regime.pdf';
+        const canvas = document.getElementById('slideshow-canvas');
+        const loading = document.getElementById('slideshow-loading');
+        const prevBtn = document.getElementById('slideshow-prev');
+        const nextBtn = document.getElementById('slideshow-next');
+        const expandBtn = document.getElementById('slideshow-expand');
+        const placeholder = document.getElementById('slideshow-placeholder');
+        const popup = document.getElementById('slideshow-popup');
+        const popupInner = document.getElementById('slideshow-popup-inner');
+        const counterEl = document.getElementById('slideshow-counter');
+        const container = document.getElementById('slideshow-container');
+        const wrapper = document.getElementById('slideshow-wrapper');
+
+        let pdfDoc = null;
+        let currentPage = 1;
+        let totalPages = 0;
+
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+        document.head.appendChild(script);
+
+        script.onload = function () {
+          const pdfjsLib = window.pdfjsLib || window['pdfjs-dist/build/pdf'] || window.pdfjsDistBuildPdf;
+          if (!pdfjsLib) { loading.textContent = 'Unable to load slide viewer.'; return; }
+          pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+          pdfjsLib.getDocument({ url: PDF_URL }).promise
+            .then(function (doc) {
+              pdfDoc = doc;
+              totalPages = doc.numPages;
+              renderPage(1);
+            })
+            .catch(function () {
+              loading.textContent = 'Unable to load slides.';
+            });
+
+          function renderPage(pageNum) {
+            if (!pdfDoc || pageNum < 1 || pageNum > totalPages) return;
+            currentPage = pageNum;
+            loading.style.display = 'none';
+            loading.setAttribute('hidden', '');
+            canvas.hidden = false;
+
+            pdfDoc.getPage(pageNum).then(function (pdfPage) {
+              const baseViewport = pdfPage.getViewport({ scale: 1 });
+              container.style.aspectRatio = baseViewport.width + ' / ' + baseViewport.height;
+              const rect = container.getBoundingClientRect();
+              const displayScale = Math.min(rect.width / baseViewport.width, rect.height / baseViewport.height);
+              const dpr = window.devicePixelRatio || 1;
+              const viewport = pdfPage.getViewport({ scale: displayScale * dpr });
+
+              canvas.width = viewport.width;
+              canvas.height = viewport.height;
+              canvas.style.width = (viewport.width / dpr) + 'px';
+              canvas.style.height = (viewport.height / dpr) + 'px';
+
+              const ctx = canvas.getContext('2d');
+              ctx.fillStyle = '#d1d5db';
+              ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+              pdfPage.render({ canvasContext: ctx, viewport: viewport }).promise.then(function () {
+                counterEl.textContent = currentPage + ' of ' + totalPages + ' slides ';
+                prevBtn.disabled = currentPage <= 1;
+                nextBtn.disabled = currentPage >= totalPages;
+              });
+            });
+          }
+
+          prevBtn.addEventListener('click', function () { renderPage(currentPage - 1); });
+          nextBtn.addEventListener('click', function () { renderPage(currentPage + 1); });
+
+          function openPopup() {
+            popup.classList.remove('hidden');
+            popup.classList.add('flex');
+            popup.setAttribute('aria-hidden', 'false');
+            popupInner.appendChild(wrapper);
+            expandBtn.textContent = '(make smaller)';
+            expandBtn.setAttribute('aria-label', 'Make smaller');
+            setTimeout(function () { renderPage(currentPage); }, 50);
+          }
+          function closePopup() {
+            popup.classList.add('hidden');
+            popup.classList.remove('flex');
+            popup.setAttribute('aria-hidden', 'true');
+            placeholder.appendChild(wrapper);
+            expandBtn.textContent = '(make larger)';
+            expandBtn.setAttribute('aria-label', 'Make larger');
+            setTimeout(function () { renderPage(currentPage); }, 50);
+          }
+          expandBtn.addEventListener('click', function () {
+            if (popup.classList.contains('hidden')) {
+              openPopup();
+            } else {
+              closePopup();
+            }
+          });
+        };
+
+        script.onerror = function () {
+          loading.textContent = 'Unable to load slide viewer.';
+        };
+      })();
+    </script>
+  </section>
+</PageLayout>
