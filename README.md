@@ -55,7 +55,7 @@ All commands are run from the root of the project, from a terminal:
   - `all=1` jumps the timeline range end to 1915 immediately (show all markers without waiting).
 - `/visualize/charts` stable anchors:
   - `#charts-top`
-  - `#chart-01` … `#chart-12` (top-to-bottom chart order)
+  - `#chart-01` … `#chart-13` (top-to-bottom chart order)
 - `/visualize/compare` stable anchors:
   - `#compare-top`
   - `#compare-chart-01`

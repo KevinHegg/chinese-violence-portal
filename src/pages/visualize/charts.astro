@@ -22,6 +22,21 @@ const HONG_DI_BY_STATE: Record<string, number> = {
   "Arkansas": 1, "Colorado": 1, "New Mexico": 1, "South Carolina": 1,
   "West Virginia": 1, "Wyoming": 1
 };
+
+// Chinese Must Go mentions by state (N=2,875) - from chinese-must-go-distribution-loc-1878-1925-n-is-2875-clean.xlsx
+const CHINESE_MUST_GO_BY_STATE: Record<string, number> = {
+  "California": 269, "Montana": 141, "Nevada": 119, "Minnesota": 116, "Oregon": 114,
+  "New York": 109, "Maine": 109, "Arizona": 102, "Illinois": 91, "Nebraska": 78,
+  "District of Columbia": 74, "West Virginia": 72, "Connecticut": 69, "Kansas": 67,
+  "Ohio": 67, "Texas": 67, "Wisconsin": 66, "Washington": 64, "Georgia": 59,
+  "Hawaii": 59, "Virginia": 58, "Idaho": 55, "Pennsylvania": 54, "South Dakota": 54,
+  "Wyoming": 49, "Utah": 48, "Tennessee": 44, "Louisiana": 44, "Missouri": 39,
+  "Indiana": 36, "South Carolina": 35, "Colorado": 34, "Delaware": 34, "Michigan": 34,
+  "Vermont": 34, "Mississippi": 33, "North Dakota": 33, "Kentucky": 32, "Alabama": 26,
+  "Maryland": 25, "Iowa": 23, "New Jersey": 22, "New Mexico": 21, "Rhode Island": 19,
+  "Arkansas": 18, "Florida": 15, "Massachusetts": 15, "North Carolina": 13,
+  "New Hampshire": 12, "Oklahoma": 3, "Alaska": 1
+};
 ---
 
 <PageLayout title="Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)" currentPage="visualize/charts">
@@ -61,6 +76,7 @@ const HONG_DI_BY_STATE: Record<string, number> = {
       <li><strong>Killing Method:</strong> Distribution of how victims were killed.</li>
       <li><strong>Violence & Population:</strong> Victims per year alongside Chinese population growth and key policy events.</li>
       <li><strong>Hong Di Lynching Reports by State:</strong> Geographic distribution of newspaper articles reporting the Hong Di lynching (Colusa, California, July 1887), by state of publication (N=1,406).</li>
+      <li><strong>"Chinese Must Go" Mentions by State:</strong> Geographic distribution of newspaper mentions of the anti-Chinese slogan "Chinese must go" by state of publication, 1878–1925 (N=2,875).</li>
       </ol>
     </div>
     <style>
@@ -253,11 +269,29 @@ const HONG_DI_BY_STATE: Record<string, number> = {
       <div id="chart-hong-di-by-state-table" class="sr-only" role="region" aria-label="Data table for Hong Di articles by state chart"></div>
       </div>
     </div>
+
+    <!-- Chart 10: Chinese Must Go mentions by state (Mapbox choropleth) -->
+    <div id="chart-13" data-chart-index="13" class="scroll-mt-24">
+      <div class="bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-14">
+      <h2 id="chart-10-title" class="text-xl font-semibold mb-2 text-vintage-ink">10. Distribution of "Chinese Must Go" Mentions by State (N=2,875)</h2>
+      <p id="tagline-chart-10" class="mb-4 text-sm text-vintage-ink">Newspaper mentions of the anti-Chinese slogan "Chinese must go" by state of publication, 1878–1925.</p>
+      <div class="relative">
+      <button id="chinese-must-go-map-reset" type="button" class="absolute top-3 left-3 z-10 px-3 py-1.5 text-sm font-medium bg-white/90 hover:bg-white border border-gray-300 rounded shadow-md text-vintage-ink" aria-label="Reset map view">Reset</button>
+      <div id="chart-chinese-must-go-by-state"
+           class="chart-container rounded-lg overflow-hidden" style="height:500px;min-height:400px;"
+           role="img"
+           aria-label="Choropleth map showing Chinese Must Go mentions per state"
+           aria-describedby="chart-chinese-must-go-by-state-desc"></div>
+      </div>
+      <p id="chart-chinese-must-go-by-state-desc" class="sr-only">Choropleth map of newspaper mentions of the Chinese must go slogan by state of publication. Use the data table below for detailed values.</p>
+      <div id="chart-chinese-must-go-by-state-table" class="sr-only" role="region" aria-label="Data table for Chinese Must Go mentions by state chart"></div>
+      </div>
+    </div>
   </div>
   <script is:inline src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
   <script is:inline src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
   <script is:inline src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
-  <script is:inline define:vars={{ mapboxToken, mapboxStyle, hongDiByState: HONG_DI_BY_STATE }}>
+  <script is:inline define:vars={{ mapboxToken, mapboxStyle, hongDiByState: HONG_DI_BY_STATE, chineseMustGoByState: CHINESE_MUST_GO_BY_STATE }}>
     (function() {
     function initAllCharts() {
       if (typeof echarts === 'undefined') {
@@ -274,11 +308,12 @@ const HONG_DI_BY_STATE: Record<string, number> = {
         var timelineData = results[0];
         var lynchingsData = Array.isArray(results[1]) ? results[1] : [];
         var mainTabData = Array.isArray(results[2]) ? results[2] : lynchingsData;
-        renderCharts(timelineData, lynchingsData, mainTabData, hongDiByState);
+        renderCharts(timelineData, lynchingsData, mainTabData, hongDiByState, chineseMustGoByState);
       });
     }
-    function renderCharts(timelineData, lynchingsData, mainTabData, hongDiByState) {
+    function renderCharts(timelineData, lynchingsData, mainTabData, hongDiByState, chineseMustGoByState) {
       hongDiByState = hongDiByState || {};
+      chineseMustGoByState = chineseMustGoByState || {};
 
     // --- Chart 1: Incidents Over Time ---
     // Use Main tab (Chinese lynchings master): incidents = row count per year, victims = sum per year
@@ -1202,6 +1237,12 @@ const HONG_DI_BY_STATE: Record<string, number> = {
     const hongDiTableRows = hongDiEntries.map(function(e) { return [e[0], e[1].toString()]; });
     createDataTable('chart-hong-di-by-state-table', ['State', 'Articles'], hongDiTableRows, 'Data table for Hong Di articles by state chart');
 
+    const chineseMustGoEntries = Object.entries(chineseMustGoByState)
+      .filter(function(entry) { return entry[1] > 0; })
+      .sort(function(a, b) { return b[1] - a[1]; });
+    const chineseMustGoTableRows = chineseMustGoEntries.map(function(e) { return [e[0], e[1].toString()]; });
+    createDataTable('chart-chinese-must-go-by-state-table', ['State', 'Mentions'], chineseMustGoTableRows, 'Data table for Chinese Must Go mentions by state chart');
+
     var hongDiMap = null;
     function initHongDiMap() {
       var container = document.getElementById('chart-hong-di-by-state');
@@ -1314,6 +1355,118 @@ const HONG_DI_BY_STATE: Record<string, number> = {
     }
     initHongDiMap();
 
+    var chineseMustGoMap = null;
+    function initChineseMustGoMap() {
+      var container = document.getElementById('chart-chinese-must-go-by-state');
+      if (!container || !mapboxToken || typeof mapboxgl === 'undefined') {
+        if (container && !mapboxToken) {
+          container.innerHTML = '<div class="flex items-center justify-center h-full text-vintage-ink bg-amber-50 rounded-lg"><p class="text-center px-4">Map requires PUBLIC_MAPBOX_ACCESS_TOKEN. Configure it in your environment (e.g. Netlify) to view the choropleth.</p></div>';
+        }
+        return;
+      }
+      mapboxgl.accessToken = mapboxToken;
+      fetch('https://docs.mapbox.com/mapbox-gl-js/assets/us_states.geojson')
+        .then(function(r) { return r.json(); })
+        .then(function(geojson) {
+          var EXCLUDE = { 'Puerto Rico': 1, 'United States Virgin Islands': 1 };
+          geojson.features = geojson.features.filter(function(f) {
+            var name = f.properties && f.properties.STATE_NAME;
+            return !EXCLUDE[name];
+          });
+          geojson.features.forEach(function(f) {
+            var name = f.properties && f.properties.STATE_NAME;
+            f.properties.mentions = (name && chineseMustGoByState[name] != null) ? chineseMustGoByState[name] : 0;
+          });
+          var maxVal = Math.max(1, Math.max.apply(null, geojson.features.map(function(f) { return f.properties.mentions || 0; })));
+          var CALLOUT_OFFSETS = { 'Massachusetts': [0.25, 0], 'Vermont': [0, 0.2], 'Delaware': [-0.28, -0.05], 'District of Columbia': [0, -0.25], 'Connecticut': [0.35, 0], 'Maryland': [0.55, 0.05] };
+          var labelPoints = geojson.features.map(function(f) {
+            var c = turf.centroid(f);
+            var name = f.properties.STATE_NAME;
+            var n = f.properties.mentions || 0;
+            var offset = CALLOUT_OFFSETS[name];
+            if (offset) {
+              c.geometry.coordinates[0] += offset[0];
+              c.geometry.coordinates[1] += offset[1];
+            }
+            c.properties = { STATE_NAME: name, mentions: n, label: String(n) };
+            return c;
+          });
+          var labelsGeoJSON = { type: 'FeatureCollection', features: labelPoints };
+          chineseMustGoMap = new mapboxgl.Map({
+            container: 'chart-chinese-must-go-by-state',
+            style: 'mapbox://styles/' + mapboxStyle,
+            center: [-96, 38],
+            zoom: 3.5,
+            attributionControl: true
+          });
+          chineseMustGoMap.on('load', function() {
+            var layers = chineseMustGoMap.getStyle().layers || [];
+            layers.forEach(function(layer) {
+              var id = (layer.id || '').toLowerCase();
+              if (id.indexOf('place') !== -1 || id.indexOf('city') !== -1 || id.indexOf('settlement') !== -1 || id.indexOf('country-label') !== -1 || id.indexOf('place-country') !== -1) {
+                try { chineseMustGoMap.setLayoutProperty(layer.id, 'visibility', 'none'); } catch (e) {}
+              }
+            });
+            chineseMustGoMap.addSource('states', { type: 'geojson', data: geojson });
+            chineseMustGoMap.addLayer({
+              id: 'state-fills',
+              type: 'fill',
+              source: 'states',
+              paint: {
+                'fill-color': ['interpolate', ['linear'], ['get', 'mentions'], 0, '#ffffff', 1, '#eff3ff', 10, '#c6dbef', 50, '#6baed6', 100, '#3182bd', 200, '#08519c', maxVal, '#08306b'],
+                'fill-opacity': 0.9,
+                'fill-outline-color': '#6b7280'
+              }
+            });
+            chineseMustGoMap.addSource('state-labels', { type: 'geojson', data: labelsGeoJSON });
+            chineseMustGoMap.addLayer({
+              id: 'state-labels',
+              type: 'symbol',
+              source: 'state-labels',
+              layout: {
+                'text-field': ['get', 'label'],
+                'text-size': 13,
+                'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+                'text-anchor': 'center',
+                'text-justify': 'center',
+                'text-max-width': 10,
+                'text-allow-overlap': true,
+                'text-ignore-placement': true
+              },
+              paint: {
+                'text-color': '#0f172a',
+                'text-halo-color': '#ffffff',
+                'text-halo-width': 1
+              }
+            });
+            var popup = new mapboxgl.Popup({ closeButton: false, closeOnClick: false });
+            chineseMustGoMap.on('mousemove', 'state-fills', function(e) {
+              if (e.features.length) {
+                chineseMustGoMap.getCanvas().style.cursor = 'pointer';
+                var f = e.features[0];
+                var name = f.properties.STATE_NAME;
+                var n = f.properties.mentions || 0;
+                popup.setLngLat(e.lngLat).setHTML('<strong>' + name + '</strong>: ' + n + ' mention' + (n !== 1 ? 's' : '')).addTo(chineseMustGoMap);
+              }
+            });
+            chineseMustGoMap.on('mouseleave', 'state-fills', function() {
+              chineseMustGoMap.getCanvas().style.cursor = '';
+              popup.remove();
+            });
+            var resetBtn = document.getElementById('chinese-must-go-map-reset');
+            if (resetBtn) {
+              resetBtn.onclick = function() {
+                chineseMustGoMap.flyTo({ center: [-96, 38], zoom: 3.5, duration: 500 });
+              };
+            }
+          });
+        })
+        .catch(function() {
+          if (container) container.innerHTML = '<div class="flex items-center justify-center h-full text-vintage-ink bg-amber-50 rounded-lg"><p class="text-center px-4">Could not load map data.</p></div>';
+        });
+    }
+    initChineseMustGoMap();
+
     function renderPolicyEventGraphics() {
       var graphics = policyEvents.map(function(event) {
         var useAltRow = event.year === 1882 || event.year === 1892;
@@ -1394,6 +1547,7 @@ const HONG_DI_BY_STATE: Record<string, number> = {
       chartPieKillingMethod.resize();
       chartCombo.resize();
       if (hongDiMap) hongDiMap.resize();
+      if (chineseMustGoMap) chineseMustGoMap.resize();
       setTimeout(renderPolicyEventGraphics, 60);
     };
 
