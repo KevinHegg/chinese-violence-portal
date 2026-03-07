@@ -52,7 +52,7 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
           <label for="keyword-search" class="block font-medium text-vintage-ink mb-2">Keyword Search:</label>
           <div class="flex flex-col sm:flex-row gap-2 sm:items-center">
             <input id="keyword-search" type="text" class="input input-bordered border-2 border-amber-300 bg-amber-50 w-full sm:max-w-md min-w-0" placeholder="e.g. 1885 Montana OR arson" aria-describedby="keyword-search-hint" />
-            <span id="keyword-search-hint" class="sr-only">Search article titles, summaries, transcripts. Type an article-id (e.g. 240 or 0240) to jump to that clip. Multiple words: all must match (e.g. 1885 Montana).</span>
+            <span id="keyword-search-hint" class="sr-only">Search article titles, summaries, transcripts. Numbers match as substring (e.g. 1888). Words match whole-word. Multi-word: all must match OR exact phrase in transcript/summary (e.g. chinese must go). Article-id (e.g. 240) jumps to that clip.</span>
             <button id="keyword-clear" class="px-4 py-2 bg-amber-100 hover:bg-amber-200 text-vintage-ink font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 border border-amber-300 hover:border-amber-400 text-sm flex-shrink-0 self-start sm:self-auto" aria-label="Clear keyword search">Clear</button>
           </div>
         </div>
@@ -189,9 +189,22 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
     const noResults = document.getElementById('no-results');
     
     let lastKeyword = '';
-    
 
+    function termMatches(text, term) {
+      if (/^\d+$/.test(term)) {
+        return text.includes(term);
+      }
+      const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return new RegExp('\\b' + escaped + '\\b', 'i').test(text);
+    }
 
+    function exactPhraseInTranscriptOrSummary(article, phrase) {
+      if (!phrase || phrase.trim() === '') return false;
+      const p = phrase.toLowerCase();
+      const summary = (article['article-summary'] || '').toLowerCase();
+      const transcript = (article['article-transcript'] || '').toLowerCase();
+      return summary.includes(p) || transcript.includes(p);
+    }
 
     function formatDate(dateString) {
       if (!dateString) return '';
@@ -310,7 +323,7 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
         const publicationMatch = !publication || article.newspaper === publication;
         const entitiesMatch = !entityFilter || (article['named-entities'] && article['named-entities'].toLowerCase().includes(entityFilter.toLowerCase()));
         
-        // Keyword search: space-separated terms require ALL to match (AND logic)
+        // Keyword search: space-separated terms require ALL to match (AND logic, whole-word)
         // Special case: single numeric term (e.g. "240" or "0240") matches by article-id
         let keywordMatch = true;
         if (keyword) {
@@ -319,7 +332,14 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
             const norm = (id) => { const n = parseInt(String(id || ''), 10); return isNaN(n) ? '' : n.toString().padStart(4, '0'); };
             const searchNorm = norm(terms[0]);
             const articleNorm = norm(article['article-id']);
-            keywordMatch = searchNorm && articleNorm && searchNorm === articleNorm;
+            const byArticleId = searchNorm && articleNorm && searchNorm === articleNorm;
+            if (!byArticleId) {
+              const t = (article['article-title'] || '').toLowerCase();
+              const s = (article['article-summary'] || '').toLowerCase();
+              const tr = (article['article-transcript'] || '').toLowerCase();
+              const searchable = [t, s, tr, (article.newspaper || '').toLowerCase(), (article['newspaper-location'] || '').toLowerCase(), (article['publication-date'] || '').toLowerCase(), (article['publication-date-expanded'] || '').toLowerCase(), String(article['publication-year'] ?? '').toLowerCase(), (article['turabian-citation'] || '').toLowerCase(), (article['lynching-id'] || '').toLowerCase(), (article['article-id'] || '').toLowerCase()].join(' ');
+              keywordMatch = searchable.includes(terms[0]);
+            }
           } else {
             const title = (article['article-title'] || '').toLowerCase();
             const summary = (article['article-summary'] || '').toLowerCase();
@@ -333,7 +353,9 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
             const lynchingId = (article['lynching-id'] || '').toLowerCase();
             const articleId = (article['article-id'] || '').toLowerCase();
             const searchable = [title, summary, transcript, newspaper, location, pubDate, pubDateExpanded, pubYear, citation, lynchingId, articleId].join(' ');
-            keywordMatch = terms.every(term => searchable.includes(term.toLowerCase()));
+            const allTermsMatch = terms.every(term => termMatches(searchable, term));
+            const phraseInBody = terms.length >= 2 && exactPhraseInTranscriptOrSummary(article, keyword);
+            keywordMatch = allTermsMatch || phraseInBody;
           }
         }
         
@@ -359,7 +381,7 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
       // Count how many dropdown filters are active (not including keyword)
       const activeDropdownCount = [decade, state, publication, entityFilter].filter(Boolean).length;
       
-      // Helper to filter articles by keyword (AND logic for space-separated terms)
+      // Helper to filter articles by keyword (AND logic for space-separated terms, whole-word)
       // Special case: single numeric term matches by article-id (e.g. "240" or "0240")
       const keywordFilteredArticles = keyword ? articles.filter(article => {
         const terms = keyword.split(/\s+/).filter(Boolean);
@@ -367,7 +389,9 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
           const norm = (id) => { const n = parseInt(String(id || ''), 10); return isNaN(n) ? '' : n.toString().padStart(4, '0'); };
           const searchNorm = norm(terms[0]);
           const articleNorm = norm(article['article-id']);
-          return searchNorm && articleNorm && searchNorm === articleNorm;
+          if (searchNorm && articleNorm && searchNorm === articleNorm) return true;
+          const searchable = [(article['article-title'] || '').toLowerCase(), (article['article-summary'] || '').toLowerCase(), (article['article-transcript'] || '').toLowerCase(), (article.newspaper || '').toLowerCase(), (article['newspaper-location'] || '').toLowerCase(), (article['publication-date'] || '').toLowerCase(), (article['publication-date-expanded'] || '').toLowerCase(), String(article['publication-year'] ?? '').toLowerCase(), (article['turabian-citation'] || '').toLowerCase(), (article['lynching-id'] || '').toLowerCase(), (article['article-id'] || '').toLowerCase()].join(' ');
+          return searchable.includes(terms[0]);
         }
         const title = (article['article-title'] || '').toLowerCase();
         const summary = (article['article-summary'] || '').toLowerCase();
@@ -381,7 +405,9 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
         const lynchingId = (article['lynching-id'] || '').toLowerCase();
         const articleId = (article['article-id'] || '').toLowerCase();
         const searchable = [title, summary, transcript, newspaper, location, pubDate, pubDateExpanded, pubYear, citation, lynchingId, articleId].join(' ');
-        return terms.every(term => searchable.includes(term.toLowerCase()));
+        const allTermsMatch = terms.every(term => termMatches(searchable, term));
+        const phraseInBody = terms.length >= 2 && exactPhraseInTranscriptOrSummary(article, keyword);
+        return allTermsMatch || phraseInBody;
       }) : articles;
       
       // RULE: Filter ALL dropdowns if keyword is present OR 2+ dropdowns are selected
