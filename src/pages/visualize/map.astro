@@ -278,6 +278,7 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
     // URL parameters for docent/deep-link behavior
     const urlParams = new URLSearchParams(window.location.search);
     const focusIdParam = (urlParams.get('focus') || '').trim();
+    const fromRecordParam = (urlParams.get('fromRecord') || '').trim();
     const showAllParam = urlParams.get('all') === '1';
     const focusZoomLevel = 8;
     const docentActive = urlParams.get('docent') === '1' || (typeof sessionStorage !== 'undefined' && !!sessionStorage.getItem('docent_id'));
@@ -364,7 +365,7 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
       invalidateMapSize();
       if (e.detail && e.detail.active === false) {
         focusRingLayer.clearLayers();
-      } else if (e.detail && e.detail.active === true && focusIdParam && docentActive) {
+      } else if (e.detail && e.detail.active === true && focusIdParam && (docentActive || fromRecordParam)) {
         addFocusRing(focusIdParam);
       }
     });
@@ -643,7 +644,7 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
         if (focusIdParam) {
           centerMapOnRecord(focusIdParam);
         }
-        if (docentActive && focusIdParam) {
+        if ((docentActive || fromRecordParam) && focusIdParam) {
           addFocusRing(focusIdParam);
         }
 
@@ -661,15 +662,17 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
         console.error("Error loading JSON:", error);
       });
 
-    // Backlink logic
+    // Backlink logic: when fromRecord is present, show "Return to lynching record"
     function getSafeBacklink() {
       const urlParams = new URLSearchParams(window.location.search);
+      const fromRecord = (urlParams.get('fromRecord') || '').trim();
+      if (fromRecord) {
+        return { fromlink: '/records/' + fromRecord, linklabel: 'Return to lynching record' };
+      }
       let fromlink = urlParams.get('fromlink');
       let linklabel = urlParams.get('linklabel');
-      // Decode only once
       try { fromlink = fromlink ? decodeURIComponent(fromlink) : null; } catch { }
       try { linklabel = linklabel ? decodeURIComponent(linklabel) : null; } catch { }
-      // Validate fromlink: must be a relative URL (starts with /)
       if (!fromlink || !fromlink.startsWith('/')) fromlink = '/visualize/';
       if (!linklabel) linklabel = 'Back to Visualizations';
       return { fromlink, linklabel };

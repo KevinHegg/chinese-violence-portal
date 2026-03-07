@@ -268,7 +268,7 @@ const decodeHtmlEntities = (text: string) => {
           <!-- Map Image -->
           <div id="record-map" class="flex-shrink-0 w-full md:w-auto scroll-mt-24">
             {(() => {
-              // If coordinates exist, link to Google Maps; otherwise no link
+              // If coordinates exist, link to the internal violence map; otherwise no link
               const hasCoordinates = !!(lynching.latitude && lynching.longitude && 
                                        lynching.latitude !== 0 && lynching.longitude !== 0);
               
@@ -286,29 +286,20 @@ const decodeHtmlEntities = (text: string) => {
               const imageSrc = mapImageUrls.primary;
               const fallbackUrl = mapImageUrls.fallback;
               
-              // Google Maps URL with coordinates - zoomed out to show state borders and nearby states
-              // Using the @lat,lon,zoomz format in the URL path for better control
-              // Offset the center to the WEST (decrease longitude) so marker appears more to the EAST (right) on screen
-              // This makes the marker appear more centered when the map opens, away from the left panel
-              // The q parameter shows the marker at actual coordinates, while ll sets the view center
-              const centerOffset = 3.75; // Offset longitude to the WEST (degrees) - subtract to move marker to the right on screen
-              const centerLongitude = hasCoordinates ? lynching.longitude - centerOffset : lynching.longitude;
-              const googleMapsUrl = hasCoordinates 
-                ? `https://www.google.com/maps?q=${lynching.latitude},${lynching.longitude}&ll=${lynching.latitude},${centerLongitude}&z=6`
+              const internalMapUrl = hasCoordinates 
+                ? `/visualize/map?all=1&focus=${encodeURIComponent(lynching["lynching-id"])}&fromRecord=${encodeURIComponent(lynching["lynching-id"])}`
                 : null;
               
               const imageErrorHandler = fallbackUrl
                 ? `if (!this.dataset.fallbackTried) { this.dataset.fallbackTried='1'; this.src='${fallbackUrl}'; return; } this.classList.add('hidden'); var f=this.parentElement.querySelector('[data-map-fallback]'); if (f) f.classList.remove('hidden');`
                 : "this.classList.add('hidden'); var f=this.parentElement.querySelector('[data-map-fallback]'); if (f) f.classList.remove('hidden');";
 
-              if (googleMapsUrl) {
+              if (internalMapUrl) {
                 return (
                   <a
-                    href={googleMapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href={internalMapUrl}
                     class="block hover:opacity-80 transition-opacity"
-                    title={`View location on Google Maps: ${lynching["city"] || lynching["county"]}, ${lynching["state"]}`}
+                    title={`View this record on the violence map: ${lynching["city"] || lynching["county"]}, ${lynching["state"]}`}
                   >
                     <img 
                       src={imageSrc}
@@ -323,7 +314,7 @@ const decodeHtmlEntities = (text: string) => {
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"></path>
                         </svg>
                         <p class="text-sm">Map preview unavailable</p>
-                        <p class="text-xs">Open map in Google Maps</p>
+                        <p class="text-xs">Open in violence map</p>
                       </div>
                     </div>
                   </a>
