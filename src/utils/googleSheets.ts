@@ -419,10 +419,13 @@ function normalizeTourRow(row: Record<string, string>): DocentTourRow {
 
 function normalizeStepRow(row: Record<string, string>): DocentStepRow {
   const sn = getField(row, ['step_number', 'step number']);
+  const raw = String(sn).trim();
+  const parsed = parseInt(raw, 10);
+  const stepNum = Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
   const mfr = getField(row, ['map_focus_ring', 'map focus ring']);
   return {
-    tour_id: getField(row, ['tour_id', 'tour id']),
-    step_number: /^\d+$/.test(sn) ? parseInt(sn, 10) : 0,
+    tour_id: getField(row, ['tour_id', 'tour id']).trim(),
+    step_number: stepNum,
     route: getField(row, ['route']),
     anchor: getField(row, ['anchor']),
     highlight: normalizeHighlight(getField(row, ['highlight'])),
@@ -462,7 +465,7 @@ export async function fetchDocentStepsData(): Promise<DocentStepRow[]> {
   if (!res.ok) throw new Error(`Docent steps CSV failed: ${res.status}`);
   const csv = await res.text();
   const rows = parseCSV(csv);
-  return rows.map(normalizeStepRow).filter(r => r.enabled && r.tour_id);
+  return rows.map(normalizeStepRow).filter(r => r.enabled && r.tour_id.trim() !== '');
 }
 
 /** Manifest step shape consumed by DocentSidebar (matches YAML step shape). */
@@ -500,9 +503,17 @@ export async function buildDocentManifest(
 ): Promise<DocentManifest | null> {
   const tours = toursOverride ?? (await fetchDocentToursData());
   const steps = stepsOverride ?? (await fetchDocentStepsData());
-  const tour = tours.find(t => t.tour_id === tourId);
+  const tour = tours.find(t => t.tour_id.trim() === tourId);
   if (!tour) return null;
-  const stepRows = steps.filter(s => s.tour_id === tourId).sort((a, b) => a.step_number - b.step_number);
+  const stepRows = steps
+    .filter(s => s.tour_id.trim() === tourId)
+    .sort((a, b) => a.step_number - b.step_number);
+
+  if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'development' && tourId === 'gold_mountain_to_delta') {
+    console.log('[buildDocentManifest] gold_mountain_to_delta parsed steps:', JSON.stringify(
+      stepRows.map(s => ({ step_number: s.step_number, title: s.title?.slice(0, 40), enabled: s.enabled })), null, 2
+    ));
+  }
   const stepsOut: DocentManifestStep[] = stepRows.map((s, i) => {
     const anchor = s.anchor || '';
     const scrollTarget = anchor ? (anchor.startsWith('#') ? anchor : '#' + anchor) : undefined;

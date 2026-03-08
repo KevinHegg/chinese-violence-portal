@@ -170,7 +170,7 @@
 ## Search Engine Specific
 
 ### Google
-- ✅ **Google Analytics** - Integrated (G-TY0XQLE3L9)
+- ✅ **Google Analytics** - Integrated (G-EHFB9XXVEP)
 - ✅ **Search Console** - Ready for submission
 - ✅ **Knowledge Graph** - Enhanced schema supports
 - ✅ **Rich Results** - Structured data eligible

@@ -155,9 +155,13 @@ try {
   const mobileNotice = document.getElementById("tour-mobile-notice");
   const tourRoot = document.getElementById("tour-page-root");
 
+  const DOCENT_MIN_WIDTH = 1048;
+
   const syncLayoutState = () => {
-    const isMobile = window.innerWidth < 768;
-    const tooNarrowForDocent = window.innerWidth < 1048;
+    const w = window.innerWidth;
+    const isMobile = w < 768;
+    // Only treat as "too narrow" when we have a valid viewport (avoids disabled buttons when w is 0 or stale)
+    const tooNarrowForDocent = w > 0 && w < DOCENT_MIN_WIDTH;
 
     if (mobileNotice) mobileNotice.hidden = !isMobile;
     if (tourRoot) tourRoot.setAttribute("data-mobile", isMobile ? "true" : "false");
@@ -178,6 +182,7 @@ try {
 
   syncLayoutState();
   window.addEventListener("resize", syncLayoutState);
+  window.addEventListener("load", syncLayoutState);
 
   startButton?.addEventListener("click", () => beginTour());
 
@@ -185,7 +190,7 @@ try {
     docentSection.addEventListener("click", (e) => {
       const btn = (e.target instanceof Element && e.target.closest(".tour-docent-btn")) || null;
       if (!btn) return;
-      const isWideEnough = window.innerWidth >= 1048;
+      const isWideEnough = window.innerWidth >= DOCENT_MIN_WIDTH;
       if (!isWideEnough) {
         docentDesktopOnlyNote?.scrollIntoView({ behavior: "smooth", block: "nearest" });
         return;

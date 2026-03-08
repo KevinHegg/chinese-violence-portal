@@ -302,7 +302,7 @@
     var docentId = docentFromQuery || docentFromSession || 'ahyo';
 
     function log() {
-      if (!DEV) return;
+      if (!import.meta.env.DEV) return;
       var args = Array.prototype.slice.call(arguments);
       args.unshift('[docent]');
       console.log.apply(console, args);
@@ -365,7 +365,8 @@
     // ---- Load manifest: primary = Google Sheets CSV (API), fallback = local YAML ----
     var manifest = null;
     try {
-      var apiUrl = '/api/docent-manifest?tourId=' + encodeURIComponent(docentId) + (DEV ? '&nocache=1' : '');
+      // Always bypass cache so production gets fresh manifest (avoids stale highlight targets)
+      var apiUrl = '/api/docent-manifest?tourId=' + encodeURIComponent(docentId) + '&nocache=1';
       var res = await fetch(apiUrl);
       if (res.ok) {
         manifest = await res.json();
@@ -493,6 +494,11 @@
     var hl = step.highlight !== undefined ? step.highlight : (step.Highlight !== undefined ? (DEV && log('docent: use lowercase "highlight" in manifest'), step.Highlight) : null);
     if (hl === false) return;
     var selector = (typeof hl === 'string' && hl) ? hl : (step.highlightTarget || step.scrollTarget || null);
+    // Fallback: chart-01 scroll target -> chart-01-title so chart titles highlight correctly
+    if (selector && /^#?chart-\d+$/.test(selector.replace('#', '')) && !(typeof hl === 'string' && hl)) {
+      var titleSel = selector.replace(/(\d+)$/, '$1-title');
+      if (findEl(toSelector(titleSel))) selector = titleSel;
+    }
     if (!selector) return;
     waitForEl(toSelector(selector), function(el) {
       var style = step.highlightStyle === 'chart' ? 'chart' : 'text';
@@ -576,15 +582,18 @@
     return url.pathname + url.search + url.hash;
   }
 
-  /** Normalize search string so param order doesn't affect comparison (sameRoute). */
-  function normalizedRouteKey(url) {
-    var path = url.pathname + (url.hash || '');
+  /** Normalize search params for comparison (param-order independent). */
+  function normalizedSearch(url) {
     var params = new URLSearchParams(url.search);
     var keys = [];
     params.forEach(function(_, k) { keys.push(k); });
     keys.sort();
-    var search = keys.length ? '?' + keys.map(function(k) { return k + '=' + encodeURIComponent(params.get(k) || ''); }).join('&') : '';
-    return path + search;
+    return keys.length ? '?' + keys.map(function(k) { return k + '=' + encodeURIComponent(params.get(k) || ''); }).join('&') : '';
+  }
+
+  /** Normalize search string so param order doesn't affect comparison (sameRoute). */
+  function normalizedRouteKey(url) {
+    return url.pathname + (url.hash || '') + normalizedSearch(url);
   }
 
   // ---- Apply step (scroll + highlight + action) ----
@@ -596,29 +605,34 @@
     var currentRoute = routeKey(cur);
     var targetRoute = routeKey(target);
     var sameRoute = currentRoute === targetRoute || normalizedRouteKey(cur) === normalizedRouteKey(target);
+    var samePage = cur.pathname === target.pathname && normalizedSearch(cur) === normalizedSearch(target);
 
-    log(
-      'applyStep',
-      step.id,
-      'current=' + currentRoute,
-      'target=' + targetRoute,
-      'sameRoute=' + sameRoute,
-      'scroll=' + (step.scrollTarget || '-'),
-      'hl=' + (step.highlight === false ? 'false' : (step.highlight || step.highlightTarget || '-'))
-    );
+    if (import.meta.env.DEV) {
+      var hlSel = (step.highlight !== false && (step.highlight || step.highlightTarget || step.scrollTarget))
+        ? toSelector(step.highlight || step.highlightTarget || step.scrollTarget) : '-';
+      log('applyStep', 'requestedIdx=' + stepIndex, 'renderedIdx=' + stepIndex,
+          'current=' + currentRoute, 'target=' + targetRoute, 'sameRoute=' + sameRoute, 'samePage=' + samePage,
+          'scroll=' + (step.scrollTarget || '-'), 'hl=' + hlSel);
+    }
 
-    if (!sameRoute) {
+    if (!sameRoute && !samePage) {
       if (opts.allowNavigate === false) {
         log('navigation skipped', 'current=' + currentRoute, 'target=' + targetRoute, 'navigated=false');
         render();
         return;
       }
-      log('navigation', 'current=' + currentRoute, 'target=' + targetRoute, 'navigated=true');
+      log('full navigation', 'current=' + currentRoute, 'target=' + targetRoute);
       window.location.href = target.pathname + target.search + target.hash;
       return;
     }
 
-    log('navigation', 'current=' + currentRoute, 'target=' + targetRoute, 'navigated=false');
+    if (samePage && !sameRoute) {
+      // Same page, different hash: update URL without reload, then render + scroll + highlight
+      try {
+        history.pushState(null, '', target.pathname + target.search + target.hash);
+      } catch (e) {}
+      if (import.meta.env.DEV) log('same-page transition', 'stepIdx=' + stepIndex, 'hash=' + (target.hash || '-'));
+    }
 
     render();
     /* Defer scroll until after layout from render() has been applied (fixes Next→metadata highlight under navbar) */
@@ -627,6 +641,11 @@
         scrollToSelector(toSelector(step.scrollTarget), function() {
           applyHighlight(step);
           if (opts.runAction !== false) runStepAction(step);
+          if (import.meta.env.DEV) {
+            var hlSel2 = (step.highlight !== false && (step.highlight || step.highlightTarget || step.scrollTarget))
+              ? toSelector(step.highlight || step.highlightTarget || step.scrollTarget) : '-';
+            log('step applied', 'renderedIdx=' + stepIndex, 'urlHash=' + (window.location.hash || '-'), 'activeHighlight=' + hlSel2);
+          }
         });
       });
     });
