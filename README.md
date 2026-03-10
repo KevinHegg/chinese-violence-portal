@@ -1,73 +1,124 @@
-# Astro Starter Kit: Basics
+# The John Crow Project (Chinese Violence Portal)
+
+The John Crow Project is a digital archive and visualization of anti-Chinese violence in the United States (c. 1850–1915).  
+It combines narrative case records, primary-source newspaper scans, and interactive charts/maps to make a neglected history legible and researchable.
+
+Live site: https://johncrow.org
+
+---
+
+## Overview
+
+The site lets users:
+
+- Explore **lynching records** with narrative, structured metadata, and linked sources.
+- Browse **digitized newspaper articles** with transcripts and citations.
+- Download a **living dataset** synchronized from Google Sheets.
+- Visualize patterns of violence over time and space via **timelines, charts, and maps**.
+- Take a guided **tour** and a **digital docent** walkthrough that ties evidence to argument.
+
+This repository contains the Astro codebase, data ingestion scripts, and documentation for maintaining and extending the project.
+
+---
+
+## Tech Stack
+
+- **Framework**: [Astro](https://astro.build) (SSR + static output)
+- **Frontend**: Tailwind CSS + custom CSS, minimal React where needed
+- **Visualizations**: ECharts, Mapbox GL JS, Turf.js
+- **Data pipeline**:
+  - Google Sheets as the primary data source
+  - Node scripts to sync sheets → JSON in `public/` / `src/data/`
+- **Deployment**: Netlify (production at `https://johncrow.org`)
+
+---
+
+## Data Sources
+
+Core datasets and sources include:
+
+- **Chinese lynching master dataset** (Google Sheets) – used for records, charts, and map.
+- **Newspaper article index** (Google Sheets) – drives article metadata and article scans.
+- **Publication exports**:
+  - Chart data exported via `scripts/export-publication-charts.mjs`
+  - Map imagery / overlays via corresponding export scripts.
+
+For details on how these wire together, see:
+
+- `docs/setup/google-sheets-setup.md`
+- `docs/operations/data-and-assets.md`
+- `docs/reviews/site-review-2026.md` (high-level architecture summary)
+
+---
+
+## Getting Started (Local Development)
+
+### 1. Install dependencies
 
 ```sh
-npm create astro@latest -- --template basics
+npm install
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+### 2. Run the dev server
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
+```sh
+npm run dev
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+By default the site runs at `http://localhost:4321`.
 
-## 🧞 Commands
+Some routes depend on live Google Sheets data; see `docs/setup/google-sheets-setup.md` if you need to point to different sheets or credentials.
 
-All commands are run from the root of the project, from a terminal:
+### 3. Build for production
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+```sh
+npm run build
+```
 
-## Project Route Notes
+The static/SSR output is written to `dist/`. You can preview the production build locally:
 
-- `/visualize` supports query parameters:
-  - `tab=map|timeline|charts` redirects to the corresponding visualization route.
-  - `focus=<lynching-id>` is forwarded to the target route.
-  - `year=<YYYY>` is forwarded to the target route.
-  - `all=1` is forwarded to the target route.
-- `/visualize/map` supports query parameters:
-  - `focus=<lynching-id>` centers the map on that record when coordinates are available.
-  - `all=1` jumps the timeline range end to 1915 immediately (show all markers without waiting).
-- `/visualize/charts` stable anchors:
-  - `#charts-top`
-  - `#chart-01` … `#chart-13` (top-to-bottom chart order)
-- `/visualize/compare` stable anchors:
-  - `#compare-top`
-  - `#compare-chart-01`
-  - `#compare-chart-02`
-  - `#compare-chart-03`
-- Record template stable anchors (all `/records/:lynchingId` pages):
-  - `#record-top`
-  - `#record-metadata`
-  - `#record-map`
-  - `#record-narrative`
-  - `#record-evidence` (when related articles are present)
+```sh
+npm run preview
+```
 
-## 👀 Want to learn more?
+### 4. Testing
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- Manual/feature test checklist: `docs/setup/testing-guide.md`
+- Many flows (maps, charts, docent, dataset exports) are best validated in a real browser against `localhost:4321`.
+
+---
+
+## Documentation Map
+
+To reduce markdown sprawl, project docs are organized under `docs/`:
+
+- **Setup (`docs/setup/`)** – how to get a working environment
+  - `docs/setup/google-sheets-setup.md` – connect to the Google Sheets data sources
+  - `docs/setup/google-apps-script-setup.md` – Apps Script integration for sheets/automation
+  - `docs/setup/testing-guide.md` – testing and QA workflow
+
+- **Operations (`docs/operations/`)** – ongoing data and content operations
+  - `docs/operations/data-and-assets.md` – column mappings, data export scripts, fallback image handling, and source-column fixes
+
+- **Reviews & Snapshots (`docs/reviews/`)** – dated audits and review documents
+  - `docs/reviews/accessibility-audit-2026.md` – WCAG 2.2 / Section 508 audit
+  - `docs/reviews/seo-summary-2026.md` – SEO implementation summary
+  - `docs/reviews/design-review-2026.md` – visual/UX review
+  - `docs/reviews/site-review-2026.md` – pre-thesis comprehensive site review
+  - `docs/reviews/recommendations.md` – review-driven recommendations and backlog notes
+
+Other in-place docs:
+
+- `src/data/DEPRECATED_LYNCHINGS.md` – note about deprecated JSON data
+- `public/article-scans/README.md` – guidance for managing article scan assets
+
+---
+
+## Contributing / Maintenance Notes
+
+- For **new features or bug fixes**, prefer updating the relevant doc under `docs/` rather than creating new top-level `.md` files.
+- When you perform a new **formal review** (accessibility, SEO, design, etc.), add a dated file under `docs/reviews/` instead of editing the 2026 snapshots.
+- Keep `README.md` focused on:
+  - What the project is
+  - How to run it
+  - Where to find deeper docs

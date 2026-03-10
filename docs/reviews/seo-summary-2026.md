@@ -1,3 +1,6 @@
+Note: This document is a dated review snapshot from January 2026.
+Treat as historical context; newer changes may supersede specific details.
+
 # SEO Summary - The John Crow Project
 
 **Date:** January 24, 2026  

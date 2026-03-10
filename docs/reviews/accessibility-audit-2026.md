@@ -1,3 +1,6 @@
+Note: This document is a dated review snapshot from January 2026.
+Treat as historical context; newer changes may supersede specific details.
+
 # Accessibility Audit Report
 ## John Crow Archive - WCAG 2.2 & Section 508 Compliance
 

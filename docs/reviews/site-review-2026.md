@@ -1,3 +1,6 @@
+Note: This document is a dated review snapshot from January 2026.
+Treat as historical context; newer changes may supersede specific details.
+
 # Complete Site Review - The John Crow Archive
 **Date:** January 24, 2026  
 **Reviewer:** AI Assistant  
