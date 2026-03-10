@@ -7,34 +7,222 @@ export const prerender = true;
 ---
 
 <PageLayout 
-  title="Site Guide & Technical Documentation" 
+  title="Site Guide" 
   currentPage="site-guide"
-  description="Comprehensive technical documentation and feature guide for The John Crow Project website. Built with Astro, Tailwind CSS, and deployed on Netlify."
+  description="Internal site guide describing how the John Crow Project is structured, how data flows, and how core interpretive systems work."
 >
   <div class="prose prose-lg max-w-none">
-    <h1 class="text-4xl font-bold mb-6 text-base-content">Site Guide & Technical Documentation</h1>
+    <h1 class="text-4xl font-bold mb-6 text-base-content">Site Guide</h1>
     
-    <p class="text-lg text-base-content/90 leading-relaxed mb-8">
-      This page provides comprehensive documentation of The John Crow Project website, including its features, 
-      architecture, technology stack, and deployment infrastructure. This documentation is intended for thesis 
-      committee review and future maintainers.
+    <p class="text-lg text-base-content/90 leading-relaxed mb-6">
+      This site guide explains how the John Crow Project is organized: where its data comes from, how records and articles are generated, 
+      how maps and charts are built, and how guided docent tours connect evidence to argument. It is written for committee members, 
+      collaborators, and future maintainers rather than a general public audience.
     </p>
 
-    <nav class="bg-amber-50 border-l-4 border-amber-500 rounded-lg p-6 mb-8 shadow-sm not-prose">
-      <h2 class="text-xl font-semibold mb-3 text-vintage-ink">Table of Contents</h2>
+    <div class="bg-amber-50 border-l-4 border-amber-500 rounded-lg p-4 mb-8 not-prose">
+      <p class="text-sm text-base-content/90 mb-1">
+        <strong>Audience.</strong> Internal documentation for the dissertation committee, collaborators, and maintainers.
+      </p>
+      <p class="text-sm text-base-content/90 mb-0">
+        <strong>Scope.</strong> High-level architecture, data sources, and key interpretive systems (maps, charts, and digital docent tours).
+      </p>
+    </div>
+
+    <nav class="bg-amber-50 border border-amber-200 rounded-lg p-5 mb-10 shadow-sm not-prose">
+      <h2 class="text-xl font-semibold mb-3 text-vintage-ink">Table of contents</h2>
       <ul class="text-sm text-base-content/90 space-y-2">
-        <li><a href="#features" class="text-accent hover:underline">• Site Features</a></li>
-        <li><a href="#architecture" class="text-accent hover:underline">• Technical Architecture</a></li>
-        <li><a href="#technology-stack" class="text-accent hover:underline">• Technology Stack</a></li>
-        <li><a href="#data-pipeline" class="text-accent hover:underline">• Data Pipeline</a></li>
-        <li><a href="#deployment" class="text-accent hover:underline">• Deployment Infrastructure</a></li>
-        <li><a href="#seo" class="text-accent hover:underline">• SEO & AI Optimization</a></li>
-        <li><a href="#accessibility" class="text-accent hover:underline">• Accessibility Compliance</a></li>
-        <li><a href="#maintenance" class="text-accent hover:underline">• Maintenance & Updates</a></li>
+        <li><a href="#what-the-site-is-for" class="text-accent hover:underline">• What the site is for</a></li>
+        <li><a href="#core-architecture" class="text-accent hover:underline">• Core architecture</a></li>
+        <li><a href="#data-model-and-sources" class="text-accent hover:underline">• Data model and sources</a></li>
+        <li><a href="#maps-charts-and-spatial-workflow" class="text-accent hover:underline">• Maps, charts, and spatial workflow</a></li>
+        <li><a href="#digital-docent-system" class="text-accent hover:underline">• Digital Docent system</a></li>
+        <li><a href="#accessibility-and-maintenance" class="text-accent hover:underline">• Accessibility and maintenance</a></li>
+        <li><a href="#future-direction" class="text-accent hover:underline">• Future direction</a></li>
       </ul>
     </nav>
 
-    <h2 id="features" class="text-3xl font-semibold mt-12 mb-6 text-base-content border-b-2 border-amber-300 pb-2">Site Features</h2>
+    <h2 id="what-the-site-is-for" class="text-3xl font-semibold mt-10 mb-4 text-base-content border-b-2 border-amber-300 pb-2">
+      1. What the site is for
+    </h2>
+
+    <p class="text-base-content/90 leading-relaxed mb-4">
+      John Crow is both a research archive and an interpretive digital history project. It documents anti-Chinese violence in the United States, 
+      roughly 1850–1915, and serves as a companion to the dissertation by making sources, data, and argument accessible in one place.
+    </p>
+
+    <ul class="list-disc list-inside mb-4 text-base-content/90 space-y-1">
+      <li><strong>Research archive.</strong> Structured records of lethal violence, with metadata and links to newspaper sources.</li>
+      <li><strong>Interpretive project.</strong> Maps, charts, and guided tours that make explicit claims about patterns, scale, and meaning.</li>
+      <li><strong>Dissertation companion.</strong> A public interface that supports and extends the written thesis.</li>
+    </ul>
+
+    <p class="text-base-content/90 leading-relaxed mb-3">
+      Core public-facing components include:
+    </p>
+    <ul class="list-disc list-inside mb-8 text-base-content/90 space-y-1">
+      <li><strong>Lynching Records.</strong> Case pages that combine structured fields (date, location, event type, victims) with a narrative synthesis and linked sources.</li>
+      <li><strong>News Clips.</strong> Article-centric views of digitized newspaper scans and transcripts.</li>
+      <li><strong>Dataset.</strong> A live, filterable table of lethal incidents, exportable as CSV/Excel/PDF.</li>
+      <li><strong>Maps and Charts.</strong> Visualizations that show incidents, victims, categories, and slogans over time and space.</li>
+      <li><strong>Ask the Archive.</strong> An AI-assisted interface that answers questions using the records and articles as context.</li>
+      <li><strong>Guided Tours & Digital Docent.</strong> Step-based walkthroughs that model how evidence supports historical argument.</li>
+    </ul>
+
+    <h2 id="core-architecture" class="text-3xl font-semibold mt-10 mb-4 text-base-content border-b-2 border-amber-300 pb-2">
+      2. Core architecture
+    </h2>
+
+    <p class="text-base-content/90 leading-relaxed mb-4">
+      The site is an Astro application deployed to Netlify, with a thin layer of JavaScript for interactive components. 
+      Styling is handled by Tailwind CSS plus a small set of custom classes that create the vintage newspaper aesthetic.
+    </p>
+
+    <ul class="list-disc list-inside mb-6 text-base-content/90 space-y-1">
+      <li><strong>Astro site.</strong> Pages and layouts are written in Astro, with a few client-side islands where interactivity is required.</li>
+      <li><strong>Styling.</strong> Tailwind CSS and custom CSS provide the typographic system, grid, and “aged paper and ink” palette.</li>
+      <li><strong>Interactive components.</strong> ECharts powers charts; Mapbox GL + Turf power maps; React is used sparingly where a component benefits from stateful interaction.</li>
+      <li><strong>Data access.</strong> A shared utility reads CSV/JSON exports from Google Sheets and exposes them via simple API routes.</li>
+      <li><strong>Deployment.</strong> Netlify builds the Astro site, runs pre-build data sync scripts, and serves the final output over a global CDN.</li>
+      <li><strong>Docent manifests.</strong> A dedicated API route builds docent tour manifests from Google Sheets CSV exports; static YAML manifests remain as a fallback.</li>
+    </ul>
+
+    <div class="bg-amber-50 border-l-4 border-amber-500 rounded-lg p-4 mb-10 not-prose">
+      <p class="text-sm text-base-content/90 mb-1">
+        <strong>Live vs. built data.</strong> Most user-facing content is driven by Google Sheets. Build-time scripts generate JSON snapshots for performance, 
+        but key views (records, dataset, maps, charts, docent tours) can read fresh data via lightweight API routes when needed.
+      </p>
+    </div>
+
+    <h2 id="data-model-and-sources" class="text-3xl font-semibold mt-10 mb-4 text-base-content border-b-2 border-amber-300 pb-2">
+      3. Data model and sources
+    </h2>
+
+    <p class="text-base-content/90 leading-relaxed mb-4">
+      The project treats Google Sheets as the canonical source for both structured data and many narrative/label fields. 
+      From there, the site materializes records, articles, charts, and docent steps.
+    </p>
+
+    <h3 class="text-2xl font-semibold mt-6 mb-3 text-base-content">Lynching records</h3>
+    <p class="text-base-content/90 leading-relaxed mb-3">
+      Each record combines structured fields from a “Main” tab (date, year, state, county, city, event type, number of victims, etc.) with a narrative summary 
+      and links to article IDs. During build, data is synced into JSON; at runtime, the record routes and API endpoints read from that structured data.
+    </p>
+
+    <h3 class="text-2xl font-semibold mt-6 mb-3 text-base-content">News clips and article scans</h3>
+    <p class="text-base-content/90 leading-relaxed mb-3">
+      A separate sheet holds article metadata (publication, date, page, headline, violence category, related record ID, and file paths). 
+      These rows drive the News Clips page and article viewer, which surface scans from <code>public/article-scans/</code> along with machine-readable transcripts.
+    </p>
+    <p class="text-base-content/90 leading-relaxed mb-3">
+      The News Clips route is designed to be query-parameter friendly (for example, filtered by entity or record) so that maps, records, and docent steps can link directly into article views.
+    </p>
+
+    <h3 class="text-2xl font-semibold mt-6 mb-3 text-base-content">Dataset table</h3>
+    <p class="text-base-content/90 leading-relaxed mb-3">
+      The Dataset page reads from the same lynching master sheet and presents a “living” table. Users can sort and filter in the browser and export the current view as CSV, Excel, or PDF. 
+      This table is intended as the primary entry point for researchers who want to work with the full dataset rather than individual narratives.
+    </p>
+
+    <h3 class="text-2xl font-semibold mt-6 mb-3 text-base-content">Docent tours: tours and steps sheets</h3>
+    <p class="text-base-content/90 leading-relaxed mb-3">
+      The Digital Docent system is driven by two Google Sheets tabs:
+    </p>
+    <ul class="list-disc list-inside mb-3 text-base-content/90 space-y-1">
+      <li><strong>docent_tours.</strong> One row per tour (tour ID, title, subtitle, start route, start anchor, desktop-only flag, enabled flag, sort order).</li>
+      <li><strong>docent_steps.</strong> One row per step (tour ID, step number, route, anchor/scroll target, optional highlight target and style, optional action, map focus ring, title, body text, enabled flag).</li>
+    </ul>
+    <p class="text-base-content/90 leading-relaxed mb-8">
+      A backend helper reads these CSV exports and constructs a manifest for each tour. If the sheet-based manifest is unavailable or empty, 
+      the system can fall back to local YAML manifests in <code>public/docents/</code> for legacy tours.
+    </p>
+
+    <h2 id="maps-charts-and-spatial-workflow" class="text-3xl font-semibold mt-10 mb-4 text-base-content border-b-2 border-amber-300 pb-2">
+      4. Maps, charts, and spatial workflow
+    </h2>
+
+    <p class="text-base-content/90 leading-relaxed mb-4">
+      Maps and charts are central to the interpretive argument rather than decorative illustrations. They expose patterns in incidents, victims, 
+      categories of violence, and slogans across time and space.
+    </p>
+
+    <ul class="list-disc list-inside mb-4 text-base-content/90 space-y-1">
+      <li><strong>Charts.</strong> ECharts-based views show annual incidents and victims, state-level distributions, event types, pretexts, and Chinese population context.</li>
+      <li><strong>Maps.</strong> Mapbox-based maps plot incidents and, in separate views, the geography of “Hong Di” reporting and “Chinese must go” mentions.</li>
+      <li><strong>Record–map linkage.</strong> Records know their coordinates and can be focused on the map; the map, in turn, links back into individual record pages.</li>
+      <li><strong>Workflow.</strong> Custom export scripts transform the lynching master sheet into chart-ready and map-ready JSON/tiles, 
+        using AI-assisted coding to rapidly prototype and refine historical GIS interfaces.</li>
+    </ul>
+
+    <p class="text-base-content/90 leading-relaxed mb-8">
+      The goal is to let users move fluidly between narrative, table, chart, and map views, seeing the same incidents through different analytical lenses.
+    </p>
+
+    <h2 id="digital-docent-system" class="text-3xl font-semibold mt-10 mb-4 text-base-content border-b-2 border-amber-300 pb-2">
+      5. Digital Docent system
+    </h2>
+
+    <p class="text-base-content/90 leading-relaxed mb-4">
+      The Digital Docent is a guided, step-based tour system that can move across records, articles, maps, charts, and filtered views. 
+      Each step specifies where to send the reader, what to highlight, and what interpretive point to make.
+    </p>
+
+    <ul class="list-disc list-inside mb-4 text-base-content/90 space-y-1">
+      <li><strong>Step-based manifests.</strong> For a given tour ID, the manifest includes an ordered list of steps with route, anchor/scrollTarget, optional highlight selector, and optional actions (for example, open a specific article).</li>
+      <li><strong>Cross-page navigation.</strong> Steps can move from a record page into the map, into News Clips filtered by a record ID, or down into a particular chart section.</li>
+      <li><strong>Highlighting.</strong> On desktop, the docent sidebar highlights the relevant text block, chart title, or map region to keep the user oriented.</li>
+      <li><strong>Sheet-driven configuration.</strong> All of this behavior is configured row-by-row in the Google Sheets tabs mentioned above, so tours can be revised without touching code.</li>
+    </ul>
+
+    <div class="bg-amber-50 border-l-4 border-amber-500 rounded-lg p-4 mb-8 not-prose">
+      <p class="text-sm text-base-content/90 mb-1">
+        <strong>Quick Start vs. Docent Tours.</strong> The Quick Start tour teaches visitors how to use the site (navigation, filters, map controls). 
+        The longer Digital Docent tours are interpretive walkthroughs that model how the dissertation reads the archive: following a case, 
+        tracking how a lynching circulates in print, or situating incidents within broader patterns.
+      </p>
+      <p class="text-sm text-base-content/90 mb-0">
+        At present, docent tours are desktop-oriented and require a reasonably wide viewport; on small screens, the sidebar is intentionally disabled.
+      </p>
+    </div>
+
+    <h2 id="accessibility-and-maintenance" class="text-3xl font-semibold mt-10 mb-4 text-base-content border-b-2 border-amber-300 pb-2">
+      6. Accessibility and maintenance
+    </h2>
+
+    <p class="text-base-content/90 leading-relaxed mb-3">
+      Accessibility has been a first-order concern throughout the project. The public-facing statement at <code>/accessibility</code> 
+      summarizes the commitment and documents WCAG 2.2 Level AA conformance.
+    </p>
+
+    <ul class="list-disc list-inside mb-4 text-base-content/90 space-y-1">
+      <li><strong>Public statement.</strong> See <code>/accessibility</code> for a plain-language description of accessibility features and standards.</li>
+      <li><strong>Audit details.</strong> The Git repository contains a more detailed accessibility audit report in <code>docs/reviews/accessibility-audit-2026.md</code>.</li>
+      <li><strong>Operations & setup.</strong> Additional maintenance documentation (Google Sheets setup, Apps Script integration, data/asset workflows, testing) lives under <code>docs/</code> in the repo.</li>
+    </ul>
+
+    <div class="bg-amber-50 border-l-4 border-amber-500 rounded-lg p-4 mb-10 not-prose">
+      <p class="text-sm text-base-content/90 mb-1">
+        <strong>Maintenance note.</strong> When changing data structures or docent configurations, update the relevant docs in <code>docs/setup/</code>, 
+        <code>docs/operations/</code>, or <code>docs/reviews/</code> so this guide and the repository remain in sync.
+      </p>
+    </div>
+
+    <h2 id="future-direction" class="text-3xl font-semibold mt-10 mb-4 text-base-content border-b-2 border-amber-300 pb-2">
+      7. Future direction
+    </h2>
+
+    <p class="text-base-content/90 leading-relaxed mb-3">
+      The site is stable and production-ready, but it is also intentionally unfinished. The underlying archive and interpretive frame will continue to evolve.
+    </p>
+
+    <ul class="list-disc list-inside mb-8 text-base-content/90 space-y-1">
+      <li><strong>Docent tours.</strong> Additional tours may foreground different themes (labor, law, print networks) or audiences (students, researchers, public history partners).</li>
+      <li><strong>Data refinement.</strong> Ongoing work includes cleaning, extending, and re-coding incidents, as well as reconciling duplicate or marginal cases.</li>
+      <li><strong>New cases and articles.</strong> As research continues, new records and newspaper clips can be added via the same Google Sheets pipeline.</li>
+      <li><strong>Pedagogy.</strong> Future features may include classroom-facing modules, annotated paths, or comparative views that connect this archive to other racial violence datasets.</li>
+    </ul>
+
+    <h2 id="features" class="text-3xl font-semibold mt-12 mb-6 text-base-content border-b-2 border-amber-300 pb-2">Additional technical details</h2>
 
     <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Core Functionality</h3>
 

@@ -72,7 +72,7 @@ export const prerender = true;
           <li>• Visible focus indicators</li>
           <li>• No keyboard traps</li>
           <li>• Map keyboard controls</li>
-          <li>• Modal focus management</li>
+          <li>• Modal focus management (article viewer and docent sidebar)</li>
         </ul>
       </div>
 
@@ -94,10 +94,20 @@ export const prerender = true;
           <li>• Responsive layout</li>
           <li>• Resizable text (up to 200%)</li>
           <li>• Clear visual hierarchy</li>
-          <li>• Accessible charts & maps</li>
+          <li>• Accessible charts & maps with text equivalents</li>
         </ul>
       </div>
     </div>
+
+    <h2 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Interactive systems</h2>
+    <p class="text-base-content/90 leading-relaxed mb-4">
+      Several interactive systems have additional accessibility affordances beyond standard page content:
+    </p>
+    <ul class="list-disc list-inside mb-6 text-base-content/90 space-y-2">
+      <li><strong>Digital Docent Tours:</strong> The guided sidebar tour uses standard buttons for Back, Resume, Next, and Exit; step titles and counters update dynamically, and step changes are announced politely to screen readers. The docent layout is desktop-only and disabled on narrow/mobile viewports.</li>
+      <li><strong>Interactive maps and charts:</strong> The map provides keyboard instructions, a focusable map region, and an accessible data list alternative. Charts expose ARIA roles, off-screen descriptions, and data tables that mirror the visual content.</li>
+      <li><strong>Query-driven article navigation:</strong> Article modals can be opened from records or docent tours using query parameters. When a modal opens, focus moves into the dialog and is trapped until closed; on close, focus returns to the triggering control.</li>
+    </ul>
 
     <h2 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Testing & Evaluation</h2>
     <p class="text-base-content/90 leading-relaxed mb-4">
