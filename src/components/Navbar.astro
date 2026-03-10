@@ -199,9 +199,7 @@ const { currentPage = '' } = Astro.props;
     const mobileDropdownTriggers = Array.from(nav.querySelectorAll('[data-mobile-dropdown-target]'));
     const mobileToggle = document.getElementById('jc-nav-toggle');
     const mobileMenu = document.getElementById('jc-nav-mobile-menu');
-    const tooltipTriggers = Array.from(nav.querySelectorAll('[data-tooltip-trigger]')) as HTMLElement[];
-    const globalTooltip = document.getElementById('jc-global-tooltip') as HTMLElement | null;
-    const suppressTouchTooltips = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
     const closeDesktopDropdowns = () => {
       dropdownTriggers.forEach((trigger) => {
@@ -223,7 +221,7 @@ const { currentPage = '' } = Astro.props;
       clearDesktopDropdownCloseTimer();
       desktopDropdownCloseTimer = window.setTimeout(() => {
         closeDesktopDropdowns();
-      }, 1000);
+      }, 300);
     };
 
     const closeMobileDropdowns = () => {
@@ -235,65 +233,9 @@ const { currentPage = '' } = Astro.props;
       });
     };
 
-    const hideTooltip = () => {
-      if (globalTooltip) globalTooltip.hidden = true;
-    };
-
-    const showTooltip = (trigger: HTMLElement) => {
-      if (!globalTooltip) return;
-      const text = trigger.getAttribute('data-tooltip-text');
-      if (!text) return;
-      globalTooltip.textContent = text;
-      globalTooltip.hidden = false;
-
-      const navRect = nav.getBoundingClientRect();
-      const rect = trigger.getBoundingClientRect();
-      const isDropdownItem = trigger.classList.contains('jc-nav__dropdown-link');
-      const isAboutMenuItem = !!trigger.closest('#jc-about-menu');
-
-      // Top-level: below navbar edge, left-aligned with trigger.
-      // Second-level: to the right of dropdown row, vertically aligned.
-      let top = isDropdownItem ? rect.top : navRect.bottom + 6;
-      let left = isDropdownItem ? rect.right + 8 : rect.left;
-      if (isAboutMenuItem) left = rect.left - 220;
-
-      globalTooltip.style.top = `${top}px`;
-      globalTooltip.style.left = `${left}px`;
-
-      // Clamp to viewport so tooltips remain visible.
-      requestAnimationFrame(() => {
-        if (!globalTooltip) return;
-        const pad = 8;
-        const tipW = globalTooltip.offsetWidth;
-        const tipH = globalTooltip.offsetHeight;
-        const maxLeft = window.innerWidth - tipW - pad;
-        const maxTop = window.innerHeight - tipH - pad;
-        const clampedLeft = Math.min(Math.max(left, pad), Math.max(maxLeft, pad));
-        const clampedTop = Math.min(Math.max(top, pad), Math.max(maxTop, pad));
-        globalTooltip.style.left = `${clampedLeft}px`;
-        globalTooltip.style.top = `${clampedTop}px`;
-      });
-    };
-
-    // Add more nav tooltips/icons by following existing data-tooltip-root + Tooltip pair.
-    tooltipTriggers.forEach((trigger) => {
-      trigger.addEventListener('mouseenter', () => {
-        if (suppressTouchTooltips) return;
-        showTooltip(trigger);
-      });
-      trigger.addEventListener('focus', () => showTooltip(trigger));
-      trigger.addEventListener('mouseleave', () => hideTooltip());
-      trigger.addEventListener('blur', () => hideTooltip());
-      trigger.addEventListener('keydown', (event) => {
-        const keyEvent = event as KeyboardEvent;
-        if (keyEvent.key === 'Escape') hideTooltip();
-      });
-    });
-
     dropdownTriggers.forEach((trigger) => {
       trigger.addEventListener('click', (event) => {
         event.stopPropagation();
-        hideTooltip();
         clearDesktopDropdownCloseTimer();
         const targetId = trigger.getAttribute('data-dropdown-target');
         const menu = targetId ? document.getElementById(targetId) : null;
@@ -307,13 +249,47 @@ const { currentPage = '' } = Astro.props;
 
       const targetId = trigger.getAttribute('data-dropdown-target');
       const menu = targetId ? document.getElementById(targetId) : null;
-      if (menu) {
-        // Auto-close desktop dropdown about 1s after pointer leaves
-        // both the top-level trigger and its submenu panel.
-        trigger.addEventListener('mouseenter', () => clearDesktopDropdownCloseTimer());
-        menu.addEventListener('mouseenter', () => clearDesktopDropdownCloseTimer());
-        trigger.addEventListener('mouseleave', () => scheduleDesktopDropdownClose());
-        menu.addEventListener('mouseleave', () => scheduleDesktopDropdownClose());
+
+      // Desktop hover intent (pointer devices only): open on hover after ~200ms,
+      // close ~300ms after pointer leaves trigger + submenu.
+      if (menu && isFinePointer) {
+        let openTimer: number | null = null;
+
+        const clearOpenTimer = () => {
+          if (openTimer !== null) {
+            window.clearTimeout(openTimer);
+            openTimer = null;
+          }
+        };
+
+        const openFromHover = () => {
+          // Only open if currently hidden; if user has already clicked to open,
+          // we don't need to re-run the logic.
+          if (!menu.hidden) return;
+          clearDesktopDropdownCloseTimer();
+          closeDesktopDropdowns();
+          menu.hidden = false;
+          trigger.setAttribute('aria-expanded', 'true');
+        };
+
+        const scheduleOpen = () => {
+          clearOpenTimer();
+          clearDesktopDropdownCloseTimer();
+          openTimer = window.setTimeout(openFromHover, 200);
+        };
+
+        const scheduleClose = () => {
+          clearOpenTimer();
+          scheduleDesktopDropdownClose();
+        };
+
+        trigger.addEventListener('mouseenter', scheduleOpen);
+        menu.addEventListener('mouseenter', () => {
+          clearOpenTimer();
+          clearDesktopDropdownCloseTimer();
+        });
+        trigger.addEventListener('mouseleave', scheduleClose);
+        menu.addEventListener('mouseleave', scheduleClose);
       }
     });
 
@@ -346,7 +322,6 @@ const { currentPage = '' } = Astro.props;
       const keyEvent = event as KeyboardEvent;
       if (keyEvent.key === 'Escape') {
         closeDesktopDropdowns();
-        hideTooltip();
         if (mobileMenu && mobileToggle) {
           mobileMenu.hidden = true;
           mobileToggle.setAttribute('aria-expanded', 'false');
