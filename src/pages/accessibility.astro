@@ -132,10 +132,16 @@ export const prerender = true;
     </ul>
 
     <h2 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Known Limitations</h2>
-    <p class="text-base-content/90 leading-relaxed mb-6">
-      Despite our best efforts to ensure accessibility, there may be some limitations. We are committed to addressing 
+    <p class="text-base-content/90 leading-relaxed mb-4">
+      Despite our best efforts to ensure accessibility, there are some limitations. We are committed to addressing 
       any issues that arise. If you discover any accessibility barriers, please contact us using the information below.
     </p>
+    <ul class="list-disc list-inside mb-6 text-base-content/90 space-y-2">
+      <li><strong>Interactive maps:</strong> The Leaflet/Mapbox-based map remains a complex spatial interface. Screen reader users are encouraged to rely on the keyboard instructions, the accessible incident list, and record pages rather than direct map interaction.</li>
+      <li><strong>Charts:</strong> Charts expose ARIA labels, descriptions, and data tables, but screen reader interaction with the chart surface itself is limited. The primary accessible representation of chart data is the associated table.</li>
+      <li><strong>Article image zoom/pan:</strong> The article viewer’s zoom and pan controls are optimized for mouse and touch. Keyboard users can fully access the transcription and citation, but fine-grained image zoom/pan is not yet fully keyboard-driven.</li>
+      <li><strong>Digital Docent tours:</strong> Docent tours are currently desktop-only and require a sufficiently wide viewport. On narrow/mobile screens, the docent sidebar is intentionally disabled and a notice is shown instead.</li>
+    </ul>
 
     <h2 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Feedback & Contact</h2>
     <div class="bg-amber-50 border border-amber-300 rounded-lg p-6 mb-6">
@@ -151,15 +157,6 @@ export const prerender = true;
         We aim to respond to accessibility feedback within 5 business days and to propose a solution within 10 business days.
       </p>
     </div>
-
-    <h2 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Formal Complaints</h2>
-    <p class="text-base-content/90 leading-relaxed mb-6">
-      If you are not satisfied with our response to your accessibility concern, you may file a formal complaint with:
-    </p>
-    <ul class="list-disc list-inside mb-6 text-base-content/90 space-y-2">
-      <li><a href="https://www.ada.gov/filing_complaint.htm" target="_blank" rel="noopener noreferrer" class="text-accent underline">U.S. Department of Justice (ADA Complaints)</a></li>
-      <li><a href="https://www.section508.gov/manage/contact-us" target="_blank" rel="noopener noreferrer" class="text-accent underline">U.S. Access Board (Section 508 Complaints)</a></li>
-    </ul>
 
     <h2 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Standards & Guidelines</h2>
     <p class="text-base-content/90 leading-relaxed mb-4">

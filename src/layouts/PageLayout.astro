@@ -94,10 +94,13 @@ const fullTitle = `${title} - John Crow Project`;
     })} />
   </head>
   <body class="font-serif" data-current-page={currentPage}>
-    <Navbar currentPage={currentPage} />
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <header>
+      <Navbar currentPage={currentPage} />
+    </header>
     <DocentSidebar />
     
-    <main id="main-content" class="p-6 pt-8">
+    <main id="main-content" class="p-6 pt-8" role="main">
       <div class="container-standard">
         <slot />
         
