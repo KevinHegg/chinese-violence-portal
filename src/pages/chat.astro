@@ -4,10 +4,18 @@ import PageLayout from "../layouts/PageLayout.astro";
 
 <PageLayout title="Ask the Archive" currentPage="chat">
   <style>
+    .chat-message {
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      word-break: break-word;
+      min-width: 0;
+    }
     .chat-message a {
       color: #2563eb;
       text-decoration: underline;
       font-weight: 500;
+      overflow-wrap: break-word;
+      word-break: break-all;
     }
     .chat-message a:hover {
       color: #1d4ed8;

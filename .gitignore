@@ -28,3 +28,6 @@ pnpm-debug.log*
 
 # Publication chart exports (generated locally)
 extras/
+
+# Local chat test page (not for production)
+public/chat-test.html
