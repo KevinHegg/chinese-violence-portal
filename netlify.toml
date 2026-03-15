@@ -1,0 +1,6 @@
+# Netlify build and function configuration
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  included_files = ["data/archive-json/**"]

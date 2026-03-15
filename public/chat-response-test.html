@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Response (Responses API) – Test</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 0 auto; padding: 1.5rem; }
+    h1 { font-size: 1.25rem; margin-bottom: 0.5rem; }
+    p.label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; margin-bottom: 0.25rem; }
+    p.sub { color: #6b7280; font-size: 0.875rem; margin-bottom: 1.5rem; }
+    #chat-messages { min-height: 200px; margin-bottom: 1rem; }
+    .msg { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
+    .msg.user .bubble { background: #dcfce7; }
+    .msg.assistant .bubble { background: #f3f4f6; }
+    .bubble { padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.9375rem; overflow-wrap: break-word; }
+    .bubble a { color: #2563eb; text-decoration: underline; word-break: break-all; }
+    form { display: flex; gap: 0.5rem; }
+    input[type="text"] { flex: 1; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; }
+    button[type="submit"] { padding: 0.5rem 1rem; background: #16a34a; color: white; border: none; border-radius: 0.375rem; cursor: pointer; }
+    button[type="submit"]:disabled { opacity: 0.6; cursor: not-allowed; }
+    #error { margin-top: 1rem; padding: 0.75rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.375rem; color: #b91c1c; font-size: 0.875rem; display: none; }
+    .debug-panel { margin-top: 0.5rem; padding: 0.5rem 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.25rem; font-size: 0.75rem; color: #475569; }
+    .debug-panel .debug-title { font-weight: 600; margin-bottom: 0.25rem; }
+    .debug-panel pre { margin: 0; white-space: pre-wrap; word-break: break-word; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <p class="label" role="status">Responses API test interface</p>
+  <h1>Chat Response (Responses API) – Test</h1>
+  <p class="sub">Sends requests to <code>/.netlify/functions/chat-response</code>. For local testing use <code>netlify dev</code>. Not part of the main site navigation.</p>
+
+  <div id="chat-messages"></div>
+
+  <form id="chat-form">
+    <input type="text" id="message-input" placeholder="Ask about the archive…" autocomplete="off" />
+    <button type="submit" id="send-btn">Send</button>
+  </form>
+
+  <div id="error"></div>
+
+  <script>
+    (function () {
+      const messagesEl = document.getElementById('chat-messages');
+      const form = document.getElementById('chat-form');
+      const input = document.getElementById('message-input');
+      const sendBtn = document.getElementById('send-btn');
+      const errorEl = document.getElementById('error');
+
+      function addMessage(text, isUser, debug) {
+        const div = document.createElement('div');
+        div.className = 'msg ' + (isUser ? 'user' : 'assistant');
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        if (isUser) {
+          bubble.innerHTML = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+        } else {
+          bubble.innerHTML = typeof marked !== 'undefined' ? marked.parse(text) : text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+          bubble.querySelectorAll('a').forEach(function (a) {
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+          });
+        }
+        div.appendChild(bubble);
+        if (debug && typeof debug === 'object') {
+          const panel = document.createElement('div');
+          panel.className = 'debug-panel';
+          panel.innerHTML = '<span class="debug-title">Temporary debug output</span><pre>' + JSON.stringify(debug, null, 2) + '</pre>';
+          div.appendChild(panel);
+        }
+        messagesEl.appendChild(div);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+
+      function showError(msg) {
+        errorEl.textContent = msg;
+        errorEl.style.display = 'block';
+      }
+      function hideError() {
+        errorEl.style.display = 'none';
+      }
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const message = input.value.trim();
+        if (!message) return;
+
+        addMessage(message, true);
+        input.value = '';
+        sendBtn.disabled = true;
+        hideError();
+
+        try {
+          const res = await fetch('/.netlify/functions/chat-response', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: message })
+          });
+
+          const data = await res.json().catch(function () { return {}; });
+
+          if (!res.ok) {
+            showError(data.error || data.details || 'Request failed.');
+            addMessage('Error: ' + (data.error || data.details || res.status), false);
+            return;
+          }
+
+          if (data.response) {
+            addMessage(data.response, false, data.debug);
+          } else {
+            addMessage('Empty response.', false, data.debug);
+          }
+        } catch (err) {
+          showError(err.message || 'Network error.');
+          addMessage('Error: ' + (err.message || 'Network error.'), false);
+        } finally {
+          sendBtn.disabled = false;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "John Crow Archive JSON",
+  "description": "Authoritative schema for events.json and articles.json. Do not rename or add fields.",
+  "definitions": {
+    "event": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "date",
+        "year",
+        "decade",
+        "state",
+        "location",
+        "title",
+        "summary",
+        "narrative",
+        "url",
+        "article_ids",
+        "keywords"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "event" },
+        "date": { "type": "string" },
+        "year": { "type": "number" },
+        "decade": { "type": "number" },
+        "state": { "type": "string" },
+        "location": { "type": "string" },
+        "title": { "type": "string" },
+        "summary": { "type": "string" },
+        "narrative": { "type": "string" },
+        "url": { "type": "string" },
+        "article_ids": { "type": "array", "items": { "type": "string" } },
+        "keywords": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "article": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "linked_record_id",
+        "headline",
+        "newspaper",
+        "publication_date",
+        "year",
+        "decade",
+        "state",
+        "location",
+        "summary",
+        "transcript",
+        "url",
+        "keywords"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "const": "article" },
+        "linked_record_id": { "type": "string" },
+        "headline": { "type": "string" },
+        "newspaper": { "type": "string" },
+        "publication_date": { "type": "string" },
+        "year": { "type": "number" },
+        "decade": { "type": "number" },
+        "state": { "type": "string" },
+        "location": { "type": "string" },
+        "summary": { "type": "string" },
+        "transcript": { "type": "string" },
+        "url": { "type": "string" },
+        "keywords": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  },
+  "oneOf": [
+    { "type": "array", "items": { "$ref": "#/definitions/event" } },
+    { "type": "array", "items": { "$ref": "#/definitions/article" } }
+  ]
+}
