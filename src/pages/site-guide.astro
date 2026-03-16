@@ -65,7 +65,7 @@ export const prerender = true;
       <li><strong>News Clips.</strong> Article-centric views of digitized newspaper scans and transcripts.</li>
       <li><strong>Dataset.</strong> A live, filterable table of lethal incidents, exportable as CSV/Excel/PDF.</li>
       <li><strong>Maps and Charts.</strong> Visualizations that show incidents, victims, categories, and slogans over time and space.</li>
-      <li><strong>Ask the Archive.</strong> An AI-assisted interface that answers questions using the records and articles as context.</li>
+      <li><strong>Ask the Archive.</strong> An archive chatbot that gives grounded answers by combining deterministic search over structured event and article data with LLM interpretation from a curated thesis and secondary sources. Archive facts and links come only from the search tool, so the model cannot invent records or URLs; interpretive synthesis uses vector-store retrieval. See <a href="/docs/archive-chatbot-architecture" class="text-accent hover:underline">Archive Chatbot Architecture</a> for full technical detail.</li>
       <li><strong>Guided Tours & Digital Docent.</strong> Step-based walkthroughs that model how evidence supports historical argument.</li>
     </ul>
 
@@ -268,13 +268,17 @@ export const prerender = true;
       </div>
 
       <div class="bg-white border border-amber-200 rounded-lg p-5">
-        <h4 class="text-lg font-semibold mb-3 text-vintage-ink">5. AI-Powered Chat Interface</h4>
+        <h4 class="text-lg font-semibold mb-3 text-vintage-ink">5. Ask the Archive (Archive Chatbot)</h4>
         <ul class="text-sm text-base-content/90 space-y-2">
-          <li><strong>Ask the Archive</strong> - OpenAI Assistant (GPT-4) powered Q&A</li>
-          <li><strong>Contextual Responses</strong> - Answers based on full dataset and articles</li>
-          <li><strong>Suggested Prompts</strong> - Pre-written questions to guide exploration</li>
-          <li><strong>Markdown Support</strong> - Formatted responses with citations</li>
+          <li><strong>Deterministic search</strong> — Archive facts, record IDs, and johncrow.org URLs come from a <code>search_archive</code> tool over structured JSON (events + articles); the LLM never invents records.</li>
+          <li><strong>Interpretive layer</strong> — Vector stores (thesis + secondary sources) provide context via <code>file_search</code> for patterns, significance, and historical framing.</li>
+          <li><strong>Grounded answers</strong> — Concise responses with real archive links; “no matching record” when appropriate.</li>
+          <li><strong>Suggested prompts</strong> — Pre-written cards (e.g. Rock Springs, Ah Yo, national scope) to guide exploration.</li>
+          <li><strong>Markdown responses</strong> — Formatted answers with links rendered client-side.</li>
         </ul>
+        <p class="text-sm text-base-content/80 mt-2">
+          Full architecture: <a href="/docs/archive-chatbot-architecture" class="text-accent hover:underline">docs/archive-chatbot-architecture</a>.
+        </p>
       </div>
 
       <div class="bg-white border border-amber-200 rounded-lg p-5">
@@ -458,7 +462,7 @@ chinese-violence-portal/
     <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Backend & APIs</h3>
     <ul class="list-disc list-inside mb-6 text-base-content/90 space-y-2 ml-4">
       <li><strong>Google Sheets API</strong> - Primary data source, fetches CSV exports programmatically</li>
-      <li><strong>OpenAI API</strong> - Powers AI chat interface using GPT-4 Assistant</li>
+      <li><strong>OpenAI Responses API</strong> — Powers Ask the Archive with tool calling (deterministic <code>search_archive</code> + vector-store <code>file_search</code>)</li>
       <li><strong>Mapbox API</strong> - Provides map tiles and geocoding services</li>
       <li><strong>Netlify Functions</strong> - Serverless API endpoints for data fetching and chat</li>
     </ul>

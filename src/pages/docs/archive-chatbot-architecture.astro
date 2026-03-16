@@ -1,0 +1,106 @@
+---
+import PageLayout from "../../layouts/PageLayout.astro";
+import { readFileSync } from "fs";
+import path from "path";
+import { marked } from "marked";
+
+const docPath = path.join(process.cwd(), "docs", "archive-chatbot-architecture.md");
+const raw = readFileSync(docPath, "utf-8");
+const html = marked.parse(raw) as string;
+---
+
+<PageLayout
+  title="Archive Chatbot Architecture"
+  description="How the Ask the Archive chatbot works and how to replicate it for your own digital archive."
+>
+  <div class="container-standard py-8">
+    <article class="prose prose-slate max-w-none doc-content" set:html={html} />
+  </div>
+</PageLayout>
+
+<style>
+  .doc-content :global(h1) {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+  .doc-content :global(h2) {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .doc-content :global(h3) {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .doc-content :global(p) {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  .doc-content :global(ul),
+  .doc-content :global(ol) {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+  .doc-content :global(li) {
+    margin-bottom: 0.25rem;
+  }
+  .doc-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.9375rem;
+  }
+  .doc-content :global(th),
+  .doc-content :global(td) {
+    border: 1px solid #e2e8f0;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+  .doc-content :global(th) {
+    background: #f8fafc;
+    font-weight: 600;
+  }
+  .doc-content :global(pre) {
+    background: #f1f5f9;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    font-size: 0.875rem;
+    margin: 1rem 0;
+  }
+  .doc-content :global(code) {
+    background: #f1f5f9;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+  }
+  .doc-content :global(pre code) {
+    background: none;
+    padding: 0;
+  }
+  .doc-content :global(hr) {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 2rem 0;
+  }
+  .doc-content :global(blockquote) {
+    border-left: 4px solid #cbd5e1;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    color: #475569;
+  }
+  .doc-content :global(a) {
+    color: #2563eb;
+    text-decoration: underline;
+  }
+  .doc-content :global(a:hover) {
+    color: #1d4ed8;
+  }
+</style>
