@@ -68,21 +68,25 @@ const html = marked.parse(raw) as string;
     font-weight: 600;
   }
   .doc-content :global(pre) {
-    background: #f1f5f9;
+    background: #1e293b;
+    color: #f1f5f9;
     padding: 1rem;
     border-radius: 0.5rem;
     overflow-x: auto;
     font-size: 0.875rem;
     margin: 1rem 0;
+    border: 1px solid #334155;
   }
   .doc-content :global(code) {
-    background: #f1f5f9;
+    background: #e2e8f0;
+    color: #0f172a;
     padding: 0.125rem 0.25rem;
     border-radius: 0.25rem;
     font-size: 0.875em;
   }
   .doc-content :global(pre code) {
     background: none;
+    color: inherit;
     padding: 0;
   }
   .doc-content :global(hr) {
