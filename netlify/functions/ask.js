@@ -1,3 +1,8 @@
+/**
+ * LEGACY: Assistant-backed chat route. No longer used by the live /chat page.
+ * The production chat uses netlify/functions/chat-response.js (Responses API + search_archive).
+ * Kept only for rollback; not wired to the UI.
+ */
 export async function handler(event) {
     const { question } = JSON.parse(event.body || '{}');
   

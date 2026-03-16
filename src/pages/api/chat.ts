@@ -1,6 +1,12 @@
 import type { APIRoute } from 'astro';
 import { marked } from 'marked';
 
+/**
+ * LEGACY: This API route is no longer used by the live /chat page.
+ * Production chat uses /.netlify/functions/chat-response (Responses API + search_archive).
+ * Kept for rollback or server-side use if needed.
+ */
+
 // Configure marked for better markdown parsing
 marked.setOptions({
   breaks: true,

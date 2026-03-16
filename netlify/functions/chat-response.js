@@ -1,10 +1,11 @@
 /**
- * Responses API route for migration. POST only. Does not replace ask.js or /chat.
+ * Production chat route for Ask the Archive. POST only.
  * Uses OpenAI Responses API (client.responses.create), not Chat Completions.
- * Fulfills search_archive via lib/archive-search.js.
+ * Fulfills search_archive via lib/archive-search.js. Optional file_search when
+ * OPENAI_ARCHIVE_VECTOR_STORE_ID / OPENAI_SECONDARY_VECTOR_STORE_ID are set.
  *
  * Body: { "message": "user question here" }
- * Response: { "response": "final answer text" }
+ * Response: { "response": "final answer text (Markdown)" }
  *
  * Requires: OPENAI_API_KEY. Model: OPENAI_CHAT_MODEL or "gpt-5.4".
  */
@@ -53,7 +54,7 @@ const SEARCH_ARCHIVE_TOOL = {
   strict: true,
 };
 
-const SYSTEM_INSTRUCTION = `You answer questions about the John Crow Project archive and anti-Chinese violence in the United States (1848–1924). Be concise. Do not become long-winded. Do not offer follow-up suggestions unless the user asks.
+const SYSTEM_INSTRUCTION = `You answer questions about the John Crow Project archive and anti-Chinese violence in the United States (1848–1924). Answer briefly by default. Prefer one short explanatory paragraph, then a short bullet list of 1–3 archive links when useful. Do not ramble. Do not offer follow-up suggestions unless the user asks.
 
 Primary interpretive framework:
 
@@ -83,7 +84,7 @@ Link format:
 
 1. Event record links — Use this label pattern: [Location — Date (Record ID)](url). Examples: [Rock Springs, Wyoming Territory — Sept. 2, 1885 (WY1885-09-02)](...), [Friars Point, Mississippi — May 5, 1885 (MS1885-05-05)](...). Prefer location + date + record ID. Do not use the full long event title unless the user explicitly asks for formal titles.
 
-2. Article links — Use this label pattern: ["Headline" — Newspaper (Date)](url). Examples: ["Ah Yo, a Chinaman, Thrown Into the River and Shot" — Vicksburg Post (1885-05-14)](...), ["A Chinaman Lynched" — Chicago Tribune (1885-05-16)](...). Do not include article ID unless the user explicitly asks. Keep the headline intact; abbreviate only if absolutely necessary.
+2. Article links — Use this label pattern: ["Headline" — Newspaper (Date)](url). Use exact newspaper names from the dataset. Do not include article ID unless the user explicitly asks. Keep the headline intact; abbreviate only if absolutely necessary.
 
 3. Multiple links — When returning several links, always format them as a Markdown bullet list. Do not dump naked URLs in prose. Keep answers concise.
 
@@ -167,6 +168,7 @@ export default async function handler(req, context) {
   let toolInputs = null;
   let finalText = null;
   let round = 0;
+  let retried = false;
 
   try {
     while (round < MAX_TOOL_ROUNDS) {
@@ -184,7 +186,17 @@ export default async function handler(req, context) {
         createParams.input = toolInputs;
       }
 
-      const response = await client.responses.create(createParams);
+      let response;
+      try {
+        response = await client.responses.create(createParams);
+      } catch (createErr) {
+        if (!retried && isTransientError(createErr)) {
+          retried = true;
+          response = await client.responses.create(createParams);
+        } else {
+          throw createErr;
+        }
+      }
 
       if (response.error) {
         return new Response(
@@ -263,25 +275,7 @@ export default async function handler(req, context) {
       );
     }
 
-    const toolsCalled = [];
-    if (searchArchiveCalls > 0) toolsCalled.push("search_archive");
-    if (fileSearchCalls > 0) toolsCalled.push("file_search");
-
-    const payload = {
-      response: finalText,
-      debug: {
-        tool_rounds: round,
-        tools_available: toolsAvailable,
-        tools_called: toolsCalled,
-        search_archive_calls: searchArchiveCalls,
-        search_archive_executions: searchArchiveExecutions,
-        search_archive_cap_hit: searchArchiveCapHit,
-        file_search_calls: fileSearchCalls,
-        used_vector_stores: usedVectorStores,
-        vector_store_ids_present: vectorStoreIdsPresent,
-      },
-    };
-    return new Response(JSON.stringify(payload), {
+    return new Response(JSON.stringify({ response: finalText }), {
       status: 200,
       headers: JSON_HEADERS,
     });
@@ -292,4 +286,12 @@ export default async function handler(req, context) {
       { status: 500, headers: JSON_HEADERS }
     );
   }
+}
+
+function isTransientError(err) {
+  const msg = (err?.message || String(err)).toLowerCase();
+  const status = err?.status ?? err?.statusCode ?? err?.response?.status;
+  if (status === 502 || status === 503 || status === 504) return true;
+  if (msg.includes("timeout") || msg.includes("econnreset") || msg.includes("econnrefused")) return true;
+  return false;
 }
