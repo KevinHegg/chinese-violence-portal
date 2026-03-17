@@ -729,8 +729,10 @@ const CHINESE_MUST_GO_BY_STATE: Record<string, number> = {
       const victims = Number(e['number-of-victims']) || 1;
       typeCounts[t] = (typeCounts[t] || 0) + victims;
     });
-    const typeNames = Object.keys(typeCounts).map(t => t === 'Possible Lynching' ? 'Possible\nLynching' : t);
-    const typeVals = typeNames.map((t, i) => typeCounts[Object.keys(typeCounts)[i]]);
+    const wrapAxisLabel = (label) => String(label || '').trim().replace(/\s+/g, '\n');
+    const rawTypeNames = Object.keys(typeCounts);
+    const typeNames = rawTypeNames.map(wrapAxisLabel);
+    const typeVals = rawTypeNames.map((t) => typeCounts[t]);
     
     // Create table for types chart
     const typesTableRows = typeNames.map((name, i) => [name.replace(/\n/g, ' '), typeVals[i].toString()]);
@@ -747,8 +749,14 @@ const CHINESE_MUST_GO_BY_STATE: Record<string, number> = {
       xAxis: { 
         type: 'category', 
         data: typeNames, 
-        name: 'Category', 
-        axisLabel: { rotate: 0, formatter: v => v.replace(/\n/g, '\n'), align: 'center', color: 'var(--western-saddle-brown)' }, 
+        axisLabel: {
+          rotate: 0,
+          formatter: v => v,
+          align: 'center',
+          lineHeight: 14,
+          margin: 10,
+          color: 'var(--western-saddle-brown)'
+        }, 
         axisTick: { alignWithLabel: true },
         axisLine: { lineStyle: { color: 'var(--western-sienna)' } }
       },
@@ -826,7 +834,7 @@ const CHINESE_MUST_GO_BY_STATE: Record<string, number> = {
           }
         }
       }],
-      grid: { left: 80, right: 30, top: 50, bottom: 80 },
+      grid: { left: 80, right: 30, top: 50, bottom: 100 },
       responsive: true
     });
     

@@ -51,35 +51,34 @@ export async function fetchGoogleSheetCSV(config: GoogleSheetsConfig): Promise<s
  * Handles quoted fields, commas within quotes, etc.
  */
 export function parseCSV(csvText: string): Record<string, string>[] {
-  const lines = csvText.split('\n').filter(line => line.trim());
-  
-  if (lines.length < 2) {
+  const normalizedText = csvText.replace(/^\uFEFF/, '');
+  const firstNewline = normalizedText.search(/\r?\n/);
+  const headerSample = firstNewline >= 0 ? normalizedText.slice(0, firstNewline) : normalizedText;
+  const tabCount = (headerSample.match(/\t/g) || []).length;
+  const commaCount = (headerSample.match(/,/g) || []).length;
+  const delim = tabCount > commaCount ? '\t' : ',';
+
+  const rows = parseCSVRecords(normalizedText, delim);
+  if (rows.length < 2) {
     return [];
   }
-  
-  const first = lines[0];
-  const tabCount = (first.match(/\t/g) || []).length;
-  const commaCount = (first.match(/,/g) || []).length;
-  const delim = tabCount > commaCount ? '\t' : ',';
-  
-  const parseLine = (line: string) => parseCSVLine(line, delim);
-  
-  const headers = parseLine(first).map((h: string) => h.trim());
-  
+
+  const headers = rows[0].map((h: string) => h.trim());
   const data: Record<string, string>[] = [];
-  for (let i = 1; i < lines.length; i++) {
-    const values = parseLine(lines[i]);
+
+  for (let i = 1; i < rows.length; i++) {
+    const values = rows[i];
     const row: Record<string, string> = {};
-    
+
     headers.forEach((header, index) => {
       row[header] = values[index] || '';
     });
-    
+
     if (Object.values(row).some(val => val.trim())) {
       data.push(row);
     }
   }
-  
+
   return data;
 }
 
@@ -113,6 +112,52 @@ function parseCSVLine(line: string, delim: string = ','): string[] {
   
   values.push(current.trim());
   return values;
+}
+
+function parseCSVRecords(text: string, delim: string = ','): string[][] {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const nextChar = text[i + 1];
+
+    if (char === '"') {
+      if (inQuotes && nextChar === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === delim && !inQuotes) {
+      row.push(current.trim());
+      current = '';
+    } else if ((char === '\n' || char === '\r') && !inQuotes) {
+      if (char === '\r' && nextChar === '\n') {
+        i++;
+      }
+      row.push(current.trim());
+      current = '';
+
+      if (row.some((value) => value.trim())) {
+        rows.push(row);
+      }
+      row = [];
+    } else {
+      current += char;
+    }
+  }
+
+  if (current.length > 0 || row.length > 0) {
+    row.push(current.trim());
+    if (row.some((value) => value.trim())) {
+      rows.push(row);
+    }
+  }
+
+  return rows;
 }
 
 /**
