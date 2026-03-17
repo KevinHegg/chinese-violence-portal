@@ -6,9 +6,14 @@ import { fetchArticlesData } from "../utils/googleSheets";
 
 export const prerender = false;
 
-// Fetch articles directly from Google Sheets
-
-const articles = await fetchArticlesData();
+let articles: any[] = [];
+let articlesLoadError = "";
+try {
+  articles = await fetchArticlesData();
+} catch (error) {
+  console.error("Failed to load articles for /news:", error);
+  articlesLoadError = "News Clips is temporarily unavailable because the article dataset could not be loaded.";
+}
 
 // Extract unique values for dropdowns
 const decades = [...new Set(articles.map((article: any) => article.decade).filter(Boolean))].sort();
@@ -42,6 +47,11 @@ const entities = [...topNamedEntities].sort(); // Alphabetize the entities
         Explore historical newspaper articles documenting events and patterns in our dataset. 
         Filter by decade, state, publication, or named entities to discover contemporary perspectives.
       </p>
+      {articlesLoadError && (
+        <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 text-sm text-vintage-ink">
+          {articlesLoadError}
+        </div>
+      )}
     </div>
 
     <!-- Filter and Sort Controls -->

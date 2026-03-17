@@ -337,12 +337,24 @@ const { currentPage = '' } = Astro.props;
       explore: 'explore',
       dataset: 'explore',
       news: 'explore',
+      records: 'explore',
+      articles: 'explore',
       chat: 'chat',
       visualize: 'visualize',
+      'visualize/charts': 'visualize',
+      'visualize/compare': 'visualize',
+      'visualize/timeline': 'visualize',
+      'visualize/map': 'visualize',
+      'visualize/newscloud': 'visualize',
       sources: 'sources',
       about: 'about',
+      'site-guide': 'about',
+      accessibility: 'about',
     };
-    const activeKey = activeMap[pageKey as keyof typeof activeMap] || '';
+    const activeKey =
+      activeMap[pageKey as keyof typeof activeMap] ||
+      (pageKey.startsWith('visualize/') ? 'visualize' : '') ||
+      (pageKey.startsWith('about/') ? 'about' : '');
     if (activeKey) {
       nav.querySelectorAll(`[data-nav-key="${activeKey}"]`).forEach((el) => {
         el.classList.add('is-active');

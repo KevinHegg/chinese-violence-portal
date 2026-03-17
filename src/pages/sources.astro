@@ -4,8 +4,14 @@ import { fetchArticlesData } from "../utils/googleSheets";
 
 export const prerender = false;
 
-// Fetch articles from Google Sheets
-const articles = await fetchArticlesData();
+let articles: any[] = [];
+let articlesLoadError = "";
+try {
+  articles = await fetchArticlesData();
+} catch (error) {
+  console.error("Failed to load articles for /sources:", error);
+  articlesLoadError = "Primary-source article citations are temporarily unavailable because the article dataset could not be loaded.";
+}
 
 // Normalize citation to remove duplicate quotes that might come from CSV parsing
 const normalizeCitation = (citation: string): string => {
@@ -67,6 +73,12 @@ const sortedArticles = [...articles]
   <p class="mb-8 text-lg max-w-4xl leading-relaxed">
     The items in this bibliography were used and consulted in the creation of much of the content on this website. Further Readings lists scholarly and secondary works; Primary Sources lists digitized newspaper articles. Together they provide the foundation for understanding the historical context, events, and scholarly interpretations that inform our digital archive of anti-Chinese violence in the American West during the second half of the 19th century.
   </p>
+
+  {articlesLoadError && (
+    <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 mb-6 text-sm text-vintage-ink">
+      {articlesLoadError}
+    </div>
+  )}
 
   <h2 class="text-2xl font-semibold mb-4 mt-8">Further Readings</h2>
   <div class="space-y-3 mb-8">

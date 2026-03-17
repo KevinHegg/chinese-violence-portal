@@ -5,16 +5,32 @@ import { fetchArticlesData, fetchLynchingsData } from "../../utils/googleSheets"
 
 export const prerender = false;
 
-// Fetch articles and lynchings data
-const [articles, lynchingsData] = await Promise.all([
+let articles: any[] = [];
+let lynchingsData: any[] = [];
+let articleLoadError = "";
+
+const [articlesResult, lynchingsResult] = await Promise.allSettled([
   fetchArticlesData(),
   fetchLynchingsData()
 ]);
 
+if (articlesResult.status === "fulfilled") {
+  articles = articlesResult.value;
+} else {
+  console.error("Failed to load articles for article detail page:", articlesResult.reason);
+  articleLoadError = "This article page is temporarily unavailable because the article dataset could not be loaded.";
+}
+
+if (lynchingsResult.status === "fulfilled") {
+  lynchingsData = lynchingsResult.value;
+} else {
+  console.error("Failed to load lynching data for article detail page:", lynchingsResult.reason);
+}
+
 const { articleId } = Astro.params;
 const article = articles.find((a: any) => a["article-id"] === articleId);
 
-if (!article) {
+if (!article && !articleLoadError) {
   return Astro.redirect('/404');
 }
 
@@ -43,7 +59,16 @@ const formatDate = (dateStr: string) => {
 };
 ---
 
-<PageLayout title={article["article-title"] || "Article Not Found"} currentPage="articles">
+<PageLayout title={article?.["article-title"] || "Article"} currentPage="articles">
+  {articleLoadError ? (
+    <div class="container-standard mt-6">
+      <div class="bg-amber-50 border border-amber-300 rounded-lg p-6 text-vintage-ink">
+        <h1 class="text-2xl font-semibold mb-2">Article temporarily unavailable</h1>
+        <p class="mb-4">{articleLoadError}</p>
+        <a href="/news" class="underline hover:no-underline">Return to News Clips</a>
+      </div>
+    </div>
+  ) : (
       <div class="container-standard mt-4">
     <!-- Breadcrumb Navigation -->
     <nav aria-label="Breadcrumb" class="mb-4">
@@ -113,9 +138,9 @@ const formatDate = (dateStr: string) => {
         {article["article-transcript"] ? 
           article["article-transcript"]
             .split('⏎')
-            .map(p => p.trim())
-            .filter(p => p.length > 0)
-            .map((p) => (
+            .map((p: string) => p.trim())
+            .filter((p: string) => p.length > 0)
+            .map((p: string) => (
               <p style="text-indent: 1.5em; margin-bottom: 0.5em; margin-top: 0.3em">{p}</p>
             ))
           : <p>Transcript not available</p>
@@ -198,4 +223,5 @@ const formatDate = (dateStr: string) => {
       margin-bottom: 0.5em !important;
     }
   </style>
+  )}
 </PageLayout> 

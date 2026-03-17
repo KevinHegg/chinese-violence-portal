@@ -38,6 +38,29 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
       width: 100%;
       height: 100%;
     }
+    #map-status {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: rgba(255, 251, 235, 0.92);
+      z-index: 1200;
+      text-align: center;
+    }
+    #map-status.is-visible {
+      display: flex;
+    }
+    .map-status__card {
+      max-width: 32rem;
+      background: #fffbe6;
+      border: 1px solid #d97706;
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      color: #5b3a29;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
     /* Overlay for timeline controls: half the map's width, centered at bottom */
     #overlay {
       position: absolute;
@@ -230,6 +253,9 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
          tabindex="0"
          aria-label="Interactive map showing locations of anti-Chinese violence incidents from 1850 to 1915. Use keyboard controls to navigate: arrow keys to pan, plus and minus to zoom, space bar to play timeline. See keyboard instructions and data list below for accessible alternatives."
          aria-describedby="map-keyboard-instructions"></div>
+    <div id="map-status" role="status" aria-live="polite">
+      <div class="map-status__card"></div>
+    </div>
   </div>
   <div id="overlay">
     <button id="playButton" class="btn btn-primary" aria-label="Play timeline animation">Play</button>
@@ -260,12 +286,33 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
   </div>
   <DocentSidebar />
   <script is:inline define:vars={{ mapboxToken, mapboxStyle }}>
+    let leafletInitAttempts = 0;
+
+    function showMapStatus(message) {
+      const status = document.getElementById('map-status');
+      const card = status ? status.querySelector('.map-status__card') : null;
+      if (!status || !card) return;
+      card.textContent = message;
+      status.classList.add('is-visible');
+    }
+
+    function hideMapStatus() {
+      const status = document.getElementById('map-status');
+      if (status) status.classList.remove('is-visible');
+    }
+
     // Wait for Leaflet to load
     function initMap() {
       if (typeof L === 'undefined' || !window.leafletLoaded) {
+        leafletInitAttempts += 1;
+        if (leafletInitAttempts > 50) {
+          showMapStatus('The map could not finish loading. Please refresh the page or try again in a moment.');
+          return;
+        }
         setTimeout(initMap, 100);
         return;
       }
+      hideMapStatus();
 
     // Parameters - INCREASED SPEED
     const pulseDuration = 750;      // 750ms per pulse cycle
@@ -660,6 +707,7 @@ const mapboxStyle = 'kevinhegg/cmd4pgf7p01ud01s4awo3b3yd';
 
       }).catch(error => {
         console.error("Error loading JSON:", error);
+        showMapStatus('The map data could not be loaded right now. Please refresh the page or try again later.');
       });
 
     // Backlink logic: when fromRecord is present, show "Return to lynching record"

@@ -6,8 +6,14 @@ import { fetchArticlesData } from "../../utils/googleSheets";
 
 export const prerender = false;
 
-// Fetch articles directly from Google Sheets
-const articles = await fetchArticlesData();
+let articles: any[] = [];
+let articlesLoadError = "";
+try {
+  articles = await fetchArticlesData();
+} catch (error) {
+  console.error("Failed to load articles for /visualize/newscloud:", error);
+  articlesLoadError = "News Cloud is temporarily unavailable because the article dataset could not be loaded.";
+}
 
 // Entity processing and rendering now happens client-side
 ---
@@ -43,6 +49,11 @@ const articles = await fetchArticlesData();
         Explore frequently mentioned locations, people, and organizations in our newspaper archive. 
         Click on any entity in the word cloud to filter articles and discover patterns across publications and time periods.
       </p>
+      {articlesLoadError && (
+        <div class="bg-amber-50 border border-amber-300 rounded-lg p-4 text-sm text-vintage-ink">
+          {articlesLoadError}
+        </div>
+      )}
     </div>
 
          <!-- Word Cloud -->
