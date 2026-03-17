@@ -4,7 +4,7 @@
  * Fulfills search_archive via lib/archive-search.js. Optional file_search when
  * OPENAI_ARCHIVE_VECTOR_STORE_ID / OPENAI_SECONDARY_VECTOR_STORE_ID are set.
  *
- * Body: { "message": "user question here" }
+ * Body: { "message": "user question here", "history": [{ role, content }, ...] }
  * Response: { "response": "final answer text (Markdown)" }
  *
  * Requires: OPENAI_API_KEY. Model: OPENAI_CHAT_MODEL or "gpt-5.4".
@@ -21,7 +21,7 @@ const FILE_SEARCH_MAX_NUM_RESULTS = 3;
 const SEARCH_ARCHIVE_TOOL = {
   type: "function",
   name: "search_archive",
-  description: "Search the John Crow archive of events and articles. Use linked_record_id to get all articles linked to a specific event (e.g. after finding an event by id). For broad or regional questions, prefer one or two searches with a higher limit (e.g. 10–15) rather than many narrow searches.",
+  description: "Search the John Crow archive of events and articles. Use linked_record_id to get all articles linked to a specific event (e.g. after finding an event by id). For broad or regional questions, prefer one or two searches with a higher limit (e.g. 10–15) rather than many narrow searches. For exact phrase, count, transcript, or exhaustive requests over articles, use mode=\"exhaustive_phrase\" with a phrase.",
   parameters: {
     type: "object",
     properties: {
@@ -44,11 +44,32 @@ const SEARCH_ARCHIVE_TOOL = {
       linked_record_id: {
         type: ["string", "null"],
       },
+      mode: {
+        type: ["string", "null"],
+        enum: ["exhaustive_phrase", null],
+      },
+      phrase: {
+        type: ["string", "null"],
+      },
+      match_mode: {
+        type: ["string", "null"],
+        enum: ["default", "exact_phrase", "contains", null],
+      },
+      search_fields: {
+        type: ["array", "null"],
+        items: {
+          type: "string",
+          enum: ["headline", "summary", "transcript", "keywords"],
+        },
+      },
+      exhaustive: {
+        type: ["boolean", "null"],
+      },
       limit: {
         type: ["integer", "null"],
       },
     },
-    required: ["type", "year", "decade", "state", "keywords", "linked_record_id", "limit"],
+    required: ["type", "year", "decade", "state", "keywords", "linked_record_id", "mode", "phrase", "match_mode", "search_fields", "exhaustive", "limit"],
     additionalProperties: false,
   },
   strict: true,
@@ -76,13 +97,14 @@ Rules:
 - When search_archive has already returned sufficient results to answer the user's request, do not call it again. Prefer using the first successful archive result set rather than repeating the same lookup.
 - For requests for links to a named event or victim: search the event once, then if needed search linked articles once (using linked_record_id), then answer. Do not re-search or make additional search_archive calls once you have the event and its linked articles.
 - For ordinary archive lookup questions, use no more than 2 search_archive calls unless the user explicitly asks for exhaustive coverage. If enough archive evidence is already available, stop searching and answer.
+- If the user clearly asks for exhaustive retrieval, exact phrase matching, transcript searching, or counts (for example: "all," "every," "exact phrase," "search the transcripts," "how many"), prefer exhaustive archive search rather than ordinary exploratory retrieval.
 
 Output format:
 - Write plain prose only. Do not emit raw citation tokens, tool names, or pseudo-citation markup (e.g. .search_archive, turn...commentary..., or similar). When you reference archive material, mention the record or article plainly and include only real johncrow.org URLs that were returned by search_archive.
 
 Link format:
 
-1. Event record links — Use this label pattern: [Location — Date (Record ID)](url). Examples: [Rock Springs, Wyoming Territory — Sept. 2, 1885 (WY1885-09-02)](...), [Friars Point, Mississippi — May 5, 1885 (MS1885-05-05)](...). Prefer location + date + record ID. Do not use the full long event title unless the user explicitly asks for formal titles.
+1. Event record links — Use this label pattern: [Location — Date](url). Examples: [Rock Springs, Wyoming Territory — Sept. 2, 1885](...), [Friars Point, Mississippi — May 5, 1885](...). Do not include the record ID in the visible link label unless the user explicitly asks for IDs. Do not use the full long event title unless the user explicitly asks for formal titles.
 
 2. Article links — Use this label pattern: ["Headline" — Newspaper (Date)](url). Use exact newspaper names from the dataset. Do not include article ID unless the user explicitly asks. Keep the headline intact; abbreviate only if absolutely necessary.
 
@@ -92,10 +114,16 @@ Link format:
 
 Rules (continued):
 - If the user asks about a specific incident, lynching, riot, massacre, event, article, or named person, you must call search_archive before answering.
+- Use the recent conversation context when the user says things like "that case," "those articles," "this event," "that lynching," "give me links," or "what about the South?" Treat the most recently discussed archive event, article set, or regional topic as the default referent unless the user clearly shifts topics.
 - File search (if available) returns contextual or background material only. Do not treat file_search as a source for archive records or URLs. Do not cite or invent archive records or johncrow.org links from file_search.
 - Call search_archive before answering any archive question. For event-like questions (incidents, lynching, riots, etc.), search events first; if you find an event and article coverage would help, you may search articles too.
 - When the user asks for articles related to an event, lynching, massacre, or named incident: search events first to find the matching event. The event record is the authoritative source for linked articles. If the event has article_ids, retrieve those linked articles by calling search_archive with type "articles" and linked_record_id set to that event's id (e.g. MS1885-05-05). Do not rely only on free-text article search; use linked_record_id so all linked articles are returned. Do not claim only one article exists when the event has multiple linked articles.
+- If an event has already been identified earlier in the conversation and the user asks for related articles, all linked articles, more articles, more examples, or links, prefer that existing event context first. If that event has linked articles, use linked_record_id to retrieve them before launching a new broad search.
+- If the user asks for more examples or follow-up regional comparisons, prefer the most recently discussed archive result set and extend it with one additional targeted search rather than restarting from scratch.
 - Only mention articles if they were returned by search_archive.
+- For article queries that ask for "all," "every," "exact phrase," "how many," or "search the transcripts," call search_archive exactly once with type="articles", mode="exhaustive_phrase", and phrase set to the target phrase. Trust the returned total_matches count. Do not iterate or approximate exhaustiveness with multiple searches.
+- In mode="exhaustive_phrase", search_archive performs a full scan across article transcripts and headlines and returns all matches. Treat that result as authoritative for completeness within the archive data.
+- For exhaustive results, always report total_matches. If the matching list is long, show only the first several items and say so plainly, for example: "Found 24 matching articles. Showing first 10:" Do not say "here are all" unless the returned result set is actually complete and fully shown.
 - For broad interpretive or regional questions, do not call search_archive repeatedly. Prefer one or a few broader searches with a higher limit (e.g. limit 10–15) rather than many narrow searches. Gather a few representative examples (e.g. 2–4), then synthesize; do not exhaustively call search_archive.
 - For broad interpretive questions you may use file_search for context. But if your answer makes claims about archive geography, chronology, or the distribution of violence, you must first use search_archive to gather relevant archive examples. Do not generalize from a single event when the user asks about a broad pattern.
 - If the user asks whether anti-Chinese violence was national, regional, southern, western, midwestern, etc.: use search_archive once or twice to gather multiple examples from relevant regions (e.g. limit 10–15); prefer at least 2–4 representative archive examples; then use file_search only for interpretive support. Do not make many separate search_archive calls.
@@ -121,6 +149,7 @@ export default async function handler(req, context) {
   }
 
   const message = body.message != null ? String(body.message).trim() : "";
+  const history = normalizeHistory(body.history);
   if (!message) {
     return new Response(JSON.stringify({ error: "Missing or empty message." }), {
       status: 400,
@@ -142,9 +171,6 @@ export default async function handler(req, context) {
   const archiveVsId = process.env.OPENAI_ARCHIVE_VECTOR_STORE_ID;
   const secondaryVsId = process.env.OPENAI_SECONDARY_VECTOR_STORE_ID;
   const vectorStoreIds = [archiveVsId, secondaryVsId].filter(Boolean);
-  const vectorStoreIdsPresent = [];
-  if (archiveVsId) vectorStoreIdsPresent.push("OPENAI_ARCHIVE_VECTOR_STORE_ID");
-  if (secondaryVsId) vectorStoreIdsPresent.push("OPENAI_SECONDARY_VECTOR_STORE_ID");
   const usedVectorStores = vectorStoreIds.length > 0;
   const tools =
     usedVectorStores
@@ -180,7 +206,7 @@ export default async function handler(req, context) {
       };
 
       if (previousResponseId == null) {
-        createParams.input = message;
+        createParams.input = buildConversationInput(history, message);
       } else {
         createParams.previous_response_id = previousResponseId;
         createParams.input = toolInputs;
@@ -294,4 +320,31 @@ function isTransientError(err) {
   if (status === 502 || status === 503 || status === 504) return true;
   if (msg.includes("timeout") || msg.includes("econnreset") || msg.includes("econnrefused")) return true;
   return false;
+}
+
+function normalizeHistory(history) {
+  if (!Array.isArray(history)) return [];
+
+  return history
+    .filter((item) => item && (item.role === "user" || item.role === "assistant"))
+    .map((item) => ({
+      role: item.role,
+      content: String(item.content ?? "").trim(),
+    }))
+    .filter((item) => item.content)
+    .slice(-4);
+}
+
+function buildConversationInput(history, message) {
+  const input = history.map((item) => ({
+    role: item.role,
+    content: item.content,
+  }));
+
+  input.push({
+    role: "user",
+    content: message,
+  });
+
+  return input;
 }

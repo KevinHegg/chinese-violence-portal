@@ -10,6 +10,8 @@ import fs from "node:fs";
 
 const DEFAULT_LIMIT = 5;
 const MAX_LIMIT = 20;
+const DEFAULT_ARTICLE_SEARCH_FIELDS = ["headline", "summary", "transcript", "keywords"];
+const ALLOWED_ARTICLE_SEARCH_FIELDS = new Set(DEFAULT_ARTICLE_SEARCH_FIELDS);
 
 const CANDIDATE_RELATIVE_PATHS = [
   "../../data/archive-json",    // bundled: search_archive.mjs at .../search_archive/netlify/functions/ -> ../../data/archive-json
@@ -70,6 +72,42 @@ function tokenizeKeywords(keywordsStr) {
     .filter(Boolean);
 }
 
+function normalizeSearchText(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function normalizeMatchMode(value) {
+  if (value === "exact_phrase" || value === "contains") return value;
+  return "default";
+}
+
+function normalizeMode(value) {
+  if (value === "exhaustive_phrase") return value;
+  return null;
+}
+
+function normalizeSearchFields(fields) {
+  if (!Array.isArray(fields) || fields.length === 0) {
+    return [...DEFAULT_ARTICLE_SEARCH_FIELDS];
+  }
+
+  const normalized = fields
+    .map((field) => String(field || "").trim())
+    .filter((field) => ALLOWED_ARTICLE_SEARCH_FIELDS.has(field));
+
+  return normalized.length ? normalized : [...DEFAULT_ARTICLE_SEARCH_FIELDS];
+}
+
+function getArticleFieldValue(article, field) {
+  if (field === "keywords") {
+    return Array.isArray(article.keywords) ? article.keywords.join(" ") : "";
+  }
+  return article[field] ?? "";
+}
+
 function scoreText(tokens, text, weight) {
   if (!text || !tokens.length) return 0;
   const lower = String(text).toLowerCase();
@@ -114,6 +152,57 @@ function scoreArticle(article, tokens) {
   s += scoreText(tokens, article.location, ARTICLE_WEIGHTS.location);
   s += scoreKeywordArray(tokens, article.keywords, ARTICLE_WEIGHTS.keywords);
   return s;
+}
+
+function scoreArticleByFields(article, tokens, fields) {
+  if (!tokens.length) return 0;
+
+  const usingDefaultFields =
+    fields.length === DEFAULT_ARTICLE_SEARCH_FIELDS.length &&
+    DEFAULT_ARTICLE_SEARCH_FIELDS.every((field) => fields.includes(field));
+
+  if (usingDefaultFields) {
+    return scoreArticle(article, tokens);
+  }
+
+  let s = 0;
+  if (fields.includes("headline")) s += scoreText(tokens, article.headline, ARTICLE_WEIGHTS.headline);
+  if (fields.includes("summary")) s += scoreText(tokens, article.summary, ARTICLE_WEIGHTS.summary);
+  if (fields.includes("transcript")) s += scoreText(tokens, article.transcript, ARTICLE_WEIGHTS.transcript);
+  if (fields.includes("keywords")) s += scoreKeywordArray(tokens, article.keywords, ARTICLE_WEIGHTS.keywords);
+
+  // Keep id/linkage/location/newspaper signals for ordinary article lookup unless caller explicitly
+  // narrows fields for exhaustive phrase-style searches.
+  s += scoreText(tokens, article.id, ARTICLE_WEIGHTS.id);
+  s += scoreText(tokens, article.linked_record_id, ARTICLE_WEIGHTS.linked_record_id);
+  s += scoreText(tokens, article.newspaper, ARTICLE_WEIGHTS.newspaper);
+  s += scoreText(tokens, article.location, ARTICLE_WEIGHTS.location);
+  return s;
+}
+
+function matchesArticleByMode(article, queryText, matchMode, fields) {
+  const needle = normalizeSearchText(queryText);
+  if (!needle) return false;
+
+  for (const field of fields) {
+    const haystack = normalizeSearchText(getArticleFieldValue(article, field));
+    if (!haystack) continue;
+    if (matchMode === "exact_phrase" || matchMode === "contains") {
+      if (haystack.includes(needle)) return true;
+    }
+  }
+
+  return false;
+}
+
+function matchesArticleByPhrase(article, phrase) {
+  const needle = normalizeSearchText(phrase);
+  if (!needle) return false;
+
+  const transcript = normalizeSearchText(article.transcript);
+  const headline = normalizeSearchText(article.headline);
+
+  return transcript.includes(needle) || headline.includes(needle);
 }
 
 function filterEvents(events, query) {
@@ -196,9 +285,9 @@ function toCompactArticle(article, score) {
 }
 
 /**
- * Run archive search. Query: { type?, year?, decade?, state?, keywords?, limit?, linked_record_id? }.
+ * Run archive search. Query: { type?, year?, decade?, state?, keywords?, limit?, linked_record_id?, match_mode?, search_fields?, exhaustive?, mode?, phrase? }.
  * For type "articles", linked_record_id filters to articles whose linked_record_id matches (event's canonical link).
- * Returns { query, count, results }. Throws if data files are missing.
+ * Returns { query, count, total_matches, returned_matches, results }. Throws if data files are missing.
  */
 export function searchArchive(query) {
   const type = query.type;
@@ -207,11 +296,16 @@ export function searchArchive(query) {
   const state = query.state != null ? String(query.state) : undefined;
   const keywords = query.keywords != null ? String(query.keywords) : undefined;
   const linked_record_id = query.linked_record_id != null ? String(query.linked_record_id).trim() || undefined : undefined;
+  const match_mode = normalizeMatchMode(query.match_mode);
+  const search_fields = normalizeSearchFields(query.search_fields);
+  const exhaustive = query.exhaustive === true;
+  const mode = normalizeMode(query.mode);
+  const phrase = query.phrase != null ? String(query.phrase) : undefined;
   let limit = query.limit != null ? Number(query.limit) : DEFAULT_LIMIT;
   if (Number.isNaN(limit) || limit < 1) limit = DEFAULT_LIMIT;
   if (limit > MAX_LIMIT) limit = MAX_LIMIT;
 
-  const q = { type, year, decade, state, keywords, limit, linked_record_id };
+  const q = { type, year, decade, state, keywords, limit, linked_record_id, match_mode, search_fields, exhaustive, mode, phrase };
 
   let events = [];
   let articles = [];
@@ -244,17 +338,43 @@ export function searchArchive(query) {
 
   if (type !== "events") {
     let articleList = filterArticles(articles, q);
-    if (linked_record_id != null && linked_record_id !== "") {
+    if (mode === "exhaustive_phrase") {
+      if (type !== "articles") {
+        throw new Error('mode "exhaustive_phrase" is only valid for type "articles".');
+      }
+      const normalizedPhrase = normalizeSearchText(phrase);
+      if (!normalizedPhrase) {
+        throw new Error('mode "exhaustive_phrase" requires a non-empty "phrase" parameter.');
+      }
+
+      const matches = sortArticlesByDateOrId(articleList)
+        .filter((a) => matchesArticleByPhrase(a, normalizedPhrase))
+        .map((a) => toCompactArticle(a, 0));
+
+      results.push(...matches);
+    } else if (linked_record_id != null && linked_record_id !== "") {
       const sorted = sortArticlesByDateOrId(articleList);
       const compact = sorted.slice(0, limit).map((a) => toCompactArticle(a, 0));
       results.push(...compact);
     } else {
       if (tokens.length) {
-        articleList = articleList
-          .map((a) => ({ item: a, score: scoreArticle(a, tokens) }))
-          .filter((x) => x.score > 0)
-          .sort((a, b) => b.score - a.score)
-          .map((x) => toCompactArticle(x.item, x.score));
+        if (exhaustive && type === "articles" && match_mode !== "default") {
+          articleList = sortArticlesByDateOrId(
+            articleList.filter((a) => matchesArticleByMode(a, keywords, match_mode, search_fields))
+          ).map((a) => toCompactArticle(a, 0));
+        } else if (exhaustive && type === "articles") {
+          articleList = articleList
+            .map((a) => ({ item: a, score: scoreArticleByFields(a, tokens, search_fields) }))
+            .filter((x) => x.score > 0)
+            .sort((a, b) => b.score - a.score)
+            .map((x) => toCompactArticle(x.item, x.score));
+        } else {
+          articleList = articleList
+            .map((a) => ({ item: a, score: scoreArticleByFields(a, tokens, search_fields) }))
+            .filter((x) => x.score > 0)
+            .sort((a, b) => b.score - a.score)
+            .map((x) => toCompactArticle(x.item, x.score));
+        }
       } else {
         articleList = articleList.map((a) => toCompactArticle(a, 0));
       }
@@ -262,8 +382,11 @@ export function searchArchive(query) {
     }
   }
 
-  results.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
-  const top = results.slice(0, limit);
+  if (mode !== "exhaustive_phrase") {
+    results.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+  }
+  const totalMatches = results.length;
+  const top = mode === "exhaustive_phrase" ? results : results.slice(0, limit);
 
   return {
     query: {
@@ -273,9 +396,16 @@ export function searchArchive(query) {
       state: q.state ?? null,
       keywords: q.keywords ?? null,
       linked_record_id: q.linked_record_id ?? null,
+      match_mode: q.match_mode ?? null,
+      search_fields: Array.isArray(q.search_fields) ? q.search_fields : null,
+      exhaustive: q.exhaustive === true,
+      mode: q.mode ?? null,
+      phrase: q.phrase ?? null,
       limit: q.limit,
     },
     count: top.length,
+    total_matches: totalMatches,
+    returned_matches: top.length,
     results: top,
   };
 }

@@ -2,6 +2,9 @@
  * Netlify function: POST-only archive search.
  * Uses (req, context) and returns a Response. Does not affect ask.js or /chat.
  *
+ * Supports ordinary scored search plus deterministic article phrase search via:
+ * { type: "articles", mode: "exhaustive_phrase", phrase: "..." }
+ *
  * Run locally: node netlify/functions/test-search-archive.mjs
  */
 
@@ -42,6 +45,8 @@ export default async function handler(req, context) {
         details,
         query: body,
         count: 0,
+        total_matches: 0,
+        returned_matches: 0,
         results: [],
       }),
       { status: 500, headers: JSON_HEADERS }
