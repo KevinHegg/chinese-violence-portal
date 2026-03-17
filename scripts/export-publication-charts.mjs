@@ -237,7 +237,7 @@ function buildChartData(lynchings) {
     const censusPoints = rows.map((r) => ({
       year: parseInt(r['Census Year'] || r.year, 10),
       black: parseInt(r['Black population'] || r.black || 0, 10),
-      asian: parseInt(r['Chinese Population'] || r.chinese || r.asian || 0, 10),
+      asian: parseInt(r['Asian Population'] || r['Chinese Population'] || r.chinese || r.asian || 0, 10),
     })).filter((p) => p.year && (p.black > 0 || p.asian > 0));
     for (let i = 0; i < censusPoints.length - 1; i++) {
       const a = censusPoints[i];
@@ -1301,22 +1301,22 @@ function buildChartConfigs(data) {
   const maxV = Math.max(...victimsSeries, 1);
   const labelTop = maxV + Math.max(3, Math.round(maxV * 0.15));
   configs.push({
-    name: '8. Anti-Chinese Violence and Chinese Population in the U.S. (1850-1915)',
+    name: '8. Anti-Chinese Violence and Asian Population in the U.S. (1850-1915)',
     width: PRINT.width,
     height: PRINT.heightTall,
     pixelRatio: PRINT.pixelRatio,
     option: {
       ...base(),
       title: { show: false },
-      legend: { data: ['Victims', 'Chinese Population'], bottom: 8 + Pb, textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
+      legend: { data: ['Victims', 'Asian Population'], bottom: 8 + Pb, textStyle: { color: T.text, fontFamily: T.font, fontSize: F.legend } },
       xAxis: { type: 'category', data: data.comboYears, ...axis() },
       yAxis: [
         { type: 'value', name: 'Number of Victims', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, position: 'left', max: labelTop + 2, ...axisYLeft(), nameGap: 40 },
-        { type: 'value', name: 'Chinese Population', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, position: 'right', axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel, rotate: 0 }, ...axisYRight(), nameGap: 90 },
+        { type: 'value', name: 'Asian Population', nameTextStyle: { color: T.text, fontFamily: T.font, fontSize: F.axisName }, position: 'right', axisLabel: { color: T.text, fontFamily: T.font, fontSize: F.axisLabel, rotate: 0 }, ...axisYRight(), nameGap: 90 },
       ],
       series: [
         { name: 'Victims', type: 'bar', data: victimsSeries, yAxisIndex: 0, itemStyle: { color: T.series[0] }, barWidth: '60%', markLine: { silent: true, symbol: ['none', 'none'], lineStyle: { color: T.axis, type: 'dashed', width: 1 }, data: data.policyEvents.map((e) => ({ xAxis: e.year })) } },
-        { name: 'Chinese Population', type: 'line', data: popSeries, yAxisIndex: 1, lineStyle: { color: T.series[1], width: 2 }, symbol: 'circle', symbolSize: 4, itemStyle: { color: T.series[1] } },
+        { name: 'Asian Population', type: 'line', data: popSeries, yAxisIndex: 1, lineStyle: { color: T.series[1], width: 2 }, symbol: 'circle', symbolSize: 4, itemStyle: { color: T.series[1] } },
       ],
       grid: { left: 65 + Pl, right: 105 + Pr, top: 35 + Pt, bottom: 65 + Pb },
     },

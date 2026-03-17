@@ -11,7 +11,7 @@ const censusData = timeline
   .map(e => {
     // Extract Black population
     const blackMatch = e.text.match(/Total African-American Population: ([\d,]+)/);
-    // Extract Asian population (used as proxy for Chinese during this period)
+    // Extract Asian population totals from the census timeline entries
     const asianMatch = e.text.match(/Total Asian Population: ([\d,]+)/);
     
     return {

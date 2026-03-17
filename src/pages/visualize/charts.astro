@@ -74,7 +74,7 @@ const CHINESE_MUST_GO_BY_STATE: Record<string, number> = {
       <li><a href="#chart-07" class="text-vintage-ink underline hover:no-underline focus:no-underline"><strong>Types of Violence:</strong></a> Breakdown of violence types by victim count.</li>
       <li><a href="#chart-08" class="text-vintage-ink underline hover:no-underline focus:no-underline"><strong>Categories &amp; Pretexts:</strong></a> Distribution of violence categories and stated pretexts.</li>
       <li><a href="#chart-10" class="text-vintage-ink underline hover:no-underline focus:no-underline"><strong>Killing Method:</strong></a> Distribution of how victims were killed.</li>
-      <li><a href="#chart-11" class="text-vintage-ink underline hover:no-underline focus:no-underline"><strong>Violence &amp; Population:</strong></a> Victims per year alongside Chinese population growth and key policy events.</li>
+      <li><a href="#chart-11" class="text-vintage-ink underline hover:no-underline focus:no-underline"><strong>Violence &amp; Population:</strong></a> Victims per year alongside Asian population growth and key policy events.</li>
       <li><a href="#chart-12" class="text-vintage-ink underline hover:no-underline focus:no-underline"><strong>Hong Di Lynching Reports by State:</strong></a> Geographic distribution of newspaper articles reporting the Hong Di lynching (Colusa, California, July 1887), by state of publication (N=1,406).</li>
       <li><a href="#chart-13" class="text-vintage-ink underline hover:no-underline focus:no-underline"><strong>"Chinese Must Go" Mentions by State:</strong></a> Geographic distribution of newspaper mentions of the anti-Chinese slogan "Chinese must go" by state of publication, 1878–1925 (N=2,875).</li>
       </ol>
@@ -249,14 +249,14 @@ const CHINESE_MUST_GO_BY_STATE: Record<string, number> = {
     <!-- Chart 11 -->
     <div id="chart-11" data-chart-index="11" class="scroll-mt-24">
       <div class="relative bg-gradient-to-br from-amber-200 to-yellow-200 border-2 border-amber-500 rounded-xl shadow-2xl p-6 mb-12">
-      <h2 id="chart-11-title" class="text-xl font-semibold mb-2 text-vintage-ink">8. Anti-Chinese Violence & Chinese Population in the U.S. (1850–1915)</h2>
-             <p class="mb-4 text-sm text-vintage-ink">A combination chart showing the number of victims per year (bar), the Chinese population (line), and key policy events (vertical markers).</p>
+      <h2 id="chart-11-title" class="text-xl font-semibold mb-2 text-vintage-ink">8. Anti-Chinese Violence & Asian Population in the U.S. (1850–1915)</h2>
+             <p class="mb-4 text-sm text-vintage-ink">A combination chart showing the number of victims per year (bar), the Asian population (line), and key policy events (vertical markers).</p>
       <div id="chart-combo" 
            class="chart-container-large"
            role="img"
-           aria-label="Combination chart showing victims per year, Chinese population, and key policy events from 1850 to 1915"
+           aria-label="Combination chart showing victims per year, Asian population, and key policy events from 1850 to 1915"
            aria-describedby="chart-combo-desc"></div>
-      <p id="chart-combo-desc" class="sr-only">This combination chart displays the number of victims per year as bars, the Chinese population as a line, and key policy events as vertical markers. Use the data table below for detailed values.</p>
+      <p id="chart-combo-desc" class="sr-only">This combination chart displays the number of victims per year as bars, the Asian population as a line, and key policy events as vertical markers. Use the data table below for detailed values.</p>
       <div id="chart-combo-table" class="sr-only" role="region" aria-label="Data table for combination chart"></div>
       <a href="#charts-top" class="absolute bottom-2 right-4 text-xs text-vintage-ink/60 hover:text-vintage-ink hover:underline" aria-label="Back to top">top</a>
       </div>
@@ -1092,7 +1092,7 @@ const CHINESE_MUST_GO_BY_STATE: Record<string, number> = {
       victimsSeries[i].toString(),
       popSeries[i] ? popSeries[i].toLocaleString() : 'N/A'
     ]);
-    createDataTable('chart-combo-table', ['Year', 'Victims', 'Chinese Population'], comboTableRows, 'Data table for combination chart');
+    createDataTable('chart-combo-table', ['Year', 'Victims', 'Asian Population'], comboTableRows, 'Data table for combination chart');
     
     const chartCombo = echarts.init(document.getElementById('chart-combo'));
     chartCombo.setOption({
@@ -1124,7 +1124,7 @@ const CHINESE_MUST_GO_BY_STATE: Record<string, number> = {
             var item = params[i];
             var color = item.seriesName === 'Victims' ? '#C9A0A0' : '#DAA520';
             var value;
-            if (item.seriesName === 'Chinese Population') {
+            if (item.seriesName === 'Asian Population') {
               value = item.value ? item.value.toLocaleString() : 'N/A';
             } else {
               value = Math.round(item.value || 0);
@@ -1138,7 +1138,7 @@ const CHINESE_MUST_GO_BY_STATE: Record<string, number> = {
         }
       },
       legend: { 
-        data: ['Victims', 'Chinese Population'], 
+        data: ['Victims', 'Asian Population'], 
         bottom: 8,
         left: 'center',
         itemGap: 40,
@@ -1176,7 +1176,7 @@ const CHINESE_MUST_GO_BY_STATE: Record<string, number> = {
         },
         {
           type: 'value',
-          name: 'Chinese Population',
+          name: 'Asian Population',
           position: 'right',
           nameLocation: 'center',
           nameGap: 55,
@@ -1226,7 +1226,7 @@ const CHINESE_MUST_GO_BY_STATE: Record<string, number> = {
           }
         },
         {
-          name: 'Chinese Population',
+          name: 'Asian Population',
           type: 'line',
           data: popSeries,
           yAxisIndex: 1,
@@ -1247,7 +1247,7 @@ const CHINESE_MUST_GO_BY_STATE: Record<string, number> = {
           }
         }
       ],
-      grid: { left: 70, right: 75, top: 70, bottom: 55 },
+      grid: { left: 70, right: 75, top: 86, bottom: 55 },
       responsive: true
     });
 
@@ -1489,6 +1489,7 @@ const CHINESE_MUST_GO_BY_STATE: Record<string, number> = {
     initChineseMustGoMap();
 
     function renderPolicyEventGraphics() {
+      var markerLift = 14;
       var graphics = policyEvents.map(function(event) {
         var useAltRow = event.year === 1882 || event.year === 1892;
         var labelValue = useAltRow ? labelTopAlt : labelTop;
@@ -1505,7 +1506,7 @@ const CHINESE_MUST_GO_BY_STATE: Record<string, number> = {
               type: 'line',
               shape: {
                 x1: labelPixel[0],
-                y1: labelPixel[1] + 4,
+                y1: labelPixel[1] - markerLift + 8,
                 x2: labelPixel[0],
                 y2: axisPixel[1]
               },
@@ -1520,7 +1521,7 @@ const CHINESE_MUST_GO_BY_STATE: Record<string, number> = {
               style: {
                 text: event.label,
                 x: labelPixel[0],
-                y: labelPixel[1] - 4,
+                y: labelPixel[1] - markerLift,
                 font: 'bold 11px sans-serif',
                 fill: '#333',
                 textAlign: 'center',
