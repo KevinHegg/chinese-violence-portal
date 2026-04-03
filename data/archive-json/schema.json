@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "John Crow Archive JSON",
-  "description": "Authoritative schema for events.json and articles.json. Do not rename or add fields.",
+  "title": "Chinese Red Record Archive JSON",
+  "description": "Authoritative schema for Chinese Red Record events.json and articles.json. Do not rename or add fields.",
   "definitions": {
     "event": {
       "type": "object",

@@ -1,9 +1,9 @@
-# The John Crow Project (Chinese Violence Portal)
+# Chinese Red Record
 
-The John Crow Project is a digital archive and visualization of anti-Chinese violence in the United States (c. 1850–1915).  
+Chinese Red Record is a digital archive and visualization of anti-Chinese violence in the United States (c. 1850–1915).  
 It combines narrative case records, primary-source newspaper scans, and interactive charts/maps to make a neglected history legible and researchable.
 
-Live site: https://johncrow.org
+Live site: https://chineseredrecord.org
 
 ---
 
@@ -29,7 +29,7 @@ This repository contains the Astro codebase, data ingestion scripts, and documen
 - **Data pipeline**:
   - Google Sheets as the primary data source
   - Node scripts to sync sheets → JSON in `public/` / `src/data/`
-- **Deployment**: Netlify (production at `https://johncrow.org`)
+- **Deployment**: Netlify (production at `https://chineseredrecord.org`)
 
 ---
 

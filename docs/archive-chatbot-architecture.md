@@ -1,6 +1,6 @@
 # Building an Archive Chatbot with Deterministic Search and LLM Interpretation
 
-This document describes the architecture that powers the **Ask the Archive** assistant for the [John Crow Project](https://johncrow.org), which helps users explore anti-Chinese violence in the United States (1848–1924). The goal is to provide **grounded answers**, **deterministic archive links**, and **interpretive synthesis** using curated scholarship—without allowing the model to hallucinate archive records. The design is intended to be transparent and reproducible so other digital archives can adapt it.
+This document describes the architecture that powers the **Ask the Archive** assistant for [Chinese Red Record](https://chineseredrecord.org), which helps users explore anti-Chinese violence in the United States (1848–1924). The goal is to provide **grounded answers**, **deterministic archive links**, and **interpretive synthesis** using curated scholarship, without allowing the model to hallucinate archive records. The design is intended to be transparent and reproducible so other digital archives can adapt it.
 
 ---
 
@@ -8,7 +8,7 @@ This document describes the architecture that powers the **Ask the Archive** ass
 
 - **Archive facts must come from structured data.** Every record ID, date, location, and URL cited in an answer is retrieved from a deterministic search over the project’s own data.
 
-- **The LLM must never invent archive records.** The model cannot fabricate event IDs, article IDs, or johncrow.org URLs. It can only reference results returned by the `search_archive` tool.
+- **The LLM must never invent archive records.** The model cannot fabricate event IDs, article IDs, or archive URLs. It can only reference results returned by the `search_archive` tool.
 
 - **Interpretive answers should draw on curated scholarship.** Broader questions about meaning, patterns, and historical significance are grounded in a primary thesis and optional secondary sources stored in vector stores and retrieved via `file_search`.
 
@@ -60,7 +60,7 @@ The archive is indexed as **structured JSON** that the chatbot never sees direct
 - `id` — canonical record ID (e.g. `WY1885-09-02`)
 - `date`, `year`, `decade`, `state`, `location`
 - `title`, `summary`, `narrative`
-- `url` — canonical record URL (e.g. `https://johncrow.org/records/...`)
+- `url` — canonical record URL (e.g. `https://chineseredrecord.org/records/...`)
 - `article_ids` — array of linked article IDs
 - `keywords` — for search scoring
 
@@ -70,7 +70,7 @@ The archive is indexed as **structured JSON** that the chatbot never sees direct
 - `linked_record_id` — event ID this article is tied to
 - `headline`, `newspaper`, `publication_date`
 - `summary`, `transcript`
-- `url` — canonical article URL (e.g. `https://johncrow.org/articles/...`)
+- `url` — canonical article URL (e.g. `https://chineseredrecord.org/articles/...`)
 - `keywords`
 
 A schema is defined in `data/archive-json/schema.json`. The chatbot uses these files only through the Netlify function `search_archive`, which reads the JSON and returns filtered, scored results.
@@ -102,14 +102,14 @@ Interpretation and historical framing come from **vector stores** attached to th
 **Two vector stores** are used (configured via environment variables, not committed):
 
 1. **Archive Structured**  
-   - Primary thesis PDF (e.g. *A Murder of Crows – John Crow Thesis*).  
+   - Primary thesis PDF (e.g. *The Chinese Red Record: Western Lynch Law and the Nationalization of Racial Terror, 1853–1915*).  
    - Sitemap / navigation document for the archive (e.g. `site-map-llm.md`).  
    - Other curated interpretive materials.
 
 2. **Secondary Sources**  
    - Scholarly PDFs and historical research that support context and comparison.
 
-The thesis is named explicitly in the system instruction as the **primary interpretive framework**. The model is told to prefer retrieving passages from it for questions about patterns, causes, regional scope, and the meaning of terms like “John Crow.” Archive facts (record IDs, URLs) still must come from `search_archive` only.
+The thesis is named explicitly in the system instruction as the **primary interpretive framework**. The model is told to prefer retrieving passages from it for questions about patterns, causes, regional scope, and the archive's interpretive framing. Archive facts (record IDs, URLs) still must come from `search_archive` only.
 
 `file_search` is attached to the Responses API request when the corresponding vector store IDs are set in the environment. The same request can include both `search_archive` (function tool) and `file_search` (vector store tool).
 
@@ -119,7 +119,7 @@ The thesis is named explicitly in the system instruction as the **primary interp
 
 The system instruction encodes the separation of archive truth and interpretation:
 
-- **`search_archive` is authoritative** for archive records, record IDs, article IDs, and all archive URLs. The model may only cite johncrow.org URLs that were returned by this tool.
+- **`search_archive` is authoritative** for archive records, record IDs, article IDs, and all archive URLs. The model may only cite `chineseredrecord.org` URLs that were returned by this tool.
 - **`file_search` provides interpretation** (thesis, secondary sources). It must not be used as a source for archive records or URLs.
 - **The model must never invent** archive records, dates, IDs, or URLs.
 - **Interpretive questions** (patterns, significance, regional scope) should prefer the thesis first, then other secondary sources.
@@ -222,4 +222,4 @@ Because the model must call `search_archive` for any claim about the archive, it
 
 ---
 
-*This document describes the John Crow Project’s archive chatbot as of the date of the repository. Implementation details live in `netlify/functions/chat-response.js`, `netlify/functions/search_archive.js`, `netlify/functions/lib/archive-search.js`, and the chat page and test page referenced above.*
+*This document describes Chinese Red Record's archive chatbot as of the date of the repository. Implementation details live in `netlify/functions/chat-response.js`, `netlify/functions/search_archive.js`, `netlify/functions/lib/archive-search.js`, and the chat page and test page referenced above.*

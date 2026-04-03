@@ -12,6 +12,8 @@ const DEFAULT_LIMIT = 5;
 const MAX_LIMIT = 20;
 const DEFAULT_ARTICLE_SEARCH_FIELDS = ["headline", "summary", "transcript", "keywords"];
 const ALLOWED_ARTICLE_SEARCH_FIELDS = new Set(DEFAULT_ARTICLE_SEARCH_FIELDS);
+const CURRENT_SITE_URL = "https://chineseredrecord.org";
+const LEGACY_SITE_URL = "https://johncrow.org";
 
 const CANDIDATE_RELATIVE_PATHS = [
   "../../data/archive-json",    // bundled: search_archive.mjs at .../search_archive/netlify/functions/ -> ../../data/archive-json
@@ -252,6 +254,13 @@ function sortArticlesByDateOrId(articles) {
   });
 }
 
+function normalizeArchiveUrl(url, fallbackPath) {
+  const raw = String(url || "").trim();
+  if (!raw) return `${CURRENT_SITE_URL}${fallbackPath}`;
+  if (raw.startsWith("/")) return `${CURRENT_SITE_URL}${raw}`;
+  return raw.replace(LEGACY_SITE_URL, CURRENT_SITE_URL);
+}
+
 function toCompactEvent(event, score) {
   return {
     id: event.id,
@@ -262,7 +271,7 @@ function toCompactEvent(event, score) {
     location: event.location,
     title: event.title,
     summary: event.summary,
-    url: event.url,
+    url: normalizeArchiveUrl(event.url, `/records/${event.id}`),
     score,
   };
 }
@@ -279,7 +288,7 @@ function toCompactArticle(article, score) {
     headline: article.headline,
     newspaper: article.newspaper,
     summary: article.summary,
-    url: article.url,
+    url: normalizeArchiveUrl(article.url, `/articles/${article.id}`),
     score,
   };
 }

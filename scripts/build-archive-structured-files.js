@@ -2,10 +2,10 @@
  * build-archive-structured-files.js
  *
  * Generates canonical archive-structured files for manual upload to the
- * john-crow-archive-structured vector store. Do NOT create or manage the
+ * Chinese Red Record archive structured vector store. Do NOT create or manage the
  * vector store; this script only produces the corpus files.
  *
- * Source: public/data/johncrow_data.json (from build-johncrow-json.mjs)
+ * Source: public/data/johncrow_data.json (from build-archive-source-json.mjs)
  * Output: data/vectorstore/archive-structured/
  *
  * Rerun after major archive dataset updates.
@@ -21,6 +21,8 @@ const ROOT = path.resolve(__dirname, '..');
 
 const SOURCE_PATH = path.join(ROOT, 'public/data/johncrow_data.json');
 const OUT_DIR = path.join(ROOT, 'data/vectorstore/archive-structured');
+const CURRENT_SITE_URL = 'https://chineseredrecord.org';
+const LEGACY_SITE_URL = 'https://johncrow.org';
 
 const SEP = '\n---\n';
 
@@ -53,6 +55,13 @@ function normalizeWhitespace(text) {
     .trim();
 }
 
+function normalizeArchiveUrl(url, fallbackPath) {
+  const raw = String(url ?? '').trim();
+  if (!raw) return `${CURRENT_SITE_URL}${fallbackPath}`;
+  if (raw.startsWith('/')) return `${CURRENT_SITE_URL}${raw}`;
+  return raw.replace(LEGACY_SITE_URL, CURRENT_SITE_URL);
+}
+
 function decadeFromYear(year) {
   if (year == null || typeof year !== 'number' || Number.isNaN(year)) return '';
   const d = Math.floor(Number(year) / 10) * 10;
@@ -64,7 +73,7 @@ function requireSource(data) {
     throw new Error(`Invalid source data: expected object, got ${typeof data}`);
   }
   if (!Array.isArray(data.records)) {
-    throw new Error('Source missing "records" array. Is public/data/johncrow_data.json from build-johncrow-json.mjs?');
+    throw new Error('Source missing "records" array. Is public/data/johncrow_data.json from build-archive-source-json.mjs?');
   }
   if (!Array.isArray(data.articles)) {
     throw new Error('Source missing "articles" array.');
@@ -78,7 +87,7 @@ function buildEventBlock(record) {
   const state = record.state ?? '';
   const location = record.place ?? '';
   const title = record.narrative_title || record.narrative_short_title || '';
-  const url = record.url || `https://johncrow.org/records/${id}`;
+  const url = normalizeArchiveUrl(record.url, `/records/${id}`);
   const summary = stripHtml(record.narrative_summary ?? '');
   const narrative = stripHtml(record.narrative_summary ?? '');
   const decade = decadeFromYear(year);
@@ -109,7 +118,7 @@ function buildArticleBlock(article) {
   const headline = (article.headline ?? '').replace(/\n/g, ' ');
   const newspaper = article.publication ?? '';
   const pubDate = article.date ?? '';
-  const url = article.url || `https://johncrow.org/articles/${id}`;
+  const url = normalizeArchiveUrl(article.url, `/articles/${id}`);
   const summary = stripHtml(article.summary ?? '');
 
   const lines = [
@@ -133,7 +142,7 @@ function buildTranscriptBlock(article) {
   const headline = (article.headline ?? '').replace(/\n/g, ' ');
   const newspaper = article.publication ?? '';
   const pubDate = article.date ?? '';
-  const url = article.url || `https://johncrow.org/articles/${id}`;
+  const url = normalizeArchiveUrl(article.url, `/articles/${id}`);
   const transcript = normalizeWhitespace(stripHtml(article.transcript ?? ''));
 
   const lines = [
@@ -156,7 +165,7 @@ function buildNarrativeBlock(record) {
   const date = record.date ?? '';
   const location = record.place ?? '';
   const title = record.narrative_title || record.narrative_short_title || '';
-  const url = record.url || `https://johncrow.org/records/${id}`;
+  const url = normalizeArchiveUrl(record.url, `/records/${id}`);
   const narrative = stripHtml(record.narrative_summary ?? '');
 
   const lines = [
@@ -240,7 +249,7 @@ async function main() {
 
   console.log('');
   console.log('Output directory:', OUT_DIR);
-  console.log('Add these files manually to the john-crow-archive-structured vector store.');
+  console.log('Add these files manually to the Chinese Red Record archive structured vector store.');
 }
 
 main().catch((err) => {

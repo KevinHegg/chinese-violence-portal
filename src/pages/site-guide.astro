@@ -9,13 +9,13 @@ export const prerender = true;
 <PageLayout 
   title="Site Guide" 
   currentPage="site-guide"
-  description="Internal site guide describing how the John Crow Project is structured, how data flows, and how core interpretive systems work."
+  description="Internal site guide describing how Chinese Red Record is structured, how data flows, and how core interpretive systems work."
 >
   <div class="prose prose-lg max-w-none">
     <h1 class="text-4xl font-bold mb-6 text-base-content">Site Guide</h1>
     
     <p class="text-lg text-base-content/90 leading-relaxed mb-6">
-      This site guide explains how the John Crow Project is organized: where its data comes from, how records and articles are generated, 
+      This site guide explains how Chinese Red Record is organized: where its data comes from, how records and articles are generated, 
       how maps and charts are built, and how guided docent tours connect evidence to argument. It is written for committee members, 
       collaborators, and future maintainers rather than a general public audience.
     </p>
@@ -47,7 +47,7 @@ export const prerender = true;
     </h2>
 
     <p class="text-base-content/90 leading-relaxed mb-4">
-      John Crow is both a research archive and an interpretive digital history project. It documents anti-Chinese violence in the United States, 
+      Chinese Red Record is both a research archive and an interpretive digital history project. It documents anti-Chinese violence in the United States, 
       roughly 1850–1915, and serves as a companion to the dissertation by making sources, data, and argument accessible in one place.
     </p>
 
@@ -270,7 +270,7 @@ export const prerender = true;
       <div class="bg-white border border-amber-200 rounded-lg p-5">
         <h4 class="text-lg font-semibold mb-3 text-vintage-ink">5. Ask the Archive (Archive Chatbot)</h4>
         <ul class="text-sm text-base-content/90 space-y-2">
-          <li><strong>Deterministic search</strong> — Archive facts, record IDs, and johncrow.org URLs come from a <code>search_archive</code> tool over structured JSON (events + articles); the LLM never invents records.</li>
+          <li><strong>Deterministic search</strong> — Archive facts, record IDs, and chineseredrecord.org URLs come from a <code>search_archive</code> tool over structured JSON (events + articles); the LLM never invents records.</li>
           <li><strong>Interpretive layer</strong> — Vector stores (thesis + secondary sources) provide context via <code>file_search</code> for patterns, significance, and historical framing.</li>
           <li><strong>Grounded answers</strong> — Concise responses with real archive links; “no matching record” when appropriate.</li>
           <li><strong>Suggested prompts</strong> — Pre-written cards (e.g. Rock Springs, Ah Yo, national scope) to guide exploration.</li>
@@ -528,7 +528,7 @@ chinese-violence-portal/
     <h3 class="text-2xl font-semibold mt-8 mb-4 text-base-content">Domain & Hosting</h3>
     <div class="bg-white border border-amber-200 rounded-lg p-5 mb-6 not-prose">
       <ul class="text-sm text-base-content/90 space-y-3">
-        <li><strong>Domain</strong> - johncrow.org (registered through domain registrar)</li>
+        <li><strong>Domain</strong> - chineseredrecord.org (registered through domain registrar)</li>
         <li><strong>Hosting</strong> - Netlify (https://www.netlify.com/)</li>
         <li><strong>SSL Certificate</strong> - Automatic HTTPS via Let's Encrypt</li>
         <li><strong>CDN</strong> - Global edge network for fast content delivery</li>
@@ -545,7 +545,7 @@ chinese-violence-portal/
         <li><strong>5. Data Sync</strong> - Pre-build script fetches latest Google Sheets data</li>
         <li><strong>6. Astro Build</strong> - Compiles all pages, optimizes assets</li>
         <li><strong>7. Deploy</strong> - Uploads built files to CDN</li>
-        <li><strong>8. Live</strong> - Site available at johncrow.org</li>
+        <li><strong>8. Live</strong> - Site available at chineseredrecord.org</li>
       </ol>
     </div>
 

@@ -14,7 +14,7 @@ const STEP_DEFS: StepDef[] = [
   {
     selector: "#home-framing",
     title: "Start with the argument",
-    text: "This project documents anti-Chinese racial terror and calls the Western system 'John Crow'—a regime aimed at expulsion. The site is built to let you move from narrative to evidence to pattern.",
+    text: "Chinese Red Record documents anti-Chinese racial terror as a scholarly archive of lynchings, expulsions, exclusion, and related violence. The site is built to let you move from narrative to evidence to pattern.",
   },
   {
     selector: "#qs-records",

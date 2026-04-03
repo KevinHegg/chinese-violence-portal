@@ -11,9 +11,9 @@ export interface Props {
   type?: string;
 }
 
-const { title, currentPage, description = "The John Crow Project revives a neglected chapter of American history: the white supremacist violence and legal exclusion aimed at Chinese immigrants after the Gold Rush.", image = "https://johncrow.org/johnchinaman.png", type = "website" } = Astro.props;
-const siteUrl = "https://johncrow.org";
-const fullTitle = `${title} - John Crow Project`;
+const { title, currentPage, description = "Chinese Red Record documents anti-Chinese lynchings, expulsions, exclusion, and racial terror through linked records, maps, charts, and primary-source newspapers.", image = "https://chineseredrecord.org/johnchinaman.png", type = "website" } = Astro.props;
+const siteUrl = "https://chineseredrecord.org";
+const fullTitle = `${title} | Chinese Red Record`;
 ---
 
 <!doctype html>
@@ -59,8 +59,8 @@ const fullTitle = `${title} - John Crow Project`;
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "name": "The John Crow Project",
-      "alternateName": "John Crow Archive",
+      "name": "Chinese Red Record",
+      "alternateName": "Chinese Red Record archive",
       "url": siteUrl,
       "description": description,
       "about": {

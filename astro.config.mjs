@@ -5,7 +5,7 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   output: 'server',
-  site: 'https://johncrow.org',
+  site: 'https://chineseredrecord.org',
   integrations: [
     react(),
     sitemap({

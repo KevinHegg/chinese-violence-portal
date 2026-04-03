@@ -17,9 +17,9 @@ steps:
     highlight: "#record-title"
     title: "The case that anchors the project"
     text: >
-      This record opens where John Crow and Jim Crow visibly converge: a Chinese victim,
-      a Southern setting, a familiar lynching script, and impunity. It is a point of entry
-      into a national story of racial terror.
+      This record shows how anti-Chinese lynching in the Mississippi Delta connects western
+      lynch law to a wider national history of racial terror. It is a point of entry into
+      the archive's larger argument.
 
   - id: 2
     route: "/records/MS1885-05-05"

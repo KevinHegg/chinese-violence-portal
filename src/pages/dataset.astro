@@ -3,12 +3,12 @@ import PageLayout from "../layouts/PageLayout.astro";
 import "../styles/western-colors.css";
 ---
 
-<PageLayout title="Dataset" currentPage="dataset">
+<PageLayout title="Chinese Red Record Dataset" currentPage="dataset">
   <head>
-    <meta name="description" content="Browse and download a living dataset of anti-Chinese violence (1850–1915) compiled from newspapers and archival sources. Sort, filter, and export records of lynchings, massacres, and exclusion events for research and education.">
+    <meta name="description" content="Browse and download the Chinese Red Record dataset of anti-Chinese lynchings and related violence (1850–1915). Sort, review, and export structured records for research and teaching.">
   </head>
   <div class="container-standard">
-    <h1 class="text-4xl font-bold mb-6">Anti-Chinese Lynching Dataset</h1>
+    <h1 class="text-4xl font-bold mb-6">Chinese Red Record Dataset</h1>
     <!-- Callout for Submit Form -->
     <div class="mb-6">
       <div class="bg-amber-100 border-l-4 border-amber-400 rounded-lg p-4 flex flex-col md:flex-row md:items-center gap-3 shadow-sm">
@@ -21,8 +21,8 @@ import "../styles/western-colors.css";
     
     <div class="mb-0">
       <p class="text-lg mb-4">
-        Explore a living dataset of anti-Chinese violence (1850 – 1915) drawn from newspapers and other archival sources. The table refreshes automatically whenever our Google Sheet is updated. 
-        <strong>Click</strong> any column header to sort the table. <strong>Click</strong> the same header again to sort in reverse order. The "[Full record]" link opens a web page with more details about the selected event.
+        Explore a living dataset of anti-Chinese lynchings and related lethal violence (1850 – 1915) drawn from newspapers and other archival sources. The table refreshes automatically whenever the Public tab of the Chinese lynchings master Google Sheet is updated.
+        <strong>Click</strong> any column header to sort the table. <strong>Click</strong> the same header again to sort in reverse order. The "[Full record]" link opens the corresponding archive record with additional evidence and narrative context.
       </p>
       
       <div class="flex flex-wrap gap-4 mb-0">
@@ -61,21 +61,21 @@ import "../styles/western-colors.css";
         </colgroup>
           <thead>
             <tr class="bg-gray-200">
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Identifier">ID</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="lynching-id">ID</th>
               <th class="px-2 py-2 text-left text-sm">Link</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Name">Name</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Gender">Gender</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Date">Date</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Year">Year</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Number of Victims">Victims</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="State">State/Terr.</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="County">County</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="City">City</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Category of Violence">Category of Violence</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Accusation or Pretext">Accusation</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Job">Job</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="Killing Method">Killing Method</th>
-              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm col-compiled-by-th" data-sort="Compiled By">Compiled By</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="victim-names">Name</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="victim-gender">Gender</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="date">Date</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="year">Year</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="number-of-victims">Victims</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="state">State/Terr.</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="county">County</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="city">City</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="category-of-violence">Category of Violence</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="accusation">Accusation</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="job">Job</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm" data-sort="killing-method">Killing Method</th>
+              <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-300 text-sm col-compiled-by-th" data-sort="compiled-by">Compiled By</th>
             </tr>
           </thead>
           <tbody id="table-body">
@@ -95,89 +95,97 @@ import "../styles/western-colors.css";
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
-  // CSV URL from Google Sheets
-  const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRNUFmt4rj08UFlhScGPJfiOTLPWS_HlT2eRukzdhTq24U2Y877iFBiyTWwHiG7OpHUsMich6giiluS/pub?gid=378919265&single=true&output=csv';
+  // @ts-nocheck - client-side DOM + export libraries loaded at runtime
+  const DATA_URL = '/api/lynchings?nocache=1';
+  const EXPORT_FILENAME_BASE = 'chinese-red-record-dataset';
+  const EXPORT_COLUMNS = [
+    { key: 'lynching-id', label: 'Identifier' },
+    { key: 'link', label: 'Link' },
+    { key: 'victim-names', label: 'Name' },
+    { key: 'victim-gender', label: 'Gender' },
+    { key: 'date', label: 'Date' },
+    { key: 'year', label: 'Year' },
+    { key: 'number-of-victims', label: 'Number of Victims' },
+    { key: 'state', label: 'State' },
+    { key: 'county', label: 'County' },
+    { key: 'city', label: 'City' },
+    { key: 'category-of-violence', label: 'Category of Violence' },
+    { key: 'accusation', label: 'Accusation or Pretext' },
+    { key: 'job', label: 'Job' },
+    { key: 'killing-method', label: 'Killing Method' },
+    { key: 'compiled-by', label: 'Compiled By' },
+  ];
 
-  let tableData: Record<string, string>[] = [];
-  let currentSort = { column: 'Year', direction: 'asc' };
+  let tableData = [];
+  let currentSort = { column: 'year', direction: 'asc' };
 
-  // Parse CSV with quoted fields (handles commas and newlines inside "...")
-  function parseCSV(csvText: string): string[][] {
-    const rows: string[][] = [];
-    let row: string[] = [];
-    let field = '';
-    let inQuotes = false;
-    const len = csvText.length;
-    for (let i = 0; i < len; i++) {
-      const c = csvText[i];
-      const next = csvText[i + 1];
-      if (inQuotes) {
-        if (c === '"') {
-          if (next === '"') {
-            field += '"';
-            i++;
-          } else {
-            inQuotes = false;
-          }
-        } else {
-          field += c;
-        }
-      } else {
-        if (c === '"') {
-          inQuotes = true;
-        } else if (c === ',') {
-          row.push(field.trim());
-          field = '';
-        } else if (c === '\n') {
-          row.push(field.trim());
-          field = '';
-          if (row.some(cell => cell.length > 0)) rows.push(row);
-          row = [];
-        } else if (c !== '\r') {
-          field += c;
-        }
-      }
+  function formatVictimNames(value) {
+    if (Array.isArray(value)) {
+      return value.map((name) => String(name || '').trim()).filter(Boolean).join('; ');
     }
-    if (field.length > 0 || row.length > 0) {
-      row.push(field.trim());
-      if (row.some(cell => cell.length > 0)) rows.push(row);
-    }
-    return rows;
+    return String(value || '').trim();
   }
 
-  // Load and parse CSV data
+  function getRecordPath(row) {
+    const id = String(row['lynching-id'] || '').trim();
+    return id ? `/records/${encodeURIComponent(id)}` : '';
+  }
+
+  function getCellValue(row, key) {
+    switch (key) {
+      case 'link':
+        return getRecordPath(row) ? `${window.location.origin}${getRecordPath(row)}` : '';
+      case 'victim-names':
+        return formatVictimNames(row['victim-names']);
+      case 'number-of-victims': {
+        const n = Number.parseInt(row['number-of-victims'], 10);
+        return Number.isFinite(n) ? String(n) : '';
+      }
+      case 'year': {
+        const n = Number.parseInt(row.year, 10);
+        return Number.isFinite(n) ? String(n) : '';
+      }
+      default:
+        return String(row[key] || '').trim();
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function getExportRows() {
+    return tableData.map((row) => {
+      const exportRow = {};
+      EXPORT_COLUMNS.forEach(({ key, label }) => {
+        exportRow[label] = getCellValue(row, key);
+      });
+      return exportRow;
+    });
+  }
+
   async function loadData() {
     try {
-      const response = await fetch(CSV_URL);
-      const csvText = await response.text();
-      
-      const rows = parseCSV(csvText);
-      if (rows.length < 2) {
-        throw new Error('Invalid CSV format');
+      const response = await fetch(DATA_URL);
+      if (!response.ok) {
+        throw new Error(`Dataset request failed with status ${response.status}`);
       }
-      
-      const headers = rows[0].map(h => h.trim());
-      const data: Record<string, string>[] = [];
-      for (let i = 1; i < rows.length; i++) {
-        const values = rows[i];
-        const row: Record<string, string> = {};
-        headers.forEach((header, index) => {
-          row[header] = (values[index] ?? '').trim();
-        });
-        if (Object.values(row).some(v => v.length > 0)) {
-          data.push(row);
-        }
+
+      const data = await response.json();
+      if (!Array.isArray(data)) {
+        throw new Error('Dataset response was not an array');
       }
-      
-      tableData = data;
-      
-      // Initial sort and display
+
+      tableData = data.filter((row) => row && row['lynching-id']);
       sortData(currentSort.column, currentSort.direction);
       displayData();
       syncTableScrollWidth();
-      
     } catch (error) {
-      // Only log errors in development
       if (import.meta.env.DEV) {
         console.error('Error loading data:', error);
       }
@@ -188,61 +196,63 @@ import "../styles/western-colors.css";
     }
   }
 
-  // Sort data
-  function sortData(column: string, direction: 'asc' | 'desc') {
+  function sortData(column, direction) {
+    const numericColumns = new Set(['year', 'number-of-victims']);
     tableData.sort((a, b) => {
-      let aVal = a[column] || '';
-      let bVal = b[column] || '';
-      
-      // Handle numeric columns
-      if (column === 'Year' || column === 'Number of Victims') {
-        aVal = parseInt(aVal) || 0;
-        bVal = parseInt(bVal) || 0;
+      let aVal = getCellValue(a, column);
+      let bVal = getCellValue(b, column);
+
+      if (numericColumns.has(column)) {
+        aVal = Number.parseInt(aVal, 10) || 0;
+        bVal = Number.parseInt(bVal, 10) || 0;
+      } else {
+        aVal = String(aVal || '').toLowerCase();
+        bVal = String(bVal || '').toLowerCase();
       }
-      
+
+      if (aVal === bVal) return 0;
       if (direction === 'asc') {
         return aVal > bVal ? 1 : -1;
-      } else {
-        return aVal < bVal ? 1 : -1;
       }
+      return aVal < bVal ? 1 : -1;
     });
   }
 
-  // Display data in table
   function displayData() {
     const tbody = document.getElementById('table-body');
+    if (!tbody) return;
     tbody.innerHTML = '';
-    
+
+    if (tableData.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="15" class="text-center py-8">No records available.</td></tr>';
+      return;
+    }
+
     tableData.forEach((row, index) => {
       const tr = document.createElement('tr');
-      // Add alternating row background
-      if (index % 2 === 0) {
-        tr.className = 'hover:bg-gray-50 bg-white';
-      } else {
-        tr.className = 'hover:bg-gray-50 bg-gray-50';
-      }
-      
-      const compiledBy = row['Compiled By'] || '';
+      tr.className = index % 2 === 0 ? 'hover:bg-gray-50 bg-white' : 'hover:bg-gray-50 bg-gray-50';
+
+      const recordPath = getRecordPath(row);
       tr.innerHTML = `
-        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Identifier'] || ''}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${escapeHtml(getCellValue(row, 'lynching-id'))}</td>
         <td class="border border-gray-300 px-2 py-2 text-sm">
-          ${row['Link'] ? `<a href="${row['Link']}" target="_blank" class="text-blue-600 hover:underline text-sm">[Full record]</a>` : ''}
+          ${recordPath ? `<a href="${recordPath}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline text-sm">[Full record]</a>` : ''}
         </td>
-        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Name'] || ''}</td>
-        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Gender'] || ''}</td>
-        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Date'] || ''}</td>
-        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Year'] || ''}</td>
-        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Number of Victims'] || ''}</td>
-        <td class="border border-gray-300 px-2 py-2 text-sm">${row['State'] || ''}</td>
-        <td class="border border-gray-300 px-2 py-2 text-sm">${row['County'] || ''}</td>
-        <td class="border border-gray-300 px-2 py-2 text-sm">${row['City'] || ''}</td>
-        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Category of Violence'] || ''}</td>
-        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Accusation or Pretext'] || ''}</td>
-        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Job'] || ''}</td>
-        <td class="border border-gray-300 px-2 py-2 text-sm">${row['Killing Method'] || row['Killing method'] || row['killing-method'] || ''}</td>
-        <td class="border border-gray-300 px-2 py-2 text-sm cell-compiled-by">${compiledBy}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${escapeHtml(getCellValue(row, 'victim-names'))}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${escapeHtml(getCellValue(row, 'victim-gender'))}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${escapeHtml(getCellValue(row, 'date'))}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${escapeHtml(getCellValue(row, 'year'))}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${escapeHtml(getCellValue(row, 'number-of-victims'))}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${escapeHtml(getCellValue(row, 'state'))}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${escapeHtml(getCellValue(row, 'county'))}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${escapeHtml(getCellValue(row, 'city'))}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${escapeHtml(getCellValue(row, 'category-of-violence'))}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${escapeHtml(getCellValue(row, 'accusation'))}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${escapeHtml(getCellValue(row, 'job'))}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm">${escapeHtml(getCellValue(row, 'killing-method'))}</td>
+        <td class="border border-gray-300 px-2 py-2 text-sm cell-compiled-by">${escapeHtml(getCellValue(row, 'compiled-by'))}</td>
       `;
-      
+
       tbody.appendChild(tr);
     });
     syncTableScrollWidth();
@@ -273,6 +283,7 @@ import "../styles/western-colors.css";
     headers.forEach(header => {
       header.addEventListener('click', () => {
         const column = header.getAttribute('data-sort');
+        if (!column) return;
         const direction = currentSort.column === column && currentSort.direction === 'asc' ? 'desc' : 'asc';
         
         currentSort = { column, direction };
@@ -293,17 +304,18 @@ import "../styles/western-colors.css";
       return;
     }
     
-    const headers = Object.keys(tableData[0]);
+    const exportRows = getExportRows();
+    const headers = EXPORT_COLUMNS.map(({ label }) => label);
     const csvContent = [
       headers.join(','),
-      ...tableData.map(row => headers.map(header => `"${row[header] || ''}"`).join(','))
+      ...exportRows.map((row) => headers.map((header) => `"${String(row[header] || '').replace(/"/g, '""')}"`).join(','))
     ].join('\n');
     
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'chinese-violence-dataset.csv';
+    a.download = `${EXPORT_FILENAME_BASE}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
   }
@@ -314,7 +326,7 @@ import "../styles/western-colors.css";
       return;
     }
     
-    const worksheet = XLSX.utils.json_to_sheet(tableData);
+    const worksheet = XLSX.utils.json_to_sheet(getExportRows());
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
     
@@ -323,7 +335,7 @@ import "../styles/western-colors.css";
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'chinese-violence-dataset.xlsx';
+    a.download = `${EXPORT_FILENAME_BASE}.xlsx`;
     a.click();
     window.URL.revokeObjectURL(url);
   }
@@ -342,7 +354,7 @@ import "../styles/western-colors.css";
       
       // Add title
       const title = document.createElement('h1');
-      title.textContent = 'Chinese Violence Dataset (1850-1915)';
+      title.textContent = 'Chinese Red Record Dataset (1850-1915)';
       title.style.fontSize = '18px';
       title.style.marginBottom = '10px';
       title.style.color = '#333';
@@ -382,7 +394,7 @@ import "../styles/western-colors.css";
       // Configure html2pdf options
       const opt = {
         margin: [10, 10, 10, 10],
-        filename: 'chinese-violence-dataset.pdf',
+        filename: `${EXPORT_FILENAME_BASE}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
           scale: 2,

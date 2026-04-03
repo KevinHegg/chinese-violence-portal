@@ -10,7 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "build:archive": "node scripts/build-johncrow-json.mjs",
+    "build:archive": "node scripts/build-archive-source-json.mjs",
     "build:archive-structured": "node scripts/build-archive-structured-files.js",
     "build:archive-json": "node scripts/build-archive-json.js",
     "export-charts": "node ./scripts/export-publication-charts.mjs",

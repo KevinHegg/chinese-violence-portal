@@ -5,7 +5,7 @@
  * data/archive-json/events.json and data/archive-json/articles.json that
  * conform exactly to data/archive-json/schema.json.
  *
- * Source: public/data/johncrow_data.json (from build-johncrow-json.mjs)
+ * Source: public/data/johncrow_data.json (from build-archive-source-json.mjs)
  * Output: data/archive-json/events.json, data/archive-json/articles.json
  */
 
@@ -22,6 +22,8 @@ const SCHEMA_PATH = path.join(ROOT, 'data/archive-json/schema.json');
 const OUT_DIR = path.join(ROOT, 'data/archive-json');
 const EVENTS_PATH = path.join(OUT_DIR, 'events.json');
 const ARTICLES_PATH = path.join(OUT_DIR, 'articles.json');
+const CURRENT_SITE_URL = 'https://chineseredrecord.org';
+const LEGACY_SITE_URL = 'https://johncrow.org';
 
 function stripHtml(text) {
   if (text == null || text === '') return '';
@@ -49,6 +51,13 @@ function normalizeWhitespace(text) {
     .replace(/\r/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
+}
+
+function normalizeArchiveUrl(url, fallbackPath) {
+  const raw = String(url ?? '').trim();
+  if (!raw) return `${CURRENT_SITE_URL}${fallbackPath}`;
+  if (raw.startsWith('/')) return `${CURRENT_SITE_URL}${raw}`;
+  return raw.replace(LEGACY_SITE_URL, CURRENT_SITE_URL);
 }
 
 function parseYearFromDate(dateStr) {
@@ -183,7 +192,7 @@ function buildEvents(records, allArticleIds, stats) {
       title: r.narrative_title || r.narrative_short_title || '',
       summary: stripHtml(r.narrative_summary ?? ''),
       narrative: stripHtml(r.narrative_summary ?? ''),
-      url: r.url || `https://johncrow.org/records/${r.id ?? ''}`,
+      url: normalizeArchiveUrl(r.url, `/records/${r.id ?? ''}`),
       article_ids: articleIds,
       keywords,
     };
@@ -224,7 +233,7 @@ function buildArticles(articles, eventById, stats) {
       location,
       summary: stripHtml(a.summary ?? ''),
       transcript,
-      url: a.url || `https://johncrow.org/articles/${id}`,
+      url: normalizeArchiveUrl(a.url, `/articles/${id}`),
       keywords,
     };
   });

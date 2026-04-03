@@ -39,4 +39,4 @@ User-agent: cohere-ai
 Allow: /
 
 # Sitemap
-Sitemap: https://johncrow.org/sitemap-index.xml
+Sitemap: https://chineseredrecord.org/sitemap-index.xml

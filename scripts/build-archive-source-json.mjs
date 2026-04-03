@@ -6,6 +6,8 @@ import { parse } from 'csv-parse/sync';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
+const CURRENT_SITE_URL = 'https://chineseredrecord.org';
+const LEGACY_SITE_URL = 'https://johncrow.org';
 
 const LYNCHINGS_SHEET_ID = '18Bo9acVyuQTsdQ1baxSntSUZur50Yla8NcZKe2nZWyQ';
 // Use the Main tab for authoritative lynching/event data (default gid from site config)
@@ -75,7 +77,19 @@ function normalizeText(value) {
     .replace(/\u201C/g, '"')
     .replace(/\u201D/g, '"')
     .replace(/\u00a0/g, ' ')
+    .replace(/bloodiest decade of John Crow/g, 'bloodiest decade of anti-Chinese racial terror')
+    .replace(/John Crow Project dataset/g, 'Chinese Red Record archive dataset')
+    .replace(/John Crow dataset/g, 'Chinese Red Record archive dataset')
+    .replace(/John Crow Archive/g, 'Chinese Red Record archive')
+    .replace(/John Crow Project/g, 'Chinese Red Record')
     .trim();
+}
+
+function normalizeArchiveUrl(url, fallbackPath) {
+  const raw = String(url || '').trim();
+  if (!raw) return `${CURRENT_SITE_URL}${fallbackPath}`;
+  if (raw.startsWith('/')) return `${CURRENT_SITE_URL}${raw}`;
+  return raw.replace(LEGACY_SITE_URL, CURRENT_SITE_URL);
 }
 
 function parseDateWithPrecision(dateStr) {
@@ -156,7 +170,7 @@ function buildRecords(rows) {
 
       return {
         id: id.trim(),
-        url: link || null,
+        url: normalizeArchiveUrl(link, `/records/${id.trim()}`),
         newspaper_ids,
         name: normalizeText(getField(row, ['Name', 'name'])),
         gender: normalizeText(getField(row, ['Gender', 'gender'])),
@@ -213,7 +227,7 @@ function buildArticles(rows) {
       return {
         article_id: articleId.trim(),
         lynching_id: lynchingId || null,
-        url: link || null,
+        url: normalizeArchiveUrl(link, `/articles/${articleId.trim()}`),
         headline: normalizeText(getField(row, ['article-title', 'Article Title', 'article_title'])),
         publication: publication,
         publication_place: publicationPlace,
@@ -263,4 +277,3 @@ main().catch((err) => {
   console.error('Error building johncrow_data.json:', err);
   process.exit(1);
 });
-

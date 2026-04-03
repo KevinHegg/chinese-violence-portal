@@ -9,6 +9,15 @@ interface GoogleSheetsConfig {
   tabName?: string; // Alternative: tab name
 }
 
+function normalizeBrandingCopy(value: string): string {
+  return value
+    .replace(/bloodiest decade of John Crow/g, 'bloodiest decade of anti-Chinese racial terror')
+    .replace(/John Crow Project dataset/g, 'Chinese Red Record archive dataset')
+    .replace(/John Crow dataset/g, 'Chinese Red Record archive dataset')
+    .replace(/John Crow Archive/g, 'Chinese Red Record archive')
+    .replace(/John Crow Project/g, 'Chinese Red Record');
+}
+
 /**
  * Fetch CSV data from Google Sheets public export URL
  * Supports both export format and publish-to-web format
@@ -173,7 +182,7 @@ export function convertToLynchingFormat(rows: Record<string, string>[]): any[] {
       for (const name of possibleNames) {
         const v = row[name] ?? row[name.toLowerCase()] ?? row[name.toUpperCase()] ??
           row[name.replace(/ /g, '-')] ?? row[name.replace(/ /g, '_')] ?? row[name.replace(/-/g, ' ')];
-        if (v && String(v).trim()) return String(v).trim();
+        if (v && String(v).trim()) return normalizeBrandingCopy(String(v).trim());
       }
       return '';
     };
@@ -270,7 +279,7 @@ export function convertToArticleFormat(rows: Record<string, string>[]): any[] {
                      row[name.replace(/ /g, '_')] ||
                      row[name.replace(/-/g, ' ')] ||
                      '';
-        if (value) return value;
+        if (value) return normalizeBrandingCopy(value);
       }
       return '';
     };
@@ -450,8 +459,8 @@ function normalizeTourRow(row: Record<string, string>): DocentTourRow {
   const sortOrderNum = so.trim() === '' ? 0 : parseFloat(so);
   return {
     tour_id: getField(row, ['tour_id', 'tour id', 'tourid', 'id']).trim(),
-    title: getField(row, ['title']),
-    subtitle: getField(row, ['subtitle']),
+    title: normalizeBrandingCopy(getField(row, ['title'])),
+    subtitle: normalizeBrandingCopy(getField(row, ['subtitle'])),
     start_label: getField(row, ['start_label', 'start label']),
     desktop_only: normalizeBool(getField(row, ['desktop_only', 'desktop only'])),
     start_route: getField(row, ['start_route', 'start route']),
@@ -478,8 +487,8 @@ function normalizeStepRow(row: Record<string, string>): DocentStepRow {
     action_type: (v => (v ? v : null))(getField(row, ['action_type', 'action type'])),
     action_value: (v => (v ? v : null))(getField(row, ['action_value', 'action value'])),
     map_focus_ring: normalizeBool(mfr),
-    title: getField(row, ['title']),
-    text: getField(row, ['text']),
+    title: normalizeBrandingCopy(getField(row, ['title'])),
+    text: normalizeBrandingCopy(getField(row, ['text'])),
     enabled: normalizeBool(getField(row, ['enabled'])),
   };
 }

@@ -38,6 +38,7 @@ const featuredRecord = featuredSource.length > 0
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-EHFB9XXVEP"></script>
     <script>
+      // @ts-nocheck - Google Analytics script
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
@@ -46,18 +47,18 @@ const featuredRecord = featuredSource.length > 0
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>The John Crow Project</title>
-    <meta name="description" content="Documenting the history of anti-Chinese lynching, exclusion, and resistance in the American West (1850–1915). Explore interactive records, maps, timelines, and primary-source newspaper articles to uncover this neglected chapter of American history." />
-    <meta name="keywords" content="John Crow, anti-Chinese violence, Chinese lynching, American West, Chinese Exclusion, anti-Asian racism, digital history, primary sources, 1850-1915" />
+    <title>Chinese Red Record</title>
+    <meta name="description" content="Chinese Red Record documents anti-Chinese lynchings, exclusion, expulsions, and resistance through interactive records, maps, timelines, and primary-source newspaper articles." />
+    <meta name="keywords" content="Chinese Red Record, anti-Chinese violence, Chinese lynching, American West, Chinese Exclusion, anti-Asian racism, digital history, primary sources, 1850-1915" />
     
     <!-- Enhanced Structured Data for Homepage -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "CollectionPage",
-      "name": "The John Crow Project",
-      "description": "Comprehensive digital archive documenting anti-Chinese violence in the American West (1850-1915), including {incidentCount} documented incidents, {victimCount} victims, and 140+ primary source newspaper articles.",
-      "url": "https://johncrow.org",
+      "name": "Chinese Red Record",
+      "description": "Comprehensive digital archive documenting anti-Chinese lynchings, expulsions, exclusion, and racial terror in the American West and beyond (1850-1915), including {incidentCount} documented incidents, {victimCount} victims, and 140+ primary source newspaper articles.",
+      "url": "https://chineseredrecord.org",
       "mainEntity": {
         "@type": "DataCatalog",
         "name": "Anti-Chinese Violence Database",
@@ -74,19 +75,19 @@ const featuredRecord = featuredSource.length > 0
         {
           "@type": "WebPage",
           "name": "Explore Records",
-          "url": "https://johncrow.org/explore",
+          "url": "https://chineseredrecord.org/explore",
           "description": "Search and filter {incidentCount} documented incidents of anti-Chinese violence"
         },
         {
           "@type": "WebPage",
           "name": "Data Visualizations",
-          "url": "https://johncrow.org/visualize",
+          "url": "https://chineseredrecord.org/visualize",
           "description": "Interactive charts, maps, and timelines showing patterns of violence over time"
         },
         {
           "@type": "WebPage",
           "name": "Primary Sources",
-          "url": "https://johncrow.org/news",
+          "url": "https://chineseredrecord.org/news",
           "description": "140+ digitized newspaper articles with full transcripts"
         }
       ],
@@ -107,7 +108,7 @@ const featuredRecord = featuredSource.length > 0
       <div class="container-standard">
         <div class="text-center mb-8">
           <h1 class="text-3xl font-display font-bold mb-4 text-base-content">
-            The John Crow Project
+            Chinese Red Record
           </h1>
           
           <p class="text-lg font-body text-base-content/80 max-w-3xl mx-auto leading-relaxed">
@@ -118,15 +119,15 @@ const featuredRecord = featuredSource.length > 0
         <div id="tour-root"></div>
 
         <section id="home-framing" aria-labelledby="what-is-site-title" class="card-vintage p-6 mb-8">
-          <h2 id="what-is-site-title" class="text-2xl font-display font-semibold mb-3 text-base-content">What Is the John Crow Project?</h2>
+          <h2 id="what-is-site-title" class="text-2xl font-display font-semibold mb-3 text-base-content">What Is Chinese Red Record?</h2>
           <p class="font-body text-base-content/90 leading-relaxed mb-3">
-            Between the California Gold Rush and the First World War, Chinese immigrants were subjected to a coordinated regime of racial terror—lynchings, riots, expulsions, and legal exclusion. This project calls that Western system “John Crow”: a structure aimed at expulsion rather than subordination.
+            Chinese Red Record is a scholarly archive of anti-Chinese lynchings and related racial terror. It traces how lynchings, riots, massacres, expulsions, and exclusion worked together to drive Chinese communities from mining camps, railroad towns, river ports, and cities across the American West and beyond.
           </p>
           <p class="font-body text-base-content/90 leading-relaxed mb-3">
-            Drawing on a newly compiled dataset of documented lynchings, digitized newspaper archives, and spatial analysis, this site reconstructs how violence spread—across towns, along rivers and railroads, and through national print networks.
+            Drawing on a newly compiled dataset of documented lynchings, digitized newspaper archives, maps, and structured records, the archive reconstructs how violence spread across regions and how newspapers, law, and politics helped nationalize anti-Chinese racial terror.
           </p>
           <p class="font-body text-base-content/90 leading-relaxed mb-3">
-            The interactive maps, timelines, and charts presented here translate the quantitative and spatial arguments of the dissertation into web-based form. Where possible, visualizations correspond directly to analytical figures developed in A Murder of Crows.
+            The interactive maps, timelines, and charts presented here translate the dissertation's quantitative and spatial arguments into web form. Where possible, the visualizations correspond directly to the thesis, <em>The Chinese Red Record: Western Lynch Law and the Nationalization of Racial Terror, 1853-1915.</em>
           </p>
           <p class="font-body text-base-content/90 leading-relaxed">
             <a href="/about/project-and-thesis" class="text-accent hover:text-accent-focus underline">
