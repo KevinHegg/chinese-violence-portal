@@ -4,3 +4,13 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
   included_files = ["data/archive-json/**"]
+[[redirects]]
+  from = "https://johncrow.org/*"
+  to = "https://chineseredrecord.org/:splat"
+  status = 301
+  force = true
+[[redirects]]
+  from = "https://www.johncrow.org/*"
+  to = "https://chineseredrecord.org/:splat"
+  status = 301
+  force = true
