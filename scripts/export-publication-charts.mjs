@@ -13,8 +13,8 @@ const PRINT = {
   pixelRatio: 2,        // crisp print output
   padding: 10,          // px padding around each chart
   paddingTop: 10,
-  paddingLeft: 5,
-  paddingRight: 5,
+  paddingLeft: 0,
+  paddingRight: 0,
   paddingBottom: 5,
 };
 
@@ -29,6 +29,11 @@ import { buildTableBarHtml } from './table-bar-html.mjs';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
 const extrasDir = path.join(root, 'extras');
+const LEGACY_PNG_ALIASES = {
+  '6b. Pretexts for Violence': ['5b pretexts for violence'],
+  '7. Killing Method': ['6 distribution of killing method'],
+  '6b-7. Pretexts for Violence and Killing Method': ['Figure 15. Pretexts for Violence and Killing Method'],
+};
 
 const PATHS = {
   timeline: path.join(root, 'public/timeline.json'),
@@ -44,7 +49,7 @@ const theme = {
   grid: '#e0e0e0',
   font: 'Times New Roman, Georgia, serif',
   border: 'none',
-  series: ['#2563eb', '#dc2626', '#059669', '#7c3aed', '#d97706', '#0891b2', '#4f46e5', '#b91c1c', '#0d9488', '#c2410c'],
+  series: ['#5b6c7d', '#b88a44', '#8d6e63', '#738a6e', '#9d5c63', '#7f8c8d', '#7b6d8d', '#a57c5b', '#58727c', '#8f7f5a'],
 };
 
 function buildChartData(lynchings) {
@@ -374,7 +379,7 @@ function buildChartConfigs(data) {
   const Pl = PRINT.paddingLeft;
   const Pr = PRINT.paddingRight;
   const Pb = PRINT.paddingBottom;
-  const F = { axisLabel: 20, axisName: 18, legend: 18, barLabelBig: 20, barLabelSmall: 16, pieLabel: 20 };
+  const F = { axisLabel: 16, axisName: 17, legend: 15, barLabelBig: 18, barLabelSmall: 13, pieLabel: 14 };
   const base = () => ({
     backgroundColor: T.bg,
     textStyle: { fontFamily: T.font, fontSize: F.axisLabel, color: T.text },
@@ -903,8 +908,8 @@ function buildChartConfigs(data) {
       color: preColors,
       series: [{
         type: 'pie',
-        radius: ['20%', '55%'],
-        center: ['50%', '50%'],
+        radius: ['20%', '51%'],
+        center: ['56%', '50%'],
         startAngle: 180,
         data: pretextChartData,
         label: {
@@ -913,7 +918,7 @@ function buildChartConfigs(data) {
           fontSize: F.pieLabel,
           formatter: '{b}: {c}',
           overflow: 'break',
-          width: 140,
+          width: 128,
         },
         labelLine: { lineStyle: { color: T.axis } },
       }],
@@ -1863,7 +1868,13 @@ async function main() {
     if (!result) continue;
     const { name, png } = result;
     const pngBuf = stripDataUrl(png);
-    if (pngBuf) fs.writeFileSync(path.join(extrasDir, `${name}.png`), pngBuf);
+    if (pngBuf) {
+      fs.writeFileSync(path.join(extrasDir, `${name}.png`), pngBuf);
+      const aliases = LEGACY_PNG_ALIASES[name] || [];
+      for (const alias of aliases) {
+        fs.writeFileSync(path.join(extrasDir, `${alias}.png`), pngBuf);
+      }
+    }
     console.log(`Wrote ${name}.png`);
   }
 
