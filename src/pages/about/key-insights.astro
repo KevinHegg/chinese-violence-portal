@@ -27,13 +27,13 @@ import PageLayout from "../../layouts/PageLayout.astro";
           Loading slides…
         </div>
       </div>
-      <div class="flex items-center justify-between gap-4 px-4 py-3 bg-white shrink-0">
-        <button id="slideshow-prev" type="button" class="btn btn-sm btn-ghost" aria-label="Previous slide">← Back</button>
-        <span class="text-sm text-base-content font-medium shrink-0 min-w-[8rem] text-center">
-          <span id="slideshow-counter">— of — slides</span>
-          <button id="slideshow-expand" type="button" class="ml-1 underline hover:no-underline cursor-pointer bg-transparent border-0 p-0 font-inherit text-inherit" aria-label="Make larger">(make larger)</button>
+      <div class="flex items-center justify-between gap-2 sm:gap-4 px-3 sm:px-4 py-3 bg-white shrink-0">
+        <button id="slideshow-prev" type="button" class="btn btn-sm btn-ghost shrink-0" aria-label="Previous slide">← Back</button>
+        <span class="flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 text-center text-sm font-medium text-base-content sm:min-w-[10rem] sm:flex-initial sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-1">
+          <span id="slideshow-counter" class="leading-tight">— of — slides</span>
+          <button id="slideshow-expand" type="button" class="cursor-pointer border-0 bg-transparent p-0 font-inherit text-inherit underline decoration-1 underline-offset-2 hover:no-underline sm:ml-0" aria-label="Make larger">(make larger)</button>
         </span>
-        <button id="slideshow-next" type="button" class="btn btn-sm btn-ghost" aria-label="Next slide">Next →</button>
+        <button id="slideshow-next" type="button" class="btn btn-sm btn-ghost shrink-0" aria-label="Next slide">Next →</button>
       </div>
     </div>
     <div id="slideshow-popup" class="fixed top-[52px] left-0 right-0 bottom-0 z-[4000] bg-black/90 hidden flex flex-col items-center justify-center p-4 pt-0" aria-hidden="true">
