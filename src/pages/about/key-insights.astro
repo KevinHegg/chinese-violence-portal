@@ -18,8 +18,12 @@ import PageLayout from "../../layouts/PageLayout.astro";
     <div id="slideshow-placeholder" class="mt-10 max-w-4xl mx-auto">
       <div id="slideshow-wrapper" class="w-full rounded-lg border border-base-300 overflow-hidden shadow-sm flex flex-col gap-0" role="region" aria-label="Slide deck viewer">
       <div id="slideshow-container" class="relative w-full min-h-[400px] bg-base-300 flex items-center justify-center p-0 m-0">
-        <canvas id="slideshow-canvas" class="max-w-full max-h-full object-contain" hidden aria-hidden="true"></canvas>
-        <div id="slideshow-loading" class="absolute inset-0 flex items-center justify-center text-base-content/70">
+        <canvas id="slideshow-canvas" class="relative z-0 max-w-full max-h-full object-contain" hidden aria-hidden="true"></canvas>
+        <div id="slideshow-overlay-nav" class="absolute inset-0 z-10 hidden" aria-hidden="true">
+          <button type="button" id="slideshow-overlay-prev" class="flex-1 min-h-[200px] min-w-0 cursor-pointer border-0 bg-transparent p-0 transition-colors hover:bg-black/[0.06] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40 disabled:cursor-default disabled:hover:bg-transparent" tabindex="-1" aria-hidden="true" title="Previous slide"></button>
+          <button type="button" id="slideshow-overlay-next" class="flex-1 min-h-[200px] min-w-0 cursor-pointer border-0 bg-transparent p-0 transition-colors hover:bg-black/[0.06] focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40 disabled:cursor-default disabled:hover:bg-transparent" tabindex="-1" aria-hidden="true" title="Next slide"></button>
+        </div>
+        <div id="slideshow-loading" class="absolute inset-0 z-20 flex items-center justify-center text-base-content/70">
           Loading slides…
         </div>
       </div>
@@ -39,9 +43,12 @@ import PageLayout from "../../layouts/PageLayout.astro";
 
     <script is:inline>
       (function () {
-        const PDF_URL = '/docs/The_Chinese_Red_Record.pdf';
+        const PDF_URL = '/docs/The_Chinese_Red_Record_revised.pdf';
         const canvas = document.getElementById('slideshow-canvas');
         const loading = document.getElementById('slideshow-loading');
+        const overlayNav = document.getElementById('slideshow-overlay-nav');
+        const overlayPrev = document.getElementById('slideshow-overlay-prev');
+        const overlayNext = document.getElementById('slideshow-overlay-next');
         const prevBtn = document.getElementById('slideshow-prev');
         const nextBtn = document.getElementById('slideshow-next');
         const expandBtn = document.getElementById('slideshow-expand');
@@ -75,6 +82,15 @@ import PageLayout from "../../layouts/PageLayout.astro";
               loading.textContent = 'Unable to load slides.';
             });
 
+          function syncNavDisabled() {
+            var atFirst = currentPage <= 1;
+            var atLast = currentPage >= totalPages;
+            prevBtn.disabled = atFirst;
+            nextBtn.disabled = atLast;
+            overlayPrev.disabled = atFirst;
+            overlayNext.disabled = atLast;
+          }
+
           function renderPage(pageNum) {
             if (!pdfDoc || pageNum < 1 || pageNum > totalPages) return;
             currentPage = pageNum;
@@ -101,14 +117,20 @@ import PageLayout from "../../layouts/PageLayout.astro";
 
               pdfPage.render({ canvasContext: ctx, viewport: viewport }).promise.then(function () {
                 counterEl.textContent = currentPage + ' of ' + totalPages + ' slides ';
-                prevBtn.disabled = currentPage <= 1;
-                nextBtn.disabled = currentPage >= totalPages;
+                overlayNav.classList.remove('hidden');
+                overlayNav.classList.add('flex');
+                syncNavDisabled();
               });
             });
           }
 
-          prevBtn.addEventListener('click', function () { renderPage(currentPage - 1); });
-          nextBtn.addEventListener('click', function () { renderPage(currentPage + 1); });
+          function goPrev() { renderPage(currentPage - 1); }
+          function goNext() { renderPage(currentPage + 1); }
+
+          prevBtn.addEventListener('click', goPrev);
+          nextBtn.addEventListener('click', goNext);
+          overlayPrev.addEventListener('click', goPrev);
+          overlayNext.addEventListener('click', goNext);
 
           function openPopup() {
             popup.classList.remove('hidden');
