@@ -336,6 +336,27 @@ export function convertToArticleFormat(rows: Record<string, string>[]): any[] {
 }
 
 /**
+ * Convert Google Sheets row data to timeline event format.
+ */
+export function convertToTimelineFormat(rows: Record<string, string>[]): any[] {
+  if (rows.length === 0) return [];
+
+  return rows
+    .map((row) => ({
+      year: (row['Year'] || '').trim(),
+      month: (row['Month'] || '').trim(),
+      day: (row['Day'] || '').trim(),
+      displayDate: (row['Display Date'] || '').trim(),
+      headline: normalizeBrandingCopy((row['Headline'] || '').trim()),
+      text: normalizeBrandingCopy((row['Text'] || '').trim()),
+      eventType: (row['Event Type'] || '').trim(),
+      link: (row['Link'] || '').trim(),
+      primaryLink: (row['Primary Link'] || '').trim(),
+    }))
+    .filter((item) => item.year && item.headline);
+}
+
+/**
  * Fetch and parse lynchings data from Google Sheets
  */
 export async function fetchLynchingsData(): Promise<any[]> {
@@ -377,6 +398,18 @@ export async function fetchArticlesData(): Promise<any[]> {
   
   const rows = parseCSV(csv);
   return convertToArticleFormat(rows);
+}
+
+/**
+ * Fetch and parse timeline data from Google Sheets.
+ */
+export async function fetchTimelineData(): Promise<any[]> {
+  const csv = await fetchGoogleSheetCSV({
+    sheetId: '1rY012LaX-_gPklUU9yjYlixlyjUIoiY5rl9b4P7u9rs',
+  });
+
+  const rows = parseCSV(csv);
+  return convertToTimelineFormat(rows);
 }
 
 // ---------------------------------------------------------------------------

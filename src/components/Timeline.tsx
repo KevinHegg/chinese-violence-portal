@@ -11,6 +11,7 @@ interface TimelineItem {
   description: string;
   eventType: string;
   link?: string;
+  primaryLink?: string;
   lynchingId?: string;
 }
 
@@ -52,10 +53,13 @@ const Timeline: React.FC = () => {
   useEffect(() => {
     const fetchTimelineData = async () => {
       try {
-        // Fetch timeline data from locally synced JSON to avoid
-        // external CSV redirect/cors edge cases at runtime.
+        const nocache = typeof window !== 'undefined' &&
+          new URLSearchParams(window.location.search).get('nocache') === '1';
+        const timelineUrl = nocache ? '/api/timeline?nocache=1' : '/api/timeline';
+
+        // Fetch live timeline data from Google Sheets via API route.
         const [timelineResponse, lynchingsResponse] = await Promise.all([
-          fetch('/timeline.json'),
+          fetch(timelineUrl),
           fetch('/api/lynchings')
         ]);
 
@@ -78,6 +82,7 @@ const Timeline: React.FC = () => {
           const text = String(row.text ?? '').trim();
           const eventType = String(row.eventType ?? 'Legal & Policy').trim() || 'Legal & Policy';
           const link = String(row.link ?? '').trim();
+          const primaryLink = String(row.primaryLink ?? row['Primary Link'] ?? '').trim();
 
           // Skip Anti-Chinese Violence entries here; lynching items come from API.
           if (eventType.toLowerCase() === 'anti-chinese violence') {
@@ -96,7 +101,8 @@ const Timeline: React.FC = () => {
             title: headline,
             description: text,
             eventType,
-            link: link || undefined
+            link: link || undefined,
+            primaryLink: primaryLink || undefined
           };
           timelineItems.push(timelineItem);
         });
@@ -376,14 +382,29 @@ const Timeline: React.FC = () => {
                       className="text-xs text-gray-700 leading-relaxed"
                       dangerouslySetInnerHTML={{ __html: renderDescriptionHtml(item.description) }}
                     />
-                    {item.link && (
+                    {(item.link || item.primaryLink) && (
                       <p className="text-xs mt-1">
-                        <a 
-                          href={item.link} 
-                          className="text-accent hover:text-accent-focus underline"
-                        >
-                          (Read More)
-                        </a>
+                        {item.link && (
+                          <a
+                            href={item.link}
+                            target="timeline-link"
+                            rel="noopener noreferrer"
+                            className="text-accent hover:text-accent-focus underline"
+                          >
+                            (Read More)
+                          </a>
+                        )}
+                        {item.link && item.primaryLink && ' '}
+                        {item.primaryLink && (
+                          <a
+                            href={item.primaryLink}
+                            target="timeline-link"
+                            rel="noopener noreferrer"
+                            className="text-accent hover:text-accent-focus underline"
+                          >
+                            (See source)
+                          </a>
+                        )}
                       </p>
                     )}
                   </div>

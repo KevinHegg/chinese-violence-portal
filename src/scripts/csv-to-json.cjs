@@ -19,7 +19,8 @@ const json = records.map(row => ({
   headline: row['Headline'] || '',
   text: row['Text'] || '',
   eventType: row['Event Type'] || '',
-  link: row['Link'] || ''
+  link: row['Link'] || '',
+  primaryLink: row['Primary Link'] || ''
 }));
 
 fs.writeFileSync(jsonPath, JSON.stringify(json, null, 2));
