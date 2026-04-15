@@ -42,6 +42,11 @@ const STEP_DEFS: StepDef[] = [
     text: "Ask questions and trace evidence across records.",
   },
   {
+    selector: "#home-contribute-cta",
+    title: "Contribute new evidence",
+    text: "Use this call-to-action when you want to submit a documented incident for review. Contributions are moderated before anything is added to the archive.",
+  },
+  {
     selector: "#nav-explore",
     title: "Explore by collection",
     text: "Browse the archive by collection: Lynching Records, News Clips, or the Dataset.",

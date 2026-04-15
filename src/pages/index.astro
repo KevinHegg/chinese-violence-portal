@@ -173,6 +173,24 @@ const featuredRecord = featuredSource.length > 0
           </p>
         </section>
 
+        <section id="home-contribute-cta" aria-labelledby="home-contribute-title" class="mb-8">
+          <div class="rounded-xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
+            <h2 id="home-contribute-title" class="text-xl font-display font-semibold text-base-content mb-2">
+              Contribute: Submit an Incident
+            </h2>
+            <p class="text-base font-body text-base-content/80 leading-relaxed mb-4 max-w-3xl">
+              Know of a documented incident of lethal anti-Chinese violence that belongs in the archive?
+              Share evidence for review through the submission form.
+            </p>
+            <a
+              href="/submit"
+              class="inline-flex items-center rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-amber-950 shadow-sm transition-colors hover:bg-amber-600"
+            >
+              Submit an Incident
+            </a>
+          </div>
+        </section>
+
         <!-- Featured Record Section -->
         {featuredRecord && (
           <section aria-labelledby="featured-record-title" class="mb-8">
@@ -222,6 +240,11 @@ const featuredRecord = featuredSource.length > 0
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
               WCAG 2.2 AA Compliant
+            </a>
+          </div>
+          <div class="mb-3">
+            <a href="/about/contact" class="text-sm font-medium text-accent underline hover:text-accent-focus">
+              Contact
             </a>
           </div>
           <p class="text-sm font-body text-base-content/70">
