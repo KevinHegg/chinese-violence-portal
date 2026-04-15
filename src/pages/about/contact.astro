@@ -154,6 +154,43 @@ export const prerender = true;
       Prefer email? You can also write to <a href="mailto:kevinhegg@gmail.com" class="text-accent underline hover:text-accent-focus">kevinhegg@gmail.com</a>.
     </p>
   </section>
+
+  <iframe
+    name="feedback-submit-target"
+    id="feedback-submit-target"
+    title="Feedback submission target"
+    class="hidden"
+  ></iframe>
+
+  <div
+    id="feedback-success-modal"
+    class="fixed inset-0 z-[10000] hidden items-center justify-center bg-black/60 px-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="feedback-success-title"
+    aria-describedby="feedback-success-message"
+  >
+    <div class="w-full max-w-md overflow-hidden rounded-xl border border-amber-200 bg-white shadow-2xl">
+      <div class="border-b border-amber-200 bg-amber-50 px-6 py-4">
+        <h2 id="feedback-success-title" class="text-xl font-semibold text-gray-900">Feedback Sent</h2>
+      </div>
+      <div class="p-6">
+        <p id="feedback-success-message" class="text-gray-700 leading-relaxed text-center mb-6">
+          Your feedback was submitted successfully.<br />
+          Thank you!
+        </p>
+        <div class="flex justify-center">
+          <button
+            id="feedback-success-close"
+            type="button"
+            class="inline-flex items-center justify-center rounded-lg bg-gray-900 px-5 py-3 font-semibold text-white shadow-sm transition-colors hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-amber-700 focus:ring-offset-2"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </PageLayout>
 
 <script>
@@ -161,8 +198,47 @@ export const prerender = true;
   const form = document.getElementById('feedback-form');
   const errorSummary = document.getElementById('feedback-error-summary');
   const submitError = document.getElementById('feedback-submit-error');
+  const submitButton = document.getElementById('feedback-submit-button');
+  const submitTarget = document.getElementById('feedback-submit-target');
+  const successModal = document.getElementById('feedback-success-modal');
+  const successClose = document.getElementById('feedback-success-close');
+  const successPath = '/about/contact/success/';
+  let lastFocusedElement = null;
+  let pendingSubmission = false;
+
+  const openSuccessModal = () => {
+    if (!successModal) return;
+    lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    successModal.classList.remove('hidden');
+    successModal.classList.add('flex');
+    document.body.classList.add('overflow-hidden');
+    if (successClose instanceof HTMLButtonElement) {
+      successClose.focus();
+    }
+  };
+
+  const closeSuccessModal = () => {
+    if (!successModal) return;
+    successModal.classList.add('hidden');
+    successModal.classList.remove('flex');
+    document.body.classList.remove('overflow-hidden');
+    if (lastFocusedElement instanceof HTMLElement) {
+      lastFocusedElement.focus();
+    }
+  };
+
+  if (successClose instanceof HTMLButtonElement) {
+    successClose.addEventListener('click', closeSuccessModal);
+  }
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && successModal && !successModal.classList.contains('hidden')) {
+      closeSuccessModal();
+    }
+  });
 
   if (form instanceof HTMLFormElement) {
+    form.setAttribute('target', 'feedback-submit-target');
     const fieldErrors = {
       category: 'Choose a category.',
       message: 'Enter your message.',
@@ -227,6 +303,51 @@ export const prerender = true;
         errorSummary.classList.add('hidden');
       }
       submitError?.classList.add('hidden');
+      closeSuccessModal();
+      pendingSubmission = true;
+
+      if (submitButton instanceof HTMLButtonElement) {
+        submitButton.disabled = true;
+        submitButton.textContent = 'Sending...';
+      }
+    });
+  }
+
+  if (submitTarget instanceof HTMLIFrameElement) {
+    submitTarget.addEventListener('load', () => {
+      if (!pendingSubmission) return;
+      pendingSubmission = false;
+
+      let reachedSuccessPage = false;
+      try {
+        const iframePath = submitTarget.contentWindow?.location?.pathname || '';
+        reachedSuccessPage = iframePath === successPath;
+      } catch {
+        reachedSuccessPage = false;
+      }
+
+      if (submitButton instanceof HTMLButtonElement) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Send Feedback';
+      }
+
+      if (!reachedSuccessPage) {
+        submitError?.classList.remove('hidden');
+        submitError?.focus?.();
+        return;
+      }
+
+      if (form instanceof HTMLFormElement) {
+        form.reset();
+        const fields = Array.from(form.querySelectorAll('select, textarea, input[type="email"]'));
+        fields.forEach((field) => {
+          field.setAttribute('aria-invalid', 'false');
+          const errorElement = document.getElementById(`${field.id}-error`);
+          if (errorElement) errorElement.textContent = '';
+        });
+      }
+
+      openSuccessModal();
     });
   }
 </script>
